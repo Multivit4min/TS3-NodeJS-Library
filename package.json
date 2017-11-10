@@ -1,0 +1,17 @@
+{
+  "name": "node-ts3-query",
+  "version": "1.0.0",
+  "description": "",
+  "main": "query.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "crc-32": "^1.1.1",
+    "events": "^1.1.1",
+    "line-input-stream": "^1.0.1"
+  }
+}
