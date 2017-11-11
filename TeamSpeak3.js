@@ -7,7 +7,9 @@
 const TS3Query = require(__dirname+"/transport/TS3Query") 
 const TeamSpeakClient = require(__dirname+"/property/Client") 
 const TeamSpeakChannel = require(__dirname+"/property/Channel") 
+const TeamSpeakServer = require(__dirname+"/property/Server") 
 const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup") 
+const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup") 
 const Promise = require("bluebird") 
 const events = require("events") 
 const util = require("util") 
@@ -49,6 +51,7 @@ class TeamSpeak3 {
 		this._channels = {}
 		this._servergroups = {}
 		this._channelgroups = {}
+        this._servers = {}
 
         this._ts3 = new TS3Query(this._config.host, this._config.queryport) 
         if (this._config.keepalive) this._ts3.keepAlive() 
@@ -58,9 +61,9 @@ class TeamSpeak3 {
         this._ts3.on("connect", () => { 
             var exec = [] 
             if (typeof(this._config.username) == "string") 
-                this.login(this._config.username, this._config.password)
+                exec.push(this.login(this._config.username, this._config.password))
             if (typeof(this._config.serverport) == "number") 
-                this.use(this._config.serverport)
+                exec.push(this.useByPort(this._config.serverport))
             if (typeof(this._config.nickname) == "string") 
                 exec.push(this.execute("clientupdate", {client_nickname: this._config.nickname}))
             Promise.all(exec)
@@ -106,7 +109,7 @@ class TeamSpeak3 {
      * @param {string} password - The Password you want to login with
      * @returns {Promise} Promise object 
      */
-    login(username, password) { 
+    login(username, password) {
         return this.execute("login", [username, password]) 
     } 
 
@@ -117,8 +120,8 @@ class TeamSpeak3 {
      * @async 
      * @returns {Promise} Promise object 
      */
-    logout() { 
-        return this.execute("logout") 
+    logout() {
+        return this._cacheCleanUp(this.execute("logout"))
     } 
 
 
@@ -126,7 +129,7 @@ class TeamSpeak3 {
      * Displays the servers version information including platform and build number.
      * @version 1.0 
      * @async 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     version() { 
         return this.execute("version") 
@@ -137,7 +140,7 @@ class TeamSpeak3 {
      * Displays detailed connection information about the server instance including uptime, number of virtual servers online, traffic information, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     hostInfo() { 
         return this.execute("hostinfo") 
@@ -148,7 +151,7 @@ class TeamSpeak3 {
      * Displays the server instance configuration including database revision number, the file transfer port, default group IDs, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     instanceInfo() { 
         return this.execute("instanceinfo") 
@@ -160,7 +163,7 @@ class TeamSpeak3 {
      * @version 1.0 
      * @async 
      * @param {object} properties - The stuff you want to change
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     instanceEdit(properties) { 
         return this.execute("instanceedit", properties) 
@@ -171,7 +174,7 @@ class TeamSpeak3 {
      * Displays a list of IP addresses used by the server instance on multi-homed machines.
      * @version 1.0 
      * @async 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     bindingList() { 
         return this.execute("bindinglist") 
@@ -179,15 +182,38 @@ class TeamSpeak3 {
 
 
     /** 
-     * Selects the virtual server specified with sid or port to allow further interaction. The ServerQuery client will appear on the virtual server and acts like a real TeamSpeak 3 Client, except it's unable to send or receive voice data.
+     * Selects the virtual server specified with the port to allow further interaction.
      * @version 1.0 
      * @async
      * @param {number} port - The Port the Server runs on
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
-    use(port) { 
-        return this.execute("use", {port: port}) 
+    useByPort(port) { 
+        return this._cacheCleanUp(this.execute("use", {port: port}))
     } 
+
+
+    /** 
+     * Selects the virtual server specified with the sid to allow further interaction.
+     * @version 1.0 
+     * @async
+     * @param {number} sid - The Server ID
+     * @returns {Promise} Promise object
+     */ 
+    useBySid(sid) { 
+        return this._cacheCleanUp(this.execute("use", [sid]))
+    } 
+
+    
+    /** 
+     * Changes the selected virtual servers configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
+     * @version 1.0 
+     * @async
+     * @return {Promise} 
+     */ 
+    serverEdit(properties) {
+        return super.execute("serverinfo", properties)
+    }
 
 
     /** 
@@ -295,6 +321,53 @@ class TeamSpeak3 {
 
 
     /** 
+     * Displays a list of virtual servers including their ID, status, number of clients online, etc.
+     * @version 1.0 
+     * @async
+     * @returns {Promise} Promise object
+     */ 
+    serverList(filter = {}) { 
+        return this.execute(
+            "serverlist", ["-uid", "-all"]
+        ).then(servers => {
+            return this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer)
+        }).then(servers => {
+            return this.constructor._filter(servers, filter)
+        }).then(servers => {
+            return new Promise((fulfill, reject) => {
+                fulfill(servers.map(s => {
+                    return this._servers[s.virtualserver_id]
+                }))
+            })
+        })
+    }
+
+
+    /** 
+     * Displays a list of channel groups available. Depending on your permissions, the output may also contain template groups.
+     * @version 1.0 
+     * @async 
+     * @param {object} filter - Filter Object 
+     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Server Groups
+     */ 
+    channelGroupList(filter = {}) { 
+        return this.execute(
+            "channelgrouplist"
+        ).then(groups => {
+            return this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup)
+        }).then(groups => {
+            return this.constructor._filter(groups, filter)
+        }).then(groups => {
+            return new Promise((fulfill, reject) => {
+                fulfill(groups.map(g => {
+                    return this._channelgroups[g.cgid]
+                }))
+            })
+        })
+    }
+
+
+    /** 
      * Displays a list of server groups available. Depending on your permissions, the output may also contain global ServerQuery groups and template groups.
      * @version 1.0 
      * @async 
@@ -324,7 +397,7 @@ class TeamSpeak3 {
      * @async 
      * @param {object} filter - Filter Object 
      * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Channels
-     */ 
+     */
     channelList(filter = {}) { 
         return this.execute( 
             "channellist", 
@@ -380,6 +453,27 @@ class TeamSpeak3 {
 
 
     /** 
+     * Cleans up the cache after a server deselect
+     * @version 1.0 
+     * @async 
+     * @private
+     * @param {object} promise - The Promise which will be waited for before the cleanup
+     * @returns {Promise} Promise object 
+     */ 
+    _cacheCleanUp(promise) {
+        return new Promise((fulfill, reject) => {
+            promise.then(res => {
+                this._servergroups = []
+                this._channels = []
+                this._clients = []
+                this._channelgroups = []
+                fulfill(res)
+            }).catch(reject)
+        })
+    }
+
+
+    /** 
      * Parses the whole Cache by given Objects
      * @version 1.0 
      * @async 
@@ -413,26 +507,26 @@ class TeamSpeak3 {
      * @private 
      * @static 
      * @async 
-     * @param {object} obj - The Object which should get filtered 
-     * @param {object} filt - Filter Object 
-     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Clients 
+     * @param {object} array - The Object which should get filtered 
+     * @param {object} filter - Filter Object 
+     * @returns {Promise<object>} Promise object
      */ 
-    static _filter(obj, filt) { 
+    static _filter(array, filter) {
         return new Promise((fulfill, reject) => { 
-            if (!(obj instanceof Array)) obj = [obj] 
-            if (Object.keys(filt).length == 0) 
-                return fulfill(obj) 
-            fulfill(obj.filter(o => { 
-                for (var k in filt) { 
-                    if (!(k in o)) return false 
-                    if (filt[k] instanceof RegExp) return o[k].match(filt[k]) 
-                    switch (typeof o[k]) { 
-                        case "number": return o[k] === parseInt(filt[k]) 
+            if (!Array.isArray(array)) array = [array]
+            if (Object.keys(filter).length == 0) 
+                return fulfill(array)
+            fulfill(array.filter(a => { 
+                for (var k in filter) {
+                    if (!(k in a)) return false 
+                    if (filter[k] instanceof RegExp) return a[k].match(filter[k])
+                    switch (typeof a[k]) { 
+                        case "number": return a[k] == parseFloat(filter[k]) 
                         case "string": 
-                        case "object": return o[k].match(filt[k]) 
+                        case "object": return a[k].match(filter[k]) 
                     } 
                 } 
-            })) 
+            }))
         }) 
     } 
 } 

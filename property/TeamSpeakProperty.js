@@ -4,7 +4,8 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com> 
  */ 
- const CRC32 = require('crc-32') 
+const CRC32 = require('crc-32') 
+const Promise = require("bluebird")
   
 /**
  * TeamSpeak Property Class
@@ -112,9 +113,22 @@
                         return cmd[2] = a 
                     return cmd[1] = a 
             } 
-        }) 
+        })
         return CRC32.str(JSON.stringify(cmd)) 
-    } 
+    }
+
+
+    /** 
+     * Filters an Object with given Option
+     * @version 1.0
+     * @async
+     * @param {object} array - The Object which should get filtered 
+     * @param {object} filter - Filter Object 
+     * @returns {Promise<object>} Promise object
+     */ 
+    filter(array, filter) {
+        return this._parent.constructor._filter(array, filter)
+    }
         
 } 
 
