@@ -5,6 +5,7 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const Promise = require("bluebird") 
 
  /**
  * Class representing a TeamSpeak Client

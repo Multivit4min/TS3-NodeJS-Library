@@ -11,6 +11,7 @@ const LineInputStream = require("line-input-stream")
 const Promise = require("bluebird")
 const events = require("events")
 const util = require("util")
+const CRC32 = require("crc-32")
 
 
 /**
@@ -66,8 +67,8 @@ class TS3Query {
                 } else if (line.indexOf("notify") === 0) {
                     if (this._doubleEvents.some(s => line.indexOf(s) === 0)
                         && this._handleDoubleEvents
-                        && line == this._lastevent) return
-                    this._lastevent = line
+                        && CRC32.str(line) == this._lastevent) return
+                    this._lastevent = CRC32.str(line)
                     return this.emit(
                         line.substr(6, line.indexOf(" ") - 6), 
                         Response.parse(line.substr(line.indexOf(" ") + 1)))

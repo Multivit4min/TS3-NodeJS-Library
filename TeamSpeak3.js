@@ -11,8 +11,8 @@ const TeamSpeakServer = require(__dirname+"/property/Server")
 const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup") 
 const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup") 
 const Promise = require("bluebird") 
-const events = require("events") 
-const util = require("util") 
+const events = require("events")
+const util = require("util")
 
 /**
  * Main TeamSpeak Query Class
@@ -57,15 +57,15 @@ class TeamSpeak3 {
         if (this._config.keepalive) this._ts3.keepAlive() 
         if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer) 
 
-        this._ts3.on("cliententerview", this._evcliententerview)
-        this._ts3.on("clientleftview", this._evclientleftview)
-        this._ts3.on("serveredited", this._evserveredited)
-        this._ts3.on("channeledited", this._evchanneledited)
-        this._ts3.on("channelmoved", this._evchannelmoved)
-        this._ts3.on("channeldeleted", this._evchanneldeleted)
-        this._ts3.on("clientmoved", this._evclientmoved)
-        this._ts3.on("textmessage", this._evtextmessage)
-        this._ts3.on("tokenused", this._evtokenused)
+        this._ts3.on("cliententerview", this._evcliententerview.bind(this))
+        this._ts3.on("clientleftview", this._evclientleftview.bind(this))
+        this._ts3.on("serveredited", this._evserveredited.bind(this))
+        this._ts3.on("channeledited", this._evchanneledited.bind(this))
+        this._ts3.on("channelmoved", this._evchannelmoved.bind(this))
+        this._ts3.on("channeldeleted", this._evchanneldeleted.bind(this))
+        this._ts3.on("clientmoved", this._evclientmoved.bind(this))
+        this._ts3.on("textmessage", this._evtextmessage.bind(this))
+        this._ts3.on("tokenused", this._evtokenused.bind(this))
 
         this._ts3.on("connect", () => {
             var exec = [] 
@@ -84,13 +84,31 @@ class TeamSpeak3 {
 
 
     _evcliententerview() {
-        console.log("CLIENTENTERVIEW")
-        console.log(...arguments)
+        this.getClientByID(arguments[0].clid)
+        .then(c => this.emit("clientconnect", {client: c})
+        ).catch(e => this.emit("error", e))
     }
 
 
     _evclientleftview() {
-        console.log("CLIENTLEFTVIEW")
+        this.clientList()
+        .then(() => this.emit("clientdisconnect", arguments[0]))
+    }
+
+
+    _evtextmessage() {
+        var ev = arguments[0]
+        this.getClientByID(ev.invokerid)
+        .then(c => this.emit("message", {
+            invoker: c, 
+            msg: ev.msg, 
+            targetmode: ev.targetmode
+        })).catch(e => this.emit("error", e))
+    }
+
+
+    _evclientmoved() {
+        console.log("CLIENTMOVED")
         console.log(...arguments)
     }
 
@@ -115,18 +133,6 @@ class TeamSpeak3 {
 
     _evchanneldeleted() {
         console.log("CHANNELDELETED")
-        console.log(...arguments)
-    }
-
-
-    _evclientmoved() {
-        console.log("CLIENTMOVED")
-        console.log(...arguments)
-    }
-
-
-    _evtextmessage() {
-        console.log("TEXTMESSAGE")
         console.log(...arguments)
     }
 
@@ -600,7 +606,7 @@ class TeamSpeak3 {
         }).then(clients => {
             return new Promise((fulfill, reject) => {
                 fulfill(clients.map(c => {
-                    return this._clients[c.clid]
+                    return this._clients[String(c.clid)]
                 }))
             })
         })
@@ -655,9 +661,9 @@ class TeamSpeak3 {
         return new Promise((fulfill, reject) => {
             var remainder = Object.keys(cache)
             list.forEach(l => {
-                if (remainder.indexOf(l[key]) >= 0) 
-                    return remainder.splice(remainder.indexOf(l[key]), 1)
-                cache[l[key]] = new Class(this, l)
+                if (remainder.indexOf(String(l[key])) >= 0) 
+                    return remainder.splice(remainder.indexOf(String(l[key])), 1)
+                cache[String(l[key])] = new Class(this, l)
             })
             remainder.forEach(r => {
                 delete cache[r]
@@ -678,7 +684,7 @@ class TeamSpeak3 {
      * @returns {Promise<object>} Promise object
      */ 
     static _filter(array, filter) {
-        return new Promise((fulfill, reject) => { 
+        return new Promise((fulfill, reject) => {
             if (!Array.isArray(array)) array = [array]
             if (Object.keys(filter).length == 0) 
                 return fulfill(array)
