@@ -30,6 +30,17 @@ class TeamSpeakServer extends TeamSpeakProperty {
 
 
     /** 
+     * Selects the Virtual Server
+     * @constructor 
+     * @version 1.0 
+     * @return {Promise} 
+     */ 
+    use() {
+        return this.execute("use", {sid: this._static.sid})
+    }
+
+
+    /** 
      * Gets basic Infos about the Server
      * @version 1.0 
      * @async

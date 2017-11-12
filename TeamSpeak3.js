@@ -65,7 +65,7 @@ class TeamSpeak3 {
             if (typeof(this._config.serverport) == "number") 
                 exec.push(this.useByPort(this._config.serverport))
             if (typeof(this._config.nickname) == "string") 
-                exec.push(this.execute("clientupdate", {client_nickname: this._config.nickname}))
+                exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
             Promise.all(exec)
                 .then(r => this.emit("ready"))
                 .catch(e => this.emit("error", e))
@@ -85,6 +85,18 @@ class TeamSpeak3 {
      */ 
     execute() { 
         return this._ts3.execute(...arguments) 
+    } 
+
+
+    /** 
+     * Change your ServerQuery clients settings using given properties.
+     * @version 1.0 
+     * @async 
+     * @param {string} properties - The Properties which should be changed
+     * @returns {Promise} Promise object 
+     */
+    clientUpdate(properties) { 
+        return this.execute("clientupdate", properties) 
     } 
 
 
@@ -239,25 +251,37 @@ class TeamSpeak3 {
 
 
     /** 
-     * Stops the virtual server specified with sid. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance
+     * Displays the database ID of the virtual server running on the UDP port
      * @version 1.0 
      * @async 
-     * @param {number} sid - Server id you want to stop
+     * @param {number} port - The Server Port where data should be retrieved
      * @returns {Promise} Promise object
      */ 
-    serverStop(sid) { 
-        return this.execute("serverstop", {sid: sid}) 
+    serverIdGetByPort(port) { 
+        return this.execute("serveridgetbyport", {virtualserver_port: port}) 
     }
 
 
     /** 
-     * Starts the virtual server specified with sid. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.     * @version 1.0 
+     * Changes the selected virtual servers configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
+     * @version 1.0 
      * @async 
-     * @param {number} sid - Server id you want to start
+     * @param {object} properties - The Server Settings which should be changed
      * @returns {Promise} Promise object
      */ 
-    serverStart(sid) { 
-        return this.execute("serverstart", {sid: sid}) 
+    serverEdit(properties) { 
+        return this.execute("serveredit", properties) 
+    }
+
+
+    /** 
+     * Stops the entire TeamSpeak 3 Server instance by shutting down the process.
+     * @version 1.0 
+     * @async 
+     * @returns {Promise} Promise object
+     */ 
+    serverProcessStop() {
+        return this.execute("serverprocessstop") 
     }
 
 
@@ -269,6 +293,80 @@ class TeamSpeak3 {
      */ 
     connectionInfo() { 
         return this.execute("serverrequestconnectioninfo") 
+    }
+
+
+    /** 
+     * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key. If virtualserver_port is not specified, the server will test for the first unused UDP port
+     * @version 1.0 
+     * @async 
+     * @param {object} properties - The Server Settings
+     * @returns {Promise} Promise object
+     */ 
+    serverCreate(properties) { 
+        var token = ""
+        return this.execute("servercreate", properties)
+        .then(res => {
+            token = r.token
+            return this.serverList({virtualserver_id: res.sid})
+        }).then(server => {
+            return new Promise(fulfill => fulfill(server[0], token))
+        })
+    }
+
+
+    /** 
+     * Creates a new channel using the given properties. Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
+     * @version 1.0 
+     * @async 
+     * @param {string} name - The Name of the Channel
+     * @param {object} [type={}] - Properties of the Channel
+     * @returns {Promise} Promise object
+     */ 
+    channelCreate(name, properties = {}) {
+        properties.channel_name = name
+        return this.execute("channelcreate", properties)
+        .then(r => {
+            return this.channelList({cid: r.cid})
+        }).then(c => {
+            return new Promise(fulfill => fulfill(c[0]))
+        })
+    }
+
+
+    /** 
+     * Creates a new server group using the name specified with name. The optional type parameter can be used to create ServerQuery groups and template groups.
+     * @version 1.0 
+     * @async 
+     * @param {string} name - The Name of the Server Group
+     * @param {number} [type=1] - Type of the Server Group
+     * @returns {Promise} Promise object
+     */ 
+    serverGroupCreate(name, type = 1) { 
+        return this.execute("servergroupadd", {name: name, type: type})
+        .then(r => {
+            return this.serverGroupList({sgid: r.sgid})
+        }).then(g => {
+            return new Promise(fulfill => fulfill(g[0]))
+        })
+    }
+
+
+    /** 
+     * Creates a new channel group using a given name. The optional type parameter can be used to create ServerQuery groups and template groups.
+     * @version 1.0 
+     * @async 
+     * @param {string} name - The Name of the Channel Group
+     * @param {number} [type=1] - Type of the Channel Group
+     * @returns {Promise} Promise object
+     */ 
+    channelGroupCreate(name, type = 1) { 
+        return this.execute("channelgroupadd", {name: name, type: type})
+        .then(r => {
+            return this.channelGroupList({cgid: r.cgid})
+        }).then(g => {
+            return new Promise(fulfill => fulfill(g[0]))
+        })
     }
 
 
@@ -314,6 +412,22 @@ class TeamSpeak3 {
     getClientByUID(uid) {
         return new Promise((fulfill, reject) => {
             this.clientList({client_unique_identifier: uid})
+                .then(clients => fulfill(clients[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Retrieves a Single Client by the given Client Unique Identifier
+     * @version 1.0 
+     * @async 
+     * @param {string} name - The Nickname of the Client
+     * @returns {Promise<object>} Promise object which returns the Client Object or undefined if not found
+     */ 
+    getClientByName(name) {
+        return new Promise((fulfill, reject) => {
+            this.clientList({client_nickname: name})
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
