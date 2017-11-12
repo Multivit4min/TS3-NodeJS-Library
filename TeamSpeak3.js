@@ -2,7 +2,7 @@
  * @file TeamSpeak3.js
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3 
- * @author David Kartnaller <david.kartnaller@gmail.com> 
+ * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const TS3Query = require(__dirname+"/transport/TS3Query") 
 const TeamSpeakClient = require(__dirname+"/property/Client") 
@@ -24,9 +24,9 @@ class TeamSpeak3 {
      * @constructor 
      * @version 1.0 
      * @param {object} [config] - The Configuration Object 
-     * @param {string} [config.host='127.0.0.1'] - The Host on which the TeamSpeak Server runs 
-     * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs 
-     * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs 
+     * @param {string} [config.host='127.0.0.1'] - The Host on which the TeamSpeak Server runs
+     * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs
+     * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs
      * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server 
      * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server 
      * @param {string} [config.nickname] - The Nickname the Client should have 
@@ -57,8 +57,17 @@ class TeamSpeak3 {
         if (this._config.keepalive) this._ts3.keepAlive() 
         if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer) 
 
+        this._ts3.on("cliententerview", this._evcliententerview)
+        this._ts3.on("clientleftview", this._evclientleftview)
+        this._ts3.on("serveredited", this._evserveredited)
+        this._ts3.on("channeledited", this._evchanneledited)
+        this._ts3.on("channelmoved", this._evchannelmoved)
+        this._ts3.on("channeldeleted", this._evchanneldeleted)
+        this._ts3.on("clientmoved", this._evclientmoved)
+        this._ts3.on("textmessage", this._evtextmessage)
+        this._ts3.on("tokenused", this._evtokenused)
 
-        this._ts3.on("connect", () => { 
+        this._ts3.on("connect", () => {
             var exec = [] 
             if (typeof(this._config.username) == "string") 
                 exec.push(this.login(this._config.username, this._config.password))
@@ -69,9 +78,63 @@ class TeamSpeak3 {
             Promise.all(exec)
                 .then(r => this.emit("ready"))
                 .catch(e => this.emit("error", e))
-        }) 
-        this._ts3.on("close", e => this.emit("close", e)) 
-    } 
+        })
+        this._ts3.on("close", e => this.emit("close", e))
+    }
+
+
+    _evcliententerview() {
+        console.log("CLIENTENTERVIEW")
+        console.log(...arguments)
+    }
+
+
+    _evclientleftview() {
+        console.log("CLIENTLEFTVIEW")
+        console.log(...arguments)
+    }
+
+
+    _evserveredited() {
+        console.log("SERVEREDITED")
+        console.log(...arguments)
+    }
+
+
+    _evchanneledited() {
+        console.log("CHANNELDELETED")
+        console.log(...arguments)
+    }
+
+
+    _evchannelmoved() {
+        console.log("CHANNELMOVED")
+        console.log(...arguments)
+    }
+
+
+    _evchanneldeleted() {
+        console.log("CHANNELDELETED")
+        console.log(...arguments)
+    }
+
+
+    _evclientmoved() {
+        console.log("CLIENTMOVED")
+        console.log(...arguments)
+    }
+
+
+    _evtextmessage() {
+        console.log("TEXTMESSAGE")
+        console.log(...arguments)
+    }
+
+
+    _evtokenused() {
+        console.log("TOKENUSED")
+        console.log(...arguments)
+    }
 
 
     /** 
@@ -85,7 +148,7 @@ class TeamSpeak3 {
      */ 
     execute() { 
         return this._ts3.execute(...arguments) 
-    } 
+    }
 
 
     /** 
@@ -97,7 +160,7 @@ class TeamSpeak3 {
      */
     clientUpdate(properties) { 
         return this.execute("clientupdate", properties) 
-    } 
+    }
 
 
     /** 
@@ -110,7 +173,7 @@ class TeamSpeak3 {
      */
     registerEvent(event, id = 0) { 
         return this.execute("servernotifyregister", {event: event, id: 0}) 
-    } 
+    }
 
 
     /** 
@@ -123,7 +186,7 @@ class TeamSpeak3 {
      */
     login(username, password) {
         return this.execute("login", [username, password]) 
-    } 
+    }
 
 
     /** 
@@ -134,7 +197,7 @@ class TeamSpeak3 {
      */
     logout() {
         return this._cacheCleanUp(this.execute("logout"))
-    } 
+    }
 
 
     /** 
@@ -145,7 +208,7 @@ class TeamSpeak3 {
      */ 
     version() { 
         return this.execute("version") 
-    } 
+    }
 
 
     /** 
@@ -156,7 +219,7 @@ class TeamSpeak3 {
      */ 
     hostInfo() { 
         return this.execute("hostinfo") 
-    } 
+    }
 
 
     /** 
@@ -167,7 +230,7 @@ class TeamSpeak3 {
      */ 
     instanceInfo() { 
         return this.execute("instanceinfo") 
-    } 
+    }
 
 
     /** 
@@ -179,7 +242,7 @@ class TeamSpeak3 {
      */ 
     instanceEdit(properties) { 
         return this.execute("instanceedit", properties) 
-    } 
+    }
 
 
     /** 
@@ -190,7 +253,7 @@ class TeamSpeak3 {
      */ 
     bindingList() { 
         return this.execute("bindinglist") 
-    } 
+    }
 
 
     /** 
@@ -202,7 +265,7 @@ class TeamSpeak3 {
      */ 
     useByPort(port) { 
         return this._cacheCleanUp(this.execute("use", {port: port}))
-    } 
+    }
 
 
     /** 
@@ -214,17 +277,6 @@ class TeamSpeak3 {
      */ 
     useBySid(sid) { 
         return this._cacheCleanUp(this.execute("use", [sid]))
-    } 
-
-    
-    /** 
-     * Changes the selected virtual servers configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
-     * @version 1.0 
-     * @async
-     * @return {Promise} 
-     */ 
-    serverEdit(properties) {
-        return super.execute("serverinfo", properties)
     }
 
 
@@ -236,7 +288,7 @@ class TeamSpeak3 {
      */ 
     whoami() { 
         return this.execute("whoami") 
-    } 
+    }
 
 
     /** 

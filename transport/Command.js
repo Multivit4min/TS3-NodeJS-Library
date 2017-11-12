@@ -2,9 +2,11 @@
  * @file Response.js 
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
- * @author David Kartnaller <david.kartnaller@gmail.com> 
+ * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const escape = require(__dirname+"/../helper/escape.js")
+
+
 
 /**
  * TeamSpeak Query Command Class
@@ -15,6 +17,7 @@ class Command {
      * Creates the Command Class
      * @constructor 
      * @version 1.0
+     * @toc TRANSPORT.Command
      */ 
     constructor() {
         this._cmd = ""

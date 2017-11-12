@@ -2,7 +2,7 @@
  * @file Channel.js 
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
- * @author David Kartnaller <david.kartnaller@gmail.com> 
+ * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
 

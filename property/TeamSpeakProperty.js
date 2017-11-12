@@ -2,7 +2,7 @@
  * @file TeamSpeakProperty.js 
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
- * @author David Kartnaller <david.kartnaller@gmail.com> 
+ * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const CRC32 = require('crc-32') 
 const Promise = require("bluebird")

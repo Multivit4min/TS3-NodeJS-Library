@@ -2,7 +2,7 @@
  * @file TS3Query.js 
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
- * @author David Kartnaller <david.kartnaller@gmail.com> 
+ * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
 const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
@@ -38,6 +38,12 @@ class TS3Query {
         this._active = false
         this._antiSpamStepping = 0
 
+        this._doubleEvents = [
+            "notifyclientleftview", 
+            "notifyclientmoved",
+            "notifycliententerview"
+        ]
+
         this._socket = net.connect(port, ip)
         this._socket.on("connect", () => {
             LineInputStream(this._socket)
@@ -58,7 +64,9 @@ class TS3Query {
                     this._active = false
                     return this._queueWorker()
                 } else if (line.indexOf("notify") === 0) {
-                    if (this._handleDoubleEvents && line === this._lastevent) return
+                    if (this._doubleEvents.some(s => line.indexOf(s) === 0)
+                        && this._handleDoubleEvents
+                        && line == this._lastevent) return
                     this._lastevent = line
                     return this.emit(
                         line.substr(6, line.indexOf(" ") - 6), 
@@ -94,7 +102,7 @@ class TS3Query {
 
 
     /** 
-     * Whether Buggy Double Events should be handled or not
+     * Whether Double Events should be handled or not
      * @version 1.0 
      * @param {boolean} [b=true] - Parameter enables or disables the Double Event Handling
      */ 
