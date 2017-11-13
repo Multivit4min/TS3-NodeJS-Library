@@ -93,6 +93,7 @@ class TeamSpeak3 {
     _evclientleftview() {
         this.clientList()
         .then(() => this.emit("clientdisconnect", arguments[0]))
+        .catch(e => this.emit("error", e))
     }
 
 
@@ -489,6 +490,318 @@ class TeamSpeak3 {
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
+    }    
+
+
+    /**
+     * Displays a list of permissions available on the server instance including ID, name and description.
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise object
+     */
+    permissionList() {
+        return this.execute("permissionlist")
+    }
+ 
+ 
+    /**
+     * Displays the database ID of one or more permissions specified by permsid.
+     * @version 1.0
+     * @async
+     * @param {(string|array)} permsid - One or more Permission Names
+     * @returns {Promise} Promise object
+     */
+    permIdGetByName(permsid) {
+        return this.execute("permidgetbyname", {permsid: permsid})
+    }
+ 
+ 
+    /**
+     * Displays the current value of the permission for your own connection. This can be useful when you need to check your own privileges.
+     * @version 1.0
+     * @async
+     * @param {number|string} key - Perm ID or Name which should be checked
+     * @returns {Promise} Promise object
+     */
+    permGet(key) {
+        var prop = {}
+        if (typeof key === "string")
+            prop.permsid = key
+        else
+            prop.permid = key
+        return this.execute("permget", prop)
+    }
+ 
+ 
+    /**
+     * Displays detailed information about all assignments of the permission. The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
+     * @version 1.0
+     * @async
+     * @param {(number|string)} perm - Perm ID or Name to get
+     * @returns {Promise} Promise object
+     */
+    permFind(perm) {
+        var prop = {}
+        if (typeof perm === "number")
+            prop.permid = perm
+        else
+            prop.permsid = perm
+        return this.execute("permfind", prop)
+    }
+ 
+ 
+    /**
+     * Restores the default permission settings on the selected virtual server and creates a new initial administrator token. Please note that in case of an error during the permreset call - e.g. when the database has been modified or corrupted - the virtual server will be deleted from the database.
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise object
+     */
+    permReset() {
+        return this.execute("permreset")
+    }
+ 
+ 
+    /**
+     * Displays a list of privilege keys available including their type and group IDs.
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise object
+     */
+    privilegekeyList() {
+        return this.execute("privilegekeylist")
+    }
+ 
+ 
+    /**
+     * Create a new token. If type is set to 0, the ID specified with tokenid will be a server group ID. Otherwise, tokenid is used as a channel group ID and you need to provide a valid channel ID using channelid.
+     * @version 1.0
+     * @async
+     * @param {number} type - Token Type
+     * @param {number} group - Depends on the Type given, add either a valid Channel Group or Server Group
+     * @param {number} [cid] - Depends on the Type given, add a valid Channel ID
+     * @param {string} [description] - Token Description
+     * @returns {Promise} Promise object
+     */
+    privilegekeyAdd(type, group, cid, description) {
+        var prop = {tokentype: type, tokenid1: group}
+        if (type === 1) prop.tokenid2 = cid
+        if (description) prop.description = description
+        return this.execute("privilegekeyadd", prop)
+    }
+ 
+ 
+    /**
+     * Deletes an existing token matching the token key specified with token.
+     * @version 1.0
+     * @async
+     * @param {string} token - The token which should be deleted
+     * @returns {Promise} Promise object
+     */
+    privilegekeyDelete(token) {
+        return this.execute("privilegekeydelete", {token: token})
+    }
+ 
+ 
+    /**
+     * Use a token key gain access to a server or channel group. Please note that the server will automatically delete the token after it has been used.
+     * @version 1.0
+     * @async
+     * @param {string} token - The token which should be used
+     * @returns {Promise} Promise object
+     */
+    privilegekeyUse(token) {
+        return this.execute("privilegekeyuse", {token: token})
+    }
+ 
+ 
+    /**
+     * Displays a list of offline messages you've received. The output contains the senders unique identifier, the messages subject, etc.
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise object
+     */
+    messageList() {
+        return this.execute("messagelist")
+    }
+ 
+ 
+    /**
+     * Sends an offline message to the client specified by uid.
+     * @version 1.0
+     * @async
+     * @param {string} uid - Client Unique Identifier (uid)
+     * @param {string} subject - Subject of the message
+     * @param {string} text - Message Text
+     * @returns {Promise} Promise object
+     */
+    messageAdd(uid, subject, text) {
+        return this.execute(
+            "messageadd",
+            { cluid: uid, subject: subject, text: text}
+        )
+    }
+ 
+ 
+    /**
+     * Sends an offline message to the client specified by uid.
+     * @version 1.0
+     * @async
+     * @param {number} id - The Message ID which should be deleted
+     * @returns {Promise} Promise object
+     */
+    messageDel(id) {
+        return this.execute("messagedel", { msgid: id })
+    }
+ 
+ 
+    /**
+     * Displays an existing offline message with the given id from the inbox.
+     * @version 1.0
+     * @async
+     * @param {number} id - Gets the content of the Message
+     * @returns {Promise} Promise object
+     */
+    messageGet(id) {
+        return this.execute("messageget", { msgid: id })
+    }
+ 
+ 
+    /**
+     * Displays an existing offline message with the given id from the inbox.
+     * @version 1.0
+     * @async
+     * @param {number} id - Gets the content of the Message
+     * @param {number} read - If flag is set to 1 the message will be marked as read
+     * @returns {Promise} Promise object
+     */
+    messageUpdate(id, read) {
+        return this.execute("messageupdateflag", { msgid: id, flag: flag })
+    }
+ 
+ 
+    /**
+     * Displays a list of complaints on the selected virtual server. If dbid is specified, only complaints about the targeted client will be shown.
+     * @version 1.0
+     * @async
+     * @param {number} [dbid] - Filter only for certain Client with the given Database ID
+     * @returns {Promise} Promise object
+     */
+    complainList(dbid) {
+        return this.execute("complainlist", (typeof dbid === "number") ? { cldbid: dbid } : null)
+    }
+ 
+ 
+    /**
+     * Submits a complaint about the client with database ID dbid to the server.
+     * @version 1.0
+     * @async
+     * @param {number} dbid - Filter only for certain Client with the given Database ID
+     * @param {string} [message] - The Message which should be added
+     * @returns {Promise} Promise object
+     */
+    complainAdd(dbid, message = "") {
+        return this.execute("complainadd", { cldbid: dbid, message: message })
+    }
+ 
+ 
+    /**
+     * Deletes the complaint about the client with ID tdbid submitted by the client with ID fdbid from the server. If dbid will be left empty all complaints for the tdbid will be deleted
+     * @version 1.0
+     * @async
+     * @param {number} tcldbid - The Target Client Database ID
+     * @param {number} fcldbid - The Client Database ID which filed the Report
+     * @returns {Promise} Promise object
+     */
+    complainDel(tdbid, fdbid = false) {
+        var cmd = (fdbid === false) ? "complaindelall" : "complaindel"
+        var prop = {tcldbid: tdbid}
+        if (fdbid === false) prop.fcldbid = fdbid
+        return this.execute(cmd, prop)
+    }
+ 
+ 
+    /**
+     * Displays a list of active bans on the selected virtual server.
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise object
+     */
+    banList() {
+        return this.execute("banlist")
+    }
+ 
+ 
+    /**
+     * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one of the following must be set: ip, name, or uid.
+     * @version 1.0
+     * @async
+     * @param {string} ip - IP Regex
+     * @param {string} name - Name Regex
+     * @param {string} uid - UID Regex
+     * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
+     * @param {string} reason - Ban Reason
+     * @returns {Promise} Promise object
+     */
+    banAdd(ip, name, uid, time, reason) {
+        return this.execute("banadd", {ip: ip, name: name, uid: uid, time: time, banreason: reason})
+    }
+ 
+ 
+    /**
+     * Removes one or all bans from the server
+     * @version 1.0
+     * @async
+     * @param {number} [id] - The BanID to remove, if not provided it will remove all bans
+     * @returns {Promise} Promise object
+     */
+    banDel(id = false) {
+        var prop = {}
+        cmd = (id === false) ? "bandelall" : "bandel"
+        if (id !== false) prop.banid = id
+        return this.execute(cmd, prop)
+    }
+ 
+ 
+    /**
+     * Displays a specified number of entries from the servers log. If instance is set to 1, the server will return lines from the master logfile (ts3server_0.log) instead of the selected virtual server logfile.
+     * @version 1.0
+     * @async
+     * @param {number} [lines=1000] - Lines to receive
+     * @param {number} [reverse=0] - Invert Output
+     * @param {number} [instance=0] - Instance or Virtual Server Log
+     * @param {number} [begin_pos=0] - Begin at Position
+     * @returns {Promise} Promise object
+     */
+    logView(lines = 1000, reverse = 0, instance = 0, begin_pos = 0) {
+        return this.execute(
+            "logview",
+            {lines: lines, reverse: reverse, instance: instance, begin_pos: begin_pos}
+        )
+    }
+ 
+ 
+    /**
+     * Writes a custom entry into the servers log. Depending on your permissions, you'll be able to add entries into the server instance log and/or your virtual servers log. The loglevel parameter specifies the type of the entry
+     * @version 1.0
+     * @async
+     * @param {number} level - Level 1 to 4
+     * @param {string} msg - Message to log
+     * @returns {Promise} Promise object
+     */
+    logAdd(level, msg) {
+        return this.execute("logadd", {loglevel: level, logmsg: msg})
+    }
+ 
+ 
+    /**
+     * Sends a text message to all clients on all virtual servers in the TeamSpeak 3 Server instance.
+     * @version 1.0
+     * @async
+     * @param {string} msg - Message which will be sent to all instances
+     * @returns {Promise} Promise object
+     */
+    gm(msg) {
+        return this.execute("gm", {msg: msg})
     }
 
 
