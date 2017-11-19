@@ -31,6 +31,19 @@ class TeamSpeakClient extends TeamSpeakProperty {
             dbid: c.client_database_id,
             type: c.client_type
         }
+        super.on("clientmoved", ev => {
+            if (ev.client.getID() !== this.getID()) return
+            this.emit("move", ev.channel)
+        })
+        super.on("textmessage", ev => {
+            if (ev.invoker.getID() !== this.getID()) return
+            this.emit("message", ev.msg)
+        })
+        super.on("clientdisconnect", ev => {
+            if (ev.clid !== this.getID()) return
+            super.removeAllListeners()
+            this.emit("disconnect")
+        })
     }
 
 
@@ -169,5 +182,6 @@ class TeamSpeakClient extends TeamSpeakProperty {
         )
     }
 }
+
 
 module.exports = TeamSpeakClient

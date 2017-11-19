@@ -12,7 +12,7 @@ const EventEmitter = require("events")
  * TeamSpeak Property Class
  * @class
  */
- class TeamSpeakProperty { 
+ class TeamSpeakProperty extends EventEmitter { 
     /** 
      * Creates a new TeamSpeak Property 
      * @constructor 
@@ -20,10 +20,40 @@ const EventEmitter = require("events")
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
      */ 
     constructor(parent) {
+        super()
         this._parent = parent 
         this._cache = {} 
         this._cachetime = 50
-    } 
+        this._events = {}
+    }
+
+
+    /** 
+     * Subscribes to parent Events 
+     * @version 1.0
+     * @param {string} name - The Event Name which should be subscribed to
+     * @param {function} cb - The Callback
+     * @returns {undefined}
+     */ 
+    on(name, cb) {
+        if (!(name in this._events)) this._events[name] = []
+        this._events[name].push(cb)
+        this._parent.on(name, cb)
+    }
+
+
+    /** 
+     * Safely unsubscribes to all Events
+     * @version 1.0
+     * @returns {undefined}
+     */
+    removeAllListeners() {
+        Object.keys(this._events).forEach(k => {
+            this._events[k].forEach(cb => {
+                this._parent.removeListener(k, cb)
+            })
+        })
+    }
 
 
     /** 

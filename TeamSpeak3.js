@@ -99,11 +99,12 @@ class TeamSpeak3 extends EventEmitter {
     _evtextmessage() {
         var ev = arguments[0]
         this.getClientByID(ev.invokerid)
-        .then(c => super.emit("textmessage", {
+        .then(c => {
+            super.emit("textmessage", {
             invoker: c, 
             msg: ev.msg, 
             targetmode: ev.targetmode
-        })).catch(e => supersuper.emit("error", e))
+        })}).catch(e => super.emit("error", e))
     }
 
 

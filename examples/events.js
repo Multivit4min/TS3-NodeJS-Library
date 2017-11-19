@@ -14,15 +14,12 @@ var ts3 = new TeamSpeak3({
 })
 
 ts3.on("clientconnect", async ev => {
-    console.log("Client "+(await ev.client.getInfo()).client_nickname+" just connected")
-})
-
-ts3.on("textmessage", async ev => {
-    console.log((await ev.invoker.getInfo()).client_nickname+" just sent '"+ ev.msg +"'")
-})
-
-ts3.on("clientmoved", async ev => {
-    console.log((await ev.client.getInfo()).client_nickname+" just moved to Channel "+(await ev.channel.getInfo()).channel_name)
+    var client = ev.client
+    var nick = (await client.getInfo()).client_nickname
+    console.log("Client "+nick+" just connected")
+    client.on("move" => async channel => console.log(nick+" just moved to Channel "+(await ev.channel.getInfo()).channel_name))
+    client.on("message", msg => console.log(nick+" just sent '"+msg+"'"))
+    client.on("disconnect", () => console.log(nick+" just disconnected :("))
 })
 
 ts3.on("ready", () => {
