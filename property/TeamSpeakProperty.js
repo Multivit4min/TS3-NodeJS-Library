@@ -6,7 +6,8 @@
  */ 
 const CRC32 = require('crc-32') 
 const Promise = require("bluebird")
-  
+const EventEmitter = require("events")
+
 /**
  * TeamSpeak Property Class
  * @class
@@ -18,7 +19,7 @@ const Promise = require("bluebird")
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
      */ 
-    constructor(parent) { 
+    constructor(parent) {
         this._parent = parent 
         this._cache = {} 
         this._cachetime = 50
@@ -41,7 +42,26 @@ const Promise = require("bluebird")
             return this._commandCache(args.filter(a => a !== true)) 
         else 
             return this._parent.execute(...arguments) 
-    } 
+    }
+
+
+    /** 
+     * Sends a command to the TeamSpeak Server. 
+     * @version 1.0 
+     * @async 
+     * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
+     * @param {object} [Object] - Optional the Parameters 
+     * @param {object} [Array] - Optional Flagwords 
+     * @param {boolean} [Boolean] - Optional if the Command should be cached 
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
+     */ 
+    execute() { 
+        var args = Array.prototype.slice.call(arguments) 
+        if (args.some(b => b === true)) 
+            return this._commandCache(args.filter(a => a !== true)) 
+        else 
+            return this._parent.execute(...arguments) 
+    }
 
 
    /** 
@@ -129,7 +149,7 @@ const Promise = require("bluebird")
     filter(array, filter) {
         return this._parent.constructor._filter(array, filter)
     }
-        
+
 } 
 
 module.exports = TeamSpeakProperty

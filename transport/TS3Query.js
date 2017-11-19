@@ -9,8 +9,7 @@ const Response = require(__dirname+"/Response.js")
 const net = require("net")
 const LineInputStream = require("line-input-stream")
 const Promise = require("bluebird")
-const events = require("events")
-const util = require("util")
+const EventEmitter = require("events")
 const CRC32 = require("crc-32")
 
 
@@ -18,7 +17,7 @@ const CRC32 = require("crc-32")
  * TS3 Query Connection
  * @class
  */
-class TS3Query {
+class TS3Query extends EventEmitter {
     /** 
      * Creates a new TS3Query
      * @constructor 
@@ -27,7 +26,7 @@ class TS3Query {
      * @param {number} port - This holds Basic Client data
      */ 
     constructor(ip, port) {
-        events.EventEmitter.call(this)
+        super()
         this._ignoreLines = 2
         this._queue = []
         this._lastline = ""
@@ -189,5 +188,4 @@ class TS3Query {
 
 }
 
-util.inherits(TS3Query, events.EventEmitter)
 module.exports = TS3Query

@@ -170,5 +170,4 @@ class TeamSpeakClient extends TeamSpeakProperty {
     }
 }
 
-
 module.exports = TeamSpeakClient

@@ -11,14 +11,13 @@ const TeamSpeakServer = require(__dirname+"/property/Server")
 const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup") 
 const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup") 
 const Promise = require("bluebird") 
-const events = require("events")
-const util = require("util")
+const EventEmitter = require("events")
 
 /**
  * Main TeamSpeak Query Class
  * @class
  */
-class TeamSpeak3 { 
+class TeamSpeak3 extends EventEmitter { 
     /** 
      * Represents a TeamSpeak Server Instance
      * @constructor 
@@ -35,7 +34,7 @@ class TeamSpeak3 {
      * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive 
      */ 
     constructor(config = {}) { 
-        events.EventEmitter.call(this) 
+        super()
         this._config = { 
             host: config.host || "127.0.0.1", 
             queryport: parseInt(config.queryport) || 10011, 
@@ -63,9 +62,9 @@ class TeamSpeak3 {
         this._ts3.on("channeledited", this._evchanneledited.bind(this))
         this._ts3.on("channelmoved", this._evchannelmoved.bind(this))
         this._ts3.on("channeldeleted", this._evchanneldeleted.bind(this))
+        this._ts3.on("channelcreated", this._evchannelcreated.bind(this))
         this._ts3.on("clientmoved", this._evclientmoved.bind(this))
         this._ts3.on("textmessage", this._evtextmessage.bind(this))
-        this._ts3.on("tokenused", this._evtokenused.bind(this))
 
         this._ts3.on("connect", () => {
             var exec = [] 
@@ -76,71 +75,113 @@ class TeamSpeak3 {
             if (typeof(this._config.nickname) == "string") 
                 exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
             Promise.all(exec)
-                .then(r => this.emit("ready"))
-                .catch(e => this.emit("error", e))
+                .then(r => super.emit("ready"))
+                .catch(e => super.emit("error", e))
         })
-        this._ts3.on("close", e => this.emit("close", e))
+        this._ts3.on("close", e => super.emit("close", e))
     }
 
 
     _evcliententerview() {
         this.getClientByID(arguments[0].clid)
-        .then(c => this.emit("clientconnect", {client: c})
-        ).catch(e => this.emit("error", e))
+        .then(c => super.emit("clientconnect", {client: c})
+        ).catch(e => super.emit("error", e))
     }
 
 
     _evclientleftview() {
         this.clientList()
-        .then(() => this.emit("clientdisconnect", arguments[0]))
-        .catch(e => this.emit("error", e))
+        .then(() => super.emit("clientdisconnect", arguments[0]))
+        .catch(e => super.emit("error", e))
     }
 
 
     _evtextmessage() {
         var ev = arguments[0]
         this.getClientByID(ev.invokerid)
-        .then(c => this.emit("message", {
+        .then(c => super.emit("textmessage", {
             invoker: c, 
             msg: ev.msg, 
             targetmode: ev.targetmode
-        })).catch(e => this.emit("error", e))
+        })).catch(e => supersuper.emit("error", e))
     }
 
 
     _evclientmoved() {
-        console.log("CLIENTMOVED")
-        console.log(...arguments)
+        var args = arguments[0]
+        Promise.all([
+            this.getClientByID(args.clid),
+            this.getChannelByID(args.ctid)
+        ]).then(res => this.emit("clientmoved", {
+            client: res[0],
+            channel: res[1],
+            reasonid: args.reasonid
+        })).catch(e => this.emit("error", e))
     }
 
 
     _evserveredited() {
-        console.log("SERVEREDITED")
-        console.log(...arguments)
+        var args = arguments[0]
+        this.getClientByID(args.invokerid)
+        .then(client => {
+            var prop = {invoker: client, modified: {}}
+            Object.keys(args)
+                .filter(k => k.indexOf("virtualserver_") === 0)
+                .forEach(k => prop.modified[k] = args[k])
+            this.emit("serveredit", prop)
+        }).catch(e => this.emit("error", e))
     }
 
 
     _evchanneledited() {
-        console.log("CHANNELDELETED")
-        console.log(...arguments)
+        var args = arguments[0]
+        Promise.all([
+            this.getClientByID(args.invokerid),
+            this.getChannelByID(args.cid)
+        ]).then(res => {
+            var prop = {invoker: res[0], channel: res[1], modified: {}}
+            Object.keys(args)
+                .filter(k => k.indexOf("channel_") === 0)
+                .forEach(k => prop.modified[k] = args[k])
+            this.emit("channeledit", prop)
+        }).catch(e => this.emit("error", e))
+    }
+
+
+    _evchannelcreated() {
+        var args = arguments[0]
+        Promise.all([
+            this.getClientByID(args.invokerid),
+            this.getChannelByID(args.cid)
+        ]).then(res => {
+            var prop = {invoker: res[0], channel: res[1], modified: {}}
+            Object.keys(args)
+                .filter(k => k.indexOf("channel_") === 0)
+                .forEach(k => prop.modified[k] = args[k])
+            this.emit("channelcreate", prop)
+        }).catch(e => this.emit("error", e))
     }
 
 
     _evchannelmoved() {
-        console.log("CHANNELMOVED")
-        console.log(...arguments)
+        var args = arguments[0]
+        Promise.all([
+            this.getClientByID(args.invokerid),
+            this.getChannelByID(args.cid),
+            this.getChannelByID(args.cpid)
+        ]).then(res => this.emit("channelmoved", {
+            invoker: res[0], 
+            channel: res[1],
+            parent: res[2]
+        })).catch(e => this.emit("error", e))
     }
 
 
     _evchanneldeleted() {
-        console.log("CHANNELDELETED")
-        console.log(...arguments)
-    }
-
-
-    _evtokenused() {
-        console.log("TOKENUSED")
-        console.log(...arguments)
+        this.getClientByID(arguments[0].cid)
+        .then(client => {
+            this.emit("channeldelete", {invoker: client, cid: cid})
+        }).catch(e => this.emit("error", e))
     }
 
 
@@ -178,8 +219,10 @@ class TeamSpeak3 {
      * @param {number} [id] - The Channel ID 
      * @returns {Promise} Promise object 
      */
-    registerEvent(event, id = 0) { 
-        return this.execute("servernotifyregister", {event: event, id: 0}) 
+    registerEvent(event, id = false) {
+        var arg = {event: event}
+        if (id !== false) arg.id = id
+        return this.execute("servernotifyregister", arg) 
     }
 
 
@@ -430,6 +473,38 @@ class TeamSpeak3 {
 
 
     /** 
+     * Retrieves a Single Channel by the given Channel ID
+     * @version 1.0 
+     * @async 
+     * @param {number} cid - The Channel Id
+     * @returns {Promise<object>} Promise object which returns the Channel Object or undefined if not found
+     */ 
+    getChannelByID(cid) {
+        return new Promise((fulfill, reject) => {
+            this.channelList({cid: cid})
+                .then(channel => fulfill(channel[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Retrieves a Single Channel by the given Channel Name
+     * @version 1.0 
+     * @async 
+     * @param {number} name - The Name of the Channel
+     * @returns {Promise<object>} Promise object which returns the Channel Object or undefined if not found
+     */ 
+    getChannelByName(name) {
+        return new Promise((fulfill, reject) => {
+            this.channelList({channel_name: name})
+                .then(channel => fulfill(channel[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
      * Retrieves a Single Client by the given Client ID
      * @version 1.0 
      * @async 
@@ -442,7 +517,7 @@ class TeamSpeak3 {
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
-    } 
+    }
 
 
     /** 
@@ -458,7 +533,7 @@ class TeamSpeak3 {
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
-    } 
+    }
 
 
     /** 
@@ -490,7 +565,7 @@ class TeamSpeak3 {
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
-    }    
+    }
 
 
     /**
@@ -974,12 +1049,13 @@ class TeamSpeak3 {
         return new Promise((fulfill, reject) => {
             var remainder = Object.keys(cache)
             list.forEach(l => {
-                if (remainder.indexOf(String(l[key])) >= 0) 
-                    return remainder.splice(remainder.indexOf(String(l[key])), 1)
-                cache[String(l[key])] = new Class(this, l)
+                var k = String(l[key])
+                if (remainder.indexOf(k) >= 0) 
+                    return remainder.splice(remainder.indexOf(k), 1)
+                cache[k] = new Class(this, l)
             })
             remainder.forEach(r => {
-                delete cache[r]
+                delete cache[String(r)]
             })
             fulfill(list)
         })
@@ -1017,7 +1093,4 @@ class TeamSpeak3 {
 } 
 
 
-
-
-util.inherits(TeamSpeak3, events.EventEmitter) 
 module.exports = TeamSpeak3

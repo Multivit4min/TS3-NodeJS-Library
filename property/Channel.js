@@ -34,7 +34,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @async
      * @return {Promise} 
      */ 
-    channelInfo() {
+    getInfo() {
         return super.execute(
             "channelinfo", 
             {cid: this._static.cid}, 
