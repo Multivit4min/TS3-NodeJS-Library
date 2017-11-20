@@ -24,7 +24,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @param {number} c.client_type - The Client Type
      */ 
     constructor(parent, c) {
-		super(parent)
+        super(parent)
         this._static = {
             uid: c.client_unique_identifier,
             clid: c.clid,
@@ -68,13 +68,23 @@ class TeamSpeakClient extends TeamSpeakProperty {
 
 
     /** 
+     * Returns the Client Unique ID
+     * @version 1.0 
+     * @returns {string} Returns the Client UniqueID
+     */
+    getUID() {
+        return this._static.uid
+    }
+
+
+    /** 
      * Evaluates if the Client is a Query Client or a normal Client
      * @version 1.0 
      * @returns {boolean} true when the Client is a Server Query Client
      */ 
-	isQuery() {
-		return c.client_type === 1
-	}
+    isQuery() {
+        return this._static.type === 1
+    }
 
 
     /** 
