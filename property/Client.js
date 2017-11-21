@@ -164,6 +164,30 @@ class TeamSpeakClient extends TeamSpeakProperty {
 
 
     /** 
+     * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
+     * @version 1.0 
+     * @async
+     * @param {string} sgid - The Server Group ID which the Client should be added to
+     * @returns {Promise} Promise Object
+     */ 
+    serverGroupAdd(sgid) {
+        return super.execute("servergroupaddclient", {sgid: sgid, cldbid: this._static.dbid})
+    }
+
+
+    /** 
+     * Removes the client from the server group specified with sgid.
+     * @version 1.0 
+     * @async
+     * @param {string} sgid - The Server Group ID which the Client should be removed from
+     * @returns {Promise} Promise Object
+     */ 
+    serverGroupDel(id) {
+        return super.execute("servergroupdelclient", {sgid: sgid, cldbid: this._static.dbid})
+    }
+
+
+    /** 
      * Pokes the Client with a certain message
      * @version 1.0 
      * @async
