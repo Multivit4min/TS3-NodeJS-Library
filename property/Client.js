@@ -182,7 +182,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @param {string} sgid - The Server Group ID which the Client should be removed from
      * @returns {Promise} Promise Object
      */ 
-    serverGroupDel(id) {
+    serverGroupDel(sgid) {
         return super.execute("servergroupdelclient", {sgid: sgid, cldbid: this._static.dbid})
     }
 
