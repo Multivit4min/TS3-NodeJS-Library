@@ -17,7 +17,7 @@ ts3.on("clientconnect", async ev => {
     var client = ev.client
     var nick = (await client.getInfo()).client_nickname
     console.log("Client "+nick+" just connected")
-    client.on("move" => async channel => console.log(nick+" just moved to Channel "+(await ev.channel.getInfo()).channel_name))
+    client.on("move", async channel => console.log(nick+" just moved to Channel "+(await ev.channel.getInfo()).channel_name))
     client.on("message", msg => console.log(nick+" just sent '"+msg+"'"))
     client.on("disconnect", () => console.log(nick+" just disconnected :("))
 })
