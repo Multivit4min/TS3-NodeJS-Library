@@ -1,9 +1,9 @@
-/** 
- * @file TS3Query.js 
- * @copyright David Kartnaller 2017 
- * @license GNU GPLv3 
+/**
+ * @file TS3Query.js
+ * @copyright David Kartnaller 2017
+ * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
 const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
 const net = require("net")
@@ -18,13 +18,13 @@ const CRC32 = require("crc-32")
  * @class
  */
 class TS3Query extends EventEmitter {
-    /** 
+    /**
      * Creates a new TS3Query
-     * @constructor 
-     * @version 1.0 
+     * @constructor
+     * @version 1.0
      * @param {string} ip - The Parent Object which is a TeamSpeak Instance
      * @param {number} port - This holds Basic Client data
-     */ 
+     */
     constructor(ip, port) {
         super()
         this._ignoreLines = 2
@@ -39,7 +39,7 @@ class TS3Query extends EventEmitter {
         this._antiSpamStepping = 0
 
         this._doubleEvents = [
-            "notifyclientleftview", 
+            "notifyclientleftview",
             "notifyclientmoved",
             "notifycliententerview"
         ]
@@ -50,7 +50,7 @@ class TS3Query extends EventEmitter {
             .on("line", line => {
                 this._lastline = line
                 var line = line.trim()
-                if (this._ignoreLines > 0 
+                if (this._ignoreLines > 0
                     && line.indexOf("error") !== 0)
                     return this._ignoreLines--
                 if (line.indexOf("error") === 0) {
@@ -180,7 +180,6 @@ class TS3Query extends EventEmitter {
         this._active.res = new Response()
         this._antispamTimeout = setTimeout(() => {
             this._cmdstarted = Date.now()
-            console.log(this._active.cmd.build())
             this._socket.write(this._active.cmd.build()+"\n")
         }, this._antiSpamStepping - (Date.now() - this._cmdstarted))
         this._refreshKeepAlive()

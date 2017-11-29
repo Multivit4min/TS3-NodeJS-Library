@@ -32,6 +32,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated 
      * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms) 
      * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive 
+     * @param {boolean} [config.clientconnect_on_select=false] -Sends a clientconnect event on every already connected client when server gets switched
      */ 
     constructor(config = {}) { 
         super()
@@ -44,7 +45,8 @@ class TeamSpeak3 extends EventEmitter {
             nickname: config.nickname || false, 
             antispam: Boolean(config.antispam), 
             antispamtimer: parseInt(config.antispamtimer) || 350, 
-            keepalive: Boolean(config.keepalive) || true 
+            keepalive: Boolean(config.keepalive) || true,
+            clientconnect_on_select: Boolean(config.clientconnect_on_select) || false
         } 
 		this._clients = {}
 		this._channels = {}
@@ -185,6 +187,12 @@ class TeamSpeak3 extends EventEmitter {
         }).catch(e => this.emit("error", e))
     }
 
+    _sendConnectEvents() {
+        return this.clientList().then(clients => {
+            clients.forEach(client => this.emit("clientconnect", {client: client}))
+        })
+    }
+
 
     /** 
      * Sends a command to the TeamSpeak Server. 
@@ -315,7 +323,13 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise} Promise object
      */ 
     useByPort(port) { 
-        return this._cacheCleanUp(this.execute("use", {port: port}))
+        return new Promise((fulfill, reject) => {
+            this._cacheCleanUp(this.execute("use", {port: port}))
+            .then(res => {
+                if (this._config.clientconnect_on_select) this._sendConnectEvents()
+                fulfill(res)
+            }).catch(reject)
+        })
     }
 
 
@@ -327,7 +341,13 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise} Promise object
      */ 
     useBySid(sid) { 
-        return this._cacheCleanUp(this.execute("use", [sid]))
+        return new Promise((fulfill, reject) => {
+            this._cacheCleanUp(this.execute("use", [sid]))
+            .then(res => {
+                if (config.clientconnect_on_select) this._sendConnectEvents()
+                fulfill(res)
+            }).catch(reject)
+        })
     }
 
 
@@ -1051,13 +1071,13 @@ class TeamSpeak3 extends EventEmitter {
             var remainder = Object.keys(cache)
             list.forEach(l => {
                 var k = String(l[key])
-                if (remainder.indexOf(k) >= 0) 
+                if (remainder.indexOf(k) >= 0) {
+                    cache[k].updateCache(l)
                     return remainder.splice(remainder.indexOf(k), 1)
+                }
                 cache[k] = new Class(this, l)
             })
-            remainder.forEach(r => {
-                delete cache[String(r)]
-            })
+            remainder.forEach(r => { delete cache[String(r)] })
             fulfill(list)
         })
     }

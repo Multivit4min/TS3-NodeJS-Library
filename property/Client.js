@@ -24,7 +24,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @param {number} c.client_type - The Client Type
      */ 
     constructor(parent, c) {
-        super(parent)
+		super(parent, c)
         this._static = {
             uid: c.client_unique_identifier,
             clid: c.clid,
@@ -53,7 +53,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {number} Returns the Clients Database ID
      */
     getDBID() {
-        return this._static.client_database_id
+        return this._static.dbid
     }
 
 
@@ -83,7 +83,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {boolean} true when the Client is a Server Query Client
      */ 
     isQuery() {
-        return this._static.type === 1
+        return this._static.type == 1
     }
 
 
@@ -215,6 +215,9 @@ class TeamSpeakClient extends TeamSpeakProperty {
             {targetmode: 1, target: this._static.clid, msg: msg}
         )
     }
+
+
+
 }
 
 

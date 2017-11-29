@@ -19,8 +19,9 @@ const EventEmitter = require("events")
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
      */ 
-    constructor(parent) {
+    constructor(parent, c) {
         super()
+        this._propcache = c
         this._parent = parent 
         this._cache = {} 
         this._cachetime = 50
@@ -178,6 +179,26 @@ const EventEmitter = require("events")
      */ 
     filter(array, filter) {
         return this._parent.constructor._filter(array, filter)
+    }
+
+    /** 
+     * Returns the data from the last List Command
+     * @version 1.0
+     * @returns {object}
+     */ 
+    getCache() {
+        return this._propcache
+    }
+
+
+    /** 
+     * Sets the Data from the Last List Command
+     * @private
+     * @version 1.0
+     * @returns {object}
+     */ 
+    updateCache(info) {
+        return this._propcache = info
     }
 
 } 
