@@ -88,9 +88,9 @@ class TeamSpeakClient extends TeamSpeakProperty {
 
 
     /**
-     * Evaluates if the Client is a Query Client or a normal Client
+     * Retrieves a displayable Client Link for the TeamSpeak Chat
      * @version 1.0
-     * @returns {boolean} true when the Client is a Server Query Client
+     * @returns {string} returns the TeamSpeak Client URL as Link
      */
     getURL() {
         var nick = super.getCache().client_nickname
