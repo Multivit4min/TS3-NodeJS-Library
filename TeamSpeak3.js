@@ -32,7 +32,6 @@ class TeamSpeak3 extends EventEmitter {
      * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated 
      * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms) 
      * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive 
-     * @param {boolean} [config.clientconnect_on_select=false] -Sends a clientconnect event on every already connected client when server gets switched
      */ 
     constructor(config = {}) { 
         super()
@@ -46,12 +45,11 @@ class TeamSpeak3 extends EventEmitter {
             antispam: Boolean(config.antispam), 
             antispamtimer: parseInt(config.antispamtimer) || 350, 
             keepalive: Boolean(config.keepalive) || true,
-            clientconnect_on_select: Boolean(config.clientconnect_on_select) || false
         } 
-		this._clients = {}
-		this._channels = {}
-		this._servergroups = {}
-		this._channelgroups = {}
+        this._clients = {}
+        this._channels = {}
+        this._servergroups = {}
+        this._channelgroups = {}
         this._servers = {}
 
         this._ts3 = new TS3Query(this._config.host, this._config.queryport) 
@@ -181,16 +179,10 @@ class TeamSpeak3 extends EventEmitter {
 
 
     _evchanneldeleted() {
-        this.getClientByID(arguments[0].cid)
+        this.getClientByID(arguments[0].clid)
         .then(client => {
             this.emit("channeldelete", {invoker: client, cid: cid})
         }).catch(e => this.emit("error", e))
-    }
-
-    _sendConnectEvents() {
-        return this.clientList().then(clients => {
-            clients.forEach(client => this.emit("clientconnect", {client: client}))
-        })
     }
 
 
@@ -326,7 +318,6 @@ class TeamSpeak3 extends EventEmitter {
         return new Promise((fulfill, reject) => {
             this._cacheCleanUp(this.execute("use", {port: port}))
             .then(res => {
-                if (this._config.clientconnect_on_select) this._sendConnectEvents()
                 fulfill(res)
             }).catch(reject)
         })
@@ -343,10 +334,8 @@ class TeamSpeak3 extends EventEmitter {
     useBySid(sid) { 
         return new Promise((fulfill, reject) => {
             this._cacheCleanUp(this.execute("use", [sid]))
-            .then(res => {
-                if (config.clientconnect_on_select) this._sendConnectEvents()
-                fulfill(res)
-            }).catch(reject)
+            .then(res => fulfill(res))
+            .catch(reject)
         })
     }
 
