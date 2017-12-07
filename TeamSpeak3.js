@@ -181,7 +181,7 @@ class TeamSpeak3 extends EventEmitter {
     _evchanneldeleted() {
         this.getClientByID(arguments[0].clid)
         .then(client => {
-            this.emit("channeldelete", {invoker: client, cid: cid})
+            this.emit("channeldelete", {invoker: client, cid: arguments[0].cid})
         }).catch(e => this.emit("error", e))
     }
 
