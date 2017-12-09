@@ -193,7 +193,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
      * @param {object} [Object] - Optional the Parameters 
      * @param {object} [Array] - Optional Flagwords 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
+     * @returns {Promise} Promise object which returns the Information about the Query executed 
      */ 
     execute() { 
         return this._ts3.execute(...arguments) 
@@ -487,7 +487,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} cid - The Channel Id
-     * @returns {Promise<object>} Promise object which returns the Channel Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Channel Object or undefined if not found
      */ 
     getChannelByID(cid) {
         return new Promise((fulfill, reject) => {
@@ -503,7 +503,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} name - The Name of the Channel
-     * @returns {Promise<object>} Promise object which returns the Channel Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Channel Object or undefined if not found
      */ 
     getChannelByName(name) {
         return new Promise((fulfill, reject) => {
@@ -519,7 +519,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} clid - The Client Id
-     * @returns {Promise<object>} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
      */ 
     getClientByID(clid) {
         return new Promise((fulfill, reject) => {
@@ -535,7 +535,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} cldbid - The Client Database Id
-     * @returns {Promise<object>} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
      */ 
     getClientByDBID(cldbid) {
         return new Promise((fulfill, reject) => {
@@ -551,7 +551,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {string} uid - The Client Unique Identifier
-     * @returns {Promise<object>} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
      */ 
     getClientByUID(uid) {
         return new Promise((fulfill, reject) => {
@@ -567,7 +567,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {string} name - The Nickname of the Client
-     * @returns {Promise<object>} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
      */ 
     getClientByName(name) {
         return new Promise((fulfill, reject) => {
@@ -890,6 +890,58 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
+    /**
+     * Displays detailed database information about a client including unique ID, creation date, etc.
+     * @version 1.0
+     * @async
+     * @param {number} cldbid - The Client Database ID which should be searched for
+     * @returns {Promise} Promise object
+     */
+    clientDBInfo(cldbid) {
+        return this.execute("clienbtdbinfo", {cldbid: cldbid})
+    }
+
+
+    /**
+     * Displays a list of client database IDs matching a given pattern. You can either search for a clients last known nickname or his unique identity by using the -uid option.
+     * @version 1.0
+     * @async
+     * @param {string} pattern - The Pattern which should be searched for
+     * @param {boolean} isUid - True when instead of the Name it should be searched for a uid
+     * @returns {Promise} Promise object
+     */
+    clientDBFind(pattern, isUid = false) {
+        return this.execute("clientdbfind", {pattern: pattern}, (isUid) ? [] : ["-uid"])
+    }
+
+
+    /**
+     * Changes a clients settings using given properties.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be edited
+     * @param {object} properties - The Properties which should be modified
+     * @returns {Promise} Promise object
+     */
+    clientDBEdit(cldbid, properties) {
+        properties.cldbid = cldbid
+        return this.execute("clientdbedit", properties)
+    }
+
+
+    /**
+     * Deletes a clients properties from the database.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be edited
+     * @param {object} properties - The Properties which should be modified
+     * @returns {Promise} Promise object
+     */
+    clientDBDelete(cldbid) {
+        return this.execute("clientdbdelete", {cldbid: cldbid})
+    }
+
+
     /** 
      * Displays a list of virtual servers including their ID, status, number of clients online, etc.
      * @version 1.0 
@@ -918,7 +970,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Server Groups
+     * @returns {Promise} Promise object which returns an Array of TeamSpeak Server Groups
      */ 
     channelGroupList(filter = {}) { 
         return this.execute(
@@ -942,7 +994,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Server Groups
+     * @returns {Promise} Promise object which returns an Array of TeamSpeak Server Groups
      */ 
     serverGroupList(filter = {}) { 
         return this.execute(
@@ -966,7 +1018,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Channels
+     * @returns {Promise} Promise object which returns an Array of TeamSpeak Channels
      */
     channelList(filter = {}) { 
         return this.execute( 
@@ -991,7 +1043,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object which returns an Array of TeamSpeak Clients 
+     * @returns {Promise} Promise object which returns an Array of TeamSpeak Clients 
      */ 
     clientList(filter = {}) { 
         return this.execute( 
@@ -1080,7 +1132,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {object} array - The Object which should get filtered 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise} Promise object
      */ 
     static _filter(array, filter) {
         return new Promise((fulfill, reject) => {
@@ -1093,7 +1145,7 @@ class TeamSpeak3 extends EventEmitter {
                     if (filter[k] instanceof RegExp) return a[k].match(filter[k])
                     switch (typeof a[k]) { 
                         case "number": return a[k] == parseFloat(filter[k]) 
-                        case "string": 
+                        case "string": return a[k] == filter[k] 
                         case "object": return a[k].match(filter[k]) 
                     } 
                 } 
