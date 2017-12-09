@@ -898,7 +898,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise} Promise object
      */
     clientDBInfo(cldbid) {
-        return this.execute("clienbtdbinfo", {cldbid: cldbid})
+        return this.execute("clientdbinfo", {cldbid: cldbid})
     }
 
 
