@@ -911,7 +911,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise} Promise object
      */
     clientDBFind(pattern, isUid = false) {
-        return this.execute("clientdbfind", {pattern: pattern}, (isUid) ? [] : ["-uid"])
+        return this.execute("clientdbfind", {pattern: pattern}, (isUid) ? ["-uid"] : [])
     }
 
 
