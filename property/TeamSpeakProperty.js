@@ -18,6 +18,7 @@ const EventEmitter = require("events")
      * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
+     * @param {object} c - The Properties
      */ 
     constructor(parent, c) {
         super()
@@ -34,7 +35,6 @@ const EventEmitter = require("events")
      * @version 1.0
      * @param {string} name - The Event Name which should be subscribed to
      * @param {function} cb - The Callback
-     * @returns {undefined}
      */ 
     on(name, cb) {
         if (!(name in this._events)) this._events[name] = []
@@ -46,7 +46,6 @@ const EventEmitter = require("events")
     /** 
      * Safely unsubscribes to all Events
      * @version 1.0
-     * @returns {undefined}
      */
     removeAllListeners() {
         Object.keys(this._events).forEach(k => {
@@ -54,25 +53,6 @@ const EventEmitter = require("events")
                 this._parent.removeListener(k, cb)
             })
         })
-    }
-
-
-    /** 
-     * Sends a command to the TeamSpeak Server. 
-     * @version 1.0 
-     * @async 
-     * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
-     * @param {object} [Object] - Optional the Parameters 
-     * @param {object} [Array] - Optional Flagwords 
-     * @param {boolean} [Boolean] - Optional if the Command should be cached 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
-     */ 
-    execute() { 
-        var args = Array.prototype.slice.call(arguments) 
-        if (args.some(b => b === true)) 
-            return this._commandCache(args.filter(a => a !== true)) 
-        else 
-            return this._parent.execute(...arguments) 
     }
 
 
@@ -193,12 +173,36 @@ const EventEmitter = require("events")
 
     /** 
      * Sets the Data from the Last List Command
-     * @private
      * @version 1.0
      * @returns {object}
      */ 
     updateCache(info) {
         return this._propcache = info
+    }
+
+
+    /** 
+     * Returns the Parent Class
+     * @version 1.0
+     * @returns {object}
+     */ 
+    getParent() {
+        return this._parent
+    }
+
+
+    /** 
+     * Transforms an Input to an Array
+     * @async
+     * @version 1.0
+     * @returns {object}
+     */ 
+    toArray(input) {
+        return new Promise(fulfill => {
+            if (typeof input == "undefined" || input === null) return fulfill([])
+            if (!Array.isArray(input)) return fulfill([input])
+            fulfill(input)
+        })
     }
 
 } 

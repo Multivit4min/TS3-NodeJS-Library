@@ -215,6 +215,14 @@ module.exports = {
     file_size: Number,
     l: String,
 
+    //FileTransfer
+    size: Number,
+    clientftfid: Number,
+    serverftfid: Number,
+    ftkey: String,
+    port: Number,
+    proto: Number,
+
     //General
     name: String,
 

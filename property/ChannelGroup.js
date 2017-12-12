@@ -84,7 +84,7 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
             "channelgrouppermlist", 
             {cgid: this._static.cgid},
             [(permsid) ? "-permsid" : null]
-        )
+        ).then(super.toArray)
     }
 
 
@@ -156,6 +156,45 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
             "channelgroupclientlist",
            prop
         )
+    }
+
+
+
+    /**
+     * Returns a Buffer with the Icon of the Channel Group
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getIcon() {
+        return this.getIconName()
+            .then(name => {
+                return super.getParent()
+                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
+            }).then(res => {
+                return new FileTransfer(super.getParent()._config.host, res.port)
+                    .download(res.ftkey, res.size)
+            })
+    }
+
+
+
+    /**
+     * Gets the Icon Name of the Channel Group
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getIconName() {
+        return new Promise((fulfill, reject) => {
+            this.permList(true).then(perms => {
+                perms.some(perm => {
+                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
+                    return (perm.permsid === "i_icon_id")
+                })
+                reject("No Icon found!")
+            }).catch(reject)
+        })
     }
     
 

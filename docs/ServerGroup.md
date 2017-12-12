@@ -17,6 +17,8 @@ Class representing a TeamSpeak ServerGroup
     * [.addClient(cldbid)](#TeamSpeakServerGroup+addClient) ⇒ <code>Promise</code>
     * [.delClient(cldbid)](#TeamSpeakServerGroup+delClient) ⇒ <code>Promise</code>
     * [.clientList()](#TeamSpeakServerGroup+clientList) ⇒ <code>Promise</code>
+    * [.getIcon()](#TeamSpeakServerGroup+getIcon) ⇒ <code>Promise</code>
+    * [.getIconName()](#TeamSpeakServerGroup+getIconName) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeakServerGroup_new"></a>
 
@@ -147,5 +149,23 @@ Removes a client specified with cldbid from the server group.
 Displays the IDs of all clients currently residing in the server group.
 
 **Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakServerGroup+getIcon"></a>
+
+### teamSpeakServerGroup.getIcon() ⇒ <code>Promise</code>
+Returns a Buffer with the Icon of the Server Group
+
+**Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakServerGroup+getIconName"></a>
+
+### teamSpeakServerGroup.getIconName() ⇒ <code>Promise</code>
+Gets the Icon Name of the Server Group
+
+**Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
+**Returns**: <code>Promise</code> - Promise Object  
 **Async**:   
 **Version**: 1.0  

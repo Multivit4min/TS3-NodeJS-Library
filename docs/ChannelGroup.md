@@ -16,6 +16,8 @@ Class representing a TeamSpeak ChannelGroup
     * [.delPerm(perm, [permsid])](#TeamSpeakChannelGroup+delPerm) ⇒ <code>Promise</code>
     * [.setClient(cid, cldbid)](#TeamSpeakChannelGroup+setClient) ⇒ <code>Promise</code>
     * [.clientList([cid], [cldbid])](#TeamSpeakChannelGroup+clientList) ⇒ <code>Promise</code>
+    * [.getIcon()](#TeamSpeakChannelGroup+getIcon) ⇒ <code>Promise</code>
+    * [.getIconName()](#TeamSpeakChannelGroup+getIconName) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeakChannelGroup_new"></a>
 
@@ -143,3 +145,21 @@ Displays the IDs of all clients currently residing in the channel group.
 | [cid] | <code>number</code> | The Channel ID |
 | [cldbid] | <code>number</code> | The Channel ID |
 
+<a name="TeamSpeakChannelGroup+getIcon"></a>
+
+### teamSpeakChannelGroup.getIcon() ⇒ <code>Promise</code>
+Returns a Buffer with the Icon of the Channel Group
+
+**Kind**: instance method of [<code>TeamSpeakChannelGroup</code>](#TeamSpeakChannelGroup)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakChannelGroup+getIconName"></a>
+
+### teamSpeakChannelGroup.getIconName() ⇒ <code>Promise</code>
+Gets the Icon Name of the Channel Group
+
+**Kind**: instance method of [<code>TeamSpeakChannelGroup</code>](#TeamSpeakChannelGroup)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  

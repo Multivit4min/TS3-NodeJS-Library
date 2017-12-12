@@ -942,6 +942,32 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
+    /**
+     * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be added
+     * @param {string} sgid - The Server Group ID which the Client should be added to
+     * @returns {Promise} Promise Object
+     */
+    serverGroupAddClient(cldbid, sgid) {
+        return this.execute("servergroupaddclient", {sgid: sgid, cldbid: cldbid})
+    }
+
+
+    /**
+     * Removes the client from the server group specified with sgid.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be removed
+     * @param {string} sgid - The Server Group ID which the Client should be removed from
+     * @returns {Promise} Promise Object
+     */
+    serverGroupDelClient(cldbid, sgid) {
+        return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
+    }
+
+
     /** 
      * Displays a list of virtual servers including their ID, status, number of clients online, etc.
      * @version 1.0 
@@ -1061,6 +1087,46 @@ class TeamSpeak3 extends EventEmitter {
             })
         })
     } 
+
+
+    /** 
+     * Initializes a file transfer upload. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start uploading the file through TeamSpeak 3's file transfer interface.
+     * @version 1.0
+     * @async 
+     * @param {object} transfer - The Transfer Object
+     * @param {object} transfer.clientftfid - Arbitary ID to Identify the Transfer
+     * @param {string} transfer.name - Destination Filename
+     * @param {number} transfer.cid - Channel ID to upload to
+     * @param {string} transfer.cpw - Channel Password of the Channel which will be uploaded to
+     * @param {number} transfer.size - Size of the File
+     * @param {number} transfer.overwrite - <Description Pending>
+     * @param {number} transfer.resume - <Description Pending>
+     * @returns {Promise} Promise object
+     */ 
+
+    ftInitUpload(transfer) { 
+        return this.execute("ftinitupload", transfer)
+    }
+
+
+    /** 
+     * Initializes a file transfer download. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start downloading the file through TeamSpeak 3's file transfer interface.
+     * @version 1.0
+     * @async 
+     * @param {object} transfer - The Transfer Object
+     * @param {object} transfer.clientftfid - Arbitary ID to Identify the Transfer
+     * @param {string} transfer.name - Filename to Download
+     * @param {number} [transfer.cid=0] - Channel ID to upload to
+     * @param {string} [transfer.cpw=""] - Channel Password of the Channel which will be uploaded to
+     * @param {number} [transfer.seekpos=0] - <Description Pending File Startposition?>
+     * @returns {Promise} Promise object
+     */
+    ftInitDownload(transfer) { 
+        if (!("seekpos" in transfer)) transfer.seekpos = 0
+        if (!("cpw" in transfer)) transfer.cpw = ""
+        if (!("cid" in transfer)) transfer.cid = 0
+        return this.execute("ftinitdownload", transfer)
+    }
 
 
     /** 

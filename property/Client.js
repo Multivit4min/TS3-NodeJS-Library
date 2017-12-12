@@ -5,6 +5,7 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const FileTransfer = require(__dirname+"/../transport/FileTransfer")
 const Promise = require("bluebird")
 
  /**
@@ -225,6 +226,132 @@ class TeamSpeakClient extends TeamSpeakProperty {
             "sendtextmessage",
             {targetmode: 1, target: this._static.clid, msg: msg}
         )
+    }
+
+    
+    /** 
+     * Displays a list of permissions defined for a client
+     * @version 1.0 
+     * @async
+     * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+     * @return {Promise} 
+     */ 
+    permList(permsid = false) {
+        return super.execute(
+            "clientpermlist",
+            {cldbid: this._static.dbid},
+            [(permsid) ? "-permsid" : null]
+        ).then(super.toArray)
+    }
+
+    
+    /** 
+     * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {number} value - Value of the Permission
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @param {number} [skip=0] - Whether the skip flag should be set
+     * @param {number} [negate=0] - Whether the negate flag should be set
+     * @return {Promise} 
+     */ 
+    addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
+        var prop = {cldbid: this._static.dbid}
+        prop[(permsid) ? "permsid": "permid"] = perm
+        prop.permvalue = value
+        prop.permskip = skip
+        prop.permnegated = negate
+        return super.execute("clientaddperm", prop)
+    }
+
+    
+    /** 
+     * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
+     * @version 1.0 
+     * @async
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @return {Promise} 
+     */ 
+    delPerm(perm, permsid = false) {
+        var prop = {sgid: this._static.sgid}
+        prop[(permsid) ? "permsid" : "permid"] = perm
+        return super.execute("clientdelperm", prop)
+    }
+
+
+
+    /**
+     * Returns a Buffer with the Avatar of the User
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getAvatar() {
+        return this.getAvatarName()
+            .then(name => {
+                return super.getParent()
+                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
+            }).then(res => {
+                return new FileTransfer(super.getParent()._config.host, res.port)
+                    .download(res.ftkey, res.size)
+            })   
+    }
+
+
+
+    /**
+     * Returns a Buffer with the Icon of the Client
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getIcon() {
+        return this.getIconName()
+            .then(name => {
+                return super.getParent()
+                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
+            }).then(res => {
+                return new FileTransfer(super.getParent()._config.host, res.port)
+                    .download(res.ftkey, res.size)
+            })
+    }
+
+
+
+    /**
+     * Gets the Avatar Name of the Client
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getAvatarName() {
+        return new Promise((fulfill, reject) => {
+            this.getDBInfo()
+                .then(data => fulfill("avatar_"+data.client_base64HashClientUID))
+                .catch(reject)
+        })
+    }
+
+
+
+    /**
+     * Gets the Icon Name of the Client
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getIconName() {
+        return new Promise((fulfill, reject) => {
+            this.permList(true).then(perms => {
+                perms.some(perm => {
+                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
+                    return (perm.permsid === "i_icon_id")
+                })
+                reject("No Icon found!")
+            }).catch(reject)
+        })
     }
 
 

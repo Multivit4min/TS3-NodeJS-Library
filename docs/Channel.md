@@ -16,6 +16,8 @@ Class representing a TeamSpeak Channel
     * [.setPerm(perm, value, sid)](#TeamSpeakChannel+setPerm) ⇒ <code>Promise</code>
     * [.delPerm(perm, sid)](#TeamSpeakChannel+delPerm) ⇒ <code>Promise</code>
     * [.getClients(filter)](#TeamSpeakChannel+getClients) ⇒ <code>Promise</code>
+    * [.getIcon()](#TeamSpeakChannel+getIcon) ⇒ <code>Promise</code>
+    * [.getIconName()](#TeamSpeakChannel+getIconName) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeakChannel_new"></a>
 
@@ -132,3 +134,21 @@ Gets a List of Clients in the current Channel
 | --- | --- | --- |
 | filter | <code>object</code> | The Filter Object |
 
+<a name="TeamSpeakChannel+getIcon"></a>
+
+### teamSpeakChannel.getIcon() ⇒ <code>Promise</code>
+Returns a Buffer with the Icon of the Channel
+
+**Kind**: instance method of [<code>TeamSpeakChannel</code>](#TeamSpeakChannel)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakChannel+getIconName"></a>
+
+### teamSpeakChannel.getIconName() ⇒ <code>Promise</code>
+Gets the Icon Name of the Channel
+
+**Kind**: instance method of [<code>TeamSpeakChannel</code>](#TeamSpeakChannel)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  

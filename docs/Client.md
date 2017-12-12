@@ -12,6 +12,7 @@ Class representing a TeamSpeak Client
     * [.getID()](#TeamSpeakClient+getID) ⇒ <code>number</code>
     * [.getUID()](#TeamSpeakClient+getUID) ⇒ <code>string</code>
     * [.isQuery()](#TeamSpeakClient+isQuery) ⇒ <code>boolean</code>
+    * [.getURL()](#TeamSpeakClient+getURL) ⇒ <code>string</code>
     * [.getInfo()](#TeamSpeakClient+getInfo) ⇒ <code>Promise</code>
     * [.getDBInfo()](#TeamSpeakClient+getDBInfo) ⇒ <code>Promise</code>
     * [.kickFromServer(msg)](#TeamSpeakClient+kickFromServer) ⇒ <code>Promise</code>
@@ -21,6 +22,13 @@ Class representing a TeamSpeak Client
     * [.serverGroupDel(sgid)](#TeamSpeakClient+serverGroupDel) ⇒ <code>Promise</code>
     * [.poke(msg)](#TeamSpeakClient+poke) ⇒ <code>Promise</code>
     * [.message(msg)](#TeamSpeakClient+message) ⇒ <code>Promise</code>
+    * [.permList([permsid])](#TeamSpeakClient+permList) ⇒ <code>Promise</code>
+    * [.addPerm(perm, value, [permsid], [skip], [negate])](#TeamSpeakClient+addPerm) ⇒ <code>Promise</code>
+    * [.delPerm(perm, [permsid])](#TeamSpeakClient+delPerm) ⇒ <code>Promise</code>
+    * [.getAvatar()](#TeamSpeakClient+getAvatar) ⇒ <code>Promise</code>
+    * [.getIcon()](#TeamSpeakClient+getIcon) ⇒ <code>Promise</code>
+    * [.getAvatarName()](#TeamSpeakClient+getAvatarName) ⇒ <code>Promise</code>
+    * [.getIconName()](#TeamSpeakClient+getIconName) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeakClient_new"></a>
 
@@ -67,6 +75,14 @@ Evaluates if the Client is a Query Client or a normal Client
 
 **Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
 **Returns**: <code>boolean</code> - true when the Client is a Server Query Client  
+**Version**: 1.0  
+<a name="TeamSpeakClient+getURL"></a>
+
+### teamSpeakClient.getURL() ⇒ <code>string</code>
+Retrieves a displayable Client Link for the TeamSpeak Chat
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Returns**: <code>string</code> - returns the TeamSpeak Client URL as Link  
 **Version**: 1.0  
 <a name="TeamSpeakClient+getInfo"></a>
 
@@ -185,3 +201,83 @@ Sends a textmessage to the Client
 | --- | --- | --- |
 | msg | <code>string</code> | The message the Client should receive |
 
+<a name="TeamSpeakClient+permList"></a>
+
+### teamSpeakClient.permList([permsid]) ⇒ <code>Promise</code>
+Displays a list of permissions defined for a client
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Async**:   
+**Version**: 1.0  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [permsid] | <code>boolean</code> | <code>false</code> | If the permsid option is set to true the output will contain the permission names. |
+
+<a name="TeamSpeakClient+addPerm"></a>
+
+### teamSpeakClient.addPerm(perm, value, [permsid], [skip], [negate]) ⇒ <code>Promise</code>
+Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Async**:   
+**Version**: 1.0  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| perm | <code>string</code> \| <code>number</code> |  | The permid or permsid |
+| value | <code>number</code> |  | Value of the Permission |
+| [permsid] | <code>boolean</code> | <code>false</code> | Whether a permsid or permid should be used |
+| [skip] | <code>number</code> | <code>0</code> | Whether the skip flag should be set |
+| [negate] | <code>number</code> | <code>0</code> | Whether the negate flag should be set |
+
+<a name="TeamSpeakClient+delPerm"></a>
+
+### teamSpeakClient.delPerm(perm, [permsid]) ⇒ <code>Promise</code>
+Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Async**:   
+**Version**: 1.0  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| perm | <code>string</code> \| <code>number</code> |  | The permid or permsid |
+| [permsid] | <code>boolean</code> | <code>false</code> | Whether a permsid or permid should be used |
+
+<a name="TeamSpeakClient+getAvatar"></a>
+
+### teamSpeakClient.getAvatar() ⇒ <code>Promise</code>
+Returns a Buffer with the Avatar of the User
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakClient+getIcon"></a>
+
+### teamSpeakClient.getIcon() ⇒ <code>Promise</code>
+Returns a Buffer with the Icon of the Client
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakClient+getAvatarName"></a>
+
+### teamSpeakClient.getAvatarName() ⇒ <code>Promise</code>
+Gets the Avatar Name of the Client
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+<a name="TeamSpeakClient+getIconName"></a>
+
+### teamSpeakClient.getIconName() ⇒ <code>Promise</code>
+Gets the Icon Name of the Client
+
+**Kind**: instance method of [<code>TeamSpeakClient</code>](#TeamSpeakClient)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
