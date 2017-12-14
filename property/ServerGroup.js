@@ -4,9 +4,7 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com> 
  */ 
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
-const FileTransfer = require(__dirname+"/../transport/FileTransfer")
- 
+const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty") 
  /**
  * Class representing a TeamSpeak ServerGroup
  * @extends TeamSpeakProperty
@@ -22,10 +20,20 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @param {number} c.sgid - The Server Group ID
      */ 
     constructor(parent, s) {
-        super(parent)
+        super(parent, s)
         this._static = {
             sgid: s.sgid
         }
+    }
+
+    
+    /** 
+     * Returns the Server Group ID
+     * @version 1.0 
+     * @return {number} 
+     */ 
+    getSGID() {
+        return this._static.sgid
     }
 
     
@@ -178,15 +186,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     getIcon() {
-        return this.getIconName()
-            .then(name => {
-                return super.getParent()
-                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
-            }).then(res => {
-                console.log(res)
-                return new FileTransfer(super.getParent()._config.host, res.port)
-                    .download(res.ftkey, res.size)
-            })
+        return this.getIconName().then(name => super.getParent().getIcon(name))
     }
 
 
@@ -198,15 +198,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     getIconName() {
-        return new Promise((fulfill, reject) => {
-            return this.permList(true).then(perms => {
-                perms.some(perm => {
-                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
-                    return (perm.permsid === "i_icon_id")
-                })
-                reject("No Icon found!")
-            }).catch(reject)
-        })
+        return super.getParent().getIconName(this.permList(true))
     }
     
 

@@ -21,7 +21,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @param {number} c.cid - The Channel ID
      */ 
     constructor(parent, c) {
-        super(parent)
+        super(parent, c)
         this._static = {
             cid: c.cid
         }
@@ -144,7 +144,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      */ 
     getClients(filter = {}) {
         filter.cid = this._static.cid
-        return super._parent.clientList(filter)
+        return super.getParent().clientList(filter)
     }
 
 
@@ -156,14 +156,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     getIcon() {
-        return this.getIconName()
-            .then(name => {
-                return super.getParent()
-                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
-            }).then(res => {
-                return new FileTransfer(super.getParent()._config.host, res.port)
-                    .download(res.ftkey, res.size)
-            })
+        return this.getIconName().then(name => super.getParent().getIcon(name))
     }
 
 
@@ -175,15 +168,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     getIconName() {
-        return new Promise((fulfill, reject) => {
-            this.permList(true).then(perms => {
-                perms.some(perm => {
-                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
-                    return (perm.permsid === "i_icon_id")
-                })
-                reject("No Icon found!")
-            }).catch(reject)
-        })
+        return super.getParent().getIconName(this.permList(true))
     }
 
 }

@@ -4,12 +4,14 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
-const TS3Query = require(__dirname+"/transport/TS3Query") 
-const TeamSpeakClient = require(__dirname+"/property/Client") 
-const TeamSpeakChannel = require(__dirname+"/property/Channel") 
-const TeamSpeakServer = require(__dirname+"/property/Server") 
-const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup") 
-const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup") 
+const TS3Query = require(__dirname+"/transport/TS3Query")
+const FileTransfer = require(__dirname+"/transport/FileTransfer")
+const TeamSpeakClient = require(__dirname+"/property/Client")
+const TeamSpeakChannel = require(__dirname+"/property/Channel")
+const TeamSpeakServer = require(__dirname+"/property/Server")
+const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup")
+const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup")
+
 const Promise = require("bluebird") 
 const EventEmitter = require("events")
 
@@ -1126,6 +1128,48 @@ class TeamSpeak3 extends EventEmitter {
         if (!("cpw" in transfer)) transfer.cpw = ""
         if (!("cid" in transfer)) transfer.cid = 0
         return this.execute("ftinitdownload", transfer)
+    }
+
+
+
+    /**
+     * Returns an Icon with the given Name
+     * @version 1.0
+     * @async
+     * @param {string} name - The Name of the Icon to retrieve
+     * @returns {Promise} Promise Object
+     */
+    getIcon(name) {
+        return new Promise((fulfill, reject) => {
+            return this.ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
+                .then(res => {
+                    if (res.size == 0) return reject(res.msg)
+                    new FileTransfer(this._config.host, res.port)
+                        .download(res.ftkey, res.size)
+                        .then(fulfill)
+                        .catch(reject)
+                })
+        })
+    }
+
+
+
+    /**
+     * Gets the Icon Name of a resolveable Perm List
+     * @version 1.0
+     * @async
+     * @returns {Promise} Promise Object
+     */
+    getIconName(permlist) {
+        return new Promise((fulfill, reject) => {
+            return permlist.then(perms => {
+                perms.some(perm => {
+                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
+                    return (perm.permsid === "i_icon_id")
+                })
+                reject("No Icon found!")
+            }).catch(reject)
+        })
     }
 
 

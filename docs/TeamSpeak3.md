@@ -71,6 +71,8 @@ Main TeamSpeak Query Class
     * [.clientList(filter)](#TeamSpeak3+clientList) ⇒ <code>Promise</code>
     * [.ftInitUpload(transfer)](#TeamSpeak3+ftInitUpload) ⇒ <code>Promise</code>
     * [.ftInitDownload(transfer)](#TeamSpeak3+ftInitDownload) ⇒ <code>Promise</code>
+    * [.getIcon(name)](#TeamSpeak3+getIcon) ⇒ <code>Promise</code>
+    * [.getIconName()](#TeamSpeak3+getIconName) ⇒ <code>Promise</code>
     * [.quit()](#TeamSpeak3+quit) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeak3_new"></a>
@@ -953,6 +955,29 @@ Initializes a file transfer download. clientftfid is an arbitrary ID to identify
 | [transfer.cpw] | <code>string</code> | <code>&quot;\&quot;\&quot;&quot;</code> | Channel Password of the Channel which will be uploaded to |
 | [transfer.seekpos] | <code>number</code> | <code>0</code> | <Description Pending File Startposition?> |
 
+<a name="TeamSpeak3+getIcon"></a>
+
+### teamSpeak3.getIcon(name) ⇒ <code>Promise</code>
+Returns an Icon with the given Name
+
+**Kind**: instance method of [<code>TeamSpeak3</code>](#TeamSpeak3)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The Name of the Icon to retrieve |
+
+<a name="TeamSpeak3+getIconName"></a>
+
+### teamSpeak3.getIconName() ⇒ <code>Promise</code>
+Gets the Icon Name of a resolveable Perm List
+
+**Kind**: instance method of [<code>TeamSpeak3</code>](#TeamSpeak3)  
+**Returns**: <code>Promise</code> - Promise Object  
+**Async**:   
+**Version**: 1.0  
 <a name="TeamSpeak3+quit"></a>
 
 ### teamSpeak3.quit() ⇒ <code>Promise</code>
