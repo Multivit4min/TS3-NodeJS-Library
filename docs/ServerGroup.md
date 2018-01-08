@@ -8,7 +8,6 @@ Class representing a TeamSpeak ServerGroup
 
 * [TeamSpeakServerGroup](#TeamSpeakServerGroup) ⇐ <code>TeamSpeakProperty</code>
     * [new TeamSpeakServerGroup(parent, c)](#new_TeamSpeakServerGroup_new)
-    * [.getSGID()](#TeamSpeakServerGroup+getSGID) ⇒ <code>number</code>
     * [.del(force)](#TeamSpeakServerGroup+del) ⇒ <code>Promise</code>
     * [.copy([tsgid], [type], [name])](#TeamSpeakServerGroup+copy) ⇒ <code>Promise</code>
     * [.rename(name)](#TeamSpeakServerGroup+rename) ⇒ <code>Promise</code>
@@ -18,8 +17,6 @@ Class representing a TeamSpeak ServerGroup
     * [.addClient(cldbid)](#TeamSpeakServerGroup+addClient) ⇒ <code>Promise</code>
     * [.delClient(cldbid)](#TeamSpeakServerGroup+delClient) ⇒ <code>Promise</code>
     * [.clientList()](#TeamSpeakServerGroup+clientList) ⇒ <code>Promise</code>
-    * [.getIcon()](#TeamSpeakServerGroup+getIcon) ⇒ <code>Promise</code>
-    * [.getIconName()](#TeamSpeakServerGroup+getIconName) ⇒ <code>Promise</code>
 
 <a name="new_TeamSpeakServerGroup_new"></a>
 
@@ -33,13 +30,6 @@ Creates a TeamSpeak Server Group
 | c | <code>object</code> | This holds Basic ServerGroup Data |
 | c.sgid | <code>number</code> | The Server Group ID |
 
-<a name="TeamSpeakServerGroup+getSGID"></a>
-
-### teamSpeakServerGroup.getSGID() ⇒ <code>number</code>
-Returns the Server Group ID
-
-**Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
-**Version**: 1.0  
 <a name="TeamSpeakServerGroup+del"></a>
 
 ### teamSpeakServerGroup.del(force) ⇒ <code>Promise</code>
@@ -159,33 +149,15 @@ Displays the IDs of all clients currently residing in the server group.
 **Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
 **Async**:   
 **Version**: 1.0  
-<a name="TeamSpeakServerGroup+getIcon"></a>
-
-### teamSpeakServerGroup.getIcon() ⇒ <code>Promise</code>
-Returns a Buffer with the Icon of the Server Group
-
-**Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
-**Returns**: <code>Promise</code> - Promise Object  
-**Async**:   
-**Version**: 1.0  
-<a name="TeamSpeakServerGroup+getIconName"></a>
-
-### teamSpeakServerGroup.getIconName() ⇒ <code>Promise</code>
-Gets the Icon Name of the Server Group
-
-**Kind**: instance method of [<code>TeamSpeakServerGroup</code>](#TeamSpeakServerGroup)  
-**Returns**: <code>Promise</code> - Promise Object  
-**Async**:   
-**Version**: 1.0  
 <a name="TeamSpeakServerGroup"></a>
 
-## TeamSpeakServerGroup ⇐ <code>TeamSpeakProperty</code>
+## TeamSpeakServerGroup ⇐ <code>Abstract</code>
 Class representing a TeamSpeak ServerGroup
 
 **Kind**: global class  
-**Extends**: <code>TeamSpeakProperty</code>  
+**Extends**: <code>Abstract</code>  
 
-* [TeamSpeakServerGroup](#TeamSpeakServerGroup) ⇐ <code>TeamSpeakProperty</code>
+* [TeamSpeakServerGroup](#TeamSpeakServerGroup) ⇐ <code>Abstract</code>
     * [new TeamSpeakServerGroup(parent, c)](#new_TeamSpeakServerGroup_new)
     * [.getSGID()](#TeamSpeakServerGroup+getSGID) ⇒ <code>number</code>
     * [.del(force)](#TeamSpeakServerGroup+del) ⇒ <code>Promise</code>

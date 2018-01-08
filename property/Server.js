@@ -4,15 +4,15 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const Abstract = require(__dirname+"/Abstract")
 const Promise = require("bluebird")
 
  /**
  * Class representing a TeamSpeak Server
- * @extends TeamSpeakProperty
+ * @extends Abstract
  * @class
  */
-class TeamSpeakServer extends TeamSpeakProperty {
+class TeamSpeakServer extends Abstract {
     /** 
      * Creates a TeamSpeak Server
      * @constructor 
@@ -35,7 +35,7 @@ class TeamSpeakServer extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     use() {
-        return this.execute("use", {sid: this._static.sid})
+        return this.getParent().useBySid(this._static.sid)
     }
 
 
@@ -46,17 +46,7 @@ class TeamSpeakServer extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     getInfo() {
-        return this.execute(
-            "serverlist", ["-uid", "-all"], true
-        ).then(servers => {
-            return super.filter(servers, {virtualserver_id: this._static.sid})
-        }).then(servers => {
-            return new Promise((fulfill, reject) => {
-                if (servers.length == 1)
-                    return fulfill(servers[0])
-                reject()
-            })
-        })
+		return this.getCache()
     }
 
 

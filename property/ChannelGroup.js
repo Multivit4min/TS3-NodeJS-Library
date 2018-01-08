@@ -4,14 +4,14 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const Abstract = require(__dirname+"/Abstract")
  
  /**
  * Class representing a TeamSpeak ChannelGroup
- * @extends TeamSpeakProperty
+ * @extends Abstract
  * @class
  */
-class TeamSpeakChannelGroup extends TeamSpeakProperty {
+class TeamSpeakChannelGroup extends Abstract {
     /** 
      * Creates a TeamSpeak Channel Group
      * @constructor 
@@ -36,10 +36,7 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     del(force = 0) {
-        return super.execute(
-            "channelgroupdel", 
-            {cgid: this._static.cgid, force: force}
-        )
+        return super.execute("channelgroupdel", {cgid: this._static.cgid, force: force})
     }
 
     
@@ -80,11 +77,8 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     permList(permsid = false) {
-        return super.execute(
-            "channelgrouppermlist", 
-            {cgid: this._static.cgid},
-            [(permsid) ? "-permsid" : null]
-        ).then(super.toArray)
+        return super.execute("channelgrouppermlist", {cgid: this._static.cgid}, [(permsid) ? "-permsid" : null])
+        .then(super.toArray)
     }
 
 
@@ -133,10 +127,7 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
      * @return {Promise} Group
      */ 
     setClient(cid, cldbid) {
-        return super.execute(
-            "setclientchannelgroup",
-            {cgid: this._static.cgid, cldbid: cldbid, cid: cid}
-        )
+        return super.execute("setclientchannelgroup", {cgid: this._static.cgid, cldbid: cldbid, cid: cid})
     }
 
     
@@ -152,10 +143,7 @@ class TeamSpeakChannelGroup extends TeamSpeakProperty {
         var prop = {cgid: this._static.cgid}
         if (typeof cid == "number") prop.cid = cid
         if (typeof cldbid == "number") prop.cldbid = cldbid
-        return super.execute(
-            "channelgroupclientlist",
-           prop
-        )
+        return super.execute("channelgroupclientlist", prop)
     }
 
 

@@ -4,20 +4,20 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const Abstract = require(__dirname+"/Abstract")
 
  /**
  * Class representing a TeamSpeak Channel
- * @extends TeamSpeakProperty
+ * @extends Abstract
  * @class
  */
-class TeamSpeakChannel extends TeamSpeakProperty {
+class TeamSpeakChannel extends Abstract {
     /** 
      * Creates a TeamSpeak Channel
      * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-     * @param {object} c - This holds Basic Channel Data
+     * @param {object} c - This holds Basic Channel Data received by the Channel List Command
      * @param {number} c.cid - The Channel ID
      */ 
     constructor(parent, c) {
@@ -35,11 +35,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     getInfo() {
-        return super.execute(
-            "channelinfo", 
-            {cid: this._static.cid}, 
-            true
-        )
+        return super.execute("channelinfo", {cid: this._static.cid}, true)
     }
     
     
@@ -52,10 +48,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     move(cpid, order = 0) {
-        return super.execute(
-            "channelmove", 
-            {cid: this._static.cid, cpid: cpid, order: order}
-        )
+        return super.execute("channelmove", {cid: this._static.cid, cpid: cpid, order: order})
     }
     
     
@@ -67,10 +60,7 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     del(force = 0) {
-        return super.execute(
-            "channeldelete", 
-            {cid: this._static.cid, force: force}
-        )
+        return super.execute("channeldelete", {cid: this._static.cid, force: force})
     }
     
     
@@ -95,11 +85,8 @@ class TeamSpeakChannel extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     permList(permsid = false) {     
-        return super.execute(
-            "channelpermlist", 
-            {cid: this._static.cid},
-            (permsid) ? ["-permsid"] : null
-        ).then(super.toArray)
+        return super.execute("channelpermlist", {cid: this._static.cid}, (permsid) ? ["-permsid"] : null)
+			.then(super.toArray)
     }
     
     

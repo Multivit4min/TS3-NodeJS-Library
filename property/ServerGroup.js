@@ -4,13 +4,13 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com> 
  */ 
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty") 
+const Abstract = require(__dirname+"/Abstract") 
  /**
  * Class representing a TeamSpeak ServerGroup
- * @extends TeamSpeakProperty
+ * @extends Abstract
  * @class
  */
-class TeamSpeakServerGroup extends TeamSpeakProperty {
+class TeamSpeakServerGroup extends Abstract {
     /** 
      * Creates a TeamSpeak Server Group
      * @constructor 
@@ -45,10 +45,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     del(force = 0) {
-        return super.execute(
-            "servergroupdel", 
-            {sgid: this._static.sgid, force: force}
-        )
+        return super.execute("servergroupdel", {sgid: this._static.sgid, force: force})
     }
 
     
@@ -89,11 +86,8 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     permList(permsid = false) {
-        return super.execute(
-            "servergrouppermlist", 
-            {sgid: this._static.sgid},
-            [(permsid) ? "-permsid" : null]
-        ).then(super.toArray)
+        return super.execute("servergrouppermlist", {sgid: this._static.sgid}, [(permsid) ? "-permsid" : null])
+			.then(super.toArray)
     }
 
     
@@ -141,10 +135,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     addClient(cldbid) {
-        return super.execute(
-            "servergroupaddclient",
-            {sgid: this._static.sgid, cldbid: cldbid}
-        )
+        return super.execute("servergroupaddclient", {sgid: this._static.sgid, cldbid: cldbid})
     }
 
     
@@ -156,10 +147,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     delClient(cldbid) {
-        return super.execute(
-            "servergroupdelclient",
-            {sgid: this._static.sgid, cldbid: cldbid}
-        )
+        return super.execute("servergroupdelclient", {sgid: this._static.sgid, cldbid: cldbid})
     }
 
     
@@ -170,11 +158,7 @@ class TeamSpeakServerGroup extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     clientList() {
-        return super.execute(
-            "servergroupclientlist",
-            {sgid: this._static.sgid},
-            ["-names"]
-        )
+        return super.execute("servergroupclientlist", {sgid: this._static.sgid}, ["-names"])
     }
 
 

@@ -4,25 +4,29 @@
  * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
-const TeamSpeakProperty = require(__dirname+"/TeamSpeakProperty")
+const Abstract = require(__dirname+"/Abstract")
 const FileTransfer = require(__dirname+"/../transport/FileTransfer")
 const Promise = require("bluebird")
 
  /**
  * Class representing a TeamSpeak Client
- * @extends TeamSpeakProperty
+ * @extends Abstract
  * @class
+ * @fires TeamSpeakClient#move
+ * @fires TeamSpeakClient#textmessage
+ * @fires TeamSpeakClient#clientdisconnect
  */
-class TeamSpeakClient extends TeamSpeakProperty {
+class TeamSpeakClient extends Abstract {
     /**
      * Creates a TeamSpeak Client
      * @constructor
      * @version 1.0
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-     * @param {object} c - This holds Basic Client data
+     * @param {object} c - This holds Basic Client Data received by the Client List Command
      * @param {number} c.clid - The Client ID of the TeamSpeak Client
      * @param {number} c.client_database_id - The Client Database ID
-     * @param {number} c.client_type - The Client Type
+     * @param {number} c.client_type - The Client Type (0 = Client, 1 = Query)
+     * @param {string} c.client_unique_identifier - The Client Unique ID
      */
     constructor(parent, c) {
         super(parent, c)
@@ -32,14 +36,34 @@ class TeamSpeakClient extends TeamSpeakProperty {
             dbid: c.client_database_id,
             type: c.client_type
         }
+
+		/**
+		 * Move event
+		 *
+		 * @event TeamSpeakClient#move
+		 * @type {class} The Channel which the Client moved to
+		 */
         super.on("clientmoved", ev => {
             if (ev.client.getID() !== this.getID()) return
             this.emit("move", ev.channel)
         })
+
+		/**
+		 * Textmessage event
+		 *
+		 * @event TeamSpeakClient#textmessage
+		 * @type {string} The Message which has been sent
+		 */
         super.on("textmessage", ev => {
             if (ev.invoker.getID() !== this.getID()) return
             this.emit("message", ev.msg)
         })
+
+		/**
+		 * Client Disconnect Event
+		 *
+		 * @event TeamSpeakClient#clientdisconnect
+		 */
         super.on("clientdisconnect", ev => {
             if (ev.clid !== this.getID()) return
             super.removeAllListeners()
@@ -95,7 +119,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      */
     getURL() {
         var nick = super.getCache().client_nickname
-        return "[URL=client://"+this._static.cid+"/"+this._static.uid+"~"+encodeURIComponent(nick)+"]"+nick+"[/URL]"
+        return "[URL=client://"+this._static.clid+"/"+this._static.uid+"~"+encodeURIComponent(nick)+"]"+nick+"[/URL]"
     }
 
 
@@ -106,11 +130,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Returns the Client Info
      */
     getInfo() {
-        return super.execute(
-            "clientinfo",
-            {clid: this._static.clid},
-            true
-        )
+        return super.execute("clientinfo", {clid: this._static.clid}, true)
     }
 
 
@@ -121,11 +141,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Returns the Client Database Info
      */
     getDBInfo() {
-        return super.execute(
-            "clientdbinfo",
-            {cldbid: this._static.dbid},
-            true
-        )
+        return super.execute("clientdbinfo", {cldbid: this._static.dbid}, true)
     }
 
 
@@ -137,10 +153,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     kickFromServer(msg) {
-        return super.execute(
-            "clientkick",
-            {clid: this._static.clid, reasonid: 5, reasonmsg: msg}
-        )
+        return super.execute("clientkick", {clid: this._static.clid, reasonid: 5, reasonmsg: msg})
     }
 
 
@@ -152,10 +165,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     kickFromChannel(msg) {
-        return super.execute(
-            "clientkick",
-            {clid: this._static.clid, reasonid: 4, reasonmsg: msg}
-        )
+        return super.execute("clientkick", {clid: this._static.clid, reasonid: 4, reasonmsg: msg})
     }
 
 
@@ -168,10 +178,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     move(cid, cpw = "") {
-        return super.execute(
-            "clientmove",
-            {clid: this._static.clid, cid: cid, cpw:cpw}
-        )
+        return super.execute("clientmove", {clid: this._static.clid, cid: cid, cpw:cpw})
     }
 
 
@@ -207,10 +214,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     poke(msg) {
-        return super.execute(
-            "clientpoke",
-            {clid: this._static.clid, msg: msg}
-        )
+        return super.execute("clientpoke", {clid: this._static.clid, msg: msg})
     }
 
 
@@ -222,10 +226,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @returns {Promise} Promise Object
      */
     message(msg) {
-        return super.execute(
-            "sendtextmessage",
-            {targetmode: 1, target: this._static.clid, msg: msg}
-        )
+        return super.execute("sendtextmessage", {targetmode: 1, target: this._static.clid, msg: msg})
     }
 
     
@@ -237,11 +238,8 @@ class TeamSpeakClient extends TeamSpeakProperty {
      * @return {Promise} 
      */ 
     permList(permsid = false) {
-        return super.execute(
-            "clientpermlist",
-            {cldbid: this._static.dbid},
-            [(permsid) ? "-permsid" : null]
-        ).then(super.toArray)
+        return super.execute("clientpermlist",  {cldbid: this._static.dbid}, [(permsid) ? "-permsid" : null])
+			.then(super.toArray)
     }
 
     
@@ -292,7 +290,7 @@ class TeamSpeakClient extends TeamSpeakProperty {
         return this.getAvatarName()
             .then(name => {
                 return super.getParent()
-                    .ftInitDownload({clientftfid: Math.floor(Math.random() * 10000), name: "/"+name})
+                    .ftInitDownload({name: "/"+name})
             }).then(res => {
                 return new FileTransfer(super.getParent()._config.host, res.port)
                     .download(res.ftkey, res.size)

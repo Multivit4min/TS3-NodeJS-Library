@@ -1,5 +1,5 @@
 /** 
- * @file TeamSpeakProperty.js 
+ * @file Abstract.js 
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
@@ -9,12 +9,12 @@ const Promise = require("bluebird")
 const EventEmitter = require("events")
 
 /**
- * TeamSpeak Property Class
+ * Abstract Class
  * @class
  */
- class TeamSpeakProperty extends EventEmitter { 
+ class Abstract extends EventEmitter { 
     /** 
-     * Creates a new TeamSpeak Property 
+     * Creates a new Abstract Class
      * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
@@ -207,4 +207,4 @@ const EventEmitter = require("events")
 
 } 
 
-module.exports = TeamSpeakProperty
+module.exports = Abstract

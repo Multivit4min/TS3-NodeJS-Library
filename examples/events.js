@@ -1,6 +1,7 @@
 const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
 const Promise = require("bluebird") 
 
+//Creates a new Connection to a TeamSpeak Server
 var ts3 = new TeamSpeak3({
     host: "localhost",
     queryport: 10011,
@@ -13,16 +14,22 @@ var ts3 = new TeamSpeak3({
     keepalive: true
 })
 
-ts3.on("clientconnect", async ev => {
+//The clientconnect event gets fired when a new Client joins the selected TeamSpeak Server
+ts3.on("clientconnect", ev => {
     var client = ev.client
-    var nick = (await client.getInfo()).client_nickname
+	//the .getCache() method returns the data from the last Client List command
+    var nick = client.getCache().client_nickname
     console.log("Client "+nick+" just connected")
-    client.on("move", async channel => console.log(nick+" just moved to Channel "+(await ev.channel.getInfo()).channel_name))
+	//Event gets fired when the Client moves to a different Channel
+    client.on("move", channel => console.log(nick+" just moved to Channel "+ ev.channel.getCache().channel_name))
+	//Event gets fired when the Client sends a message to the bot
     client.on("message", msg => console.log(nick+" just sent '"+msg+"'"))
+	//Event gets fired when the Client disconnects from the Server
     client.on("disconnect", () => console.log(nick+" just disconnected :("))
 })
 
 ts3.on("ready", () => {
+	//This Part subscribes to all events available
     Promise.all([
         ts3.registerEvent("server"),
         ts3.registerEvent("channel", 0),
@@ -36,10 +43,13 @@ ts3.on("ready", () => {
     })
 })
 
+//Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
 ts3.on("error", e => {
     console.log("Error", e)
 })
 
+//Close event gets fired when the Connection to the TeamSpeak Server has been closed
+//the e variable is not always set
 ts3.on("close", e => {
     console.log("Connection has been closed!", e)
 })

@@ -18,7 +18,7 @@ class FileTransfer {
      * @version 1.0
      * @param {string} host - TeamSpeak's File transfer Host
      * @param {number} [port=30033] - TeamSpeak's File transfer Port
-     * @param {number} [timeout=30033] - Timeout for File Transfer
+     * @param {number} [timeout=5000] - Timeout for File Transfer
      */
     constructor(host, port = 30033, timeout = 5000) {
         this.host = host
