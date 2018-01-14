@@ -63,16 +63,16 @@ class TeamSpeakClient extends Abstract {
             this.emit("message", ev.msg)
         })
 
-		/**
-		 * Client Disconnect Event
-		 *
-		 * @event TeamSpeakClient#clientdisconnect
+        /**
+         * Client Disconnect Event
+         *
+         * @event TeamSpeakClient#clientdisconnect
          * @memberof TeamSpeakClient 
-		 */
+         */
         super.on("clientdisconnect", ev => {
             if (ev.clid !== this.getID()) return
             super.removeAllListeners()
-            this.emit("disconnect")
+            this.emit("disconnect", ev.event)
         })
     }
 

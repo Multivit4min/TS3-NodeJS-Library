@@ -125,35 +125,36 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Client Join Event
-	 *
-	 * @event TeamSpeak3#clientconnect
-     * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} client - The Client which joined the Server
-	 */
+    /**
+     * Client Join Event
+     *
+     * @event TeamSpeak3#clientconnect
+     * @type {object}
+     * @property {TeamSpeakClient} client - The Client which joined the Server
+     */
     _evcliententerview() {
-        this.getClientByID(arguments[0].clid)
-        .then(c => {
-            if (c !== undefined) return
-            super.emit("clientconnect", {client: c})
-        })
-        .catch(e => super.emit("error", e))
+        var raw = arguments[0]
+        this._clients[raw.clid] = new TeamSpeakClient(this, raw)
+        super.emit("clientconnect", {client: this._clients[raw.clid]})
     }
 
 
-	/**
-	 * Client Disconnect Event
-	 * Events Object contains all available Informations returned by the query
-	 *
-	 * @event TeamSpeak3#clientdisconnect
-     * @memberof TeamSpeak3
-	 */
+    /**
+     * Client Disconnect Event
+     * Events Object contains all available Informations returned by the query
+     *
+     * @event TeamSpeak3#clientdisconnect
+     * @type {object}
+     * @property {object} client - The data from the last Client List Command
+     * @property {object} event - The Data from the disconnect event
+     */
     _evclientleftview() {
-        this.clientList()
-        .then(() => super.emit("clientdisconnect", arguments[0]))
-        .catch(e => super.emit("error", e))
+        var raw = arguments[0]
+        super.emit("clientdisconnect", {
+            client: this._clients[raw.clid].getCache(), 
+            event: raw
+        })
+        delete this._clients[raw.clid]
     }
 
 
