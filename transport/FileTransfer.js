@@ -1,9 +1,11 @@
 /**
  * @file FileTransfer.js
+ * @ignore
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
+
 const Promise = require("bluebird")
 const net = require("net")
 
@@ -34,6 +36,7 @@ class FileTransfer {
      * @param {string} ftkey - The Filetransfer Key
      * @param {number} size - The Data Length
      * @version 1.0
+     * @returns {Promise<Buffer>} Retruns a buffer with the binary data
      */
     download(ftkey, size) {
         return new Promise((fulfill, reject) => {
@@ -61,6 +64,7 @@ class FileTransfer {
      * Connects to the File Transfer Server
      * @private
      * @version 1.0
+     * @returns {object} returns the socket
      */
     _connect() {
         this.socket = new net.Socket()

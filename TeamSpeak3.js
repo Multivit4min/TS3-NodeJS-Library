@@ -1,9 +1,11 @@
 /** 
  * @file TeamSpeak3.js
+ * @ignore
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
+
 const TS3Query = require(__dirname+"/transport/TS3Query")
 const FileTransfer = require(__dirname+"/transport/FileTransfer")
 const TeamSpeakClient = require(__dirname+"/property/Client")
@@ -37,7 +39,7 @@ class TeamSpeak3 extends EventEmitter {
      * @constructor 
      * @version 1.0 
      * @param {object} [config] - The Configuration Object 
-     * @param {string} [config.host='127.0.0.1'] - The Host on which the TeamSpeak Server runs
+     * @param {string} [config.host=127.0.0.1] - The Host on which the TeamSpeak Server runs
      * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs
      * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs
      * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server 
@@ -94,6 +96,7 @@ class TeamSpeak3 extends EventEmitter {
 				 * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
 				 *
 				 * @event TeamSpeak3#ready
+                 * @memberof TeamSpeak3
 				 */
                 .then(r => super.emit("ready"))
 				/**
@@ -102,8 +105,8 @@ class TeamSpeak3 extends EventEmitter {
 				 * and also gets fired when there was an error after receiving an event
 				 *
 				 * @event TeamSpeak3#error
-				 * @type {object}
-				 * @property {mixed} The Error Object
+                 * @memberof  TeamSpeak3
+                 * @returns {object} - return the error object 
 				 */
                 .catch(e => super.emit("error", e))
         })
@@ -114,8 +117,9 @@ class TeamSpeak3 extends EventEmitter {
 		 * Gets fired when the Query disconnects from the TeamSpeak Server
 		 *
 		 * @event TeamSpeak3#close
+         * @memberof TeamSpeak3
 		 * @type {object}
-		 * @property {mixed} The Error Object
+         * @returns {object} - may return an error object 
 		 */
         this._ts3.on("close", e => super.emit("close", e))
     }
@@ -125,12 +129,16 @@ class TeamSpeak3 extends EventEmitter {
 	 * Client Join Event
 	 *
 	 * @event TeamSpeak3#clientconnect
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} client - The Client which joined the Server
 	 */
     _evcliententerview() {
         this.getClientByID(arguments[0].clid)
-        .then(c => super.emit("clientconnect", {client: c}))
+        .then(c => {
+            if (c !== undefined) return
+            super.emit("clientconnect", {client: c})
+        })
         .catch(e => super.emit("error", e))
     }
 
@@ -140,7 +148,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Events Object contains all available Informations returned by the query
 	 *
 	 * @event TeamSpeak3#clientdisconnect
-	 * @type {object}
+     * @memberof TeamSpeak3
 	 */
     _evclientleftview() {
         this.clientList()
@@ -153,6 +161,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Textmessage event
 	 *
 	 * @event TeamSpeak3#textmessage
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which sent a textmessage
 	 * @property {string} msg - The Message which has been sent
@@ -175,6 +184,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Client Move Event
 	 *
 	 * @event TeamSpeak3#clientmoved
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} client - The Client which moved
 	 * @property {class} channel - The Channel which the client has been moved to
@@ -199,6 +209,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Server Edit Event
 	 *
 	 * @event TeamSpeak3#serveredit
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which edited the server
 	 * @property {object} modified - The Properties which has been modified
@@ -220,6 +231,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Channel Edit Event
 	 *
 	 * @event TeamSpeak3#channeledit
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which edited a channel
 	 * @property {class} channel - The Channel which has been edited
@@ -244,6 +256,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Channel Create Event
 	 *
 	 * @event TeamSpeak3#channelcreate
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which created the channel
 	 * @property {class} channel - The Channel which has been created
@@ -268,6 +281,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Channel Move Event
 	 *
 	 * @event TeamSpeak3#channelmoved
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which moved the channel
 	 * @property {class} channel - The Channel which has been moved
@@ -291,6 +305,7 @@ class TeamSpeak3 extends EventEmitter {
 	 * Channel Delete Event
 	 *
 	 * @event TeamSpeak3#channeldelete
+     * @memberof TeamSpeak3
 	 * @type {object}
 	 * @property {class} invoker - The Client which deleted the channel
 	 * @property {class} cid - The Channel ID which has been deleted
@@ -304,13 +319,13 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /** 
-     * Sends a command to the TeamSpeak Server. 
+     * Sends a command to the TeamSpeak Server.
      * @version 1.0 
      * @async 
      * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
      * @param {object} [Object] - Optional the Parameters 
      * @param {object} [Array] - Optional Flagwords 
-     * @returns {Promise} Promise object which returns the Information about the Query executed 
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
      */ 
     execute() { 
         return this._ts3.execute(...arguments) 
@@ -322,7 +337,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {string} properties - The Properties which should be changed
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */
     clientUpdate(properties) { 
         return this.execute("clientupdate", properties) 
@@ -335,7 +350,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {string} event - The Event on which should be subscribed 
      * @param {number} [id] - The Channel ID 
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */
     registerEvent(event, id = false) {
         var arg = {event: event}
@@ -350,7 +365,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {string} username - The Username which you want to login with 
      * @param {string} password - The Password you want to login with
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */
     login(username, password) {
         return this.execute("login", [username, password]) 
@@ -361,7 +376,7 @@ class TeamSpeak3 extends EventEmitter {
      * Deselects the active virtual server and logs out from the server instance.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */
     logout() {
         return this._cacheCleanUp(this.execute("logout"))
@@ -372,7 +387,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays the servers version information including platform and build number.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     version() { 
         return this.execute("version") 
@@ -383,7 +398,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays detailed connection information about the server instance including uptime, number of virtual servers online, traffic information, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     hostInfo() { 
         return this.execute("hostinfo") 
@@ -394,7 +409,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays the server instance configuration including database revision number, the file transfer port, default group IDs, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     instanceInfo() { 
         return this.execute("instanceinfo") 
@@ -406,7 +421,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} properties - The stuff you want to change
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     instanceEdit(properties) { 
         return this.execute("instanceedit", properties) 
@@ -417,7 +432,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of IP addresses used by the server instance on multi-homed machines.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     bindingList() { 
         return this.execute("bindinglist") 
@@ -429,7 +444,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async
      * @param {number} port - The Port the Server runs on
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     useByPort(port) { 
         return this._cacheCleanUp(this.execute("use", {port: port}))
@@ -441,7 +456,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async
      * @param {number} sid - The Server ID
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     useBySid(sid) { 
         return this._cacheCleanUp(this.execute("use", [sid]))
@@ -452,7 +467,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays information about your current ServerQuery connection including your loginname, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object which provides the Information about the QueryClient 
+     * @returns {Promise<object>} Promise object which provides the Information about the QueryClient 
      */ 
     whoami() { 
         return this.execute("whoami") 
@@ -463,7 +478,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays detailed configuration information about the selected virtual server including unique ID, number of clients online, configuration, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     serverInfo() { 
         return this.execute("serverinfo") 
@@ -475,7 +490,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} port - The Server Port where data should be retrieved
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     serverIdGetByPort(port) { 
         return this.execute("serveridgetbyport", {virtualserver_port: port}) 
@@ -487,7 +502,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} properties - The Server Settings which should be changed
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     serverEdit(properties) { 
         return this.execute("serveredit", properties) 
@@ -498,7 +513,7 @@ class TeamSpeak3 extends EventEmitter {
      * Stops the entire TeamSpeak 3 Server instance by shutting down the process.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     serverProcessStop() {
         return this.execute("serverprocessstop") 
@@ -509,7 +524,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays detailed connection information about the selected virtual server including uptime, traffic information, etc.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     connectionInfo() { 
         return this.execute("serverrequestconnectioninfo") 
@@ -521,7 +536,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} properties - The Server Settings
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>} returns the server admin token for the new server and the response from the server creation
      */ 
     serverCreate(properties) { 
         var token = ""
@@ -541,7 +556,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {string} name - The Name of the Channel
      * @param {object} [type={}] - Properties of the Channel
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     channelCreate(name, properties = {}) {
         properties.channel_name = name
@@ -560,7 +575,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {string} name - The Name of the Server Group
      * @param {number} [type=1] - Type of the Server Group
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     serverGroupCreate(name, type = 1) { 
         return this.execute("servergroupadd", {name: name, type: type})
@@ -578,7 +593,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {string} name - The Name of the Channel Group
      * @param {number} [type=1] - Type of the Channel Group
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     channelGroupCreate(name, type = 1) { 
         return this.execute("channelgroupadd", {name: name, type: type})
@@ -595,7 +610,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} cid - The Channel Id
-     * @returns {Promise} Promise object which returns the Channel Object or undefined if not found
+     * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
      */ 
     getChannelByID(cid) {
         return new Promise((fulfill, reject) => {
@@ -611,7 +626,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} name - The Name of the Channel
-     * @returns {Promise} Promise object which returns the Channel Object or undefined if not found
+     * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
      */ 
     getChannelByName(name) {
         return new Promise((fulfill, reject) => {
@@ -627,7 +642,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} clid - The Client Id
-     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */ 
     getClientByID(clid) {
         return new Promise((fulfill, reject) => {
@@ -643,7 +658,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {number} cldbid - The Client Database Id
-     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */ 
     getClientByDBID(cldbid) {
         return new Promise((fulfill, reject) => {
@@ -659,7 +674,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {string} uid - The Client Unique Identifier
-     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */ 
     getClientByUID(uid) {
         return new Promise((fulfill, reject) => {
@@ -675,7 +690,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {string} name - The Nickname of the Client
-     * @returns {Promise} Promise object which returns the Client Object or undefined if not found
+     * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */ 
     getClientByName(name) {
         return new Promise((fulfill, reject) => {
@@ -687,10 +702,10 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a list of permissions available on the server instance including ID, name and description.
+     * Retrieves a list of permissions available on the server instance including ID, name and description.
      * @version 1.0
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object[]>} gets a list of permissions available
      */
     permissionList() {
         return this.execute("permissionlist")
@@ -698,11 +713,11 @@ class TeamSpeak3 extends EventEmitter {
  
  
     /**
-     * Displays the database ID of one or more permissions specified by permsid.
+     * Retrieves the database ID of one or more permissions specified by permsid.
      * @version 1.0
      * @async
      * @param {(string|array)} permsid - One or more Permission Names
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>} gets the specified permissions
      */
     permIdGetByName(permsid) {
         return this.execute("permidgetbyname", {permsid: permsid})
@@ -710,11 +725,11 @@ class TeamSpeak3 extends EventEmitter {
  
  
     /**
-     * Displays the current value of the permission for your own connection. This can be useful when you need to check your own privileges.
+     * Retrieves the current value of the permission for your own connection. This can be useful when you need to check your own privileges.
      * @version 1.0
      * @async
      * @param {number|string} key - Perm ID or Name which should be checked
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>} gets the permissions
      */
     permGet(key) {
         var prop = {}
@@ -727,11 +742,11 @@ class TeamSpeak3 extends EventEmitter {
  
  
     /**
-     * Displays detailed information about all assignments of the permission. The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
+     * Retrieves detailed information about all assignments of the permission. The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
      * @version 1.0
      * @async
      * @param {(number|string)} perm - Perm ID or Name to get
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>} gets the permissions
      */
     permFind(perm) {
         var prop = {}
@@ -747,7 +762,7 @@ class TeamSpeak3 extends EventEmitter {
      * Restores the default permission settings on the selected virtual server and creates a new initial administrator token. Please note that in case of an error during the permreset call - e.g. when the database has been modified or corrupted - the virtual server will be deleted from the database.
      * @version 1.0
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise}
      */
     permReset() {
         return this.execute("permreset")
@@ -755,10 +770,10 @@ class TeamSpeak3 extends EventEmitter {
  
  
     /**
-     * Displays a list of privilege keys available including their type and group IDs.
+     * Retrieves a list of privilege keys available including their type and group IDs.
      * @version 1.0
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>} gets a list of privilegekeys
      */
     privilegekeyList() {
         return this.execute("privilegekeylist")
@@ -773,7 +788,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} group - Depends on the Type given, add either a valid Channel Group or Server Group
      * @param {number} [cid] - Depends on the Type given, add a valid Channel ID
      * @param {string} [description] - Token Description
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     privilegekeyAdd(type, group, cid, description) {
         var prop = {tokentype: type, tokenid1: group}
@@ -788,7 +803,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} token - The token which should be deleted
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     privilegekeyDelete(token) {
         return this.execute("privilegekeydelete", {token: token})
@@ -800,7 +815,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} token - The token which should be used
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     privilegekeyUse(token) {
         return this.execute("privilegekeyuse", {token: token})
@@ -811,7 +826,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of offline messages you've received. The output contains the senders unique identifier, the messages subject, etc.
      * @version 1.0
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     messageList() {
         return this.execute("messagelist")
@@ -825,7 +840,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} uid - Client Unique Identifier (uid)
      * @param {string} subject - Subject of the message
      * @param {string} text - Message Text
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     messageAdd(uid, subject, text) {
         return this.execute("messageadd", {cluid: uid, subject: subject, text: text})
@@ -837,7 +852,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} id - The Message ID which should be deleted
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     messageDel(id) {
         return this.execute("messagedel", {msgid: id})
@@ -849,7 +864,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} id - Gets the content of the Message
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     messageGet(id) {
         return this.execute("messageget", {msgid: id})
@@ -862,7 +877,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} id - Gets the content of the Message
      * @param {number} read - If flag is set to 1 the message will be marked as read
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     messageUpdate(id, read) {
         return this.execute("messageupdateflag", {msgid: id, flag: flag})
@@ -874,7 +889,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} [dbid] - Filter only for certain Client with the given Database ID
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     complainList(dbid) {
         return this.execute("complainlist", (typeof dbid === "number") ? {cldbid: dbid} : null)
@@ -887,7 +902,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} dbid - Filter only for certain Client with the given Database ID
      * @param {string} [message] - The Message which should be added
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     complainAdd(dbid, message = "") {
         return this.execute("complainadd", {cldbid: dbid, message: message})
@@ -900,7 +915,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} tcldbid - The Target Client Database ID
      * @param {number} fcldbid - The Client Database ID which filed the Report
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     complainDel(tdbid, fdbid = false) {
         var cmd = (fdbid === false) ? "complaindelall" : "complaindel"
@@ -914,7 +929,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of active bans on the selected virtual server.
      * @version 1.0
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     banList() {
         return this.execute("banlist")
@@ -925,12 +940,12 @@ class TeamSpeak3 extends EventEmitter {
      * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one of the following must be set: ip, name, or uid.
      * @version 1.0
      * @async
-     * @param {string} [ip=] - IP Regex
-     * @param {string} [name=] - Name Regex
-     * @param {string} [uid=] - UID Regex
+     * @param {string} [ip] - IP Regex
+     * @param {string} [name] - Name Regex
+     * @param {string} [uid] - UID Regex
      * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
      * @param {string} reason - Ban Reason
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     banAdd(ip, name, uid, time, reason) {
         var props = {}
@@ -948,13 +963,13 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} [id] - The BanID to remove, if not provided it will remove all bans
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     banDel(id = false) {
-        var prop = {}
-        cmd = (id === false) ? "bandelall" : "bandel"
-        if (id !== false) prop.banid = id
-        return this.execute(cmd, prop)
+        return this.execute(
+            (id === false) ? "bandelall" : "bandel", 
+            (id !== false) ? {banid: id} : null
+        )
     }
  
  
@@ -966,13 +981,10 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [reverse=0] - Invert Output
      * @param {number} [instance=0] - Instance or Virtual Server Log
      * @param {number} [begin_pos=0] - Begin at Position
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     logView(lines = 1000, reverse = 0, instance = 0, begin_pos = 0) {
-        return this.execute(
-            "logview",
-            {lines: lines, reverse: reverse, instance: instance, begin_pos: begin_pos}
-        )
+        return this.execute("logview", { lines: lines, reverse: reverse, instance: instance, begin_pos: begin_pos })
     }
  
  
@@ -982,10 +994,10 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} level - Level 1 to 4
      * @param {string} msg - Message to log
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     logAdd(level, msg) {
-        return this.execute("logadd", {loglevel: level, logmsg: msg})
+        return this.execute("logadd", { loglevel: level, logmsg: msg })
     }
  
  
@@ -994,10 +1006,10 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} msg - Message which will be sent to all instances
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     gm(msg) {
-        return this.execute("gm", {msg: msg})
+        return this.execute("gm", { msg: msg })
     }
 
 
@@ -1006,7 +1018,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} cldbid - The Client Database ID which should be searched for
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     clientDBInfo(cldbid) {
         return this.execute("clientdbinfo", {cldbid: cldbid})
@@ -1019,7 +1031,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {string} pattern - The Pattern which should be searched for
      * @param {boolean} isUid - True when instead of the Name it should be searched for a uid
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     clientDBFind(pattern, isUid = false) {
         return this.execute("clientdbfind", {pattern: pattern}, (isUid) ? ["-uid"] : [])
@@ -1032,7 +1044,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {string} cldbid - The Client Database ID which should be edited
      * @param {object} properties - The Properties which should be modified
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     clientDBEdit(cldbid, properties) {
         properties.cldbid = cldbid
@@ -1046,7 +1058,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {string} cldbid - The Client Database ID which should be edited
      * @param {object} properties - The Properties which should be modified
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     clientDBDelete(cldbid) {
         return this.execute("clientdbdelete", {cldbid: cldbid})
@@ -1059,7 +1071,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {string} cldbid - The Client Database ID which should be added
      * @param {string} sgid - The Server Group ID which the Client should be added to
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     serverGroupAddClient(cldbid, sgid) {
         return this.execute("servergroupaddclient", {sgid: sgid, cldbid: cldbid})
@@ -1072,7 +1084,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {string} cldbid - The Client Database ID which should be removed
      * @param {string} sgid - The Server Group ID which the Client should be removed from
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     serverGroupDelClient(cldbid, sgid) {
         return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
@@ -1083,7 +1095,7 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of virtual servers including their ID, status, number of clients online, etc.
      * @version 1.0 
      * @async
-     * @returns {Promise} Promise object
+     * @returns {Promise.<TeamSpeakServer[]>}
      */ 
     serverList(filter = {}) { 
         return this.execute(
@@ -1107,7 +1119,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise} Promise object which returns an Array of TeamSpeak Server Groups
+     * @returns {Promise.<TeamSpeakChannelGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
      */ 
     channelGroupList(filter = {}) { 
         return this.execute(
@@ -1131,7 +1143,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise} Promise object which returns an Array of TeamSpeak Server Groups
+     * @returns {Promise.<TeamSpeakServerGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
      */ 
     serverGroupList(filter = {}) { 
         return this.execute(
@@ -1155,7 +1167,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise} Promise object which returns an Array of TeamSpeak Channels
+     * @returns {Promise<TeamSpeakChannel[]>} Promise object which returns an Array of TeamSpeak Channels
      */
     channelList(filter = {}) { 
         return this.execute( 
@@ -1179,7 +1191,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0 
      * @async 
      * @param {object} filter - Filter Object 
-     * @returns {Promise} Promise object which returns an Array of TeamSpeak Clients 
+     * @returns {Promise<TeamSpeakClient[]>} Promise object which returns an Array of TeamSpeak Clients 
      */ 
     clientList(filter = {}) { 
         return this.execute( 
@@ -1210,7 +1222,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} transfer.size - Size of the File
      * @param {number} transfer.overwrite - <Description Pending>
      * @param {number} transfer.resume - <Description Pending>
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
 
     ftInitUpload(transfer) { 
@@ -1228,7 +1240,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [transfer.cid=0] - Channel ID to upload to
      * @param {string} [transfer.cpw=""] - Channel Password of the Channel which will be uploaded to
      * @param {number} [transfer.seekpos=0] - <Description Pending File Startposition?>
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */
     ftInitDownload(transfer) { 
 		if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
@@ -1245,7 +1257,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} name - The Name of the Icon to retrieve
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     getIcon(name) {
         return new Promise((fulfill, reject) => {
@@ -1266,7 +1278,7 @@ class TeamSpeak3 extends EventEmitter {
      * Gets the Icon Name of a resolveable Perm List
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     getIconName(permlist) {
         return new Promise((fulfill, reject) => {
@@ -1285,7 +1297,7 @@ class TeamSpeak3 extends EventEmitter {
      * Closes the ServerQuery connection to the TeamSpeak 3 Server instance.
      * @version 1.0 
      * @async 
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */ 
     quit() { 
         return this.execute("quit") 
@@ -1298,7 +1310,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @private
      * @param {object} promise - The Promise which will be waited for before the cleanup
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */ 
     _cacheCleanUp(promise) {
         return new Promise((fulfill, reject) => {
@@ -1322,7 +1334,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {object} list - The List to check against the Cache
      * @param {string} key - The Key used to identify the Object inside the Cache
      * @param {object} class - The Class which should be used
-     * @returns {Promise} Promise object 
+     * @returns {Promise.<object>}
      */ 
     _handleCache(cache, list, key, Class) {
         if (!Array.isArray(list)) var list = [list]
@@ -1350,7 +1362,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async 
      * @param {object} array - The Object which should get filtered 
      * @param {object} filter - Filter Object 
-     * @returns {Promise} Promise object
+     * @returns {Promise.<object>}
      */ 
     static _filter(array, filter) {
         return new Promise((fulfill, reject) => {

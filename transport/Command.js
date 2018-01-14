@@ -1,9 +1,11 @@
 /** 
  * @file Response.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
+
 const escape = require(__dirname+"/../helper/escape.js")
 
 
@@ -30,9 +32,11 @@ class Command {
      * Sets the main command to send
      * @version 1.0 
      * @param {string} cmd - Sets the command which will be sent to the TeamSpeak Query
+     * @returns {this}
      */ 
     setCommand(cmd) {
         this._cmd = cmd.trim()
+        return this
     }
 	
 
@@ -40,9 +44,11 @@ class Command {
      *Sets the TeamSpeak Key Value Pairs
      * @version 1.0 
      * @param {object} opts - Sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+     * @returns {this}
      */ 
     setOptions(opts) {
         this._opts = opts
+        return this
     }
 
 
@@ -50,9 +56,11 @@ class Command {
      * Set TeamSpeak Flags
      * @version 1.0 
      * @param {object} flags - Sets the Flags which should get sent to the TeamSpeak Query
+     * @returns {this}
      */ 
     setFlags(flags) {
         this._flags = flags
+        return this
     }
 
 

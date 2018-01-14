@@ -1,9 +1,11 @@
 /** 
  * @file Channel.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
+
 const Abstract = require(__dirname+"/Abstract")
 
  /**
@@ -32,7 +34,7 @@ class TeamSpeakChannel extends Abstract {
      * Displays detailed configuration information about a channel including ID, topic, description, etc.
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @return {Promise.<object>} 
      */ 
     getInfo() {
         return super.execute("channelinfo", {cid: this._static.cid}, true)
@@ -45,7 +47,7 @@ class TeamSpeakChannel extends Abstract {
      * @async
      * @param {number} cpid - Channel Parent ID
      * @param {number} [order] - Channel Sort Order
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     move(cpid, order = 0) {
         return super.execute("channelmove", {cid: this._static.cid, cpid: cpid, order: order})
@@ -57,7 +59,7 @@ class TeamSpeakChannel extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     del(force = 0) {
         return super.execute("channeldelete", {cid: this._static.cid, force: force})
@@ -69,7 +71,7 @@ class TeamSpeakChannel extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} properties - The Properties of the Channel which should get changed
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     edit(properties) {
         properties.cid = this._static.cid
@@ -82,7 +84,7 @@ class TeamSpeakChannel extends Abstract {
      * @version 1.0 
      * @async
      * @param {boolean} permsid - Whether the Perm SID should be displayed aswell
-     * @return {Promise} 
+     * @return {Promise.<object[]>}
      */ 
     permList(permsid = false) {     
         return super.execute("channelpermlist", {cid: this._static.cid}, (permsid) ? ["-permsid"] : null)
@@ -97,7 +99,7 @@ class TeamSpeakChannel extends Abstract {
      * @param {(string|number)} perm - The permid or permsid
      * @param {number} value - The Value which should be set
      * @param {boolean} sid - If the given Perm is a permsid
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     setPerm(perm, value, sid = false) {
         var prop = {cid: this._static.cid}
@@ -113,7 +115,7 @@ class TeamSpeakChannel extends Abstract {
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} sid - If the given Perm is a permsid
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     delPerm(perm, sid = false) {
         var prop = {cid: this._static.cid}
@@ -127,7 +129,7 @@ class TeamSpeakChannel extends Abstract {
      * @version 1.0 
      * @async
      * @param {object} filter - The Filter Object
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     getClients(filter = {}) {
         filter.cid = this._static.cid
@@ -140,7 +142,7 @@ class TeamSpeakChannel extends Abstract {
      * Returns a Buffer with the Icon of the Channel
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise with the binary data of the Channel Icon
      */
     getIcon() {
         return this.getIconName().then(name => super.getParent().getIcon(name))
@@ -152,7 +154,7 @@ class TeamSpeakChannel extends Abstract {
      * Gets the Icon Name of the Channel
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     getIconName() {
         return super.getParent().getIconName(this.permList(true))

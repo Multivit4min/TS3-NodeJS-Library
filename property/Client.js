@@ -1,9 +1,11 @@
 /**
  * @file Client.js
+ * @ignore
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
+
 const Abstract = require(__dirname+"/Abstract")
 const FileTransfer = require(__dirname+"/../transport/FileTransfer")
 const Promise = require("bluebird")
@@ -41,7 +43,8 @@ class TeamSpeakClient extends Abstract {
 		 * Move event
 		 *
 		 * @event TeamSpeakClient#move
-		 * @type {class} The Channel which the Client moved to
+         * @memberof TeamSpeakClient
+         * @returns {TeamSpeakChannel} The Channel where the Client moved to
 		 */
         super.on("clientmoved", ev => {
             if (ev.client.getID() !== this.getID()) return
@@ -52,7 +55,8 @@ class TeamSpeakClient extends Abstract {
 		 * Textmessage event
 		 *
 		 * @event TeamSpeakClient#textmessage
-		 * @type {string} The Message which has been sent
+         * @memberof TeamSpeakClient 
+         * @returns {string} The Message which has been sent
 		 */
         super.on("textmessage", ev => {
             if (ev.invoker.getID() !== this.getID()) return
@@ -63,6 +67,7 @@ class TeamSpeakClient extends Abstract {
 		 * Client Disconnect Event
 		 *
 		 * @event TeamSpeakClient#clientdisconnect
+         * @memberof TeamSpeakClient 
 		 */
         super.on("clientdisconnect", ev => {
             if (ev.clid !== this.getID()) return
@@ -127,7 +132,7 @@ class TeamSpeakClient extends Abstract {
      * Returns General Info of the Client, requires the Client to be online
      * @version 1.0
      * @async
-     * @returns {Promise} Returns the Client Info
+     * @returns {Promise.<object>} Promise with the Client Information
      */
     getInfo() {
         return super.execute("clientinfo", {clid: this._static.clid}, true)
@@ -138,7 +143,7 @@ class TeamSpeakClient extends Abstract {
      * Returns the Clients Database Info
      * @version 1.0
      * @async
-     * @returns {Promise} Returns the Client Database Info
+     * @returns {Promise.<object>} Returns the Client Database Info
      */
     getDBInfo() {
         return super.execute("clientdbinfo", {cldbid: this._static.dbid}, true)
@@ -150,7 +155,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} msg - The Message the Client should receive when getting kicked
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     kickFromServer(msg) {
         return super.execute("clientkick", {clid: this._static.clid, reasonid: 5, reasonmsg: msg})
@@ -162,7 +167,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} msg - The Message the Client should receive when getting kicked (max 40 Chars)
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     kickFromChannel(msg) {
         return super.execute("clientkick", {clid: this._static.clid, reasonid: 4, reasonmsg: msg})
@@ -175,7 +180,7 @@ class TeamSpeakClient extends Abstract {
      * @async
      * @param {number} cid - Channel ID in which the Client should get moved
      * @param {string} [cpw=""] - The Channel Password
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     move(cid, cpw = "") {
         return super.execute("clientmove", {clid: this._static.clid, cid: cid, cpw:cpw})
@@ -187,7 +192,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} sgid - The Server Group ID which the Client should be added to
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     serverGroupAdd(sgid) {
         return super.execute("servergroupaddclient", {sgid: sgid, cldbid: this._static.dbid})
@@ -199,7 +204,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} sgid - The Server Group ID which the Client should be removed from
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     serverGroupDel(sgid) {
         return super.execute("servergroupdelclient", {sgid: sgid, cldbid: this._static.dbid})
@@ -211,7 +216,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} msg - The message the Client should receive
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     poke(msg) {
         return super.execute("clientpoke", {clid: this._static.clid, msg: msg})
@@ -223,7 +228,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0
      * @async
      * @param {string} msg - The message the Client should receive
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise Object
      */
     message(msg) {
         return super.execute("sendtextmessage", {targetmode: 1, target: this._static.clid, msg: msg})
@@ -235,7 +240,7 @@ class TeamSpeakClient extends Abstract {
      * @version 1.0 
      * @async
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-     * @return {Promise} 
+     * @return {Promise.<object>} 
      */ 
     permList(permsid = false) {
         return super.execute("clientpermlist",  {cldbid: this._static.dbid}, [(permsid) ? "-permsid" : null])
@@ -252,7 +257,7 @@ class TeamSpeakClient extends Abstract {
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
-     * @return {Promise} 
+     * @return {Promise.<object>} 
      */ 
     addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
         var prop = {cldbid: this._static.dbid}
@@ -270,7 +275,7 @@ class TeamSpeakClient extends Abstract {
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
-     * @return {Promise} 
+     * @return {Promise.<object>} 
      */ 
     delPerm(perm, permsid = false) {
         var prop = {sgid: this._static.sgid}
@@ -284,7 +289,7 @@ class TeamSpeakClient extends Abstract {
      * Returns a Buffer with the Avatar of the User
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise with the binary data of the avatar
      */
     getAvatar() {
         return this.getAvatarName()
@@ -303,7 +308,7 @@ class TeamSpeakClient extends Abstract {
      * Returns a Buffer with the Icon of the Client
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise with the binary data of the Client Icon
      */
     getIcon() {
         return this.getIconName().then(name => super.getParent().getIcon(name))
@@ -315,7 +320,7 @@ class TeamSpeakClient extends Abstract {
      * Gets the Avatar Name of the Client
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Avatar Name
      */
     getAvatarName() {
         return new Promise((fulfill, reject) => {
@@ -331,7 +336,7 @@ class TeamSpeakClient extends Abstract {
      * Gets the Icon Name of the Client
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     getIconName() {
         return super.getParent().getIconName(this.permList(true))

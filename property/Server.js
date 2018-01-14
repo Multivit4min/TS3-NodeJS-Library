@@ -1,5 +1,6 @@
 /** 
  * @file Server.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
@@ -32,7 +33,7 @@ class TeamSpeakServer extends Abstract {
     /** 
      * Selects the Virtual Server
      * @version 1.0 
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     use() {
         return this.getParent().useBySid(this._static.sid)
@@ -43,7 +44,7 @@ class TeamSpeakServer extends Abstract {
      * Gets basic Infos about the Server
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     getInfo() {
 		return this.getCache()
@@ -54,7 +55,7 @@ class TeamSpeakServer extends Abstract {
      * Deletes the Server.
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     del() {
         return super.execute("serverdelete", {sid: this._static.sid})
@@ -65,7 +66,7 @@ class TeamSpeakServer extends Abstract {
      * Starts the virtual server. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     start() {
         return super.execute("serverstart", {sid: this._static.sid})
@@ -76,7 +77,7 @@ class TeamSpeakServer extends Abstract {
      * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     stop() {
         return super.execute("serverstop", {sid: this._static.sid})

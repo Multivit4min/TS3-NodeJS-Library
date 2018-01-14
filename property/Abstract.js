@@ -1,9 +1,11 @@
 /** 
  * @file Abstract.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
+
 const CRC32 = require('crc-32') 
 const Promise = require("bluebird")
 const EventEmitter = require("events")
@@ -64,7 +66,7 @@ const EventEmitter = require("events")
      * @param {object} [Object] - Optional the Parameters 
      * @param {object} [Array] - Optional Flagwords 
      * @param {boolean} [Boolean] - Optional if the Command should be cached 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
+     * @returns {Promise.<object>} Promise object which returns the Information about the Query executed 
      */ 
     execute() { 
         var args = Array.prototype.slice.call(arguments) 
@@ -80,7 +82,7 @@ const EventEmitter = require("events")
      * @version 1.0 
      * @async 
      * @param {object} args - Arguments which the Query should execute 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
+     * @returns {Promise.<object>} Promise object which returns the Information about the Query executed 
      */ 
     _commandCache(args) { 
         return new Promise((fulfill, reject) => { 
@@ -155,7 +157,7 @@ const EventEmitter = require("events")
      * @async
      * @param {object} array - The Object which should get filtered 
      * @param {object} filter - Filter Object 
-     * @returns {Promise<object>} Promise object
+     * @returns {Promise.<object>} Promise object
      */ 
     filter(array, filter) {
         return this._parent.constructor._filter(array, filter)
@@ -164,7 +166,7 @@ const EventEmitter = require("events")
     /** 
      * Returns the data from the last List Command
      * @version 1.0
-     * @returns {object}
+     * @return {Promise.<object>}
      */ 
     getCache() {
         return this._propcache
@@ -174,17 +176,16 @@ const EventEmitter = require("events")
     /** 
      * Sets the Data from the Last List Command
      * @version 1.0
-     * @returns {object}
      */ 
     updateCache(info) {
-        return this._propcache = info
+        this._propcache = info
     }
 
 
     /** 
      * Returns the Parent Class
      * @version 1.0
-     * @returns {object}
+     * @returns {TeamSpeak3}
      */ 
     getParent() {
         return this._parent
@@ -195,7 +196,7 @@ const EventEmitter = require("events")
      * Transforms an Input to an Array
      * @async
      * @version 1.0
-     * @returns {object}
+     * @returns {any[]}
      */ 
     toArray(input) {
         return new Promise(fulfill => {

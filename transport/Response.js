@@ -1,9 +1,11 @@
 /** 
  * @file Response.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com> 
- */ 
+ */
+
 const keytypes = require(__dirname+"/../helper/keytypes.js")
 const unescape = require(__dirname+"/../helper/unescape.js")
 
@@ -18,9 +20,11 @@ class Response {
      * Set the Line which has been received from the TeamSpeak Query
      * @version 1.0 
      * @param {string} line - The Line which has been received from the TeamSpeak Query
+     * @returns {this}
      */ 
     setLine(line) {
         this._response = Response.parse(line)
+        return this
     }
 
 	
@@ -28,9 +32,11 @@ class Response {
      * Set the error line which has been received from the TeamSpeak Query
      * @version 1.0 
      * @param {string} error - The error Line which has been received from the TeamSpeak Query
+     * @returns {this}
      */ 
     finalize(error) {
         this._error = Response.parse(error)
+        return this
     }
 
 	
@@ -94,6 +100,16 @@ class Response {
         
     }
 
+
+    
+    /** 
+     * Parses a value to the type which the key represents
+     * @version 1.0
+     * @static
+     * @param {string} k - The Key which should get looked up
+     * @param {any} v - The value which should get parsed
+     * @return {any} Returns the parsed Data
+     */ 
     static parseValue(k, v) {
         switch(keytypes[k]) {
             case "ArrayOfInt": return v.split(",").map(i => parseFloat(i))

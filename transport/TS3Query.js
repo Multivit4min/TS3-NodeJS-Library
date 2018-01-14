@@ -1,9 +1,11 @@
 /**
  * @file TS3Query.js
+ * @ignore
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
+
 const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
 const net = require("net")
@@ -68,6 +70,15 @@ class TS3Query extends EventEmitter {
                         && this._handleDoubleEvents
                         && CRC32.str(line) == this._lastevent) return
                     this._lastevent = CRC32.str(line)
+                    /**
+                     * Query Event
+                     * Gets fired when the Query receives an Event
+                     *
+                     * @event TS3Query#<TeamSpeakEvent>
+                     * @memberof  TS3Query
+                     * @type {object}
+                     * @property {any} data - The data received from the Event
+                     */
                     return this.emit(
                         line.substr(6, line.indexOf(" ") - 6), 
                         Response.parse(line.substr(line.indexOf(" ") + 1)))
@@ -81,9 +92,25 @@ class TS3Query extends EventEmitter {
                 clearTimeout(this._antispamTimeout)
                 var str =  (this._lastline.indexOf("error") === 0) ?
                     Response.parse(this._lastline)[0] : ""
+                /**
+                 * Query Close Event
+                 * Gets fired when the Query disconnects from the TeamSpeak Server
+                 *
+                 * @event TS3Query#close
+                 * @memberof  TS3Query
+                 * @type {object}
+                 * @property {any} error - The Error Object
+                 */
                 this.emit("close", str)
             })
             this._socket.on("error", err => this.emit("error", err))
+            /**
+             * Query Connect Event
+             * Gets fired when the Query connects to the TeamSpeak Server
+             *
+             * @event TS3Query#connect
+             * @memberof TS3Query
+             */
             this.emit("connect")
         })
     }
@@ -142,7 +169,7 @@ class TS3Query extends EventEmitter {
      * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
      * @param {object} [Object] - Optional the Parameters 
      * @param {object} [Array] - Optional Flagwords 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
+     * @returns {Promise.<object>} Promise object which returns the Information about the Query executed 
      */ 
     execute() {
         var args = arguments
@@ -170,7 +197,7 @@ class TS3Query extends EventEmitter {
      * Executes the next command 
      * @version 1.0
      * @private
-     * @param {object} [Object] - The Command Class
+     * @param {object} [cmd] - the next command which should get executedd
      */ 
     _queueWorker(cmd = false) {
         if (cmd) this._queue.push(cmd)

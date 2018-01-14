@@ -1,10 +1,13 @@
 /** 
  * @file ServerGroup.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com> 
- */ 
+ */
+
 const Abstract = require(__dirname+"/Abstract") 
+
  /**
  * Class representing a TeamSpeak ServerGroup
  * @extends Abstract
@@ -42,7 +45,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} force - If set to 1 the ServerGroup will be deleted even when Clients are in it
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     del(force = 0) {
         return super.execute("servergroupdel", {sgid: this._static.sgid, force: force})
@@ -56,7 +59,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {number} [tsgid=0] - The Target Group, 0 to create a new Group
      * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
      * @param {(string|boolean)} [name=false] - Name of the Group
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     copy(tsgid = 0, type = 1, name = false) {
         var prop = {ssgid: this._static.sgid, tsgid: tsgid, type: type}
@@ -71,7 +74,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {string} name - Name of the Group
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     rename(name) {
         return super.execute("servergrouprename", {sgid: this._static.sgid, name: name})
@@ -83,7 +86,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     permList(permsid = false) {
         return super.execute("servergrouppermlist", {sgid: this._static.sgid}, [(permsid) ? "-permsid" : null])
@@ -100,7 +103,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
         var prop = {sgid: this._static.sgid}
@@ -118,7 +121,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     delPerm(perm, permsid = false) {
         var prop = {sgid: this._static.sgid}
@@ -132,7 +135,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} cldbid - The Client Database ID which should be added to the Group
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     addClient(cldbid) {
         return super.execute("servergroupaddclient", {sgid: this._static.sgid, cldbid: cldbid})
@@ -144,7 +147,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} cldbid - The Client Database ID which should be removed from the Group
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     delClient(cldbid) {
         return super.execute("servergroupdelclient", {sgid: this._static.sgid, cldbid: cldbid})
@@ -155,7 +158,7 @@ class TeamSpeakServerGroup extends Abstract {
      * Displays the IDs of all clients currently residing in the server group.
      * @version 1.0 
      * @async
-     * @return {Promise} 
+     * @returns {Promise.<object>}
      */ 
     clientList() {
         return super.execute("servergroupclientlist", {sgid: this._static.sgid}, ["-names"])
@@ -167,7 +170,7 @@ class TeamSpeakServerGroup extends Abstract {
      * Returns a Buffer with the Icon of the Server Group
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise with the binary data of the ServerGroup Icon
      */
     getIcon() {
         return this.getIconName().then(name => super.getParent().getIcon(name))
@@ -179,7 +182,7 @@ class TeamSpeakServerGroup extends Abstract {
      * Gets the Icon Name of the Server Group
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>}
      */
     getIconName() {
         return super.getParent().getIconName(this.permList(true))

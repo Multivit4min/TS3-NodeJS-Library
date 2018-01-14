@@ -1,9 +1,11 @@
 /** 
  * @file ChannelGroup.js 
+ * @ignore
  * @copyright David Kartnaller 2017 
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
+
 const Abstract = require(__dirname+"/Abstract")
  
  /**
@@ -33,7 +35,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} force - If set to 1 the Channel Group will be deleted even when Clients are in it
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     del(force = 0) {
         return super.execute("channelgroupdel", {cgid: this._static.cgid, force: force})
@@ -47,7 +49,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @param {number} [tcgid=0] - The Target Group, 0 to create a new Group
      * @param {number} [type] - The Type of the Group (0 = Template Group | 1 = Normal Group)
      * @param {(string|boolean)} [name=false] - Name of the Group
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     copy(tcgid = 0, type = 1, name = false) {
         var prop = {scgid: this._static.cgid, tcgid: tcgid, type: type}
@@ -62,7 +64,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {string} name - Name of the Group
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     rename(name) {
         return super.execute("channelgrouprename", {cgid: this._static.cgid, name: name})
@@ -74,7 +76,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-     * @return {Promise} 
+     * @return {Promise.<object[]>}
      */ 
     permList(permsid = false) {
         return super.execute("channelgrouppermlist", {cgid: this._static.cgid}, [(permsid) ? "-permsid" : null])
@@ -91,7 +93,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
         var prop = {cgid: this._static.cgid}
@@ -109,7 +111,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
-     * @return {Promise} 
+     * @return {Promise.<object>}
      */ 
     delPerm(perm, permsid = false) {
         var prop = {cgid: this._static.cgid}
@@ -124,7 +126,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @async
      * @param {number} cid - The Channel in which the Client should be assigned the Group
      * @param {number} cldbid - The Client Database ID which should be added to the Group
-     * @return {Promise} Group
+     * @return {Promise.<object>}
      */ 
     setClient(cid, cldbid) {
         return super.execute("setclientchannelgroup", {cgid: this._static.cgid, cldbid: cldbid, cid: cid})
@@ -137,7 +139,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @async
      * @param {number} [cid] - The Channel ID
      * @param {number} [cldbid] - The Channel ID
-     * @return {Promise} 
+     * @return {Promise.<TeamSpeakClient>}
      */ 
     clientList(cid, cldbid) {
         var prop = {cgid: this._static.cgid}
@@ -152,7 +154,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * Returns a Buffer with the Icon of the Channel Group
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @returns {Promise.<object>} Promise with the binary data of the ChannelGroup Icon
      */
     getIcon() {
         return this.getIconName().then(name => super.getParent().getIcon(name))
@@ -164,7 +166,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * Gets the Icon Name of the Channel Group
      * @version 1.0
      * @async
-     * @returns {Promise} Promise Object
+     * @return {Promise.<object>}
      */
     getIconName() {
         return super.getParent().getIconName(this.permList(true))
