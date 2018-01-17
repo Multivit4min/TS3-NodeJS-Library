@@ -91,36 +91,36 @@ class TeamSpeak3 extends EventEmitter {
             if (typeof this._config.nickname == "string") 
                 exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
             Promise.all(exec)
-				/**
-				 * Query Ready Event
-				 * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
-				 *
-				 * @event TeamSpeak3#ready
+                /**
+                 * Query Ready Event
+                 * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
+                 *
+                 * @event TeamSpeak3#ready
                  * @memberof TeamSpeak3
-				 */
+                 */
                 .then(r => super.emit("ready"))
-				/**
-				 * Query Error Event
-				 * Gets fired when the TeamSpeak Query had an error while trying to connect
-				 * and also gets fired when there was an error after receiving an event
-				 *
-				 * @event TeamSpeak3#error
+                /**
+                 * Query Error Event
+                 * Gets fired when the TeamSpeak Query had an error while trying to connect
+                 * and also gets fired when there was an error after receiving an event
+                 *
+                 * @event TeamSpeak3#error
                  * @memberof  TeamSpeak3
                  * @returns {object} - return the error object 
-				 */
+                 */
                 .catch(e => super.emit("error", e))
         })
-		
+        
 
-		/**
-		 * Query Close Event
-		 * Gets fired when the Query disconnects from the TeamSpeak Server
-		 *
-		 * @event TeamSpeak3#close
+        /**
+         * Query Close Event
+         * Gets fired when the Query disconnects from the TeamSpeak Server
+         *
+         * @event TeamSpeak3#close
          * @memberof TeamSpeak3
-		 * @type {object}
+         * @type {object}
          * @returns {object} - may return an error object 
-		 */
+         */
         this._ts3.on("close", e => super.emit("close", e))
     }
 
@@ -158,63 +158,63 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Textmessage event
-	 *
-	 * @event TeamSpeak3#textmessage
+    /**
+     * Textmessage event
+     *
+     * @event TeamSpeak3#textmessage
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which sent a textmessage
-	 * @property {string} msg - The Message which has been sent
-	 * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which sent a textmessage
+     * @property {string} msg - The Message which has been sent
+     * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
+     */
     _evtextmessage() {
         var ev = arguments[0]
         this.getClientByID(ev.invokerid)
         .then(c => {
             super.emit("textmessage", {
-				invoker: c, 
-				msg: ev.msg, 
-				targetmode: ev.targetmode
-			})
-		}).catch(e => super.emit("error", e))
+                invoker: c, 
+                msg: ev.msg, 
+                targetmode: ev.targetmode
+            })
+        }).catch(e => super.emit("error", e))
     }
 
 
-	/**
-	 * Client Move Event
-	 *
-	 * @event TeamSpeak3#clientmoved
+    /**
+     * Client Move Event
+     *
+     * @event TeamSpeak3#clientmoved
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} client - The Client which moved
-	 * @property {class} channel - The Channel which the client has been moved to
-	 * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
-	 */
+     * @type {object}
+     * @property {class} client - The Client which moved
+     * @property {class} channel - The Channel which the client has been moved to
+     * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
+     */
     _evclientmoved() {
         var args = arguments[0]
         Promise.all([
             this.getClientByID(args.clid),
             this.getChannelByID(args.ctid)
         ]).then(res => {
-			this.emit("clientmoved", {
-				client: res[0],
-				channel: res[1],
-				reasonid: args.reasonid
-			})
-		}).catch(e => this.emit("error", e))
+            this.emit("clientmoved", {
+                client: res[0],
+                channel: res[1],
+                reasonid: args.reasonid
+            })
+        }).catch(e => this.emit("error", e))
     }
 
 
-	/**
-	 * Server Edit Event
-	 *
-	 * @event TeamSpeak3#serveredit
+    /**
+     * Server Edit Event
+     *
+     * @event TeamSpeak3#serveredit
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which edited the server
-	 * @property {object} modified - The Properties which has been modified
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which edited the server
+     * @property {object} modified - The Properties which has been modified
+     */
     _evserveredited() {
         var args = arguments[0]
         this.getClientByID(args.invokerid)
@@ -228,16 +228,16 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Channel Edit Event
-	 *
-	 * @event TeamSpeak3#channeledit
+    /**
+     * Channel Edit Event
+     *
+     * @event TeamSpeak3#channeledit
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which edited a channel
-	 * @property {class} channel - The Channel which has been edited
-	 * @property {object} modified - The Properties which has been modified
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which edited a channel
+     * @property {class} channel - The Channel which has been edited
+     * @property {object} modified - The Properties which has been modified
+     */
     _evchanneledited() {
         var args = arguments[0]
         Promise.all([
@@ -253,16 +253,16 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Channel Create Event
-	 *
-	 * @event TeamSpeak3#channelcreate
+    /**
+     * Channel Create Event
+     *
+     * @event TeamSpeak3#channelcreate
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which created the channel
-	 * @property {class} channel - The Channel which has been created
-	 * @property {object} modified - The Properties which has been modified
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which created the channel
+     * @property {class} channel - The Channel which has been created
+     * @property {object} modified - The Properties which has been modified
+     */
     _evchannelcreated() {
         var args = arguments[0]
         Promise.all([
@@ -278,16 +278,16 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Channel Move Event
-	 *
-	 * @event TeamSpeak3#channelmoved
+    /**
+     * Channel Move Event
+     *
+     * @event TeamSpeak3#channelmoved
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which moved the channel
-	 * @property {class} channel - The Channel which has been moved
-	 * @property {class} parent - The new Parent Channel
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which moved the channel
+     * @property {class} channel - The Channel which has been moved
+     * @property {class} parent - The new Parent Channel
+     */
     _evchannelmoved() {
         var args = arguments[0]
         Promise.all([
@@ -302,15 +302,15 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-	/**
-	 * Channel Delete Event
-	 *
-	 * @event TeamSpeak3#channeldelete
+    /**
+     * Channel Delete Event
+     *
+     * @event TeamSpeak3#channeldelete
      * @memberof TeamSpeak3
-	 * @type {object}
-	 * @property {class} invoker - The Client which deleted the channel
-	 * @property {class} cid - The Channel ID which has been deleted
-	 */
+     * @type {object}
+     * @property {class} invoker - The Client which deleted the channel
+     * @property {class} cid - The Channel ID which has been deleted
+     */
     _evchanneldeleted() {
         this.getClientByID(arguments[0].clid)
         .then(client => {
@@ -542,12 +542,12 @@ class TeamSpeak3 extends EventEmitter {
     serverCreate(properties) { 
         var token = ""
         return this.execute("servercreate", properties)
-		.then(res => {
-			token = r.token
-			return this.serverList({virtualserver_id: res.sid})
-		}).then(server => {
-			return new Promise(fulfill => fulfill({server: server[0], token: token}))
-		})
+        .then(res => {
+            token = r.token
+            return this.serverList({virtualserver_id: res.sid})
+        }).then(server => {
+            return new Promise(fulfill => fulfill({server: server[0], token: token}))
+        })
     }
 
 
@@ -1244,7 +1244,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     ftInitDownload(transfer) { 
-		if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
+        if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
         if (!("seekpos" in transfer)) transfer.seekpos = 0
         if (!("cpw" in transfer)) transfer.cpw = ""
         if (!("cid" in transfer)) transfer.cid = 0
