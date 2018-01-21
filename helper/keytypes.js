@@ -135,7 +135,7 @@ module.exports = {
     client_security_hash: String,
     client_login_name: String,
     client_totalconnections: Number,
-    client_flag_avatar: Number,
+    client_flag_avatar: String,
     client_talk_request: Number,
     client_talk_request_msg: String,
     client_month_bytes_uploaded: Number,
