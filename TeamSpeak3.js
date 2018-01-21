@@ -1285,7 +1285,8 @@ class TeamSpeak3 extends EventEmitter {
         return new Promise((fulfill, reject) => {
             return permlist.then(perms => {
                 perms.some(perm => {
-                    if (perm.permsid === "i_icon_id") fulfill("icon_"+perm.permvalue)
+                    if (perm.permsid === "i_icon_id")
+                        fulfill("icon_"+((perm.permvalue < 0) ? perm.permvalue>>>0 : perm.permvalue))
                     return (perm.permsid === "i_icon_id")
                 })
                 reject("No Icon found!")

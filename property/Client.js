@@ -39,25 +39,25 @@ class TeamSpeakClient extends Abstract {
             type: c.client_type
         }
 
-		/**
-		 * Move event
-		 *
-		 * @event TeamSpeakClient#move
+        /**
+         * Move event
+         *
+         * @event TeamSpeakClient#move
          * @memberof TeamSpeakClient
          * @returns {TeamSpeakChannel} The Channel where the Client moved to
-		 */
+         */
         super.on("clientmoved", ev => {
             if (ev.client.getID() !== this.getID()) return
             this.emit("move", ev.channel)
         })
 
-		/**
-		 * Textmessage event
-		 *
-		 * @event TeamSpeakClient#textmessage
+        /**
+         * Textmessage event
+         *
+         * @event TeamSpeakClient#textmessage
          * @memberof TeamSpeakClient 
          * @returns {string} The Message which has been sent
-		 */
+         */
         super.on("textmessage", ev => {
             if (ev.invoker.getID() !== this.getID()) return
             this.emit("message", ev.msg)
@@ -71,8 +71,8 @@ class TeamSpeakClient extends Abstract {
          */
         super.on("clientdisconnect", ev => {
             if (ev.client.clid !== this.getID()) return
-            super.removeAllListeners()
             this.emit("disconnect", ev.event)
+            super.removeAllListeners()
         })
     }
 
@@ -244,7 +244,7 @@ class TeamSpeakClient extends Abstract {
      */ 
     permList(permsid = false) {
         return super.execute("clientpermlist",  {cldbid: this._static.dbid}, [(permsid) ? "-permsid" : null])
-			.then(super.toArray)
+            .then(super.toArray)
     }
 
     
