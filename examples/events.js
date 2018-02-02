@@ -21,7 +21,7 @@ ts3.on("clientconnect", ev => {
     var nick = client.getCache().client_nickname
     console.log("Client "+nick+" just connected")
 	//Event gets fired when the Client moves to a different Channel
-    client.on("move", channel => console.log(nick+" just moved to Channel "+ ev.channel.getCache().channel_name))
+    client.on("move", channel => console.log(nick+" just moved to Channel "+ channel.getCache().channel_name))
 	//Event gets fired when the Client sends a message to the bot
     client.on("message", msg => console.log(nick+" just sent '"+msg+"'"))
 	//Event gets fired when the Client disconnects from the Server

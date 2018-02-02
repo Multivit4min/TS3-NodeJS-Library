@@ -151,7 +151,7 @@ class TeamSpeak3 extends EventEmitter {
     _evclientleftview() {
         var raw = arguments[0]
         super.emit("clientdisconnect", {
-            client: this._clients[raw.clid].getCache(), 
+            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : null, 
             event: raw
         })
         delete this._clients[raw.clid]
