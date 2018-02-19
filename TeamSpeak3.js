@@ -60,7 +60,7 @@ class TeamSpeak3 extends EventEmitter {
             nickname: config.nickname || false, 
             antispam: Boolean(config.antispam), 
             antispamtimer: parseInt(config.antispamtimer) || 350, 
-            keepalive: Boolean(config.keepalive) || true,
+            keepalive: Boolean(config.keepalive),
         } 
         this._clients = {}
         this._channels = {}
