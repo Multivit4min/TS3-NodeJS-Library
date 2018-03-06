@@ -21,7 +21,6 @@ const Promise = require("bluebird")
 class TeamSpeakClient extends Abstract {
     /**
      * Creates a TeamSpeak Client
-     * @constructor
      * @version 1.0
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
      * @param {object} c - This holds Basic Client Data received by the Client List Command
@@ -135,7 +134,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise with the Client Information
      */
     getInfo() {
-        return super.execute("clientinfo", {clid: this._static.clid}, true)
+        return super.getParent().clientInfo(this._static.clid)
     }
 
 
@@ -146,7 +145,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Returns the Client Database Info
      */
     getDBInfo() {
-        return super.execute("clientdbinfo", {cldbid: this._static.dbid}, true)
+        return super.getParent().clientDBInfo(this._static.dbid)
     }
 
 
@@ -158,7 +157,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     kickFromServer(msg) {
-        return super.execute("clientkick", {clid: this._static.clid, reasonid: 5, reasonmsg: msg})
+        return super.getParent().clientKick(this._static.clid, 5, msg)
     }
 
 
@@ -170,7 +169,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     kickFromChannel(msg) {
-        return super.execute("clientkick", {clid: this._static.clid, reasonid: 4, reasonmsg: msg})
+        return super.getParent().clientKick(this._static.clid, 4, msg)
     }
 
 
@@ -182,8 +181,8 @@ class TeamSpeakClient extends Abstract {
      * @param {string} [cpw=""] - The Channel Password
      * @returns {Promise.<object>} Promise Object
      */
-    move(cid, cpw = "") {
-        return super.execute("clientmove", {clid: this._static.clid, cid: cid, cpw:cpw})
+    move(cid, cpw) {
+        return super.getParent().clientMove(this._static.clid, cid, cpw)
     }
 
 
@@ -195,7 +194,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     serverGroupAdd(sgid) {
-        return super.execute("servergroupaddclient", {sgid: sgid, cldbid: this._static.dbid})
+        return super.getParent().serverGroupAddClient(this._static.dbid, sgid)
     }
 
 
@@ -207,7 +206,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     serverGroupDel(sgid) {
-        return super.execute("servergroupdelclient", {sgid: sgid, cldbid: this._static.dbid})
+        return super.getParent().serverGroupDelClient(this._static.dbid, sgid)
     }
 
 
@@ -219,7 +218,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     poke(msg) {
-        return super.execute("clientpoke", {clid: this._static.clid, msg: msg})
+        return super.getParent().clientPoke(this._static.clid, msg)
     }
 
 
@@ -231,7 +230,7 @@ class TeamSpeakClient extends Abstract {
      * @returns {Promise.<object>} Promise Object
      */
     message(msg) {
-        return super.execute("sendtextmessage", {targetmode: 1, target: this._static.clid, msg: msg})
+        return super.getParent().sendTextMessage(this._static.clid, 1, msg)
     }
 
     
@@ -242,9 +241,8 @@ class TeamSpeakClient extends Abstract {
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
      * @return {Promise.<object>} 
      */ 
-    permList(permsid = false) {
-        return super.execute("clientpermlist",  {cldbid: this._static.dbid}, [(permsid) ? "-permsid" : null])
-            .then(super.toArray)
+    permList(permsid) {
+        return super.getParent().clientPermList(this._static.dbid, permsid)
     }
 
     
@@ -259,13 +257,8 @@ class TeamSpeakClient extends Abstract {
      * @param {number} [negate=0] - Whether the negate flag should be set
      * @return {Promise.<object>} 
      */ 
-    addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {cldbid: this._static.dbid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return super.execute("clientaddperm", prop)
+    addPerm(perm, value, permsid, skip, negate) {
+        return super.getParent().clientAddPerm(this._static.dbid, perm, value, permsid, skip, negate)
     }
 
     
@@ -278,9 +271,7 @@ class TeamSpeakClient extends Abstract {
      * @return {Promise.<object>} 
      */ 
     delPerm(perm, permsid = false) {
-        var prop = {sgid: this._static.sgid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return super.execute("clientdelperm", prop)
+        return super.getParent().clientDelPerm(this._static.dbid, perm, permsid)
     }
 
 

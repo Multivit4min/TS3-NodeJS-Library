@@ -19,7 +19,6 @@ const EventEmitter = require("events")
 
 /**
  * Main TeamSpeak Query Class
- * @class
  * @fires TeamSpeak3#ready
  * @fires TeamSpeak3#error
  * @fires TeamSpeak3#close
@@ -36,7 +35,6 @@ const EventEmitter = require("events")
 class TeamSpeak3 extends EventEmitter { 
     /** 
      * Represents a TeamSpeak Server Instance
-     * @constructor 
      * @version 1.0 
      * @param {object} [config] - The Configuration Object 
      * @param {string} [config.host=127.0.0.1] - The Host on which the TeamSpeak Server runs
@@ -60,8 +58,8 @@ class TeamSpeak3 extends EventEmitter {
             nickname: config.nickname || false, 
             antispam: Boolean(config.antispam), 
             antispamtimer: parseInt(config.antispamtimer) || 350, 
-            keepalive: Boolean(config.keepalive) || true,
-        } 
+            keepalive: Boolean(config.keepalive),
+        }
         this._clients = {}
         this._channels = {}
         this._servergroups = {}
@@ -135,7 +133,10 @@ class TeamSpeak3 extends EventEmitter {
     _evcliententerview() {
         var raw = arguments[0]
         this._clients[raw.clid] = new TeamSpeakClient(this, raw)
-        super.emit("clientconnect", {client: this._clients[raw.clid]})
+        super.emit("clientconnect", {
+            client: this._clients[String(raw.clid)], 
+            cid: raw.ctid
+        })
     }
 
 
@@ -151,10 +152,10 @@ class TeamSpeak3 extends EventEmitter {
     _evclientleftview() {
         var raw = arguments[0]
         super.emit("clientdisconnect", {
-            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : null, 
+            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : {clid: raw.clid}, 
             event: raw
         })
-        delete this._clients[raw.clid]
+        delete this._clients[String(raw.clid)]
     }
 
 
@@ -552,21 +553,38 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /** 
-     * Creates a new channel using the given properties. Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
+     * Deletes a Server.
      * @version 1.0 
-     * @async 
-     * @param {string} name - The Name of the Channel
-     * @param {object} [type={}] - Properties of the Channel
+     * @async
+     * @param {number} sid - the server id
      * @returns {Promise.<object>}
      */ 
-    channelCreate(name, properties = {}) {
-        properties.channel_name = name
-        return this.execute("channelcreate", properties)
-        .then(r => {
-            return this.channelList({cid: r.cid})
-        }).then(c => {
-            return new Promise(fulfill => fulfill(c[0]))
-        })
+    serverDelete(sid) {
+        return this.execute("serverdelete", {sid: sid})
+    }
+
+    
+    /** 
+     * Starts the virtual server. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
+     * @version 1.0 
+     * @async
+     * @param {number} sid - the server id
+     * @returns {Promise.<object>}
+     */ 
+    serverStart(sid) {
+        return this.execute("serverstart", {sid: sid})
+    }
+
+    
+    /** 
+     * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
+     * @version 1.0 
+     * @async
+     * @param {number} sid - the server id
+     * @returns {Promise.<object>}
+     */ 
+    serverStop() {
+        return this.execute("serverstop", {sid: sid})
     }
 
 
@@ -584,6 +602,157 @@ class TeamSpeak3 extends EventEmitter {
             return this.serverGroupList({sgid: r.sgid})
         }).then(g => {
             return new Promise(fulfill => fulfill(g[0]))
+        })
+    }
+
+    
+    /** 
+     * Displays the IDs of all clients currently residing in the server group.
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupClientList(sgid) {
+        return this.execute("servergroupclientlist", {sgid: sgid}, ["-names"])
+    }
+
+
+    /**
+     * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be added
+     * @param {number} sgid - The Server Group ID which the Client should be added to
+     * @returns {Promise.<object>}
+     */
+    serverGroupAddClient(cldbid, sgid) {
+        return this.execute("servergroupaddclient", {sgid: sgid, cldbid: cldbid})
+    }
+
+
+    /**
+     * Removes the client from the server group specified with sgid.
+     * @version 1.0
+     * @async
+     * @param {string} cldbid - The Client Database ID which should be removed
+     * @param {number} sgid - The Server Group ID which the Client should be removed from
+     * @returns {Promise.<object>}
+     */
+    serverGroupDelClient(cldbid, sgid) {
+        return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
+    }
+
+    
+    /** 
+     * Deletes the server group. If force is set to 1, the server group will be deleted even if there are clients within.
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @param {number} force - If set to 1 the ServerGroup will be deleted even when Clients are in it
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupDel(sgid, force = 0) {
+        return this.execute("servergroupdel", {sgid: sgid, force: force})
+    }
+
+    
+    /** 
+     * Creates a copy of the server group specified with ssgid. If tsgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tsgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
+     * @version 1.0 
+     * @async
+     * @param {number} ssgid - the source ServerGroup
+     * @param {number} [tsgid=0] - the target ServerGroup, 0 to create a new Group
+     * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
+     * @param {(string|boolean)} [name=false] - Name of the Group
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupCopy(ssgid, tsgid = 0, type = 1, name = false) {
+        var prop = {ssgid: ssgid, tsgid: tsgid, type: type}
+        if (typeof name === "string") prop.name = name
+        return this.execute("servergroupcopy", prop)
+    }
+
+    
+    /** 
+     * Changes the name of the server group
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @param {string} name - new name of the ServerGroup
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupRename(sgid, name) {
+        return this.execute("servergrouprename", {sgid: sgid, name: name})
+    }
+
+    
+    /** 
+     * Displays a list of permissions assigned to the server group specified with sgid. 
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupPermList(sgid, permsid = false) {
+        return this.execute("servergrouppermlist", {sgid: sgid}, [permsid ? "-permsid" : null]).then(super.toArray)
+    }
+
+    
+    /** 
+     * Adds a specified permissions to the server group. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {number} value - Value of the Permission
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @param {number} [skip=0] - Whether the skip flag should be set
+     * @param {number} [negate=0] - Whether the negate flag should be set
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupAddPerm(sgid, perm, value, permsid = false, skip = 0, negate = 0) {
+        var prop = {sgid: sgid}
+        prop[(permsid) ? "permsid": "permid"] = perm
+        prop.permvalue = value
+        prop.permskip = skip
+        prop.permnegated = negate
+        return this.execute("servergroupaddperm", prop)
+    }
+
+    
+    /** 
+     * Removes a set of specified permissions from the server group. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} sgid - the ServerGroup id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @returns {Promise.<object>}
+     */ 
+    serverGroupDelPerm(sgid, perm, permsid = false) {
+        var prop = {sgid: sgid}
+        prop[(permsid) ? "permsid" : "permid"] = perm
+        return this.execute("servergroupdelperm", prop)
+    }
+
+
+    /** 
+     * Creates a new channel using the given properties. Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
+     * @version 1.0 
+     * @async 
+     * @param {string} name - The Name of the Channel
+     * @param {object} [type={}] - Properties of the Channel
+     * @returns {Promise.<object>}
+     */ 
+    channelCreate(name, properties = {}) {
+        properties.channel_name = name
+        return this.execute("channelcreate", properties)
+        .then(r => {
+            return this.channelList({cid: r.cid})
+        }).then(c => {
+            return new Promise(fulfill => fulfill(c[0]))
         })
     }
 
@@ -635,6 +804,106 @@ class TeamSpeak3 extends EventEmitter {
                 .then(channel => fulfill(channel[0]))
                 .catch(reject)
         })
+    }
+
+    
+    /** 
+     * Displays detailed configuration information about a channel including ID, topic, description, etc.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @return {Promise.<object>} 
+     */ 
+    channelInfo(cid) {
+        return this.execute("channelinfo", {cid: cid})
+    }
+    
+    
+    /** 
+     * Moves a channel to a new parent channel with the ID cpid. If order is specified, the channel will be sorted right under the channel with the specified ID. If order is set to 0, the channel will be sorted right below the new parent.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {number} cpid - Channel Parent ID
+     * @param {number} [order=0] - Channel Sort Order
+     * @return {Promise.<object>}
+     */ 
+    channelMove(cid, cpid, order = 0) {
+        return this.execute("channelmove", {cid: cid, cpid: cpid, order: order})
+    }
+    
+    
+    /** 
+     * Deletes an existing channel by ID. If force is set to 1, the channel will be deleted even if there are clients within. The clients will be kicked to the default channel with an appropriate reason message.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
+     * @return {Promise.<object>}
+     */ 
+    channelDelete(cid, force = 0) {
+        return this.execute("channeldelete", {cid: cid, force: force})
+    }
+    
+    
+    /** 
+     * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {number} properties - The Properties of the Channel which should get changed
+     * @return {Promise.<object>}
+     */ 
+    channelEdit(cid, properties) {
+        properties.cid = cid
+        return this.execute("channeledit", properties)
+    }
+
+
+    /** 
+     * Displays a list of permissions defined for a channel.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {boolean} permsid - Whether the Perm SID should be displayed aswell
+     * @return {Promise.<object[]>}
+     */ 
+    channelPermList(cid, permsid = false) {
+        return this.execute("channelpermlist", {cid: cid}, (permsid) ? ["-permsid"] : null).then(this.toArray)
+    }
+    
+    
+    /** 
+     * Adds a set of specified permissions to a channel. Multiple permissions can be added by providing the two parameters of each permission. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {number} value - The Value which should be set
+     * @param {boolean} sid - If the given Perm is a permsid
+     * @return {Promise.<object>}
+     */ 
+    channelSetPerm(cid, perm, value, sid = false) {
+        var prop = {cid: cid}
+        prop[(sid) ? "permsid" : "permid"] = perm
+        prop.permvalue = value
+        return this.execute("channeladdperm", prop)
+    }
+    
+    
+    /** 
+     * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} cid - the channel id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {boolean} sid - If the given Perm is a permsid
+     * @return {Promise.<object>}
+     */ 
+    channelDelPerm(cid, perm, sid = false) {
+        var prop = {cid: cid}
+        prop[(sid) ? "permsid" : "permid"] = perm
+        return this.execute("channeldelperm", prop)
     }
 
 
@@ -699,6 +968,324 @@ class TeamSpeak3 extends EventEmitter {
                 .then(clients => fulfill(clients[0]))
                 .catch(reject)
         })
+    }
+
+
+    /**
+     * Returns General Info of the Client, requires the Client to be online
+     * @version 1.0
+     * @async
+     * @param {number} clid - the client id
+     * @returns {Promise.<object>} Promise with the Client Information
+     */
+    clientInfo(clid) {
+        return this.execute("clientinfo", {clid: clid})
+    }
+
+
+    /**
+     * Returns the Clients Database Info
+     * @version 1.0
+     * @async
+     * @param {number} dbid - the client database id
+     * @returns {Promise.<object>} Returns the Client Database Info
+     */
+    clientDBInfo(dbid) {
+        return this.execute("clientdbinfo", {cldbid: dbid})
+    }
+
+
+    /**
+     * Kicks the Client from the Server
+     * @version 1.0
+     * @async
+     * @param {number} clid - the client id
+     * @param {number} reasonid - the reasonid
+     * @param {string} msg - The Message the Client should receive when getting kicked
+     * @returns {Promise.<object>} Promise Object
+     */
+    clientKick(clid, reasonid, msg) {
+        return this.execute("clientkick", {clid: clid, reasonid: reasonid, reasonmsg: msg})
+    }
+
+
+    /**
+     * Moves the Client to a different Channel
+     * @version 1.0
+     * @async
+     * @param {number} clid - the client id
+     * @param {number} cid - Channel ID in which the Client should get moved
+     * @param {string} [cpw=""] - The Channel Password
+     * @returns {Promise.<object>} Promise Object
+     */
+    clientMove(clid, cid, cpw = "") {
+        return this.execute("clientmove", {clid: clid, cid: cid, cpw:cpw})
+    }
+
+
+    /**
+     * Pokes the Client with a certain message
+     * @version 1.0
+     * @async
+     * @param {number} clid - the client id
+     * @param {string} msg - The message the Client should receive
+     * @returns {Promise.<object>} Promise Object
+     */
+    clientPoke(clid, msg) {
+        return this.execute("clientpoke", {clid: clid, msg: msg})
+    }
+
+    
+    /** 
+     * Displays a list of permissions defined for a client
+     * @version 1.0 
+     * @async
+     * @param {number} dbid - the client database id
+     * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+     * @return {Promise.<object>} 
+     */ 
+    clientPermList(dbid, permsid = false) {
+        return this.execute("clientpermlist", {cldbid: dbid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
+    }
+
+    
+    /** 
+     * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} dbid - the client database id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {number} value - Value of the Permission
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @param {number} [skip=0] - Whether the skip flag should be set
+     * @param {number} [negate=0] - Whether the negate flag should be set
+     * @return {Promise.<object>} 
+     */ 
+    clientAddPerm(dbid, perm, value, permsid = false, skip = 0, negate = 0) {
+        var prop = {cldbid: dbid}
+        prop[(permsid) ? "permsid": "permid"] = perm
+        prop.permvalue = value
+        prop.permskip = skip
+        prop.permnegated = negate
+        return this.execute("clientaddperm", prop)
+    }
+
+    
+    /** 
+     * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
+     * @version 1.0 
+     * @async
+     * @param {number} dbid - the client database id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @return {Promise.<object>} 
+     */ 
+    clientDelPerm(dbid, perm, permsid = false) {
+        var prop = {cldbid: dbid}
+        prop[(permsid) ? "permsid" : "permid"] = perm
+        return this.execute("clientdelperm", prop)
+    }
+
+
+    /**
+     * Sends a text message a specified target. 
+     * The type of the target is determined by targetmode while target specifies the ID of the recipient, whether it be a virtual server, a channel or a client.
+     * @version 1.0
+     * @async
+     * @param {string} target - target to message
+     * @param {string} targetmode - targetmode (1: client, 2: channel, 3: server)
+     * @param {string} msg - The message the Client should receive
+     * @returns {Promise.<object>} Promise Object
+     */
+    sendTextMessage(target, targetmode, msg) {
+        return this.execute("sendtextmessage", {targetmode: targetmode, target: target, msg: msg})
+    }
+
+
+    /** 
+     * Retrieves a single ServerGroup by the given ServerGroup ID
+     * @version 1.0 
+     * @async 
+     * @param {number} sgid - the ServerGroup Id
+     * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
+     */ 
+    getServerGroupByID(sgid) {
+        return new Promise((fulfill, reject) => {
+            this.serverGroupList({sgid: sgid})
+                .then(groups => fulfill(groups[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Retrieves a single ServerGroup by the given ServerGroup Name
+     * @version 1.0 
+     * @async 
+     * @param {number} name - the ServerGroup name
+     * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
+     */ 
+    getServerGroupByName(name) {
+        return new Promise((fulfill, reject) => {
+            this.serverGroupList({name: name})
+                .then(groups => fulfill(groups[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Retrieves a single ChannelGroup by the given ChannelGroup ID
+     * @version 1.0 
+     * @async 
+     * @param {number} cgid - the ChannelGroup Id
+     * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
+     */ 
+    getChannelGroupByID(cgid) {
+        return new Promise((fulfill, reject) => {
+            this.channelGroupList({cgid: cgid})
+                .then(groups => fulfill(groups[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Retrieves a single ChannelGroup by the given ChannelGroup Name
+     * @version 1.0 
+     * @async 
+     * @param {number} name - the ChannelGroup name
+     * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
+     */ 
+    getChannelGroupByName(name) {
+        return new Promise((fulfill, reject) => {
+            this.channelGroupList({name: name})
+                .then(groups => fulfill(groups[0]))
+                .catch(reject)
+        })
+    }
+
+
+    /** 
+     * Sets the channel group of a client
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - The Channel Group which the Client should get assigned
+     * @param {number} cid - The Channel in which the Client should be assigned the Group
+     * @param {number} cldbid - The Client Database ID which should be added to the Group
+     * @return {Promise.<object>}
+     */ 
+    setClientChannelGroup(cgid, cid, cldbid) {
+        return this.execute("setclientchannelgroup", {cgid: cgid, cldbid: cldbid, cid: cid})
+    }
+
+    
+    /** 
+     * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
+     * @version 1.0 
+     * @async
+     * @param {cgid} cgid - the channelgroup id
+     * @param {number} [force=0] - If set to 1 the Channel Group will be deleted even when Clients are in it
+     * @return {Promise.<object>}
+     */ 
+    deleteChannelGroup(cgid, force = 0) {
+        return this.execute("channelgroupdel", {cgid: cgid, force: force})
+    }
+
+    
+    /** 
+     * Creates a copy of the channel group. If tcgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tcgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
+     * @version 1.0 
+     * @async
+     * @param {number} scgid - the source ChannelGroup
+     * @param {number} [tcgid=0] - the target ChannelGroup (0 to create a new Group)
+     * @param {number} [type] - The Type of the Group (0 = Template Group | 1 = Normal Group)
+     * @param {(string|boolean)} [name=false] - Name of the Group
+     * @return {Promise.<object>}
+     */ 
+    channelGroupCopy(scgid, tcgid = 0, type = 1, name = false) {
+        var prop = {scgid: scgid, tcgid: tcgid, type: type}
+        if (typeof name === "string") prop.name = name
+        return this.execute("channelgroupcopy", prop)
+    }
+
+    
+    /** 
+     * Changes the name of the channel group
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - the ChannelGroup id to rename
+     * @param {string} name - new name of the ChannelGroup
+     * @return {Promise.<object>}
+     */ 
+    channelGroupRename(cgid, name) {
+        return this.execute("channelgrouprename", {cgid: cgid, name: name})
+    }
+
+    
+    /** 
+     * Displays a list of permissions assigned to the channel group specified with cgid. 
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - the ChannelGroup id to list
+     * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+     * @return {Promise.<object[]>}
+     */ 
+    channelGroupPermList(cgid, permsid = false) {
+        return this.execute("channelgrouppermlist", {cgid: cgid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
+    }
+
+
+    /** 
+     * Adds a specified permissions to the channel group. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - the ChannelGroup id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {number} value - Value of the Permission
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @param {number} [skip=0] - Whether the skip flag should be set
+     * @param {number} [negate=0] - Whether the negate flag should be set
+     * @return {Promise.<object>}
+     */
+    channelGroupAddPerm(cgid, perm, value, permsid = false, skip = 0, negate = 0) {
+        var prop = {cgid: cgid}
+        prop[(permsid) ? "permsid": "permid"] = perm
+        prop.permvalue = value
+        prop.permskip = skip
+        prop.permnegated = negate
+        return this.execute("channelgroupaddperm", prop)
+    }
+
+    
+    /** 
+     * Removes a set of specified permissions from the channel group. A permission can be specified by permid or permsid.
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - the ChannelGroup id
+     * @param {(string|number)} perm - The permid or permsid
+     * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
+     * @return {Promise.<object>}
+     */ 
+    channelGroupDelPerm(cgid, perm, permsid = false) {
+        var prop = {cgid: cgid}
+        prop[(permsid) ? "permsid" : "permid"] = perm
+        return this.execute("channelgroupdelperm", prop)
+    }
+
+    
+    /** 
+     * Displays the IDs of all clients currently residing in the channel group.
+     * @version 1.0 
+     * @async
+     * @param {number} cgid - the ChannelGroup id
+     * @param {number} [cid] - The Channel ID
+     * @return {Promise.<TeamSpeakClient>}
+     */ 
+    channelGroupClientList(cgid, cid) {
+        var prop = {cgid: cgid}
+        if (typeof cid == "number") prop.cid = cid
+        return this.execute("channelgroupclientlist", prop)
     }
 
 
@@ -1066,32 +1653,6 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /**
-     * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
-     * @version 1.0
-     * @async
-     * @param {string} cldbid - The Client Database ID which should be added
-     * @param {string} sgid - The Server Group ID which the Client should be added to
-     * @returns {Promise.<object>}
-     */
-    serverGroupAddClient(cldbid, sgid) {
-        return this.execute("servergroupaddclient", {sgid: sgid, cldbid: cldbid})
-    }
-
-
-    /**
-     * Removes the client from the server group specified with sgid.
-     * @version 1.0
-     * @async
-     * @param {string} cldbid - The Client Database ID which should be removed
-     * @param {string} sgid - The Server Group ID which the Client should be removed from
-     * @returns {Promise.<object>}
-     */
-    serverGroupDelClient(cldbid, sgid) {
-        return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
-    }
-
-
     /** 
      * Displays a list of virtual servers including their ID, status, number of clients online, etc.
      * @version 1.0 
@@ -1367,7 +1928,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */ 
     static _filter(array, filter) {
-        return new Promise((fulfill, reject) => {
+        return new Promise(fulfill => {
             if (!Array.isArray(array)) array = [array]
             if (Object.keys(filter).length == 0) 
                 return fulfill(array)
@@ -1375,6 +1936,7 @@ class TeamSpeak3 extends EventEmitter {
                 for (var k in filter) {
                     if (!(k in a)) return false 
                     if (filter[k] instanceof RegExp) return a[k].match(filter[k])
+                    if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) >= 0
                     switch (typeof a[k]) { 
                         case "number": return a[k] == parseFloat(filter[k]) 
                         case "string": return a[k] == filter[k] 
@@ -1383,7 +1945,24 @@ class TeamSpeak3 extends EventEmitter {
                 } 
             }))
         }) 
-    } 
+    }
+
+
+    /** 
+     * Transforms an Input to an Array
+     * @async
+     * @version 1.0
+     * @returns {any[]}
+     */ 
+    toArray(input) {
+        return new Promise(fulfill => {
+            if (typeof input == "undefined" || input === null) return fulfill([])
+            if (!Array.isArray(input)) return fulfill([input])
+            fulfill(input)
+        })
+    }
+    
+    
 } 
 
 

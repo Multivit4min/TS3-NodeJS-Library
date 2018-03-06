@@ -16,7 +16,6 @@ const Abstract = require(__dirname+"/Abstract")
 class TeamSpeakServerGroup extends Abstract {
     /** 
      * Creates a TeamSpeak Server Group
-     * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
      * @param {object} c - This holds Basic ServerGroup Data
@@ -48,7 +47,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>}
      */ 
     del(force = 0) {
-        return super.execute("servergroupdel", {sgid: this._static.sgid, force: force})
+        return super.getParent().serverGroupDel(this._static.sgid, force)
     }
 
     
@@ -61,11 +60,8 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {(string|boolean)} [name=false] - Name of the Group
      * @returns {Promise.<object>}
      */ 
-    copy(tsgid = 0, type = 1, name = false) {
-        var prop = {ssgid: this._static.sgid, tsgid: tsgid, type: type}
-        if (typeof name === "string") 
-            prop.name = name
-        return super.execute("servergroupcopy", prop)
+    copy(tsgid, type, name) {
+        return super.getParent().serverGroupCopy(this._static.sgid, tsgid, type, name)
     }
 
     
@@ -77,7 +73,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>}
      */ 
     rename(name) {
-        return super.execute("servergrouprename", {sgid: this._static.sgid, name: name})
+        return super.getParent().serverGroupRename(this._static.sgid, name)
     }
 
     
@@ -88,9 +84,8 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
      * @returns {Promise.<object>}
      */ 
-    permList(permsid = false) {
-        return super.execute("servergrouppermlist", {sgid: this._static.sgid}, [(permsid) ? "-permsid" : null])
-			.then(super.toArray)
+    permList(permsid) {
+        return super.getParent().serverGroupPermList(this._static.sgid, permsid)
     }
 
     
@@ -105,13 +100,8 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {number} [negate=0] - Whether the negate flag should be set
      * @returns {Promise.<object>}
      */ 
-    addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {sgid: this._static.sgid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return super.execute("servergroupaddperm", prop)
+    addPerm(perm, value, permsid, skip, negate) {
+        return super.getParent().serverGroupAddPerm(this._static.sgid, perm, value, permsid, skip, negate)
     }
 
     
@@ -123,10 +113,8 @@ class TeamSpeakServerGroup extends Abstract {
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @returns {Promise.<object>}
      */ 
-    delPerm(perm, permsid = false) {
-        var prop = {sgid: this._static.sgid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return super.execute("servergroupdelperm", prop)
+    delPerm(perm, permsid) {
+        return super.getParent().serverGroupDelPerm(this._static.sgid, perm, permsid)
     }
 
     
@@ -138,7 +126,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>}
      */ 
     addClient(cldbid) {
-        return super.execute("servergroupaddclient", {sgid: this._static.sgid, cldbid: cldbid})
+        return super.getParent().serverGroupAddClient(cldbid, this._static.sgid)
     }
 
     
@@ -150,7 +138,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>}
      */ 
     delClient(cldbid) {
-        return super.execute("servergroupdelclient", {sgid: this._static.sgid, cldbid: cldbid})
+        return super.getParent().serverGroupDelClient(cldbid, this._static.sgid)
     }
 
     
@@ -161,7 +149,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>}
      */ 
     clientList() {
-        return super.execute("servergroupclientlist", {sgid: this._static.sgid}, ["-names"])
+        return super.getParent().serverGroupClientList(this._static.sgid)
     }
 
 

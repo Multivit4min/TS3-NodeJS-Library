@@ -16,7 +16,6 @@ const Promise = require("bluebird")
 class TeamSpeakServer extends Abstract {
     /** 
      * Creates a TeamSpeak Server
-     * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
      * @param {object} s - This holds Basic ServerGroup Data
@@ -36,7 +35,7 @@ class TeamSpeakServer extends Abstract {
      * @returns {Promise.<object>}
      */ 
     use() {
-        return this.getParent().useBySid(this._static.sid)
+        return super.getParent().useBySid(this._static.sid)
     }
 
 
@@ -58,7 +57,7 @@ class TeamSpeakServer extends Abstract {
      * @returns {Promise.<object>}
      */ 
     del() {
-        return super.execute("serverdelete", {sid: this._static.sid})
+        return super.getParent().serverDelete(this._static.sid)
     }
 
     
@@ -69,7 +68,7 @@ class TeamSpeakServer extends Abstract {
      * @returns {Promise.<object>}
      */ 
     start() {
-        return super.execute("serverstart", {sid: this._static.sid})
+        return super.getParent().serverStart(this._static.sid)
     }
 
     
@@ -80,7 +79,7 @@ class TeamSpeakServer extends Abstract {
      * @returns {Promise.<object>}
      */ 
     stop() {
-        return super.execute("serverstop", {sid: this._static.sid})
+        return super.getParent().serverStop(this._static.sid)
     }
 
     

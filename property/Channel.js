@@ -16,7 +16,6 @@ const Abstract = require(__dirname+"/Abstract")
 class TeamSpeakChannel extends Abstract {
     /** 
      * Creates a TeamSpeak Channel
-     * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
      * @param {object} c - This holds Basic Channel Data received by the Channel List Command
@@ -37,7 +36,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object>} 
      */ 
     getInfo() {
-        return super.execute("channelinfo", {cid: this._static.cid}, true)
+        return super.getParent().channelInfo(this._static.cid)
     }
     
     
@@ -46,11 +45,11 @@ class TeamSpeakChannel extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} cpid - Channel Parent ID
-     * @param {number} [order] - Channel Sort Order
+     * @param {number} [order=0] - Channel Sort Order
      * @return {Promise.<object>}
      */ 
     move(cpid, order = 0) {
-        return super.execute("channelmove", {cid: this._static.cid, cpid: cpid, order: order})
+        return super.getParent().channelMove(this._static.cid, cpid, order)
     }
     
     
@@ -62,7 +61,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object>}
      */ 
     del(force = 0) {
-        return super.execute("channeldelete", {cid: this._static.cid, force: force})
+        return super.getParent().channelMove(this._static.cid, force)
     }
     
     
@@ -74,8 +73,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object>}
      */ 
     edit(properties) {
-        properties.cid = this._static.cid
-        return super.execute("channeledit", properties)
+        return super.getParent().channelMove(this._static.cid, properties)
     }
     
     
@@ -87,8 +85,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object[]>}
      */ 
     permList(permsid = false) {     
-        return super.execute("channelpermlist", {cid: this._static.cid}, (permsid) ? ["-permsid"] : null)
-			.then(super.toArray)
+        return super.getParent().channelPermList(this._static.cid, permsid)
     }
     
     
@@ -102,10 +99,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object>}
      */ 
     setPerm(perm, value, sid = false) {
-        var prop = {cid: this._static.cid}
-        prop[(sid) ? "permsid" : "permid"] = perm
-        prop.permvalue = value
-        return super.execute("channeladdperm", prop)
+        return super.getParent().channelSetPerm(this._static.cid, perm, value, sid)
     }
     
     
@@ -118,9 +112,7 @@ class TeamSpeakChannel extends Abstract {
      * @return {Promise.<object>}
      */ 
     delPerm(perm, sid = false) {
-        var prop = {cid: this._static.cid}
-        prop[(sid) ? "permsid" : "permid"] = perm
-        return super.execute("channeldelperm", prop)
+        return super.getParent().channelDelPerm(this._static.cid, perm, sid)
     }
     
     

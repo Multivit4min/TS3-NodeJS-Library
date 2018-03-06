@@ -17,7 +17,6 @@ const EventEmitter = require("events")
  class Abstract extends EventEmitter { 
     /** 
      * Creates a new Abstract Class
-     * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance 
      * @param {object} c - The Properties
@@ -189,21 +188,6 @@ const EventEmitter = require("events")
      */ 
     getParent() {
         return this._parent
-    }
-
-
-    /** 
-     * Transforms an Input to an Array
-     * @async
-     * @version 1.0
-     * @returns {any[]}
-     */ 
-    toArray(input) {
-        return new Promise(fulfill => {
-            if (typeof input == "undefined" || input === null) return fulfill([])
-            if (!Array.isArray(input)) return fulfill([input])
-            fulfill(input)
-        })
     }
 
 } 

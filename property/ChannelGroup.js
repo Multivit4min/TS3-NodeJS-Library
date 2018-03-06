@@ -16,7 +16,6 @@ const Abstract = require(__dirname+"/Abstract")
 class TeamSpeakChannelGroup extends Abstract {
     /** 
      * Creates a TeamSpeak Channel Group
-     * @constructor 
      * @version 1.0 
      * @param {object} parent - The Parent Object which is a TeamSpeak Instance
      * @param {object} c - This holds Basic ServerGroup Data
@@ -34,11 +33,11 @@ class TeamSpeakChannelGroup extends Abstract {
      * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
      * @version 1.0 
      * @async
-     * @param {number} force - If set to 1 the Channel Group will be deleted even when Clients are in it
+     * @param {number} [force=0] - If set to 1 the Channel Group will be deleted even when Clients are in it
      * @return {Promise.<object>}
      */ 
-    del(force = 0) {
-        return super.execute("channelgroupdel", {cgid: this._static.cgid, force: force})
+    del(force) {
+        return super.getParent().deleteChannelGroup(this._static.cgid, force)
     }
 
     
@@ -51,11 +50,8 @@ class TeamSpeakChannelGroup extends Abstract {
      * @param {(string|boolean)} [name=false] - Name of the Group
      * @return {Promise.<object>}
      */ 
-    copy(tcgid = 0, type = 1, name = false) {
-        var prop = {scgid: this._static.cgid, tcgid: tcgid, type: type}
-        if (typeof name === "string") 
-            prop.name = name
-        return super.execute("channelgroupcopy", prop)
+    copy(tcgid, type, name) {
+        return super.getParent().channelGroupCopy(this._static.cgid, tcgid, type, name)
     }
 
     
@@ -67,7 +63,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @return {Promise.<object>}
      */ 
     rename(name) {
-        return super.execute("channelgrouprename", {cgid: this._static.cgid, name: name})
+        return super.getParent().channelGroupRename(this._static.cgid, name)
     }
 
     
@@ -79,8 +75,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @return {Promise.<object[]>}
      */ 
     permList(permsid = false) {
-        return super.execute("channelgrouppermlist", {cgid: this._static.cgid}, [(permsid) ? "-permsid" : null])
-        .then(super.toArray)
+        return super.getParent().channelGroupPermList(this._static.cgid, permsid)
     }
 
 
@@ -96,12 +91,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @return {Promise.<object>}
      */ 
     addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {cgid: this._static.cgid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return super.execute("channelgroupaddperm", prop)
+        return super.getParent().channelGroupAddPerm(this._static.cgid, perm, value, permsid, skip, negate)
     }
 
     
@@ -114,9 +104,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @return {Promise.<object>}
      */ 
     delPerm(perm, permsid = false) {
-        var prop = {cgid: this._static.cgid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return super.execute("channelgroupdelperm", prop)
+        return super.getParent().channelGroupDelPerm(this._static.cgid, perm, permsid)
     }
 
 
@@ -129,7 +117,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @return {Promise.<object>}
      */ 
     setClient(cid, cldbid) {
-        return super.execute("setclientchannelgroup", {cgid: this._static.cgid, cldbid: cldbid, cid: cid})
+        return super.getParent().setClientChannelGroup(this._static.cgid, cid, cldbid)
     }
 
     
@@ -138,14 +126,10 @@ class TeamSpeakChannelGroup extends Abstract {
      * @version 1.0 
      * @async
      * @param {number} [cid] - The Channel ID
-     * @param {number} [cldbid] - The Channel ID
-     * @return {Promise.<TeamSpeakClient>}
+     * @return {Promise.<object>}
      */ 
-    clientList(cid, cldbid) {
-        var prop = {cgid: this._static.cgid}
-        if (typeof cid == "number") prop.cid = cid
-        if (typeof cldbid == "number") prop.cldbid = cldbid
-        return super.execute("channelgroupclientlist", prop)
+    clientList(cid) {
+        return super.getParent().channelGroupClientList(this._static.cgid, cid, cldbid)
     }
 
 
