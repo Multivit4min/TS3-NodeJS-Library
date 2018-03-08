@@ -25,7 +25,7 @@ You can find all necessary documentation [here](https://github.com/Multivit4min/
 
 Send a message to all non Query Clients connected:
 ```javascript
-const TeamSpeak3 = require(__dirname+"/TS3-NodeJS-Library/TeamSpeak3")
+const TeamSpeak3 = require("ts3-nodejs-library")
 
 //Create a new Connection
 var ts3 = new TeamSpeak3({
