@@ -46,24 +46,21 @@ class TeamSpeak3 extends EventEmitter {
      * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated 
      * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms) 
      * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive 
-     */ 
-    constructor(config = {}) { 
+     */
+    constructor(config = {}) {
         super()
-        this._config = { 
-            host: config.host || "127.0.0.1", 
-            queryport: parseInt(config.queryport) || 10011, 
-            serverport: parseInt(config.serverport) || false, 
-            username: config.username || false, 
-            password: config.password || false, 
-            nickname: config.nickname || false, 
-            antispam: Boolean(config.antispam), 
-            antispamtimer: parseInt(config.antispamtimer) || 350, 
-            keepalive: Boolean(config.keepalive),
-<<<<<<< HEAD
+        this._config = {
+            host: config.host || "127.0.0.1",
+            queryport: parseInt(config.queryport) || 10011,
+            serverport: parseInt(config.serverport) || false,
+            username: config.username || false,
+            password: config.password || false,
+            nickname: config.nickname || false,
+            antispam: Boolean(config.antispam),
+            antispamtimer: parseInt(config.antispamtimer) || 350,
+            keepalive: Boolean(config.keepalive)
         }
-=======
-        } 
->>>>>>> 240fbe5666133441e7ed5e8cf848317888bdabf6
+
         this._clients = {}
         this._channels = {}
         this._servergroups = {}
