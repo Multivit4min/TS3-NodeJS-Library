@@ -1,10 +1,14 @@
 # TS3-NodeJS-Library
 
-The TS3 NodeJS Library (name is subject to change) has been strongly influenced by [PlanetTeamSpeaks TS3 PHP 
+The TS3 NodeJS Library (name is subject to change) has been strongly influenced by [PlanetTeamSpeaks TS3 PHP
 Framework](https://docs.planetteamspeak.com/ts3/php/framework/index.html)
-
-Currently there is no NPM Repository for this Project
 <br/><br/>
+
+##### Install
+----
+`npm install ts3-nodejs-library`
+<br/><br/>
+
 ##### TODO
 ----
 * File upload
@@ -53,3 +57,5 @@ ts3.on("ready", () => {
 ts3.on("error", e => console.log("Error", e))
 ts3.on("close", e => console.log("Connection has been closed!", e))
 ```
+
+

@@ -1,11 +1,19 @@
 {
   "name": "ts3-nodejs-library",
   "version": "1.0.0",
-  "description": "",
-  "main": "TeamSpeak3.js",
+  "description": "TeamSpeak3 Query API",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Multivit4min/TS3-NodeJS-Library.git"
+  },
+  "keywords": [
+    "teamspeak",
+    "ts3"
+  ],
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "GPLv3",
   "dependencies": {
