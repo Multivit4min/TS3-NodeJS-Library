@@ -59,7 +59,11 @@ class TeamSpeak3 extends EventEmitter {
             antispam: Boolean(config.antispam), 
             antispamtimer: parseInt(config.antispamtimer) || 350, 
             keepalive: Boolean(config.keepalive),
+<<<<<<< HEAD
         }
+=======
+        } 
+>>>>>>> 240fbe5666133441e7ed5e8cf848317888bdabf6
         this._clients = {}
         this._channels = {}
         this._servergroups = {}
