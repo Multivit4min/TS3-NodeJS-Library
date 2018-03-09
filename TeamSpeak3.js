@@ -584,7 +584,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} sid - the server id
      * @returns {Promise.<object>}
      */ 
-    serverStop() {
+    serverStop(sid) {
         return this.execute("serverstop", {sid: sid})
     }
 
@@ -697,7 +697,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */ 
     serverGroupPermList(sgid, permsid = false) {
-        return this.execute("servergrouppermlist", {sgid: sgid}, [permsid ? "-permsid" : null]).then(super.toArray)
+        return this.execute("servergrouppermlist", {sgid: sgid}, [permsid ? "-permsid" : null]).then(this.toArray)
     }
 
     
@@ -1822,11 +1822,11 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} name - The Name of the Icon to retrieve
      * @returns {Promise.<object>}
      */
-    getIcon(name) {
+    downloadIcon(name) {
         return new Promise((fulfill, reject) => {
             return this.ftInitDownload({name: "/"+name})
                 .then(res => {
-                    if (res.size == 0) return reject(res.msg)
+                    if (res.size == 0) return reject(new Error(res.msg))
                     new FileTransfer(this._config.host, res.port)
                         .download(res.ftkey, res.size)
                         .then(fulfill)
@@ -1845,14 +1845,15 @@ class TeamSpeak3 extends EventEmitter {
      */
     getIconName(permlist) {
         return new Promise((fulfill, reject) => {
-            return permlist.then(perms => {
-                perms.some(perm => {
-                    if (perm.permsid === "i_icon_id")
+            permlist.then(perms => {
+                var found = perms.some(perm => {
+                    if (perm.permsid === "i_icon_id") {
                         fulfill("icon_"+((perm.permvalue < 0) ? perm.permvalue>>>0 : perm.permvalue))
-                    return (perm.permsid === "i_icon_id")
+                        return true
+                    }
                 })
-                reject("No Icon found!")
-            }).catch(reject)
+                if (!found) reject(new Error("no icon found"))
+            })
         })
     }
 

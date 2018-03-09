@@ -161,7 +161,7 @@ class TeamSpeakServerGroup extends Abstract {
      * @returns {Promise.<object>} Promise with the binary data of the ServerGroup Icon
      */
     getIcon() {
-        return this.getIconName().then(name => super.getParent().getIcon(name))
+        return this.getIconName().then(name => super.getParent().downloadIcon(name))
     }
 
 

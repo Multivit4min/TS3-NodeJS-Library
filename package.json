@@ -1,6 +1,6 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "1.0.0a",
+  "version": "1.0.1",
   "description": "TeamSpeak3 Query API",
   "main": "index.js",
   "scripts": {

@@ -141,7 +141,7 @@ class TeamSpeakChannelGroup extends Abstract {
      * @returns {Promise.<object>} Promise with the binary data of the ChannelGroup Icon
      */
     getIcon() {
-        return this.getIconName().then(name => super.getParent().getIcon(name))
+        return this.getIconName().then(name => super.getParent().downloadIcon(name))
     }
 
 
