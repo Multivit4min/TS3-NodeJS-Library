@@ -1,10 +1,10 @@
-/** 
+/**
  * @file TeamSpeak3.js
  * @ignore
  * @copyright David Kartnaller 2017
- * @license GNU GPLv3 
+ * @license GNU GPLv3
  * @author David Kartnaller <david.kartnaller@gmail.com>
- */ 
+ */
 
 const TS3Query = require(__dirname+"/transport/TS3Query")
 const FileTransfer = require(__dirname+"/transport/FileTransfer")
@@ -14,7 +14,7 @@ const TeamSpeakServer = require(__dirname+"/property/Server")
 const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup")
 const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup")
 
-const Promise = require("bluebird") 
+const Promise = require("bluebird")
 const EventEmitter = require("events")
 
 /**
@@ -32,20 +32,20 @@ const EventEmitter = require("events")
  * @fires TeamSpeak3#clientdisconnect
  * @fires TeamSpeak3#clientconnect
  */
-class TeamSpeak3 extends EventEmitter { 
-    /** 
+class TeamSpeak3 extends EventEmitter {
+    /**
      * Represents a TeamSpeak Server Instance
-     * @version 1.0 
-     * @param {object} [config] - The Configuration Object 
+     * @version 1.0
+     * @param {object} [config] - The Configuration Object
      * @param {string} [config.host=127.0.0.1] - The Host on which the TeamSpeak Server runs
      * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs
      * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs
-     * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server 
-     * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server 
-     * @param {string} [config.nickname] - The Nickname the Client should have 
-     * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated 
-     * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms) 
-     * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive 
+     * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server
+     * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server
+     * @param {string} [config.nickname] - The Nickname the Client should have
+     * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated
+     * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms)
+     * @param {boolean} [config.keepalive=true] - Whether the Query should seen a keepalive
      */
     constructor(config = {}) {
         super()
@@ -67,9 +67,9 @@ class TeamSpeak3 extends EventEmitter {
         this._channelgroups = {}
         this._servers = {}
 
-        this._ts3 = new TS3Query(this._config.host, this._config.queryport) 
-        if (this._config.keepalive) this._ts3.keepAlive() 
-        if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer) 
+        this._ts3 = new TS3Query(this._config.host, this._config.queryport)
+        if (this._config.keepalive) this._ts3.keepAlive()
+        if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer)
 
         this._ts3.on("cliententerview", this._evcliententerview.bind(this))
         this._ts3.on("clientleftview", this._evclientleftview.bind(this))
@@ -82,12 +82,12 @@ class TeamSpeak3 extends EventEmitter {
         this._ts3.on("textmessage", this._evtextmessage.bind(this))
 
         this._ts3.on("connect", () => {
-            var exec = [] 
-            if (typeof this._config.username == "string") 
+            var exec = []
+            if (typeof this._config.username == "string")
                 exec.push(this.login(this._config.username, this._config.password))
-            if (typeof this._config.serverport == "number") 
+            if (typeof this._config.serverport == "number")
                 exec.push(this.useByPort(this._config.serverport))
-            if (typeof this._config.nickname == "string") 
+            if (typeof this._config.nickname == "string")
                 exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
             Promise.all(exec)
                 /**
@@ -105,11 +105,11 @@ class TeamSpeak3 extends EventEmitter {
                  *
                  * @event TeamSpeak3#error
                  * @memberof  TeamSpeak3
-                 * @returns {object} - return the error object 
+                 * @returns {object} - return the error object
                  */
                 .catch(e => super.emit("error", e))
         })
-        
+
 
         /**
          * Query Close Event
@@ -118,7 +118,7 @@ class TeamSpeak3 extends EventEmitter {
          * @event TeamSpeak3#close
          * @memberof TeamSpeak3
          * @type {object}
-         * @returns {object} - may return an error object 
+         * @returns {object} - may return an error object
          */
         this._ts3.on("close", e => super.emit("close", e))
     }
@@ -135,7 +135,7 @@ class TeamSpeak3 extends EventEmitter {
         var raw = arguments[0]
         this._clients[raw.clid] = new TeamSpeakClient(this, raw)
         super.emit("clientconnect", {
-            client: this._clients[String(raw.clid)], 
+            client: this._clients[String(raw.clid)],
             cid: raw.ctid
         })
     }
@@ -153,7 +153,7 @@ class TeamSpeak3 extends EventEmitter {
     _evclientleftview() {
         var raw = arguments[0]
         super.emit("clientdisconnect", {
-            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : {clid: raw.clid}, 
+            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : {clid: raw.clid},
             event: raw
         })
         delete this._clients[String(raw.clid)]
@@ -175,8 +175,8 @@ class TeamSpeak3 extends EventEmitter {
         this.getClientByID(ev.invokerid)
         .then(c => {
             super.emit("textmessage", {
-                invoker: c, 
-                msg: ev.msg, 
+                invoker: c,
+                msg: ev.msg,
                 targetmode: ev.targetmode
             })
         }).catch(e => super.emit("error", e))
@@ -297,7 +297,7 @@ class TeamSpeak3 extends EventEmitter {
             this.getChannelByID(args.cid),
             this.getChannelByID(args.cpid)
         ]).then(res => this.emit("channelmoved", {
-            invoker: res[0], 
+            invoker: res[0],
             channel: res[1],
             parent: res[2]
         })).catch(e => this.emit("error", e))
@@ -321,64 +321,64 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Sends a command to the TeamSpeak Server.
-     * @version 1.0 
-     * @async 
-     * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
-     * @param {object} [Object] - Optional the Parameters 
-     * @param {object} [Array] - Optional Flagwords 
-     * @returns {Promise<object>} Promise object which returns the Information about the Query executed 
-     */ 
-    execute() { 
-        return this._ts3.execute(...arguments) 
+     * @version 1.0
+     * @async
+     * @param {string} Command - The Command which should get executed on the TeamSpeak Server
+     * @param {object} [Object] - Optional the Parameters
+     * @param {object} [Array] - Optional Flagwords
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed
+     */
+    execute() {
+        return this._ts3.execute(...arguments)
     }
 
 
-    /** 
+    /**
      * Change your ServerQuery clients settings using given properties.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} properties - The Properties which should be changed
      * @returns {Promise.<object>}
      */
-    clientUpdate(properties) { 
-        return this.execute("clientupdate", properties) 
+    clientUpdate(properties) {
+        return this.execute("clientupdate", properties)
     }
 
 
-    /** 
-     * Subscribes to an Event. 
-     * @version 1.0 
-     * @async 
-     * @param {string} event - The Event on which should be subscribed 
-     * @param {number} [id] - The Channel ID 
+    /**
+     * Subscribes to an Event.
+     * @version 1.0
+     * @async
+     * @param {string} event - The Event on which should be subscribed
+     * @param {number} [id] - The Channel ID
      * @returns {Promise.<object>}
      */
     registerEvent(event, id = false) {
         var arg = {event: event}
         if (id !== false) arg.id = id
-        return this.execute("servernotifyregister", arg) 
+        return this.execute("servernotifyregister", arg)
     }
 
 
-    /** 
+    /**
      * Authenticates with the TeamSpeak 3 Server instance using given ServerQuery login credentials.
-     * @version 1.0 
-     * @async 
-     * @param {string} username - The Username which you want to login with 
+     * @version 1.0
+     * @async
+     * @param {string} username - The Username which you want to login with
      * @param {string} password - The Password you want to login with
      * @returns {Promise.<object>}
      */
     login(username, password) {
-        return this.execute("login", [username, password]) 
+        return this.execute("login", [username, password])
     }
 
 
-    /** 
+    /**
      * Deselects the active virtual server and logs out from the server instance.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
      */
     logout() {
@@ -386,162 +386,165 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Displays the servers version information including platform and build number.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    version() { 
-        return this.execute("version") 
+     */
+    version() {
+        return this.execute("version")
     }
 
 
-    /** 
+    /**
      * Displays detailed connection information about the server instance including uptime, number of virtual servers online, traffic information, etc.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    hostInfo() { 
-        return this.execute("hostinfo") 
+     */
+    hostInfo() {
+        return this.execute("hostinfo")
     }
 
 
-    /** 
+    /**
      * Displays the server instance configuration including database revision number, the file transfer port, default group IDs, etc.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    instanceInfo() { 
-        return this.execute("instanceinfo") 
+     */
+    instanceInfo() {
+        return this.execute("instanceinfo")
     }
 
 
-    /** 
+    /**
      * Changes the server instance configuration using given properties.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {object} properties - The stuff you want to change
      * @returns {Promise.<object>}
-     */ 
-    instanceEdit(properties) { 
-        return this.execute("instanceedit", properties) 
+     */
+    instanceEdit(properties) {
+        return this.execute("instanceedit", properties)
     }
 
 
-    /** 
+    /**
      * Displays a list of IP addresses used by the server instance on multi-homed machines.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    bindingList() { 
-        return this.execute("bindinglist") 
+     */
+    bindingList() {
+        return this.execute("bindinglist")
     }
 
 
-    /** 
+    /**
      * Selects the virtual server specified with the port to allow further interaction.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} port - The Port the Server runs on
      * @returns {Promise.<object>}
-     */ 
-    useByPort(port) { 
+     */
+    useByPort(port) {
         return this._cacheCleanUp(this.execute("use", {port: port}))
     }
 
 
-    /** 
+    /**
      * Selects the virtual server specified with the sid to allow further interaction.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sid - The Server ID
      * @returns {Promise.<object>}
-     */ 
-    useBySid(sid) { 
+     */
+    useBySid(sid) {
         return this._cacheCleanUp(this.execute("use", [sid]))
     }
 
 
-    /** 
+    /**
      * Displays information about your current ServerQuery connection including your loginname, etc.
-     * @version 1.0 
-     * @async 
-     * @returns {Promise<object>} Promise object which provides the Information about the QueryClient 
-     */ 
-    whoami() { 
-        return this.execute("whoami") 
+     * @version 1.0
+     * @async
+     * @returns {Promise<object>} Promise object which provides the Information about the QueryClient
+     */
+    whoami() {
+        return this.execute("whoami")
     }
 
 
-    /** 
+    /**
      * Displays detailed configuration information about the selected virtual server including unique ID, number of clients online, configuration, etc.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
      */ 
     serverInfo() { 
         return this.execute("serverinfo") 
+     */
+    serverInfo() {
+        return this.execute("serverinfo")
     }
 
 
-    /** 
+    /**
      * Displays the database ID of the virtual server running on the UDP port
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} port - The Server Port where data should be retrieved
      * @returns {Promise.<object>}
-     */ 
-    serverIdGetByPort(port) { 
-        return this.execute("serveridgetbyport", {virtualserver_port: port}) 
+     */
+    serverIdGetByPort(port) {
+        return this.execute("serveridgetbyport", {virtualserver_port: port})
     }
 
 
-    /** 
+    /**
      * Changes the selected virtual servers configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {object} properties - The Server Settings which should be changed
      * @returns {Promise.<object>}
-     */ 
-    serverEdit(properties) { 
-        return this.execute("serveredit", properties) 
+     */
+    serverEdit(properties) {
+        return this.execute("serveredit", properties)
     }
 
 
-    /** 
+    /**
      * Stops the entire TeamSpeak 3 Server instance by shutting down the process.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
+     */
     serverProcessStop() {
-        return this.execute("serverprocessstop") 
+        return this.execute("serverprocessstop")
     }
 
 
-    /** 
+    /**
      * Displays detailed connection information about the selected virtual server including uptime, traffic information, etc.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    connectionInfo() { 
-        return this.execute("serverrequestconnectioninfo") 
+     */
+    connectionInfo() {
+        return this.execute("serverrequestconnectioninfo")
     }
 
 
-    /** 
+    /**
      * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key. If virtualserver_port is not specified, the server will test for the first unused UDP port
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {object} properties - The Server Settings
      * @returns {Promise.<object>} returns the server admin token for the new server and the response from the server creation
-     */ 
-    serverCreate(properties) { 
+     */
+    serverCreate(properties) {
         var token = ""
         return this.execute("servercreate", properties)
         .then(res => {
@@ -553,51 +556,51 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Deletes a Server.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sid - the server id
      * @returns {Promise.<object>}
-     */ 
+     */
     serverDelete(sid) {
         return this.execute("serverdelete", {sid: sid})
     }
 
-    
-    /** 
+
+    /**
      * Starts the virtual server. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sid - the server id
      * @returns {Promise.<object>}
-     */ 
+     */
     serverStart(sid) {
         return this.execute("serverstart", {sid: sid})
     }
 
-    
-    /** 
+
+    /**
      * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sid - the server id
      * @returns {Promise.<object>}
-     */ 
+     */
     serverStop(sid) {
         return this.execute("serverstop", {sid: sid})
     }
 
 
-    /** 
+    /**
      * Creates a new server group using the name specified with name. The optional type parameter can be used to create ServerQuery groups and template groups.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} name - The Name of the Server Group
      * @param {number} [type=1] - Type of the Server Group
      * @returns {Promise.<object>}
-     */ 
-    serverGroupCreate(name, type = 1) { 
+     */
+    serverGroupCreate(name, type = 1) {
         return this.execute("servergroupadd", {name: name, type: type})
         .then(r => {
             return this.serverGroupList({sgid: r.sgid})
@@ -606,14 +609,14 @@ class TeamSpeak3 extends EventEmitter {
         })
     }
 
-    
-    /** 
+
+    /**
      * Displays the IDs of all clients currently residing in the server group.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupClientList(sgid) {
         return this.execute("servergroupclientlist", {sgid: sgid}, ["-names"])
     }
@@ -644,66 +647,66 @@ class TeamSpeak3 extends EventEmitter {
         return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
     }
 
-    
-    /** 
+
+    /**
      * Deletes the server group. If force is set to 1, the server group will be deleted even if there are clients within.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @param {number} force - If set to 1 the ServerGroup will be deleted even when Clients are in it
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupDel(sgid, force = 0) {
         return this.execute("servergroupdel", {sgid: sgid, force: force})
     }
 
-    
-    /** 
+
+    /**
      * Creates a copy of the server group specified with ssgid. If tsgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tsgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} ssgid - the source ServerGroup
      * @param {number} [tsgid=0] - the target ServerGroup, 0 to create a new Group
      * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
      * @param {(string|boolean)} [name=false] - Name of the Group
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupCopy(ssgid, tsgid = 0, type = 1, name = false) {
         var prop = {ssgid: ssgid, tsgid: tsgid, type: type}
         if (typeof name === "string") prop.name = name
         return this.execute("servergroupcopy", prop)
     }
 
-    
-    /** 
+
+    /**
      * Changes the name of the server group
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @param {string} name - new name of the ServerGroup
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupRename(sgid, name) {
         return this.execute("servergrouprename", {sgid: sgid, name: name})
     }
 
-    
-    /** 
-     * Displays a list of permissions assigned to the server group specified with sgid. 
-     * @version 1.0 
+
+    /**
+     * Displays a list of permissions assigned to the server group specified with sgid.
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupPermList(sgid, permsid = false) {
         return this.execute("servergrouppermlist", {sgid: sgid}, [permsid ? "-permsid" : null]).then(this.toArray)
     }
 
-    
-    /** 
+
+    /**
      * Adds a specified permissions to the server group. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @param {(string|number)} perm - The permid or permsid
@@ -712,7 +715,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupAddPerm(sgid, perm, value, permsid = false, skip = 0, negate = 0) {
         var prop = {sgid: sgid}
         prop[(permsid) ? "permsid": "permid"] = perm
@@ -722,16 +725,16 @@ class TeamSpeak3 extends EventEmitter {
         return this.execute("servergroupaddperm", prop)
     }
 
-    
-    /** 
+
+    /**
      * Removes a set of specified permissions from the server group. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @returns {Promise.<object>}
-     */ 
+     */
     serverGroupDelPerm(sgid, perm, permsid = false) {
         var prop = {sgid: sgid}
         prop[(permsid) ? "permsid" : "permid"] = perm
@@ -739,14 +742,14 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Creates a new channel using the given properties. Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} name - The Name of the Channel
      * @param {object} [type={}] - Properties of the Channel
      * @returns {Promise.<object>}
-     */ 
+     */
     channelCreate(name, properties = {}) {
         properties.channel_name = name
         return this.execute("channelcreate", properties)
@@ -758,15 +761,15 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Creates a new channel group using a given name. The optional type parameter can be used to create ServerQuery groups and template groups.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} name - The Name of the Channel Group
      * @param {number} [type=1] - Type of the Channel Group
      * @returns {Promise.<object>}
-     */ 
-    channelGroupCreate(name, type = 1) { 
+     */
+    channelGroupCreate(name, type = 1) {
         return this.execute("channelgroupadd", {name: name, type: type})
         .then(r => {
             return this.channelGroupList({cgid: r.cgid})
@@ -776,13 +779,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Channel by the given Channel ID
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} cid - The Channel Id
      * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
-     */ 
+     */
     getChannelByID(cid) {
         return new Promise((fulfill, reject) => {
             this.channelList({cid: cid})
@@ -792,13 +795,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Channel by the given Channel Name
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} name - The Name of the Channel
      * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
-     */ 
+     */
     getChannelByName(name) {
         return new Promise((fulfill, reject) => {
             this.channelList({channel_name: name})
@@ -807,100 +810,100 @@ class TeamSpeak3 extends EventEmitter {
         })
     }
 
-    
-    /** 
+
+    /**
      * Displays detailed configuration information about a channel including ID, topic, description, etc.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     channelInfo(cid) {
         return this.execute("channelinfo", {cid: cid})
     }
-    
-    
-    /** 
+
+
+    /**
      * Moves a channel to a new parent channel with the ID cpid. If order is specified, the channel will be sorted right under the channel with the specified ID. If order is set to 0, the channel will be sorted right below the new parent.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {number} cpid - Channel Parent ID
      * @param {number} [order=0] - Channel Sort Order
      * @return {Promise.<object>}
-     */ 
+     */
     channelMove(cid, cpid, order = 0) {
         return this.execute("channelmove", {cid: cid, cpid: cpid, order: order})
     }
-    
-    
-    /** 
+
+
+    /**
      * Deletes an existing channel by ID. If force is set to 1, the channel will be deleted even if there are clients within. The clients will be kicked to the default channel with an appropriate reason message.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
      * @return {Promise.<object>}
-     */ 
+     */
     channelDelete(cid, force = 0) {
         return this.execute("channeldelete", {cid: cid, force: force})
     }
-    
-    
-    /** 
+
+
+    /**
      * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {number} properties - The Properties of the Channel which should get changed
      * @return {Promise.<object>}
-     */ 
+     */
     channelEdit(cid, properties) {
         properties.cid = cid
         return this.execute("channeledit", properties)
     }
 
 
-    /** 
+    /**
      * Displays a list of permissions defined for a channel.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {boolean} permsid - Whether the Perm SID should be displayed aswell
      * @return {Promise.<object[]>}
-     */ 
+     */
     channelPermList(cid, permsid = false) {
         return this.execute("channelpermlist", {cid: cid}, (permsid) ? ["-permsid"] : null).then(this.toArray)
     }
-    
-    
-    /** 
+
+
+    /**
      * Adds a set of specified permissions to a channel. Multiple permissions can be added by providing the two parameters of each permission. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {(string|number)} perm - The permid or permsid
      * @param {number} value - The Value which should be set
      * @param {boolean} sid - If the given Perm is a permsid
      * @return {Promise.<object>}
-     */ 
+     */
     channelSetPerm(cid, perm, value, sid = false) {
         var prop = {cid: cid}
         prop[(sid) ? "permsid" : "permid"] = perm
         prop.permvalue = value
         return this.execute("channeladdperm", prop)
     }
-    
-    
-    /** 
+
+
+    /**
      * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cid - the channel id
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} sid - If the given Perm is a permsid
      * @return {Promise.<object>}
-     */ 
+     */
     channelDelPerm(cid, perm, sid = false) {
         var prop = {cid: cid}
         prop[(sid) ? "permsid" : "permid"] = perm
@@ -908,13 +911,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Client by the given Client ID
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} clid - The Client Id
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
-     */ 
+     */
     getClientByID(clid) {
         return new Promise((fulfill, reject) => {
             this.clientList({clid: clid})
@@ -924,13 +927,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Client by the given Client Database ID
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} cldbid - The Client Database Id
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
-     */ 
+     */
     getClientByDBID(cldbid) {
         return new Promise((fulfill, reject) => {
             this.clientList({client_database_id: cldbid})
@@ -940,13 +943,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Client by the given Client Unique Identifier
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} uid - The Client Unique Identifier
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
-     */ 
+     */
     getClientByUID(uid) {
         return new Promise((fulfill, reject) => {
             this.clientList({client_unique_identifier: uid})
@@ -956,13 +959,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a Single Client by the given Client Unique Identifier
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {string} name - The Nickname of the Client
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
-     */ 
+     */
     getClientByName(name) {
         return new Promise((fulfill, reject) => {
             this.clientList({client_nickname: name})
@@ -981,6 +984,20 @@ class TeamSpeak3 extends EventEmitter {
      */
     clientInfo(clid) {
         return this.execute("clientinfo", {clid: clid})
+    }
+
+
+    /**
+     * Returns the Clients Database List
+     * @version 1.0.1
+     * @async
+     * @param {number} [start=0] - Start Offset
+     * @param {number} [duration=1000] - Duration or Limit of Clients
+     * @param {boolean} count - True when the results should be counted
+     * @returns {Promise.<object>} Returns the Client Database Info
+     */
+    clientDBList(start = 0, duration = 1000, count = true) {
+        return this.execute("clientdblist", {start: start, duration: duration}, [(count) ? "-count" : null])
     }
 
 
@@ -1036,23 +1053,23 @@ class TeamSpeak3 extends EventEmitter {
         return this.execute("clientpoke", {clid: clid, msg: msg})
     }
 
-    
-    /** 
+
+    /**
      * Displays a list of permissions defined for a client
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} dbid - the client database id
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     clientPermList(dbid, permsid = false) {
         return this.execute("clientpermlist", {cldbid: dbid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
     }
 
-    
-    /** 
+
+    /**
      * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} dbid - the client database id
      * @param {(string|number)} perm - The permid or permsid
@@ -1060,8 +1077,8 @@ class TeamSpeak3 extends EventEmitter {
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     clientAddPerm(dbid, perm, value, permsid = false, skip = 0, negate = 0) {
         var prop = {cldbid: dbid}
         prop[(permsid) ? "permsid": "permid"] = perm
@@ -1071,16 +1088,16 @@ class TeamSpeak3 extends EventEmitter {
         return this.execute("clientaddperm", prop)
     }
 
-    
-    /** 
+
+    /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} dbid - the client database id
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     clientDelPerm(dbid, perm, permsid = false) {
         var prop = {cldbid: dbid}
         prop[(permsid) ? "permsid" : "permid"] = perm
@@ -1089,7 +1106,7 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Sends a text message a specified target. 
+     * Sends a text message a specified target.
      * The type of the target is determined by targetmode while target specifies the ID of the recipient, whether it be a virtual server, a channel or a client.
      * @version 1.0
      * @async
@@ -1103,13 +1120,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a single ServerGroup by the given ServerGroup ID
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} sgid - the ServerGroup Id
      * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
-     */ 
+     */
     getServerGroupByID(sgid) {
         return new Promise((fulfill, reject) => {
             this.serverGroupList({sgid: sgid})
@@ -1119,13 +1136,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a single ServerGroup by the given ServerGroup Name
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} name - the ServerGroup name
      * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
-     */ 
+     */
     getServerGroupByName(name) {
         return new Promise((fulfill, reject) => {
             this.serverGroupList({name: name})
@@ -1135,13 +1152,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a single ChannelGroup by the given ChannelGroup ID
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} cgid - the ChannelGroup Id
      * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
-     */ 
+     */
     getChannelGroupByID(cgid) {
         return new Promise((fulfill, reject) => {
             this.channelGroupList({cgid: cgid})
@@ -1151,13 +1168,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Retrieves a single ChannelGroup by the given ChannelGroup Name
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @param {number} name - the ChannelGroup name
      * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
-     */ 
+     */
     getChannelGroupByName(name) {
         return new Promise((fulfill, reject) => {
             this.channelGroupList({name: name})
@@ -1167,79 +1184,79 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Sets the channel group of a client
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cgid - The Channel Group which the Client should get assigned
      * @param {number} cid - The Channel in which the Client should be assigned the Group
      * @param {number} cldbid - The Client Database ID which should be added to the Group
      * @return {Promise.<object>}
-     */ 
+     */
     setClientChannelGroup(cgid, cid, cldbid) {
         return this.execute("setclientchannelgroup", {cgid: cgid, cldbid: cldbid, cid: cid})
     }
 
-    
-    /** 
+
+    /**
      * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {cgid} cgid - the channelgroup id
      * @param {number} [force=0] - If set to 1 the Channel Group will be deleted even when Clients are in it
      * @return {Promise.<object>}
-     */ 
+     */
     deleteChannelGroup(cgid, force = 0) {
         return this.execute("channelgroupdel", {cgid: cgid, force: force})
     }
 
-    
-    /** 
+
+    /**
      * Creates a copy of the channel group. If tcgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tcgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} scgid - the source ChannelGroup
      * @param {number} [tcgid=0] - the target ChannelGroup (0 to create a new Group)
      * @param {number} [type] - The Type of the Group (0 = Template Group | 1 = Normal Group)
      * @param {(string|boolean)} [name=false] - Name of the Group
      * @return {Promise.<object>}
-     */ 
+     */
     channelGroupCopy(scgid, tcgid = 0, type = 1, name = false) {
         var prop = {scgid: scgid, tcgid: tcgid, type: type}
         if (typeof name === "string") prop.name = name
         return this.execute("channelgroupcopy", prop)
     }
 
-    
-    /** 
+
+    /**
      * Changes the name of the channel group
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cgid - the ChannelGroup id to rename
      * @param {string} name - new name of the ChannelGroup
      * @return {Promise.<object>}
-     */ 
+     */
     channelGroupRename(cgid, name) {
         return this.execute("channelgrouprename", {cgid: cgid, name: name})
     }
 
-    
-    /** 
-     * Displays a list of permissions assigned to the channel group specified with cgid. 
-     * @version 1.0 
+
+    /**
+     * Displays a list of permissions assigned to the channel group specified with cgid.
+     * @version 1.0
      * @async
      * @param {number} cgid - the ChannelGroup id to list
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
      * @return {Promise.<object[]>}
-     */ 
+     */
     channelGroupPermList(cgid, permsid = false) {
         return this.execute("channelgrouppermlist", {cgid: cgid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
     }
 
 
-    /** 
+    /**
      * Adds a specified permissions to the channel group. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cgid - the ChannelGroup id
      * @param {(string|number)} perm - The permid or permsid
@@ -1258,31 +1275,31 @@ class TeamSpeak3 extends EventEmitter {
         return this.execute("channelgroupaddperm", prop)
     }
 
-    
-    /** 
+
+    /**
      * Removes a set of specified permissions from the channel group. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cgid - the ChannelGroup id
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @return {Promise.<object>}
-     */ 
+     */
     channelGroupDelPerm(cgid, perm, permsid = false) {
         var prop = {cgid: cgid}
         prop[(permsid) ? "permsid" : "permid"] = perm
         return this.execute("channelgroupdelperm", prop)
     }
 
-    
-    /** 
+
+    /**
      * Displays the IDs of all clients currently residing in the channel group.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {number} cgid - the ChannelGroup id
      * @param {number} [cid] - The Channel ID
      * @return {Promise.<TeamSpeakClient>}
-     */ 
+     */
     channelGroupClientList(cgid, cid) {
         var prop = {cgid: cgid}
         if (typeof cid == "number") prop.cid = cid
@@ -1299,8 +1316,8 @@ class TeamSpeak3 extends EventEmitter {
     permissionList() {
         return this.execute("permissionlist")
     }
- 
- 
+
+
     /**
      * Retrieves the database ID of one or more permissions specified by permsid.
      * @version 1.0
@@ -1311,8 +1328,8 @@ class TeamSpeak3 extends EventEmitter {
     permIdGetByName(permsid) {
         return this.execute("permidgetbyname", {permsid: permsid})
     }
- 
- 
+
+
     /**
      * Retrieves the current value of the permission for your own connection. This can be useful when you need to check your own privileges.
      * @version 1.0
@@ -1328,8 +1345,8 @@ class TeamSpeak3 extends EventEmitter {
             prop.permid = key
         return this.execute("permget", prop)
     }
- 
- 
+
+
     /**
      * Retrieves detailed information about all assignments of the permission. The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
      * @version 1.0
@@ -1345,8 +1362,8 @@ class TeamSpeak3 extends EventEmitter {
             prop.permsid = perm
         return this.execute("permfind", prop)
     }
- 
- 
+
+
     /**
      * Restores the default permission settings on the selected virtual server and creates a new initial administrator token. Please note that in case of an error during the permreset call - e.g. when the database has been modified or corrupted - the virtual server will be deleted from the database.
      * @version 1.0
@@ -1356,8 +1373,8 @@ class TeamSpeak3 extends EventEmitter {
     permReset() {
         return this.execute("permreset")
     }
- 
- 
+
+
     /**
      * Retrieves a list of privilege keys available including their type and group IDs.
      * @version 1.0
@@ -1367,8 +1384,8 @@ class TeamSpeak3 extends EventEmitter {
     privilegekeyList() {
         return this.execute("privilegekeylist")
     }
- 
- 
+
+
     /**
      * Create a new token. If type is set to 0, the ID specified with tokenid will be a server group ID. Otherwise, tokenid is used as a channel group ID and you need to provide a valid channel ID using channelid.
      * @version 1.0
@@ -1385,8 +1402,8 @@ class TeamSpeak3 extends EventEmitter {
         if (description) prop.description = description
         return this.execute("privilegekeyadd", prop)
     }
- 
- 
+
+
     /**
      * Deletes an existing token matching the token key specified with token.
      * @version 1.0
@@ -1397,8 +1414,8 @@ class TeamSpeak3 extends EventEmitter {
     privilegekeyDelete(token) {
         return this.execute("privilegekeydelete", {token: token})
     }
- 
- 
+
+
     /**
      * Use a token key gain access to a server or channel group. Please note that the server will automatically delete the token after it has been used.
      * @version 1.0
@@ -1409,8 +1426,8 @@ class TeamSpeak3 extends EventEmitter {
     privilegekeyUse(token) {
         return this.execute("privilegekeyuse", {token: token})
     }
- 
- 
+
+
     /**
      * Displays a list of offline messages you've received. The output contains the senders unique identifier, the messages subject, etc.
      * @version 1.0
@@ -1420,8 +1437,8 @@ class TeamSpeak3 extends EventEmitter {
     messageList() {
         return this.execute("messagelist")
     }
- 
- 
+
+
     /**
      * Sends an offline message to the client specified by uid.
      * @version 1.0
@@ -1434,8 +1451,8 @@ class TeamSpeak3 extends EventEmitter {
     messageAdd(uid, subject, text) {
         return this.execute("messageadd", {cluid: uid, subject: subject, text: text})
     }
- 
- 
+
+
     /**
      * Sends an offline message to the client specified by uid.
      * @version 1.0
@@ -1446,8 +1463,8 @@ class TeamSpeak3 extends EventEmitter {
     messageDel(id) {
         return this.execute("messagedel", {msgid: id})
     }
- 
- 
+
+
     /**
      * Displays an existing offline message with the given id from the inbox.
      * @version 1.0
@@ -1458,8 +1475,8 @@ class TeamSpeak3 extends EventEmitter {
     messageGet(id) {
         return this.execute("messageget", {msgid: id})
     }
- 
- 
+
+
     /**
      * Displays an existing offline message with the given id from the inbox.
      * @version 1.0
@@ -1471,8 +1488,8 @@ class TeamSpeak3 extends EventEmitter {
     messageUpdate(id, read) {
         return this.execute("messageupdateflag", {msgid: id, flag: flag})
     }
- 
- 
+
+
     /**
      * Displays a list of complaints on the selected virtual server. If dbid is specified, only complaints about the targeted client will be shown.
      * @version 1.0
@@ -1483,8 +1500,8 @@ class TeamSpeak3 extends EventEmitter {
     complainList(dbid) {
         return this.execute("complainlist", (typeof dbid === "number") ? {cldbid: dbid} : null)
     }
- 
- 
+
+
     /**
      * Submits a complaint about the client with database ID dbid to the server.
      * @version 1.0
@@ -1496,8 +1513,8 @@ class TeamSpeak3 extends EventEmitter {
     complainAdd(dbid, message = "") {
         return this.execute("complainadd", {cldbid: dbid, message: message})
     }
- 
- 
+
+
     /**
      * Deletes the complaint about the client with ID tdbid submitted by the client with ID fdbid from the server. If dbid will be left empty all complaints for the tdbid will be deleted
      * @version 1.0
@@ -1512,8 +1529,8 @@ class TeamSpeak3 extends EventEmitter {
         if (fdbid === false) prop.fcldbid = fdbid
         return this.execute(cmd, prop)
     }
- 
- 
+
+
     /**
      * Displays a list of active bans on the selected virtual server.
      * @version 1.0
@@ -1523,8 +1540,8 @@ class TeamSpeak3 extends EventEmitter {
     banList() {
         return this.execute("banlist")
     }
- 
- 
+
+
     /**
      * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one of the following must be set: ip, name, or uid.
      * @version 1.0
@@ -1545,8 +1562,8 @@ class TeamSpeak3 extends EventEmitter {
         props.banreason = reason || ""
         return this.execute("banadd", props)
     }
- 
- 
+
+
     /**
      * Removes one or all bans from the server
      * @version 1.0
@@ -1556,12 +1573,12 @@ class TeamSpeak3 extends EventEmitter {
      */
     banDel(id = false) {
         return this.execute(
-            (id === false) ? "bandelall" : "bandel", 
+            (id === false) ? "bandelall" : "bandel",
             (id !== false) ? {banid: id} : null
         )
     }
- 
- 
+
+
     /**
      * Displays a specified number of entries from the servers log. If instance is set to 1, the server will return lines from the master logfile (ts3server_0.log) instead of the selected virtual server logfile.
      * @version 1.0
@@ -1575,8 +1592,8 @@ class TeamSpeak3 extends EventEmitter {
     logView(lines = 1000, reverse = 0, instance = 0, begin_pos = 0) {
         return this.execute("logview", { lines: lines, reverse: reverse, instance: instance, begin_pos: begin_pos })
     }
- 
- 
+
+
     /**
      * Writes a custom entry into the servers log. Depending on your permissions, you'll be able to add entries into the server instance log and/or your virtual servers log. The loglevel parameter specifies the type of the entry
      * @version 1.0
@@ -1588,8 +1605,8 @@ class TeamSpeak3 extends EventEmitter {
     logAdd(level, msg) {
         return this.execute("logadd", { loglevel: level, logmsg: msg })
     }
- 
- 
+
+
     /**
      * Sends a text message to all clients on all virtual servers in the TeamSpeak 3 Server instance.
      * @version 1.0
@@ -1654,13 +1671,13 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Displays a list of virtual servers including their ID, status, number of clients online, etc.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @returns {Promise.<TeamSpeakServer[]>}
-     */ 
-    serverList(filter = {}) { 
+     */
+    serverList(filter = {}) {
         return this.execute(
             "serverlist", ["-uid", "-all"]
         ).then(servers => {
@@ -1677,14 +1694,14 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Displays a list of channel groups available. Depending on your permissions, the output may also contain template groups.
-     * @version 1.0 
-     * @async 
-     * @param {object} filter - Filter Object 
+     * @version 1.0
+     * @async
+     * @param {object} filter - Filter Object
      * @returns {Promise.<TeamSpeakChannelGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
-     */ 
-    channelGroupList(filter = {}) { 
+     */
+    channelGroupList(filter = {}) {
         return this.execute(
             "channelgrouplist"
         ).then(groups => {
@@ -1701,14 +1718,14 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Displays a list of server groups available. Depending on your permissions, the output may also contain global ServerQuery groups and template groups.
-     * @version 1.0 
-     * @async 
-     * @param {object} filter - Filter Object 
+     * @version 1.0
+     * @async
+     * @param {object} filter - Filter Object
      * @returns {Promise.<TeamSpeakServerGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
-     */ 
-    serverGroupList(filter = {}) { 
+     */
+    serverGroupList(filter = {}) {
         return this.execute(
             "servergrouplist"
         ).then(groups => {
@@ -1725,16 +1742,16 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Lists all Channels with a given Filter
-     * @version 1.0 
-     * @async 
-     * @param {object} filter - Filter Object 
+     * @version 1.0
+     * @async
+     * @param {object} filter - Filter Object
      * @returns {Promise<TeamSpeakChannel[]>} Promise object which returns an Array of TeamSpeak Channels
      */
-    channelList(filter = {}) { 
-        return this.execute( 
-            "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon"] 
+    channelList(filter = {}) {
+        return this.execute(
+            "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon"]
         ).then(channels => {
             return this._handleCache(this._channels, channels, "cid", TeamSpeakChannel)
         }).then(channels => {
@@ -1749,16 +1766,16 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Lists all Clients with a given Filter
-     * @version 1.0 
-     * @async 
-     * @param {object} filter - Filter Object 
-     * @returns {Promise<TeamSpeakClient[]>} Promise object which returns an Array of TeamSpeak Clients 
-     */ 
-    clientList(filter = {}) { 
-        return this.execute( 
-            "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"] 
+     * @version 1.0
+     * @async
+     * @param {object} filter - Filter Object
+     * @returns {Promise<TeamSpeakClient[]>} Promise object which returns an Array of TeamSpeak Clients
+     */
+    clientList(filter = {}) {
+        return this.execute(
+            "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"]
         ).then(clients => {
             return this._handleCache(this._clients, clients, "clid", TeamSpeakClient)
         }).then(clients => {
@@ -1770,13 +1787,13 @@ class TeamSpeak3 extends EventEmitter {
                 }))
             })
         })
-    } 
+    }
 
 
-    /** 
+    /**
      * Initializes a file transfer upload. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start uploading the file through TeamSpeak 3's file transfer interface.
      * @version 1.0
-     * @async 
+     * @async
      * @param {object} transfer - The Transfer Object
      * @param {object} transfer.clientftfid - Arbitary ID to Identify the Transfer
      * @param {string} transfer.name - Destination Filename
@@ -1786,17 +1803,17 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} transfer.overwrite - <Description Pending>
      * @param {number} transfer.resume - <Description Pending>
      * @returns {Promise.<object>}
-     */ 
+     */
 
-    ftInitUpload(transfer) { 
+    ftInitUpload(transfer) {
         return this.execute("ftinitupload", transfer)
     }
 
 
-    /** 
+    /**
      * Initializes a file transfer download. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start downloading the file through TeamSpeak 3's file transfer interface.
      * @version 1.0
-     * @async 
+     * @async
      * @param {object} transfer - The Transfer Object
      * @param {string} transfer.name - Filename to Download
      * @param {number} [transfer.clientftfid] - Arbitary ID to Identify the Transfer
@@ -1805,7 +1822,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [transfer.seekpos=0] - <Description Pending File Startposition?>
      * @returns {Promise.<object>}
      */
-    ftInitDownload(transfer) { 
+    ftInitDownload(transfer) {
         if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
         if (!("seekpos" in transfer)) transfer.seekpos = 0
         if (!("cpw" in transfer)) transfer.cpw = ""
@@ -1858,25 +1875,25 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Closes the ServerQuery connection to the TeamSpeak 3 Server instance.
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @returns {Promise.<object>}
-     */ 
-    quit() { 
-        return this.execute("quit") 
+     */
+    quit() {
+        return this.execute("quit")
     }
 
 
-    /** 
+    /**
      * Cleans up the cache after a server deselect
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @private
      * @param {object} promise - The Promise which will be waited for before the cleanup
      * @returns {Promise.<object>}
-     */ 
+     */
     _cacheCleanUp(promise) {
         return new Promise((fulfill, reject) => {
             promise.then(res => {
@@ -1890,17 +1907,17 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Parses the whole Cache by given Objects
-     * @version 1.0 
-     * @async 
+     * @version 1.0
+     * @async
      * @private
      * @param {object} cache - The Cache Object
      * @param {object} list - The List to check against the Cache
      * @param {string} key - The Key used to identify the Object inside the Cache
      * @param {object} class - The Class which should be used
      * @returns {Promise.<object>}
-     */ 
+     */
     _handleCache(cache, list, key, Class) {
         if (!Array.isArray(list)) var list = [list]
         return new Promise((fulfill, reject) => {
@@ -1919,43 +1936,43 @@ class TeamSpeak3 extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Filters an Object with given Option
-     * @version 1.0 
-     * @private 
-     * @static 
-     * @async 
-     * @param {object} array - The Object which should get filtered 
-     * @param {object} filter - Filter Object 
+     * @version 1.0
+     * @private
+     * @static
+     * @async
+     * @param {object} array - The Object which should get filtered
+     * @param {object} filter - Filter Object
      * @returns {Promise.<object>}
-     */ 
+     */
     static _filter(array, filter) {
         return new Promise(fulfill => {
             if (!Array.isArray(array)) array = [array]
-            if (Object.keys(filter).length == 0) 
+            if (Object.keys(filter).length == 0)
                 return fulfill(array)
-            fulfill(array.filter(a => { 
+            fulfill(array.filter(a => {
                 for (var k in filter) {
-                    if (!(k in a)) return false 
+                    if (!(k in a)) return false
                     if (filter[k] instanceof RegExp) return a[k].match(filter[k])
                     if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) >= 0
-                    switch (typeof a[k]) { 
-                        case "number": return a[k] == parseFloat(filter[k]) 
-                        case "string": return a[k] == filter[k] 
-                        case "object": return a[k].match(filter[k]) 
-                    } 
-                } 
+                    switch (typeof a[k]) {
+                        case "number": return a[k] == parseFloat(filter[k])
+                        case "string": return a[k] == filter[k]
+                        case "object": return a[k].match(filter[k])
+                    }
+                }
             }))
-        }) 
+        })
     }
 
 
-    /** 
+    /**
      * Transforms an Input to an Array
      * @async
      * @version 1.0
      * @returns {any[]}
-     */ 
+     */
     toArray(input) {
         return new Promise(fulfill => {
             if (typeof input == "undefined" || input === null) return fulfill([])
@@ -1963,9 +1980,9 @@ class TeamSpeak3 extends EventEmitter {
             fulfill(input)
         })
     }
-    
-    
-} 
+
+
+}
 
 
 module.exports = TeamSpeak3
