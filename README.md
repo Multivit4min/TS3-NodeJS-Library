@@ -50,7 +50,7 @@ ts3.on("ready", () => {
             console.log("Sending Message to", client.getCache().client_nickname)
             //Sends to every Client a "Hello"
             client.message("Hello!")
-        }
+        })
     }).catch(e => console.log("CATCHED", e))
 })
 
