@@ -482,9 +482,6 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @returns {Promise.<object>}
      */ 
-    serverInfo() { 
-        return this.execute("serverinfo") 
-     */
     serverInfo() {
         return this.execute("serverinfo")
     }
