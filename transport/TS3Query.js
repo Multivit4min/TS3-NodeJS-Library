@@ -10,7 +10,6 @@ const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
 const net = require("net")
 const LineInputStream = require("line-input-stream")
-const Promise = require("bluebird")
 const EventEmitter = require("events")
 const CRC32 = require("crc-32")
 

@@ -1,7 +1,6 @@
 //Changes the TeamSpeak Channel Name to the Current Users online
 
 const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
-const Promise = require("bluebird") 
 
 //Define the Channel which should be edited
 var channelid = 0

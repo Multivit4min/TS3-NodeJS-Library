@@ -6,7 +6,6 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const Promise = require("bluebird")
 const net = require("net")
 
  /**

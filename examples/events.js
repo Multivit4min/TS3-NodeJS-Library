@@ -1,5 +1,4 @@
 const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
-const Promise = require("bluebird") 
 
 //Creates a new Connection to a TeamSpeak Server
 var ts3 = new TeamSpeak3({

@@ -8,7 +8,6 @@
 
 const Abstract = require(__dirname+"/Abstract")
 const FileTransfer = require(__dirname+"/../transport/FileTransfer")
-const Promise = require("bluebird")
 
  /**
  * Class representing a TeamSpeak Client

@@ -6,8 +6,7 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const CRC32 = require('crc-32') 
-const Promise = require("bluebird")
+const CRC32 = require('crc-32')
 const EventEmitter = require("events")
 
 /**

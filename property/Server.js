@@ -5,8 +5,8 @@
  * @license GNU GPLv3 
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */ 
+
 const Abstract = require(__dirname+"/Abstract")
-const Promise = require("bluebird")
 
  /**
  * Class representing a TeamSpeak Server

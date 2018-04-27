@@ -14,7 +14,6 @@ const TeamSpeakServer = require(__dirname+"/property/Server")
 const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup")
 const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup")
 
-const Promise = require("bluebird") 
 const EventEmitter = require("events")
 
 /**

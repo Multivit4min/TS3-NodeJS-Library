@@ -1,5 +1,4 @@
 const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
-const Promise = require("bluebird") 
 const fs = require("fs")
 
 var ts3 = new TeamSpeak3({
