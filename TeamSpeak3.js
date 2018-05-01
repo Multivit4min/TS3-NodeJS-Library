@@ -313,7 +313,7 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} cid - The Channel ID which has been deleted
      */
     _evchanneldeleted() {
-        this.getClientByID(arguments[0].clid)
+        this.getClientByID(arguments[0].invokerid)
         .then(client => {
             this.emit("channeldelete", {invoker: client, cid: arguments[0].cid})
         }).catch(e => this.emit("error", e))
