@@ -1747,7 +1747,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     channelList(filter = {}) {
         return this.execute(
-            "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon"]
+            "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"]
         ).then(channels => {
             return this._handleCache(this._channels, channels, "cid", TeamSpeakChannel)
         }).then(channels => {
