@@ -1,6 +1,6 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "1.1.2",
+  "version": "1.2",
   "description": "TeamSpeak3 Query API",
   "main": "index.js",
   "scripts": {
@@ -12,13 +12,13 @@
   },
   "keywords": [
     "teamspeak",
-    "ts3"
+    "ts3",
+    "query"
   ],
   "author": "Multivitamin <david.kartnaller@gmail.com>",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "crc-32": "^1.1.1",
-    "events": "^1.1.1",
     "line-input-stream": "^1.0.1"
   }
 }
