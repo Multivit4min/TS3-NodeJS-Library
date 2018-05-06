@@ -11,7 +11,7 @@ var ts3 = new TeamSpeak3({
     queryport: 10011,
     serverport: 9987,
     username: "serveradmin",
-    password: "",
+    password: "password",
     nickname: "NodeJS Query Framework",
     antispam: true,
     antispamtimer: 350,

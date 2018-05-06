@@ -28,6 +28,7 @@ class TS3Query extends EventEmitter {
      */
     constructor(ip, port) {
         super()
+        this.connected = false
         this._ignoreLines = 2
         this._queue = []
         this._lastline = ""
@@ -40,9 +41,9 @@ class TS3Query extends EventEmitter {
         this._antiSpamStepping = 0
 
         this._doubleEvents = [
-            "notifyclientleftview",
-            "notifyclientmoved",
-            "notifycliententerview"
+          "notifyclientleftview",
+          "notifyclientmoved",
+          "notifycliententerview"
         ]
 
         this._socket = net.connect(port, ip)
@@ -79,18 +80,20 @@ class TS3Query extends EventEmitter {
                      * @property {any} data - The data received from the Event
                      */
                     return this.emit(
-                        line.substr(6, line.indexOf(" ") - 6), 
+                        line.substr(6, line.indexOf(" ") - 6),
                         Response.parse(line.substr(line.indexOf(" ") + 1)))
                 } else if (this._active) {
                     this._active.res.setLine(line)
                 }
             })
 
+            this.connected = true
+
             this._socket.on("close", () => {
-				clearTimeout(this._keepalivetimer)
+                this.connected = false
+                clearTimeout(this._keepalivetimer)
                 clearTimeout(this._antispamTimeout)
-                var str =  (this._lastline.indexOf("error") === 0) ?
-                    Response.parse(this._lastline)[0] : ""
+                var str = (this._lastline.indexOf("error") === 0) ? Response.parse(this._lastline)[0] : ""
                 /**
                  * Query Close Event
                  * Gets fired when the Query disconnects from the TeamSpeak Server
@@ -111,15 +114,16 @@ class TS3Query extends EventEmitter {
              * @memberof TS3Query
              */
             this.emit("connect")
+            this._queueWorker()
         })
     }
 
 
-    /** 
+    /**
      * Sends keepalive to the TeamSpeak Server so the connection will not be closed
-     * @version 1.0 
+     * @version 1.0
      * @param {boolean} [b=true] - Parameter enables or disables the Keepalive Ping
-     */ 
+     */
     keepAlive(b = true) {
         this._keepalive = Boolean(b)
         if (!b) return clearTimeout(this._keepalivetimer)
@@ -127,30 +131,30 @@ class TS3Query extends EventEmitter {
     }
 
 
-    /** 
+    /**
      * Whether Double Events should be handled or not
-     * @version 1.0 
+     * @version 1.0
      * @param {boolean} [b=true] - Parameter enables or disables the Double Event Handling
-     */ 
+     */
     handleDoubleEvents(b = true) {
         this._handleDoubleEvents = Boolean(b)
     }
 
-    /** 
+    /**
      * Sets the antispam timeout
      * @version 1.0
      * @param {number} i - The timeout every command should have (350ms should work good if the Query is not in the whitelist)
-     */ 
+     */
     antiSpam(i = 0) {
         this._antiSpamStepping = i
     }
 
 
-    /** 
+    /**
      * Refreshes the Keepalive Timer
-     * @version 1.0 
-	 * @private
-     */ 
+     * @version 1.0
+     * @private
+     */
     _refreshKeepAlive() {
         clearTimeout(this._keepalivetimer)
         this._keepalivetimer = setTimeout(() => {
@@ -161,15 +165,15 @@ class TS3Query extends EventEmitter {
     }
 
 
-    /** 
-     * Sends a command to the TeamSpeak Server. 
-     * @version 1.0 
-     * @async 
-     * @param {string} Command - The Command which should get executed on the TeamSpeak Server 
-     * @param {object} [Object] - Optional the Parameters 
-     * @param {object} [Array] - Optional Flagwords 
-     * @returns {Promise.<object>} Promise object which returns the Information about the Query executed 
-     */ 
+    /**
+     * Sends a command to the TeamSpeak Server.
+     * @version 1.0
+     * @async
+     * @param {string} Command - The Command which should get executed on the TeamSpeak Server
+     * @param {object} [Object] - Optional the Parameters
+     * @param {object} [Array] - Optional Flagwords
+     * @returns {Promise.<object>} Promise object which returns the Information about the Query executed
+     */
     execute() {
         var args = arguments
         return new Promise((fulfill, reject) => {
@@ -178,8 +182,8 @@ class TS3Query extends EventEmitter {
                 switch (typeof(args[a])) {
                     case "string":
                         return cmd.setCommand(args[a])
-                    case "object": 
-                        if (Array.isArray(args[a])) 
+                    case "object":
+                        if (Array.isArray(args[a]))
                             return cmd.setFlags(args[a])
                         return cmd.setOptions(args[a])
                 }
@@ -192,15 +196,16 @@ class TS3Query extends EventEmitter {
         })
     }
 
-    /** 
-     * Executes the next command 
+    /**
+     * Executes the next command
      * @version 1.0
      * @private
      * @param {object} [cmd] - the next command which should get executedd
-     */ 
+     */
     _queueWorker(cmd = false) {
         if (cmd) this._queue.push(cmd)
-        if (typeof this._active == "object" 
+        if (!this.connected
+            || typeof this._active == "object"
             || this._queue.length == 0) return
         this._active = this._queue.shift()
         this._active.res = new Response()
