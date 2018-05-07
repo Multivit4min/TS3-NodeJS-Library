@@ -13,7 +13,10 @@
   "keywords": [
     "teamspeak",
     "ts3",
-    "query"
+    "query",
+    "serverquery",
+    "ts",
+    "teamspeak3"
   ],
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "GPL-3.0-or-later",
