@@ -481,7 +481,7 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @returns {Promise.<object>}
-     */ 
+     */
     serverInfo() {
         return this.execute("serverinfo")
     }
@@ -515,10 +515,11 @@ class TeamSpeak3 extends EventEmitter {
      * Stops the entire TeamSpeak 3 Server instance by shutting down the process.
      * @version 1.0
      * @async
+     * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
      * @returns {Promise.<object>}
      */
-    serverProcessStop() {
-        return this.execute("serverprocessstop")
+    serverProcessStop(msg) {
+        return this.execute("serverprocessstop", {reasonmsg: msg})
     }
 
 
@@ -581,10 +582,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} sid - the server id
+     * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
      * @returns {Promise.<object>}
      */
-    serverStop(sid) {
-        return this.execute("serverstop", {sid: sid})
+    serverStop(sid, msg) {
+        return this.execute("serverstop", {sid: sid, reasonmsg: msg})
     }
 
 
@@ -1098,6 +1100,62 @@ class TeamSpeak3 extends EventEmitter {
         var prop = {cldbid: dbid}
         prop[(permsid) ? "permsid" : "permid"] = perm
         return this.execute("clientdelperm", prop)
+    }
+
+
+    /**
+     * Searches for custom client properties specified by ident and value.
+     * The value parameter can include regular characters and SQL wildcard characters (e.g. %).
+     * @version 1.3
+     * @async
+     * @param {string} ident - the key to search for
+     * @param {string} target - the search pattern to use
+     * @returns {Promise.<object>} Promise Object
+     */
+    customSearch(ident, pattern) {
+        return this.execute("customsearch", {ident: ident, pattern: pattern})
+    }
+
+
+    /**
+     * Displays a list of custom properties for the client specified with cldbid.
+     * @version 1.3
+     * @async
+     * @param {number} cldbid - The Client Database ID which should be retrieved
+     * @returns {Promise.<object>} Promise Object
+     */
+    customInfo(cldbid) {
+        return this.execute("custominfo", {cldbid: cldbid})
+    }
+
+
+    /**
+     * Removes a custom property from a client specified by the cldbid.
+     * This requires TeamSpeak Server Version 3.2.0 or newer.
+     * @version 1.3
+     * @async
+     * @param {number} cldbid - The Client Database ID which should be changed
+     * @param {string} ident - The Key which should be deleted
+     * @returns {Promise.<object>} Promise Object
+     */
+    customDelete(cldbid, ident) {
+        return this.execute("customdelete", {cldbid: cldbid, ident: ident})
+    }
+
+
+    /**
+     * Creates or updates a custom property for client specified by the cldbid.
+     * Ident and value can be any value, and are the key value pair of the custom property.
+     * This requires TeamSpeak Server Version 3.2.0 or newer.
+     * @version 1.3
+     * @async
+     * @param {number} cldbid - The Client Database ID which should be changed
+     * @param {string} ident - The Key which should be set
+     * @param {string} value - The Value which should be set
+     * @returns {Promise.<object>} Promise Object
+     */
+    customSet(cldbid, ident, value) {
+        return this.execute("customset", {cldbid: cldbid, ident: ident, value: value})
     }
 
 

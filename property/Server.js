@@ -76,10 +76,11 @@ class TeamSpeakServer extends Abstract {
      * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
      * @version 1.0
      * @async
+     * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
      * @returns {Promise.<object>}
      */
-    stop() {
-        return super.getParent().serverStop(this._static.sid)
+    stop(msg) {
+        return super.getParent().serverStop(this._static.sid, msg)
     }
 
 

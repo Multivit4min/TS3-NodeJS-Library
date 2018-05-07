@@ -53,7 +53,7 @@ class TeamSpeakClient extends Abstract {
          * Textmessage event
          *
          * @event TeamSpeakClient#textmessage
-         * @memberof TeamSpeakClient 
+         * @memberof TeamSpeakClient
          * @returns {string} The Message which has been sent
          */
         super.on("textmessage", ev => {
@@ -65,7 +65,7 @@ class TeamSpeakClient extends Abstract {
          * Client Disconnect Event
          *
          * @event TeamSpeakClient#clientdisconnect
-         * @memberof TeamSpeakClient 
+         * @memberof TeamSpeakClient
          */
         super.on("clientdisconnect", ev => {
             if (ev.client.clid !== this.getID()) return
@@ -145,6 +145,45 @@ class TeamSpeakClient extends Abstract {
      */
     getDBInfo() {
         return super.getParent().clientDBInfo(this._static.dbid)
+    }
+
+
+    /**
+     * Displays a list of custom properties for the client
+     * @version 1.3
+     * @async
+     * @returns {Promise.<object>}
+     */
+    customInfo() {
+        return super.getParent().customInfo(this._static.dbid)
+    }
+
+
+    /**
+     * Removes a custom property from the client
+     * This requires TeamSpeak Server Version 3.2.0 or newer.
+     * @version 1.3
+     * @async
+     * @param {string} ident - The Key which should be deleted
+     * @returns {Promise.<object>}
+     */
+    customDelete(ident) {
+        return super.getParent().customDelete(this._static.dbid, ident)
+    }
+
+
+    /**
+     * Creates or updates a custom property for the client.
+     * Ident and value can be any value, and are the key value pair of the custom property.
+     * This requires TeamSpeak Server Version 3.2.0 or newer.
+     * @version 1.3
+     * @async
+     * @param {string} ident - The Key which should be set
+     * @param {string} value - The Value which should be set
+     * @returns {Promise.<object>}
+     */
+    customSet(ident, value) {
+        return super.getParent().customSet(this._static.dbid, ident, value)
     }
 
 
@@ -232,43 +271,43 @@ class TeamSpeakClient extends Abstract {
         return super.getParent().sendTextMessage(this._static.clid, 1, msg)
     }
 
-    
-    /** 
+
+    /**
      * Displays a list of permissions defined for a client
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     permList(permsid) {
         return super.getParent().clientPermList(this._static.dbid, permsid)
     }
 
-    
-    /** 
+
+    /**
      * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {number} value - Value of the Permission
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @param {number} [skip=0] - Whether the skip flag should be set
      * @param {number} [negate=0] - Whether the negate flag should be set
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     addPerm(perm, value, permsid, skip, negate) {
         return super.getParent().clientAddPerm(this._static.dbid, perm, value, permsid, skip, negate)
     }
 
-    
-    /** 
+
+    /**
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
-     * @version 1.0 
+     * @version 1.0
      * @async
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
-     * @return {Promise.<object>} 
-     */ 
+     * @return {Promise.<object>}
+     */
     delPerm(perm, permsid = false) {
         return super.getParent().clientDelPerm(this._static.dbid, perm, permsid)
     }
@@ -289,7 +328,7 @@ class TeamSpeakClient extends Abstract {
             }).then(res => {
                 return new FileTransfer(super.getParent()._config.host, res.port)
                     .download(res.ftkey, res.size)
-            })   
+            })
     }
 
 
