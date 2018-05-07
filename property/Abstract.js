@@ -26,6 +26,7 @@ const EventEmitter = require("events")
         this._cache = {}
         this._cachetime = 50
         this._events = {}
+        this._parent.on("close", () => this.removeAllListeners())
     }
 
 
