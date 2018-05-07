@@ -9,9 +9,7 @@
 const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
 const net = require("net")
-const LineInputStream = require("line-input-stream")
 const EventEmitter = require("events")
-const CRC32 = require("crc-32")
 
 
 /**
@@ -39,7 +37,7 @@ class TS3Query extends EventEmitter {
         this._keepalivetimer
         this._active = false
         this._antiSpamStepping = 0
-
+        this._data = ""
         this._doubleEvents = [
           "notifyclientleftview",
           "notifyclientmoved",
@@ -48,73 +46,75 @@ class TS3Query extends EventEmitter {
 
         this._socket = net.connect(port, ip)
         this._socket.on("connect", () => {
-            LineInputStream(this._socket)
-            .on("line", line => {
-                this._lastline = line
-                var line = line.trim()
-                if (this._ignoreLines > 0
-                    && line.indexOf("error") !== 0)
-                    return this._ignoreLines--
-                if (line.indexOf("error") === 0) {
-                    let res = this._active.res
-                    this._lastline = ""
-                    res.finalize(line)
-                    if (res.hasError())
-                        this._active.reject(res.getError())
-                    else
-                        this._active.fulfill(res.getResponse())
-                    this._active = false
-                    return this._queueWorker()
-                } else if (line.indexOf("notify") === 0) {
-                    if (this._doubleEvents.some(s => line.indexOf(s) === 0)
-                        && this._handleDoubleEvents
-                        && CRC32.str(line) == this._lastevent) return
-                    this._lastevent = CRC32.str(line)
-                    /**
-                     * Query Event
-                     * Gets fired when the Query receives an Event
-                     *
-                     * @event TS3Query#<TeamSpeakEvent>
-                     * @memberof  TS3Query
-                     * @type {object}
-                     * @property {any} data - The data received from the Event
-                     */
-                    return this.emit(
-                        line.substr(6, line.indexOf(" ") - 6),
-                        Response.parse(line.substr(line.indexOf(" ") + 1)))
-                } else if (this._active) {
-                    this._active.res.setLine(line)
-                }
+          this.connected = true
+          /**
+           * Query Connect Event
+           * Gets fired when the Query connects to the TeamSpeak Server
+           *
+           * @event TS3Query#connect
+           * @memberof TS3Query
+           */
+          this.emit("connect")
+          this._queueWorker()
+        })
+        this._socket.on("data", chunk => {
+            this._data += chunk
+            var lines = this._data.split("\n")
+            this._data = lines.pop()
+            lines.forEach(line => {
+              this._lastline = line
+              var line = line.trim()
+              if (this._ignoreLines > 0
+                  && line.indexOf("error") !== 0)
+                  return this._ignoreLines--
+              if (line.indexOf("error") === 0) {
+                  let res = this._active.res
+                  this._lastline = ""
+                  res.finalize(line)
+                  if (res.hasError())
+                      this._active.reject(res.getError())
+                  else
+                      this._active.fulfill(res.getResponse())
+                  this._active = false
+                  return this._queueWorker()
+              } else if (line.indexOf("notify") === 0) {
+                  if (this._doubleEvents.some(s => line.indexOf(s) === 0)
+                      && this._handleDoubleEvents
+                      && line === this._lastevent) return
+                  this._lastevent = line
+                  /**
+                   * Query Event
+                   * Gets fired when the Query receives an Event
+                   *
+                   * @event TS3Query#<TeamSpeakEvent>
+                   * @memberof  TS3Query
+                   * @type {object}
+                   * @property {any} data - The data received from the Event
+                   */
+                  return this.emit(
+                      line.substr(6, line.indexOf(" ") - 6),
+                      Response.parse(line.substr(line.indexOf(" ") + 1)))
+              } else if (this._active) {
+                  this._active.res.setLine(line)
+              }
             })
-
-            this.connected = true
-
-            this._socket.on("close", () => {
-                this.connected = false
-                clearTimeout(this._keepalivetimer)
-                clearTimeout(this._antispamTimeout)
-                var str = (this._lastline.indexOf("error") === 0) ? Response.parse(this._lastline)[0] : ""
-                /**
-                 * Query Close Event
-                 * Gets fired when the Query disconnects from the TeamSpeak Server
-                 *
-                 * @event TS3Query#close
-                 * @memberof  TS3Query
-                 * @type {object}
-                 * @property {any} error - The Error Object
-                 */
-                this.emit("close", str)
-            })
-            this._socket.on("error", err => this.emit("error", err))
+        })
+        this._socket.on("error", err => this.emit("error", err))
+        this._socket.on("close", () => {
+            this.connected = false
+            clearTimeout(this._keepalivetimer)
+            clearTimeout(this._antispamTimeout)
+            var str = (this._lastline.indexOf("error") === 0) ? Response.parse(this._lastline)[0] : ""
             /**
-             * Query Connect Event
-             * Gets fired when the Query connects to the TeamSpeak Server
+             * Query Close Event
+             * Gets fired when the Query disconnects from the TeamSpeak Server
              *
-             * @event TS3Query#connect
-             * @memberof TS3Query
+             * @event TS3Query#close
+             * @memberof  TS3Query
+             * @type {object}
+             * @property {any} error - The Error Object
              */
-            this.emit("connect")
-            this._queueWorker()
+            this.emit("close", str)
         })
     }
 

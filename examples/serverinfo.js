@@ -19,7 +19,6 @@ function listServers() {
   ts3.serverList().then(servers => {
     servers.forEach(server => {
       var info = server.getCache()
-      console.log(info)
       console.log(`Server ID ${info.virtualserver_id}`)
       console.log(`\tName ${info.virtualserver_name}`)
       console.log(`\tPort ${info.virtualserver_port}`)
