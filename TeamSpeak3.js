@@ -97,15 +97,6 @@ class TeamSpeak3 extends EventEmitter {
                  * @memberof TeamSpeak3
                  */
                 .then(r => super.emit("ready"))
-                /**
-                 * Query Error Event
-                 * Gets fired when the TeamSpeak Query had an error while trying to connect
-                 * and also gets fired when there was an error after receiving an event
-                 *
-                 * @event TeamSpeak3#error
-                 * @memberof  TeamSpeak3
-                 * @returns {object} - return the error object
-                 */
                 .catch(e => super.emit("error", e))
         })
 
@@ -120,6 +111,16 @@ class TeamSpeak3 extends EventEmitter {
          * @returns {object} - may return an error object
          */
         this._ts3.on("close", e => super.emit("close", e))
+        /**
+         * Query Error Event
+         * Gets fired when the TeamSpeak Query had an error while trying to connect
+         * and also gets fired when there was an error after receiving an event
+         *
+         * @event TeamSpeak3#error
+         * @memberof  TeamSpeak3
+         * @returns {object} - return the error object
+         */
+         this._ts3.on("error", e => super.emit("error", e))
     }
 
 
