@@ -14,21 +14,21 @@ var ts3 = new TeamSpeak3({
 })
 
 ts3.on("ready", () => {
-	var client = false
+    var client = false
     ts3.clientList({client_type: 0})
         .then(clients => {
             if (!clients[0]) return console.log("No Client Found!")
-			client = clients[0]
+            client = clients[0]
             return client.getAvatar()
         }).then(buffer => {
             fs.writeFileSync(__dirname+"/avatar", buffer)
             console.log("Avatar from Client "+client.getCache().client_nickname+" downloaded and saved to", __dirname+"/avatar")
             ts3.quit()
-        }).catch(e => console.log("CATCHED", e))
+        }).catch(e => console.log("CATCHED", e.message))
 })
 
 ts3.on("error", e => {
-    console.log("Error", e)
+    console.log("Error", e.message)
 })
 
 ts3.on("close", e => {

@@ -12,7 +12,7 @@ var ts3 = new TeamSpeak3({
 })
 
 ts3.on("ready", () => {
-  setTimeout(listServers, 1000)
+    listServers()
 })
 
 function listServers() {
@@ -32,7 +32,7 @@ function listServers() {
 
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
 ts3.on("error", e => {
-    console.log("Error", e)
+    console.log("Error", e.message)
 })
 
 //Close event gets fired when the Connection to the TeamSpeak Server has been closed

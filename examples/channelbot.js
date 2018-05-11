@@ -27,7 +27,7 @@ function editChannel() {
 		var serverinfo = res[1]
 		var name = serverinfo.virtualserver_clientsonline+"/"+serverinfo.virtualserver_maxclients+" online" //will be like => "10/32 online"
 		channel.edit({channel_name: name}) //Edits the Channel Name
-	}) 
+	})
 }
 
 ts3.on("ready", async () => {
@@ -49,7 +49,7 @@ ts3.on("ready", async () => {
 
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
 ts3.on("error", e => {
-    console.log("Error", e)
+    console.log("Error", e.message)
 })
 
 //Close event gets fired when the Connection to the TeamSpeak Server has been closed

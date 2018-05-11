@@ -1,7 +1,7 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "1.3.0",
-  "description": "TeamSpeak3 Query API",
+  "version": "1.4.0",
+  "description": "TeamSpeak3 Server Query API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
