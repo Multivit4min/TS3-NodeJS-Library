@@ -191,9 +191,16 @@ module.exports = {
     //Permission Specific
     permid: Number,
     permvalue: Number,
-    permnegated: Number, 
+    permnegated: Number,
     permskip: Number,
     permsid: String,
+    t: Number,
+    id1: Number,
+    id2: Number,
+    p: Number,  //permission
+    v: Number,  //value
+    n: Number,  //negate
+    s: Number,  //skip
 
     //Events
     reasonid: Number,
@@ -229,6 +236,7 @@ module.exports = {
     //Reponse Error
     id: Number,
     msg: String,
-    extra_msg: String
+    extra_msg: String,
+    failed_permid: Number
 
 }

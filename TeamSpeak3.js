@@ -1363,6 +1363,23 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
+     * Displays all permissions assigned to a client for the channel specified with cid. If permid is set to 0, all permissions will be displayed. A permission can be specified by permid or permsid.
+     * @async
+     * @param {number} cldbid - The Client Database ID
+     * @param {number} cid - One or more Permission Names
+     * @param {number} [permid] - One or more Permission IDs
+     * @param {number} [permsid] - One or more Permission Names
+     * @returns {Promise.<object>} retrieves assigned permissions
+     */
+    permOverview(cldbid, cid, permid, permsid) {
+        var props = { cldbid: cldbid, cid: cid }
+        if (permid !== null && permid !== undefined) props.permid = permid
+        if (permsid !== null && permsid !== undefined) props.permsid = permsid
+        return this.execute("permoverview", props)
+    }
+
+
+    /**
      * Retrieves a list of permissions available on the server instance including ID, name and description.
      * @version 1.0
      * @async
