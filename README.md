@@ -51,11 +51,9 @@ ts3.on("ready", () => {
             //Sends to every Client a "Hello"
             client.message("Hello!")
         })
-    }).catch(e => console.log("CATCHED", e))
+    }).catch(e => console.log("CATCHED", e.message))
 })
 
-ts3.on("error", e => console.log("Error", e))
+ts3.on("error", e => console.log("Error", e.message))
 ts3.on("close", e => console.log("Connection has been closed!", e))
 ```
-
-
