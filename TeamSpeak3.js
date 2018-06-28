@@ -36,6 +36,7 @@ class TeamSpeak3 extends EventEmitter {
      * Represents a TeamSpeak Server Instance
      * @version 1.0
      * @param {object} [config] - The Configuration Object
+     * @param {string} [config.protocol=raw] - The Protocol to use, valid is ssh or raw
      * @param {string} [config.host=127.0.0.1] - The Host on which the TeamSpeak Server runs
      * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs
      * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs
@@ -49,6 +50,7 @@ class TeamSpeak3 extends EventEmitter {
     constructor(config = {}) {
         super()
         this._config = {
+            protocol: config.protocol || "raw",
             host: config.host || "127.0.0.1",
             queryport: parseInt(config.queryport) || 10011,
             serverport: parseInt(config.serverport) || false,
@@ -66,7 +68,14 @@ class TeamSpeak3 extends EventEmitter {
         this._channelgroups = {}
         this._servers = {}
 
-        this._ts3 = new TS3Query(this._config.host, this._config.queryport)
+        this._ts3 = new TS3Query(
+          this._config.host,
+          this._config.queryport,
+          this._config.protocol,
+          this._config.username,
+          this._config.password
+        )
+
         if (this._config.keepalive) this._ts3.keepAlive()
         if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer)
 
@@ -82,11 +91,11 @@ class TeamSpeak3 extends EventEmitter {
 
         this._ts3.on("connect", () => {
             var exec = []
-            if (typeof this._config.username == "string")
+            if (typeof this._config.username === "string" && this._config.protocol === "raw")
                 exec.push(this.login(this._config.username, this._config.password))
-            if (typeof this._config.serverport == "number")
+            if (typeof this._config.serverport === "number")
                 exec.push(this.useByPort(this._config.serverport))
-            if (typeof this._config.nickname == "string")
+            if (typeof this._config.nickname === "string")
                 exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
             Promise.all(exec)
                 /**

@@ -8,7 +8,8 @@
 
 const Command = require(__dirname+"/Command.js")
 const Response = require(__dirname+"/Response.js")
-const net = require("net")
+const RAW = require(__dirname+"/protocols/raw.js")
+const SSH = require(__dirname+"/protocols/ssh.js")
 const EventEmitter = require("events")
 
 
@@ -21,12 +22,16 @@ class TS3Query extends EventEmitter {
      * Creates a new TS3Query
      * @constructor
      * @version 1.0
-     * @param {string} ip - The Parent Object which is a TeamSpeak Instance
-     * @param {number} port - This holds Basic Client data
+     * @param {string} host - Teamspeak host to connect to
+     * @param {number} port - TeamSpeak query port
+     * @param {string} [proto=raw] - Protocol to use to connect to the Query
+     * @param {string} [username] - Username to connect with, only required when using ssh
+     * @param {string} [password] - This holds Basic Client data, only required when using ssh
      */
-    constructor(ip, port) {
+    constructor(host, port, proto = "raw", username, password) {
         super()
         this.connected = false
+        this._proto = proto
         this._ignoreLines = 2
         this._queue = []
         this._lastline = ""
@@ -44,7 +49,14 @@ class TS3Query extends EventEmitter {
           "notifycliententerview"
         ]
 
-        this._socket = net.connect(port, ip)
+        if (this._proto === "raw") {
+          this._socket = new RAW(host, port)
+        } else if (this._proto === "ssh") {
+          this._socket = new SSH(host, port, username, password)
+        } else {
+          throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
+        }
+
         this._socket.on("connect", () => {
           this.connected = true
           /**
@@ -57,48 +69,50 @@ class TS3Query extends EventEmitter {
           this.emit("connect")
           this._queueWorker()
         })
-        this._socket.on("data", chunk => {
-            this._data += chunk
-            var lines = this._data.split("\n")
-            this._data = lines.pop()
-            lines.forEach(line => {
-              this._lastline = line
-              var line = line.trim()
-              if (this._ignoreLines > 0
-                  && line.indexOf("error") !== 0)
-                  return this._ignoreLines--
-              if (line.indexOf("error") === 0) {
-                  let res = this._active.res
-                  this._lastline = ""
-                  res.finalize(line)
-                  if (res.hasError())
-                      this._active.reject(res.getError())
-                  else
-                      this._active.fulfill(res.getResponse())
-                  this._active = false
-                  return this._queueWorker()
-              } else if (line.indexOf("notify") === 0) {
-                  if (this._doubleEvents.some(s => line.indexOf(s) === 0)
-                      && this._handleDoubleEvents
-                      && line === this._lastevent) return
-                  this._lastevent = line
-                  /**
-                   * Query Event
-                   * Gets fired when the Query receives an Event
-                   *
-                   * @event TS3Query#<TeamSpeakEvent>
-                   * @memberof  TS3Query
-                   * @type {object}
-                   * @property {any} data - The data received from the Event
-                   */
-                  return this.emit(
-                      line.substr(6, line.indexOf(" ") - 6),
-                      Response.parse(line.substr(line.indexOf(" ") + 1)))
-              } else if (this._active) {
-                  this._active.res.setLine(line)
-              }
-            })
+        this._socket.on("line", line => {
+          this._lastline = line
+          var line = line.trim()
+          if (this._ignoreLines > 0
+              && line.indexOf("error") !== 0)
+              return this._ignoreLines--
+          if (line.indexOf("error") === 0) {
+              let res = this._active.res
+              this._lastline = ""
+              res.finalize(line)
+              if (res.hasError())
+                  this._active.reject(res.getError())
+              else
+                  this._active.fulfill(res.getResponse())
+              this._active = false
+              return this._queueWorker()
+          } else if (line.indexOf("notify") === 0) {
+              if (this._doubleEvents.some(s => line.indexOf(s) === 0)
+                  && this._handleDoubleEvents
+                  && line === this._lastevent) return
+              this._lastevent = line
+              /**
+               * Query Event
+               * Gets fired when the Query receives an Event
+               *
+               * @event TS3Query#<TeamSpeakEvent>
+               * @memberof  TS3Query
+               * @type {object}
+               * @property {any} data - The data received from the Event
+               */
+              return this.emit(
+                  line.substr(6, line.indexOf(" ") - 6),
+                  Response.parse(line.substr(line.indexOf(" ") + 1)))
+          } else if (this._active) {
+              this._active.res.setLine(line)
+          }
         })
+        /**
+         * Query Event
+         * Gets fired when the Socket had an Error
+         *
+         * @event TS3Query#<TeamSpeakEvent>
+         * @memberof  TS3Query
+         */
         this._socket.on("error", err => this.emit("error", err))
         this._socket.on("close", () => {
             this.connected = false
@@ -159,7 +173,7 @@ class TS3Query extends EventEmitter {
         clearTimeout(this._keepalivetimer)
         this._keepalivetimer = setTimeout(() => {
             this._cmdstarted = Date.now()
-            this._socket.write("\n")
+            this._socket.sendKeepAlive()
             this._refreshKeepAlive()
         }, 300 * 1000 - (Date.now() - this._cmdstarted))
     }
@@ -211,7 +225,7 @@ class TS3Query extends EventEmitter {
         this._active.res = new Response()
         this._antispamTimeout = setTimeout(() => {
             this._cmdstarted = Date.now()
-            this._socket.write(this._active.cmd.build()+"\n")
+            this._socket.send(this._active.cmd.build())
         }, this._antiSpamStepping - (Date.now() - this._cmdstarted))
         this._refreshKeepAlive()
     }

@@ -2,18 +2,17 @@ const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
 var ts3 = new TeamSpeak3({
-    host: "10.10.12.103",
-    queryport: 10011,
+    protocol: "ssh",    //simpty add this line to connect via ssh
+    host: "localhost",
+    queryport: 10022,
     username: "serveradmin",
-    password: "02bn+0R9",
+    password: "password",
     antispam: true,
     antispamtimer: 350,
     keepalive: true
 })
 
-ts3.on("ready", () => {
-    listServers()
-})
+ts3.on("ready", () => listServers())
 
 function listServers() {
   ts3.serverList().then(servers => {
