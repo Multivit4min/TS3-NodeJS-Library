@@ -223,12 +223,14 @@ module.exports = {
     l: String,
 
     //FileTransfer
+    path: String,
     size: Number,
     clientftfid: Number,
     serverftfid: Number,
     ftkey: String,
     port: Number,
     proto: Number,
+    datetime: Number,
 
     //General
     name: String,

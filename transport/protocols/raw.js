@@ -40,7 +40,7 @@ class RAW extends EventEmitter {
   }
 
   _handleClose() {
-    this.emit("close", str)
+    this.emit("close", ...arguments)
   }
 
   _handleData(chunk) {

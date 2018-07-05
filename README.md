@@ -9,12 +9,6 @@ Framework](https://docs.planetteamspeak.com/ts3/php/framework/index.html)
 `npm install ts3-nodejs-library`
 <br/><br/>
 
-##### TODO
-----
-* File upload
-* Channel Browser Access
-<br/><br/>
-
 ##### Documentation
 ----
 You can find all necessary documentation on the [GitHub Wiki Page](https://github.com/Multivit4min/TS3-NodeJS-Library/wiki)!

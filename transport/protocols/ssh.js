@@ -43,8 +43,8 @@ class SSH extends EventEmitter {
     })
   }
 
-  _handleClose(e) {
-    this.emit("close")
+  _handleClose() {
+    this.emit("close", ...arguments)
   }
 
   _handleError(err) {
