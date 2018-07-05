@@ -1878,7 +1878,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} cid - the channel id to check for
      * @param {string} [path=/] - the path to list
      * @param {string} [cpw] - the channel password
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftGetFileList(cid, path = "/", cpw = "") {
         return this.execute("ftgetfilelist", { cid, path, cpw })
@@ -1892,7 +1892,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} cid - the channel id to check for
      * @param {string} name - the filepath to receive
      * @param {string} [cpw] - the channel password
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftGetFileInfo(cid, name, cpw = "") {
         return this.execute("ftgetfileinfo", { cid, name, cpw })
@@ -1900,12 +1900,12 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed information about one or more specified files stored in a channels file repository
+     * Stops the running file transfer with server-side ID serverftfid.
      * @version 1.6
      * @async
      * @param {number} serverftfid - Server File Transfer ID
      * @param {number} [del=1] - <Description Pending>
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftStop(serverftfid, del=1) {
         return this.execute("ftstop", { serverftfid, delete: del })
@@ -1913,13 +1913,13 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed information about one or more specified files stored in a channels file repository.
+     * Deletes one or more files stored in a channels file repository
      * @version 1.6
      * @async
      * @param {number} cid - the channel id to check for
      * @param {string} name - path to the file to delete
      * @param {string} [cpw] - the channel password
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftDeleteFile(cid, name, cpw = "") {
         return this.execute("ftdeletefile", { cid, name, cpw })
@@ -1927,13 +1927,13 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed information about one or more specified files stored in a channels file repository.
+     * Creates new directory in a channels file repository
      * @version 1.6
      * @async
      * @param {number} cid - the channel id to check for
      * @param {string} dirname - path to the directory
      * @param {string} [cpw] - the channel password
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftCreateDir(cid, dirname, cpw = "") {
         return this.execute("ftcreatedir", { cid, dirname, cpw })
@@ -1941,7 +1941,7 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed information about one or more specified files stored in a channels file repository.
+     * Renames a file in a channels file repository. If the two parameters tcid and tcpw are specified, the file will be moved into another channels file repository
      * @version 1.6
      * @async
      * @param {number} cid - the channel id to check for
@@ -1950,7 +1950,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [tcid] - target channel id if the file should be moved to a different channel
      * @param {string} [cpw] - the channel password from where the file gets renamed
      * @param {string} [tcpw] - the channel password from where the file will get transferred to
-     * @returns {Promise<[]>} Promise object which returns an Array of Files
+     * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftRenameFile(cid, oldname, newname, tcid, cpw = "", tcpw) {
         return this.execute("ftrenamefile", { cid, oldname, newname, tcid, cpw, tcpw })
@@ -1958,7 +1958,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Initializes a file transfer upload. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start uploading the file through TeamSpeak 3's file transfer interface.
+     * Initializes a file transfer upload. clientftfid is an arbitrary ID to identify the file transfer on client-side.
+     * On success, the server generates a new ftkey which is required to start uploading the file through TeamSpeak 3's file transfer interface.
      * @version 1.0
      * @async
      * @param {object} transfer - The Transfer Object
@@ -1981,7 +1982,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Initializes a file transfer download. clientftfid is an arbitrary ID to identify the file transfer on client-side. On success, the server generates a new ftkey which is required to start downloading the file through TeamSpeak 3's file transfer interface.
+     * Initializes a file transfer download. clientftfid is an arbitrary ID to identify the file transfer on client-side.
+     * On success, the server generates a new ftkey which is required to start downloading the file through TeamSpeak 3's file transfer interface.
      * @version 1.0
      * @async
      * @param {object} transfer - The Transfer Object
