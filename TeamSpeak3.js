@@ -140,12 +140,11 @@ class TeamSpeak3 extends EventEmitter {
      * @type {object}
      * @property {TeamSpeakClient} client - The Client which joined the Server
      */
-    _evcliententerview() {
-        var raw = arguments[0]
-        this._clients[raw.clid] = new TeamSpeakClient(this, raw)
+    _evcliententerview(event) {
+        this._clients[event.clid] = new TeamSpeakClient(this, event)
         super.emit("clientconnect", {
-            client: this._clients[String(raw.clid)],
-            cid: raw.ctid
+            client: this._clients[String(event.clid)],
+            cid: event.ctid
         })
     }
 
@@ -159,11 +158,10 @@ class TeamSpeak3 extends EventEmitter {
      * @property {object} client - The data from the last Client List Command
      * @property {object} event - The Data from the disconnect event
      */
-    _evclientleftview() {
-        var raw = arguments[0]
+    _evclientleftview(event) {
         super.emit("clientdisconnect", {
-            client: (raw.clid in this._clients) ? this._clients[raw.clid].getCache() : {clid: raw.clid},
-            event: raw
+            client: (event.clid in this._clients) ? this._clients[event.clid].getCache() : {clid: event.clid},
+            event
         })
         delete this._clients[String(raw.clid)]
     }
@@ -179,14 +177,13 @@ class TeamSpeak3 extends EventEmitter {
      * @property {string} msg - The Message which has been sent
      * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
      */
-    _evtextmessage() {
-        var ev = arguments[0]
-        this.getClientByID(ev.invokerid)
+    _evtextmessage(event) {
+        this.getClientByID(event.invokerid)
         .then(c => {
             super.emit("textmessage", {
                 invoker: c,
-                msg: ev.msg,
-                targetmode: ev.targetmode
+                msg: event.msg,
+                targetmode: event.targetmode
             })
         }).catch(e => super.emit("error", e))
     }
@@ -202,16 +199,15 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} channel - The Channel which the client has been moved to
      * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
      */
-    _evclientmoved() {
-        var args = arguments[0]
+    _evclientmoved(event) {
         Promise.all([
-            this.getClientByID(args.clid),
-            this.getChannelByID(args.ctid)
+            this.getClientByID(event.clid),
+            this.getChannelByID(event.ctid)
         ]).then(res => {
             this.emit("clientmoved", {
                 client: res[0],
                 channel: res[1],
-                reasonid: args.reasonid
+                reasonid: event.reasonid
             })
         }).catch(e => this.emit("error", e))
     }
@@ -226,14 +222,13 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} invoker - The Client which edited the server
      * @property {object} modified - The Properties which has been modified
      */
-    _evserveredited() {
-        var args = arguments[0]
-        this.getClientByID(args.invokerid)
+    _evserveredited(event) {
+        this.getClientByID(event.invokerid)
         .then(client => {
             var prop = {invoker: client, modified: {}}
-            Object.keys(args)
+            Object.keys(event)
                 .filter(k => k.indexOf("virtualserver_") === 0)
-                .forEach(k => prop.modified[k] = args[k])
+                .forEach(k => prop.modified[k] = event[k])
             this.emit("serveredit", prop)
         }).catch(e => this.emit("error", e))
     }
@@ -249,16 +244,15 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} channel - The Channel which has been edited
      * @property {object} modified - The Properties which has been modified
      */
-    _evchanneledited() {
-        var args = arguments[0]
+    _evchanneledited(event) {
         Promise.all([
-            this.getClientByID(args.invokerid),
-            this.getChannelByID(args.cid)
+            this.getClientByID(event.invokerid),
+            this.getChannelByID(event.cid)
         ]).then(res => {
             var prop = {invoker: res[0], channel: res[1], modified: {}}
-            Object.keys(args)
+            Object.keys(event)
                 .filter(k => k.indexOf("channel_") === 0)
-                .forEach(k => prop.modified[k] = args[k])
+                .forEach(k => prop.modified[k] = event[k])
             this.emit("channeledit", prop)
         }).catch(e => this.emit("error", e))
     }
@@ -274,16 +268,15 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} channel - The Channel which has been created
      * @property {object} modified - The Properties which has been modified
      */
-    _evchannelcreated() {
-        var args = arguments[0]
+    _evchannelcreated(event) {
         Promise.all([
-            this.getClientByID(args.invokerid),
-            this.getChannelByID(args.cid)
+            this.getClientByID(event.invokerid),
+            this.getChannelByID(event.cid)
         ]).then(res => {
             var prop = {invoker: res[0], channel: res[1], modified: {}}
             Object.keys(args)
                 .filter(k => k.indexOf("channel_") === 0)
-                .forEach(k => prop.modified[k] = args[k])
+                .forEach(k => prop.modified[k] = event[k])
             this.emit("channelcreate", prop)
         }).catch(e => this.emit("error", e))
     }
@@ -299,12 +292,11 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} channel - The Channel which has been moved
      * @property {class} parent - The new Parent Channel
      */
-    _evchannelmoved() {
-        var args = arguments[0]
+    _evchannelmoved(event) {
         Promise.all([
-            this.getClientByID(args.invokerid),
-            this.getChannelByID(args.cid),
-            this.getChannelByID(args.cpid)
+            this.getClientByID(event.invokerid),
+            this.getChannelByID(event.cid),
+            this.getChannelByID(event.cpid)
         ]).then(res => this.emit("channelmoved", {
             invoker: res[0],
             channel: res[1],
@@ -322,11 +314,10 @@ class TeamSpeak3 extends EventEmitter {
      * @property {class} invoker - The Client which deleted the channel
      * @property {class} cid - The Channel ID which has been deleted
      */
-    _evchanneldeleted() {
-        this.getClientByID(arguments[0].invokerid)
-        .then(client => {
-            this.emit("channeldelete", {invoker: client, cid: arguments[0].cid})
-        }).catch(e => this.emit("error", e))
+    _evchanneldeleted(event) {
+        this.getClientByID(event.invokerid)
+          .then(client => this.emit("channeldelete", {invoker: client, cid: event.cid}))
+          .catch(e => this.emit("error", e))
     }
 
 
@@ -361,13 +352,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} event - The Event on which should be subscribed
-     * @param {number} [id] - The Channel ID
+     * @param {number} [id] - The Channel ID, only required when subscribing to the "channel" event
      * @returns {Promise.<object>}
      */
-    registerEvent(event, id = false) {
-        var arg = {event: event}
-        if (id !== false) arg.id = id
-        return this.execute("servernotifyregister", arg)
+    registerEvent(event, id) {
+        return this.execute("servernotifyregister", { event, id })
     }
 
 
@@ -459,7 +448,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     useByPort(port) {
-        return this._cacheCleanUp(this.execute("use", {port: port}))
+        return this._cacheCleanUp(this.execute("use", { port }))
     }
 
 
@@ -501,11 +490,11 @@ class TeamSpeak3 extends EventEmitter {
      * Displays the database ID of the virtual server running on the UDP port
      * @version 1.0
      * @async
-     * @param {number} port - The Server Port where data should be retrieved
+     * @param {number} virtualserver_port - The Server Port where data should be retrieved
      * @returns {Promise.<object>}
      */
-    serverIdGetByPort(port) {
-        return this.execute("serveridgetbyport", {virtualserver_port: port})
+    serverIdGetByPort(virtualserver_port) {
+        return this.execute("serveridgetbyport", { virtualserver_port })
     }
 
 
@@ -525,11 +514,11 @@ class TeamSpeak3 extends EventEmitter {
      * Stops the entire TeamSpeak 3 Server instance by shutting down the process.
      * @version 1.0
      * @async
-     * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
+     * @param {string} [reasonmsg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
      * @returns {Promise.<object>}
      */
-    serverProcessStop(msg) {
-        return this.execute("serverprocessstop", {reasonmsg: msg})
+    serverProcessStop(reasonmsg) {
+        return this.execute("serverprocessstop", { reasonmsg })
     }
 
 
@@ -552,14 +541,13 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} returns the server admin token for the new server and the response from the server creation
      */
     serverCreate(properties) {
-        var token = ""
+        var servertoken = ""
         return this.execute("servercreate", properties)
-        .then(res => {
-            token = r.token
-            return this.serverList({virtualserver_id: res.sid})
-        }).then(server => {
-            return new Promise(fulfill => fulfill({server: server[0], token: token}))
-        })
+          .then(({token, sid}) => {
+              servertoken = token
+              return this.serverList({virtualserver_id: sid})
+          })
+          .then(server => new Promise(fulfill => fulfill({server: server[0], token: servertoken})))
     }
 
 
@@ -571,7 +559,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverDelete(sid) {
-        return this.execute("serverdelete", {sid: sid})
+        return this.execute("serverdelete", { sid })
     }
 
 
@@ -583,7 +571,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverStart(sid) {
-        return this.execute("serverstart", {sid: sid})
+        return this.execute("serverstart", { sid })
     }
 
 
@@ -592,11 +580,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} sid - the server id
-     * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
+     * @param {string} [reasonmsg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
      * @returns {Promise.<object>}
      */
-    serverStop(sid, msg) {
-        return this.execute("serverstop", {sid: sid, reasonmsg: msg})
+    serverStop(sid, reasonmsg) {
+        return this.execute("serverstop", { sid, reasonmsg })
     }
 
 
@@ -609,12 +597,9 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupCreate(name, type = 1) {
-        return this.execute("servergroupadd", {name: name, type: type})
-        .then(r => {
-            return this.serverGroupList({sgid: r.sgid})
-        }).then(g => {
-            return new Promise(fulfill => fulfill(g[0]))
-        })
+        return this.execute("servergroupadd", { name, type })
+          .then(({sgid}) => this.serverGroupList({ sgid }))
+          .then(group => new Promise(fulfill => fulfill(group[0])))
     }
 
 
@@ -626,7 +611,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupClientList(sgid) {
-        return this.execute("servergroupclientlist", {sgid: sgid}, ["-names"])
+        return this.execute("servergroupclientlist", { sgid }, ["-names"])
     }
 
 
@@ -639,7 +624,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupAddClient(cldbid, sgid) {
-        return this.execute("servergroupaddclient", {sgid: sgid, cldbid: cldbid})
+        return this.execute("servergroupaddclient", { sgid, cldbid })
     }
 
 
@@ -652,7 +637,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupDelClient(cldbid, sgid) {
-        return this.execute("servergroupdelclient", {sgid: sgid, cldbid: cldbid})
+        return this.execute("servergroupdelclient", { cldbid, sgid })
     }
 
 
@@ -661,11 +646,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
-     * @param {number} force - If set to 1 the ServerGroup will be deleted even when Clients are in it
+     * @param {number} [force=0] - If set to 1 the ServerGroup will be deleted even when Clients are in it
      * @returns {Promise.<object>}
      */
     serverGroupDel(sgid, force = 0) {
-        return this.execute("servergroupdel", {sgid: sgid, force: force})
+        return this.execute("servergroupdel", {sgid, force})
     }
 
 
@@ -680,9 +665,9 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupCopy(ssgid, tsgid = 0, type = 1, name = false) {
-        var prop = {ssgid: ssgid, tsgid: tsgid, type: type}
-        if (typeof name === "string") prop.name = name
-        return this.execute("servergroupcopy", prop)
+        var properties = { ssgid, tsgid, type }
+        if (typeof name === "string") properties.name = name
+        return this.execute("servergroupcopy", properties)
     }
 
 
@@ -695,7 +680,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupRename(sgid, name) {
-        return this.execute("servergrouprename", {sgid: sgid, name: name})
+        return this.execute("servergrouprename", { sgid, name })
     }
 
 
@@ -708,7 +693,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupPermList(sgid, permsid = false) {
-        return this.execute("servergrouppermlist", {sgid: sgid}, [permsid ? "-permsid" : null]).then(this.toArray)
+        return this.execute("servergrouppermlist", { sgid }, [permsid ? "-permsid" : null]).then(this.toArray)
     }
 
 
@@ -725,12 +710,12 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupAddPerm(sgid, perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {sgid: sgid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return this.execute("servergroupaddperm", prop)
+        var properties = { sgid }
+        properties[permsid ? "permsid": "permid"] = perm
+        properties.permvalue = value
+        properties.permskip = skip
+        properties.permnegated = negate
+        return this.execute("servergroupaddperm", properties)
     }
 
 
@@ -744,9 +729,9 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupDelPerm(sgid, perm, permsid = false) {
-        var prop = {sgid: sgid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return this.execute("servergroupdelperm", prop)
+        var properties = { sgid }
+        properties[permsid ? "permsid" : "permid"] = perm
+        return this.execute("servergroupdelperm", properties)
     }
 
 
@@ -755,17 +740,14 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} name - The Name of the Channel
-     * @param {object} [type={}] - Properties of the Channel
+     * @param {object} [properties={}] - Properties of the Channel
      * @returns {Promise.<object>}
      */
     channelCreate(name, properties = {}) {
         properties.channel_name = name
         return this.execute("channelcreate", properties)
-        .then(r => {
-            return this.channelList({cid: r.cid})
-        }).then(c => {
-            return new Promise(fulfill => fulfill(c[0]))
-        })
+        .then(({cid}) => this.channelList({ cid }))
+        .then(c => new Promise(fulfill => fulfill(c[0])))
     }
 
 
@@ -778,12 +760,9 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     channelGroupCreate(name, type = 1) {
-        return this.execute("channelgroupadd", {name: name, type: type})
-        .then(r => {
-            return this.channelGroupList({cgid: r.cgid})
-        }).then(g => {
-            return new Promise(fulfill => fulfill(g[0]))
-        })
+        return this.execute("channelgroupadd", { name, type })
+          .then(({cgid}) => this.channelGroupList({ cgid }))
+          .then(g => new Promise(fulfill => fulfill(g[0])))
     }
 
 
@@ -796,9 +775,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getChannelByID(cid) {
         return new Promise((fulfill, reject) => {
-            this.channelList({cid: cid})
-                .then(channel => fulfill(channel[0]))
-                .catch(reject)
+          this.channelList({ cid })
+            .then(channel => fulfill(channel[0]))
+            .catch(reject)
         })
     }
 
@@ -807,14 +786,14 @@ class TeamSpeak3 extends EventEmitter {
      * Retrieves a Single Channel by the given Channel Name
      * @version 1.0
      * @async
-     * @param {number} name - The Name of the Channel
+     * @param {number} channel_name - The Name of the Channel
      * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
      */
-    getChannelByName(name) {
+    getChannelByName(channel_name) {
         return new Promise((fulfill, reject) => {
-            this.channelList({channel_name: name})
-                .then(channel => fulfill(channel[0]))
-                .catch(reject)
+          this.channelList({ channel_name })
+            .then(channel => fulfill(channel[0]))
+            .catch(reject)
         })
     }
 
@@ -827,7 +806,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelInfo(cid) {
-        return this.execute("channelinfo", {cid: cid})
+        return this.execute("channelinfo", { cid })
     }
 
 
@@ -841,7 +820,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelMove(cid, cpid, order = 0) {
-        return this.execute("channelmove", {cid: cid, cpid: cpid, order: order})
+        return this.execute("channelmove", { cid, cpid, order })
     }
 
 
@@ -850,11 +829,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
-     * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
+     * @param {number} [force=0] - If set to 1 the Channel will be deleted even when Clients are in it
      * @return {Promise.<object>}
      */
     channelDelete(cid, force = 0) {
-        return this.execute("channeldelete", {cid: cid, force: force})
+        return this.execute("channeldelete", { cid, force})
     }
 
 
@@ -863,10 +842,10 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
-     * @param {number} properties - The Properties of the Channel which should get changed
+     * @param {object} [properties={}] - The Properties of the Channel which should get changed
      * @return {Promise.<object>}
      */
-    channelEdit(cid, properties) {
+    channelEdit(cid, properties = {}) {
         properties.cid = cid
         return this.execute("channeledit", properties)
     }
@@ -877,11 +856,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
-     * @param {boolean} permsid - Whether the Perm SID should be displayed aswell
+     * @param {boolean} [permsid=false] - Whether the Perm SID should be displayed aswell
      * @return {Promise.<object[]>}
      */
     channelPermList(cid, permsid = false) {
-        return this.execute("channelpermlist", {cid: cid}, (permsid) ? ["-permsid"] : null).then(this.toArray)
+        return this.execute("channelpermlist", { cid }, (permsid) ? ["-permsid"] : null).then(this.toArray)
     }
 
 
@@ -892,14 +871,14 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} cid - the channel id
      * @param {(string|number)} perm - The permid or permsid
      * @param {number} value - The Value which should be set
-     * @param {boolean} sid - If the given Perm is a permsid
+     * @param {boolean} [sid=false] - If the given Perm is a permsid
      * @return {Promise.<object>}
      */
     channelSetPerm(cid, perm, value, sid = false) {
-        var prop = {cid: cid}
-        prop[(sid) ? "permsid" : "permid"] = perm
-        prop.permvalue = value
-        return this.execute("channeladdperm", prop)
+        var properties = { cid }
+        properties[(sid) ? "permsid" : "permid"] = perm
+        properties.permvalue = value
+        return this.execute("channeladdperm", properties)
     }
 
 
@@ -928,9 +907,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getClientByID(clid) {
         return new Promise((fulfill, reject) => {
-            this.clientList({clid: clid})
-                .then(clients => fulfill(clients[0]))
-                .catch(reject)
+          this.clientList({ clid })
+            .then(clients => fulfill(clients[0]))
+            .catch(reject)
         })
     }
 
@@ -939,14 +918,14 @@ class TeamSpeak3 extends EventEmitter {
      * Retrieves a Single Client by the given Client Database ID
      * @version 1.0
      * @async
-     * @param {number} cldbid - The Client Database Id
+     * @param {number} client_database_id - The Client Database Id
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */
-    getClientByDBID(cldbid) {
+    getClientByDBID(client_database_id) {
         return new Promise((fulfill, reject) => {
-            this.clientList({client_database_id: cldbid})
-                .then(clients => fulfill(clients[0]))
-                .catch(reject)
+          this.clientList({ client_database_id })
+            .then(clients => fulfill(clients[0]))
+            .catch(reject)
         })
     }
 
@@ -955,14 +934,14 @@ class TeamSpeak3 extends EventEmitter {
      * Retrieves a Single Client by the given Client Unique Identifier
      * @version 1.0
      * @async
-     * @param {string} uid - The Client Unique Identifier
+     * @param {string} client_unique_identifier - The Client Unique Identifier
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */
-    getClientByUID(uid) {
+    getClientByUID(client_unique_identifier) {
         return new Promise((fulfill, reject) => {
-            this.clientList({client_unique_identifier: uid})
-                .then(clients => fulfill(clients[0]))
-                .catch(reject)
+          this.clientList({ client_unique_identifier })
+            .then(clients => fulfill(clients[0]))
+            .catch(reject)
         })
     }
 
@@ -971,14 +950,14 @@ class TeamSpeak3 extends EventEmitter {
      * Retrieves a Single Client by the given Client Unique Identifier
      * @version 1.0
      * @async
-     * @param {string} name - The Nickname of the Client
+     * @param {string} client_nickname - The Nickname of the Client
      * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
      */
-    getClientByName(name) {
+    getClientByName(client_nickname) {
         return new Promise((fulfill, reject) => {
-            this.clientList({client_nickname: name})
-                .then(clients => fulfill(clients[0]))
-                .catch(reject)
+          this.clientList({ client_nickname })
+            .then(clients => fulfill(clients[0]))
+            .catch(reject)
         })
     }
 
@@ -991,7 +970,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise with the Client Information
      */
     clientInfo(clid) {
-        return this.execute("clientinfo", {clid: clid})
+        return this.execute("clientinfo", { clid })
     }
 
 
@@ -1005,7 +984,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Returns the Client Database Info
      */
     clientDBList(start = 0, duration = 1000, count = true) {
-        return this.execute("clientdblist", {start: start, duration: duration}, [(count) ? "-count" : null])
+        return this.execute("clientdblist", { start, duration }, [(count) ? "-count" : null])
     }
 
 
@@ -1013,11 +992,11 @@ class TeamSpeak3 extends EventEmitter {
      * Returns the Clients Database Info
      * @version 1.0
      * @async
-     * @param {number} dbid - the client database id
+     * @param {number} cldbid - the client database id
      * @returns {Promise.<object>} Returns the Client Database Info
      */
-    clientDBInfo(dbid) {
-        return this.execute("clientdbinfo", {cldbid: dbid})
+    clientDBInfo(cldbid) {
+        return this.execute("clientdbinfo", { cldbid })
     }
 
 
@@ -1027,11 +1006,11 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} clid - the client id
      * @param {number} reasonid - the reasonid
-     * @param {string} msg - The Message the Client should receive when getting kicked
+     * @param {string} reasonmsg - The Message the Client should receive when getting kicked
      * @returns {Promise.<object>} Promise Object
      */
-    clientKick(clid, reasonid, msg) {
-        return this.execute("clientkick", {clid: clid, reasonid: reasonid, reasonmsg: msg})
+    clientKick(clid, reasonid, reasonmsg) {
+        return this.execute("clientkick", { clid, reasonid, reasonmsg })
     }
 
 
@@ -1041,11 +1020,11 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} clid - the client id
      * @param {number} cid - Channel ID in which the Client should get moved
-     * @param {string} [cpw=""] - The Channel Password
+     * @param {string} [cpw] - The Channel Password
      * @returns {Promise.<object>} Promise Object
      */
-    clientMove(clid, cid, cpw = "") {
-        return this.execute("clientmove", {clid: clid, cid: cid, cpw:cpw})
+    clientMove(clid, cid, cpw) {
+        return this.execute("clientmove", { clid, cid, cpw })
     }
 
 
@@ -1058,7 +1037,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     clientPoke(clid, msg) {
-        return this.execute("clientpoke", {clid: clid, msg: msg})
+        return this.execute("clientpoke", { clid, msg })
     }
 
 
@@ -1066,12 +1045,12 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of permissions defined for a client
      * @version 1.0
      * @async
-     * @param {number} dbid - the client database id
+     * @param {number} cldbid - the client database id
      * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
      * @return {Promise.<object>}
      */
-    clientPermList(dbid, permsid = false) {
-        return this.execute("clientpermlist", {cldbid: dbid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
+    clientPermList(cldbid, permsid = false) {
+        return this.execute("clientpermlist", { cldbid }, [(permsid) ? "-permsid" : null]).then(this.toArray)
     }
 
 
@@ -1079,7 +1058,7 @@ class TeamSpeak3 extends EventEmitter {
      * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
-     * @param {number} dbid - the client database id
+     * @param {number} cldbid - the client database id
      * @param {(string|number)} perm - The permid or permsid
      * @param {number} value - Value of the Permission
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
@@ -1087,13 +1066,13 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [negate=0] - Whether the negate flag should be set
      * @return {Promise.<object>}
      */
-    clientAddPerm(dbid, perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {cldbid: dbid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return this.execute("clientaddperm", prop)
+    clientAddPerm(cldbid, perm, value, permsid = false, skip = 0, negate = 0) {
+        var properties = { cldbid }
+        properties[(permsid) ? "permsid": "permid"] = perm
+        properties.permvalue = value
+        properties.permskip = skip
+        properties.permnegated = negate
+        return this.execute("clientaddperm", properties)
     }
 
 
@@ -1101,15 +1080,15 @@ class TeamSpeak3 extends EventEmitter {
      * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
      * @version 1.0
      * @async
-     * @param {number} dbid - the client database id
+     * @param {number} cldbid - the client database id
      * @param {(string|number)} perm - The permid or permsid
      * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
      * @return {Promise.<object>}
      */
-    clientDelPerm(dbid, perm, permsid = false) {
-        var prop = {cldbid: dbid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return this.execute("clientdelperm", prop)
+    clientDelPerm(cldbid, perm, permsid = false) {
+        var properties = { cldbid }
+        properties[(permsid) ? "permsid" : "permid"] = perm
+        return this.execute("clientdelperm", properties)
     }
 
 
@@ -1123,7 +1102,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     customSearch(ident, pattern) {
-        return this.execute("customsearch", {ident: ident, pattern: pattern})
+        return this.execute("customsearch", { ident, pattern })
     }
 
 
@@ -1135,7 +1114,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     customInfo(cldbid) {
-        return this.execute("custominfo", {cldbid: cldbid})
+        return this.execute("custominfo", { cldbid })
     }
 
 
@@ -1149,7 +1128,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     customDelete(cldbid, ident) {
-        return this.execute("customdelete", {cldbid: cldbid, ident: ident})
+        return this.execute("customdelete", { cldbid, ident })
     }
 
 
@@ -1165,7 +1144,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     customSet(cldbid, ident, value) {
-        return this.execute("customset", {cldbid: cldbid, ident: ident, value: value})
+        return this.execute("customset", { cldbid, ident, value })
     }
 
 
@@ -1180,7 +1159,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise Object
      */
     sendTextMessage(target, targetmode, msg) {
-        return this.execute("sendtextmessage", {targetmode: targetmode, target: target, msg: msg})
+        return this.execute("sendtextmessage", { target, targetmode, msg})
     }
 
 
@@ -1193,9 +1172,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getServerGroupByID(sgid) {
         return new Promise((fulfill, reject) => {
-            this.serverGroupList({sgid: sgid})
-                .then(groups => fulfill(groups[0]))
-                .catch(reject)
+          this.serverGroupList({ sgid })
+            .then(groups => fulfill(groups[0]))
+            .catch(reject)
         })
     }
 
@@ -1209,9 +1188,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getServerGroupByName(name) {
         return new Promise((fulfill, reject) => {
-            this.serverGroupList({name: name})
-                .then(groups => fulfill(groups[0]))
-                .catch(reject)
+          this.serverGroupList({ name })
+            .then(groups => fulfill(groups[0]))
+            .catch(reject)
         })
     }
 
@@ -1225,9 +1204,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getChannelGroupByID(cgid) {
         return new Promise((fulfill, reject) => {
-            this.channelGroupList({cgid: cgid})
-                .then(groups => fulfill(groups[0]))
-                .catch(reject)
+          this.channelGroupList({ cgid })
+            .then(groups => fulfill(groups[0]))
+            .catch(reject)
         })
     }
 
@@ -1241,9 +1220,9 @@ class TeamSpeak3 extends EventEmitter {
      */
     getChannelGroupByName(name) {
         return new Promise((fulfill, reject) => {
-            this.channelGroupList({name: name})
-                .then(groups => fulfill(groups[0]))
-                .catch(reject)
+          this.channelGroupList({ name })
+            .then(groups => fulfill(groups[0]))
+            .catch(reject)
         })
     }
 
@@ -1258,7 +1237,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     setClientChannelGroup(cgid, cid, cldbid) {
-        return this.execute("setclientchannelgroup", {cgid: cgid, cldbid: cldbid, cid: cid})
+        return this.execute("setclientchannelgroup", { cgid, cldbid, cid })
     }
 
 
@@ -1271,7 +1250,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     deleteChannelGroup(cgid, force = 0) {
-        return this.execute("channelgroupdel", {cgid: cgid, force: force})
+        return this.execute("channelgroupdel", { cgid, force })
     }
 
 
@@ -1286,9 +1265,9 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelGroupCopy(scgid, tcgid = 0, type = 1, name = false) {
-        var prop = {scgid: scgid, tcgid: tcgid, type: type}
-        if (typeof name === "string") prop.name = name
-        return this.execute("channelgroupcopy", prop)
+        var properties = { scgid, tcgid, type }
+        if (typeof name === "string") properties.name = name
+        return this.execute("channelgroupcopy", properties)
     }
 
 
@@ -1301,7 +1280,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelGroupRename(cgid, name) {
-        return this.execute("channelgrouprename", {cgid: cgid, name: name})
+        return this.execute("channelgrouprename", { cgid, name })
     }
 
 
@@ -1314,7 +1293,7 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object[]>}
      */
     channelGroupPermList(cgid, permsid = false) {
-        return this.execute("channelgrouppermlist", {cgid: cgid}, [(permsid) ? "-permsid" : null]).then(this.toArray)
+        return this.execute("channelgrouppermlist", { cgid }, [(permsid) ? "-permsid" : null]).then(this.toArray)
     }
 
 
@@ -1331,12 +1310,12 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelGroupAddPerm(cgid, perm, value, permsid = false, skip = 0, negate = 0) {
-        var prop = {cgid: cgid}
-        prop[(permsid) ? "permsid": "permid"] = perm
-        prop.permvalue = value
-        prop.permskip = skip
-        prop.permnegated = negate
-        return this.execute("channelgroupaddperm", prop)
+        var properties = { cgid }
+        properties[(permsid) ? "permsid": "permid"] = perm
+        properties.permvalue = value
+        properties.permskip = skip
+        properties.permnegated = negate
+        return this.execute("channelgroupaddperm", properties)
     }
 
 
@@ -1350,9 +1329,9 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<object>}
      */
     channelGroupDelPerm(cgid, perm, permsid = false) {
-        var prop = {cgid: cgid}
-        prop[(permsid) ? "permsid" : "permid"] = perm
-        return this.execute("channelgroupdelperm", prop)
+        var properties = { cgid }
+        properties[(permsid) ? "permsid" : "permid"] = perm
+        return this.execute("channelgroupdelperm", properties)
     }
 
 
@@ -1365,9 +1344,9 @@ class TeamSpeak3 extends EventEmitter {
      * @return {Promise.<TeamSpeakClient>}
      */
     channelGroupClientList(cgid, cid) {
-        var prop = {cgid: cgid}
-        if (typeof cid == "number") prop.cid = cid
-        return this.execute("channelgroupclientlist", prop)
+        var properties = { cgid }
+        if (typeof cid === "number") properties.cid = cid
+        return this.execute("channelgroupclientlist", properties)
     }
 
 
@@ -1381,10 +1360,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} retrieves assigned permissions
      */
     permOverview(cldbid, cid, permid, permsid) {
-        var props = { cldbid: cldbid, cid: cid }
-        if (permid !== null && permid !== undefined) props.permid = permid
-        if (permsid !== null && permsid !== undefined) props.permsid = permsid
-        return this.execute("permoverview", props)
+        var properties = { cldbid, cid }
+        if (permid !== null && permid !== undefined) properties.permid = permid
+        if (permsid !== null && permsid !== undefined) properties.permsid = permsid
+        return this.execute("permoverview", properties)
     }
 
 
@@ -1407,7 +1386,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} gets the specified permissions
      */
     permIdGetByName(permsid) {
-        return this.execute("permidgetbyname", {permsid: permsid})
+        return this.execute("permidgetbyname", { permsid })
     }
 
 
@@ -1419,12 +1398,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} gets the permissions
      */
     permGet(key) {
-        var prop = {}
-        if (typeof key === "string")
-            prop.permsid = key
-        else
-            prop.permid = key
-        return this.execute("permget", prop)
+        return this.execute("permget", (typeof key === "string") ? { permsid: key } : { permid: key })
     }
 
 
@@ -1436,12 +1410,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} gets the permissions
      */
     permFind(perm) {
-        var prop = {}
-        if (typeof perm === "number")
-            prop.permid = perm
-        else
-            prop.permsid = perm
-        return this.execute("permfind", prop)
+        return this.execute("permfind", (typeof perm === "number") ? { permid: perm } : { permsid: perm })
     }
 
 
@@ -1471,17 +1440,17 @@ class TeamSpeak3 extends EventEmitter {
      * Create a new token. If type is set to 0, the ID specified with tokenid will be a server group ID. Otherwise, tokenid is used as a channel group ID and you need to provide a valid channel ID using channelid.
      * @version 1.0
      * @async
-     * @param {number} type - Token Type
+     * @param {number} tokentype - Token Type
      * @param {number} group - Depends on the Type given, add either a valid Channel Group or Server Group
      * @param {number} [cid] - Depends on the Type given, add a valid Channel ID
      * @param {string} [description] - Token Description
      * @returns {Promise.<object>}
      */
-    privilegekeyAdd(type, group, cid, description) {
-        var prop = {tokentype: type, tokenid1: group}
-        if (type === 1) prop.tokenid2 = cid
-        if (description) prop.description = description
-        return this.execute("privilegekeyadd", prop)
+    privilegekeyAdd(tokentype, group, cid, description) {
+        var properties = { tokentype, tokenid1: group }
+        if (type === 1) properties.tokenid2 = cid
+        if (description) properties.description = description
+        return this.execute("privilegekeyadd", properties)
     }
 
 
@@ -1493,7 +1462,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     privilegekeyDelete(token) {
-        return this.execute("privilegekeydelete", {token: token})
+        return this.execute("privilegekeydelete", { token })
     }
 
 
@@ -1505,7 +1474,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     privilegekeyUse(token) {
-        return this.execute("privilegekeyuse", {token: token})
+        return this.execute("privilegekeyuse", { token })
     }
 
 
@@ -1524,13 +1493,13 @@ class TeamSpeak3 extends EventEmitter {
      * Sends an offline message to the client specified by uid.
      * @version 1.0
      * @async
-     * @param {string} uid - Client Unique Identifier (uid)
+     * @param {string} cluid - Client Unique Identifier (uid)
      * @param {string} subject - Subject of the message
      * @param {string} text - Message Text
      * @returns {Promise.<object>}
      */
-    messageAdd(uid, subject, text) {
-        return this.execute("messageadd", {cluid: uid, subject: subject, text: text})
+    messageAdd(cluid, subject, text) {
+        return this.execute("messageadd", { cluid, subject, text })
     }
 
 
@@ -1538,11 +1507,11 @@ class TeamSpeak3 extends EventEmitter {
      * Sends an offline message to the client specified by uid.
      * @version 1.0
      * @async
-     * @param {number} id - The Message ID which should be deleted
+     * @param {number} msgid - The Message ID which should be deleted
      * @returns {Promise.<object>}
      */
-    messageDel(id) {
-        return this.execute("messagedel", {msgid: id})
+    messageDel(msgid) {
+        return this.execute("messagedel", { msgid })
     }
 
 
@@ -1550,11 +1519,11 @@ class TeamSpeak3 extends EventEmitter {
      * Displays an existing offline message with the given id from the inbox.
      * @version 1.0
      * @async
-     * @param {number} id - Gets the content of the Message
+     * @param {number} msgid - Gets the content of the Message
      * @returns {Promise.<object>}
      */
-    messageGet(id) {
-        return this.execute("messageget", {msgid: id})
+    messageGet(msgid) {
+        return this.execute("messageget", { msgid })
     }
 
 
@@ -1562,12 +1531,12 @@ class TeamSpeak3 extends EventEmitter {
      * Displays an existing offline message with the given id from the inbox.
      * @version 1.0
      * @async
-     * @param {number} id - Gets the content of the Message
-     * @param {number} read - If flag is set to 1 the message will be marked as read
+     * @param {number} msgid - Gets the content of the Message
+     * @param {number} [flag=1] - If flag is set to 1 the message will be marked as read
      * @returns {Promise.<object>}
      */
-    messageUpdate(id, read) {
-        return this.execute("messageupdateflag", {msgid: id, flag: flag})
+    messageUpdate(msgid, flag = 1) {
+        return this.execute("messageupdateflag", { msgid, flag })
     }
 
 
@@ -1575,11 +1544,11 @@ class TeamSpeak3 extends EventEmitter {
      * Displays a list of complaints on the selected virtual server. If dbid is specified, only complaints about the targeted client will be shown.
      * @version 1.0
      * @async
-     * @param {number} [dbid] - Filter only for certain Client with the given Database ID
+     * @param {number} [cldbid] - Filter only for certain Client with the given Database ID
      * @returns {Promise.<object>}
      */
     complainList(dbid) {
-        return this.execute("complainlist", (typeof dbid === "number") ? {cldbid: dbid} : null)
+        return this.execute("complainlist", { cldbid })
     }
 
 
@@ -1587,12 +1556,12 @@ class TeamSpeak3 extends EventEmitter {
      * Submits a complaint about the client with database ID dbid to the server.
      * @version 1.0
      * @async
-     * @param {number} dbid - Filter only for certain Client with the given Database ID
+     * @param {number} cldbid - Filter only for certain Client with the given Database ID
      * @param {string} [message] - The Message which should be added
      * @returns {Promise.<object>}
      */
-    complainAdd(dbid, message = "") {
-        return this.execute("complainadd", {cldbid: dbid, message: message})
+    complainAdd(cldbid, message = "") {
+        return this.execute("complainadd", { cldbid, message })
     }
 
 
@@ -1604,11 +1573,11 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} fcldbid - The Client Database ID which filed the Report
      * @returns {Promise.<object>}
      */
-    complainDel(tdbid, fdbid = false) {
-        var cmd = (fdbid === false) ? "complaindelall" : "complaindel"
-        var prop = {tcldbid: tdbid}
-        if (fdbid === false) prop.fcldbid = fdbid
-        return this.execute(cmd, prop)
+    complainDel(tcldbid, fcldbid = false) {
+        var cmd = (fcldbid === false) ? "complaindelall" : "complaindel"
+        var properties = { tcldbid }
+        if (fcldbid === false) properties.fcldbid = fcldbid
+        return this.execute(cmd, properties)
     }
 
 
@@ -1631,17 +1600,11 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [name] - Name Regex
      * @param {string} [uid] - UID Regex
      * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
-     * @param {string} reason - Ban Reason
+     * @param {string} banreason - Ban Reason
      * @returns {Promise.<object>}
      */
-    banAdd(ip, name, uid, time, reason) {
-        var props = {}
-        if (ip) props.ip = ip
-        if (name) props.name = name
-        if (uid) props.uid = uid
-        if (time) props.time = time
-        props.banreason = reason || ""
-        return this.execute("banadd", props)
+    banAdd(ip, name, uid, time, banreason) {
+        return this.execute("banadd", { ip, name, uid, time, banreason })
     }
 
 
@@ -1649,13 +1612,13 @@ class TeamSpeak3 extends EventEmitter {
      * Removes one or all bans from the server
      * @version 1.0
      * @async
-     * @param {number} [id] - The BanID to remove, if not provided it will remove all bans
+     * @param {number} [banid] - The BanID to remove, if not provided it will remove all bans
      * @returns {Promise.<object>}
      */
-    banDel(id = false) {
+    banDel(banid = false) {
         return this.execute(
-            (id === false) ? "bandelall" : "bandel",
-            (id !== false) ? {banid: id} : null
+            (id !== false) ? "bandel" : "bandelall",
+            (id !== false) ? { banid } : null
         )
     }
 
@@ -1671,7 +1634,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     logView(lines = 1000, reverse = 0, instance = 0, begin_pos = 0) {
-        return this.execute("logview", { lines: lines, reverse: reverse, instance: instance, begin_pos: begin_pos })
+        return this.execute("logview", { lines, reverse, instance, begin_pos })
     }
 
 
@@ -1679,12 +1642,12 @@ class TeamSpeak3 extends EventEmitter {
      * Writes a custom entry into the servers log. Depending on your permissions, you'll be able to add entries into the server instance log and/or your virtual servers log. The loglevel parameter specifies the type of the entry
      * @version 1.0
      * @async
-     * @param {number} level - Level 1 to 4
-     * @param {string} msg - Message to log
+     * @param {number} loglevel - Level 1 to 4
+     * @param {string} logmsg - Message to log
      * @returns {Promise.<object>}
      */
-    logAdd(level, msg) {
-        return this.execute("logadd", { loglevel: level, logmsg: msg })
+    logAdd(loglevel, logmsg) {
+        return this.execute("logadd", { loglevel, logmsg })
     }
 
 
@@ -1696,7 +1659,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     gm(msg) {
-        return this.execute("gm", { msg: msg })
+        return this.execute("gm", { msg })
     }
 
 
@@ -1708,7 +1671,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     clientDBInfo(cldbid) {
-        return this.execute("clientdbinfo", {cldbid: cldbid})
+        return this.execute("clientdbinfo", { cldbid })
     }
 
 
@@ -1721,7 +1684,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     clientDBFind(pattern, isUid = false) {
-        return this.execute("clientdbfind", {pattern: pattern}, (isUid) ? ["-uid"] : [])
+        return this.execute("clientdbfind", { pattern }, (isUid) ? ["-uid"] : [])
     }
 
 
@@ -1730,10 +1693,10 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {string} cldbid - The Client Database ID which should be edited
-     * @param {object} properties - The Properties which should be modified
+     * @param {object} [properties={}] - The Properties which should be modified
      * @returns {Promise.<object>}
      */
-    clientDBEdit(cldbid, properties) {
+    clientDBEdit(cldbid, properties = {}) {
         properties.cldbid = cldbid
         return this.execute("clientdbedit", properties)
     }
@@ -1748,7 +1711,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     clientDBDelete(cldbid) {
-        return this.execute("clientdbdelete", {cldbid: cldbid})
+        return this.execute("clientdbdelete", { cldbid })
     }
 
 
@@ -1759,19 +1722,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<TeamSpeakServer[]>}
      */
     serverList(filter = {}) {
-        return this.execute(
-            "serverlist", ["-uid", "-all"]
-        ).then(servers => {
-            return this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer)
-        }).then(servers => {
-            return this.constructor._filter(servers, filter)
-        }).then(servers => {
-            return new Promise((fulfill, reject) => {
-                fulfill(servers.map(s => {
-                    return this._servers[s.virtualserver_id]
-                }))
-            })
-        })
+        return this.execute("serverlist", ["-uid", "-all"])
+          .then(servers => this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer))
+          .then(servers => this.constructor._filter(servers, filter))
+          .then(servers => new Promise((fulfill, reject) => fulfill(servers.map(s => this._servers[s.virtualserver_id]))))
     }
 
 
@@ -1783,19 +1737,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<TeamSpeakChannelGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
      */
     channelGroupList(filter = {}) {
-        return this.execute(
-            "channelgrouplist"
-        ).then(groups => {
-            return this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup)
-        }).then(groups => {
-            return this.constructor._filter(groups, filter)
-        }).then(groups => {
-            return new Promise((fulfill, reject) => {
-                fulfill(groups.map(g => {
-                    return this._channelgroups[g.cgid]
-                }))
-            })
-        })
+        return this.execute("channelgrouplist")
+          .then(groups => this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup))
+          .then(groups =>  this.constructor._filter(groups, filter))
+          .then(groups => new Promise((fulfill, reject) => fulfill(groups.map(g => this._channelgroups[g.cgid]))))
     }
 
 
@@ -1807,19 +1752,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<TeamSpeakServerGroup[]>} Promise object which returns an Array of TeamSpeak Server Groups
      */
     serverGroupList(filter = {}) {
-        return this.execute(
-            "servergrouplist"
-        ).then(groups => {
-            return this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup)
-        }).then(groups => {
-            return this.constructor._filter(groups, filter)
-        }).then(groups => {
-            return new Promise((fulfill, reject) => {
-                fulfill(groups.map(g => {
-                    return this._servergroups[g.sgid]
-                }))
-            })
-        })
+        return this.execute("servergrouplist")
+          .then(groups => this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup))
+          .then(groups => this.constructor._filter(groups, filter))
+          .then(groups => new Promise((fulfill, reject) => fulfill(groups.map(g => this._servergroups[g.sgid]))))
     }
 
 
@@ -1831,19 +1767,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise<TeamSpeakChannel[]>} Promise object which returns an Array of TeamSpeak Channels
      */
     channelList(filter = {}) {
-        return this.execute(
-            "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"]
-        ).then(channels => {
-            return this._handleCache(this._channels, channels, "cid", TeamSpeakChannel)
-        }).then(channels => {
-            return this.constructor._filter(channels, filter)
-        }).then(channels => {
-            return new Promise((fulfill, reject) => {
-                fulfill(channels.map(c => {
-                    return this._channels[c.cid]
-                }))
-            })
-        })
+        return this.execute("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"])
+          .then(channels => this._handleCache(this._channels, channels, "cid", TeamSpeakChannel))
+          .then(channels => this.constructor._filter(channels, filter))
+          .then(channels => new Promise((fulfill, reject) => fulfill(channels.map(c => this._channels[c.cid]))))
     }
 
 
@@ -1855,19 +1782,10 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise<TeamSpeakClient[]>} Promise object which returns an Array of TeamSpeak Clients
      */
     clientList(filter = {}) {
-        return this.execute(
-            "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"]
-        ).then(clients => {
-            return this._handleCache(this._clients, clients, "clid", TeamSpeakClient)
-        }).then(clients => {
-            return this.constructor._filter(clients, filter)
-        }).then(clients => {
-            return new Promise((fulfill, reject) => {
-                fulfill(clients.map(c => {
-                    return this._clients[String(c.clid)]
-                }))
-            })
-        })
+        return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"])
+        .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
+        .then(clients => this.constructor._filter(clients, filter))
+        .then(clients => new Promise((fulfill, reject) => fulfill(clients.map(c => this._clients[String(c.clid)]))))
     }
 
 
@@ -1921,7 +1839,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [cpw] - the channel password
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
-    ftDeleteFile(cid, name, cpw = "") {
+    ftDeleteFile(cid, name, cpw) {
         return this.execute("ftdeletefile", { cid, name, cpw })
     }
 
@@ -1935,7 +1853,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [cpw] - the channel password
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
-    ftCreateDir(cid, dirname, cpw = "") {
+    ftCreateDir(cid, dirname, cpw) {
         return this.execute("ftcreatedir", { cid, dirname, cpw })
     }
 
@@ -1952,7 +1870,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [tcpw] - the channel password from where the file will get transferred to
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
-    ftRenameFile(cid, oldname, newname, tcid, cpw = "", tcpw) {
+    ftRenameFile(cid, oldname, newname, tcid, cpw, tcpw) {
         return this.execute("ftrenamefile", { cid, oldname, newname, tcid, cpw, tcpw })
     }
 
@@ -2154,8 +2072,8 @@ class TeamSpeak3 extends EventEmitter {
                     if (filter[k] instanceof RegExp) return a[k].match(filter[k])
                     if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) >= 0
                     switch (typeof a[k]) {
-                        case "number": return a[k] == parseFloat(filter[k])
-                        case "string": return a[k] == filter[k]
+                        case "number": return a[k] === parseFloat(filter[k])
+                        case "string": return a[k] === filter[k]
                         case "object": return a[k].match(filter[k])
                     }
                 }
