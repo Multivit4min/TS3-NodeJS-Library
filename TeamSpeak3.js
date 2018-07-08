@@ -163,7 +163,7 @@ class TeamSpeak3 extends EventEmitter {
             client: (event.clid in this._clients) ? this._clients[event.clid].getCache() : {clid: event.clid},
             event
         })
-        delete this._clients[String(raw.clid)]
+        delete this._clients[String(event.clid)]
     }
 
 
