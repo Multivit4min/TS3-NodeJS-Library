@@ -97,7 +97,49 @@ const EventEmitter = require("events")
      * @version 1.0
      */
     updateCache(info) {
-        this._propcache = info
+        var changes = this.objectCopy(this._propcache, info)
+        if (Object.values(changes).length === 0) return
+        Object
+          .values(changes)
+          /**
+           * Single Property Change event
+           *
+           * @event Abstract#update_<property>
+           * @memberof Abstract
+           * @type {object}
+           * @property {any} from - the old value
+           * @property {any} to - the new value
+           */
+          .forEach(prop => this.emit("update_"+prop, changes[prop]))
+        /**
+         * Property Change event, will retrieve all changed properties in an array
+         *
+         * @event Abstract#update
+         * @memberof Abstract
+         * @type {object[]} change
+         * @property {any} change[].from - the old value
+         * @property {any} change[].to - the new value
+         */
+        this.emit("update", changes)
+    }
+
+
+    /**
+     * Copies the the new values and keys from src to dst and returns the changes to dst
+     *
+     * @param {object} dst - the object to copy the src object onto
+     * @param {object} src - the object with the new values
+     * @return {object} returns the updated values from src to dst
+     * @version 1.7
+     */
+    objectCopy(dst, src) {
+      var changes = {}
+      Object.keys(src).forEach(key => {
+        if (JSON.stringify(dst[key]) === JSON.stringify(src[key])) return
+        changes[key] = { from: dst[key], to: src[key] }
+        dst[key] = src[key]
+      })
+      return changes
     }
 
 
