@@ -63,7 +63,7 @@ class SSH extends EventEmitter {
   }
 
   sendKeepAlive() {
-    tthis._stream.write("\n")
+    this._stream.write("\n")
   }
 }
 
