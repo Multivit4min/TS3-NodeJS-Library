@@ -55,7 +55,7 @@ class RAW extends EventEmitter {
   }
 
   sendKeepAlive() {
-    this._socket.write("\n")
+    this._socket.write(" \n")
   }
 
 }

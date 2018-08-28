@@ -175,7 +175,7 @@ class TS3Query extends EventEmitter {
             this._cmdstarted = Date.now()
             this._socket.sendKeepAlive()
             this._refreshKeepAlive()
-        }, 300 * 1000 - (Date.now() - this._cmdstarted))
+        }, 200 * 1000 - (Date.now() - this._cmdstarted))
     }
 
 
