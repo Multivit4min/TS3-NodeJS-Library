@@ -2062,23 +2062,23 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     static _filter(array, filter) {
-        return new Promise(fulfill => {
-            if (!Array.isArray(array)) array = [array]
-            if (Object.keys(filter).length == 0)
-                return fulfill(array)
-            fulfill(array.filter(a => {
-                for (var k in filter) {
-                    if (!(k in a)) return false
-                    if (filter[k] instanceof RegExp) return a[k].match(filter[k])
-                    if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) >= 0
-                    switch (typeof a[k]) {
-                        case "number": return a[k] === parseFloat(filter[k])
-                        case "string": return a[k] === filter[k]
-                        case "object": return a[k].match(filter[k])
-                    }
-                }
-            }))
-        })
+       return new Promise(fulfill => {
+           if (!Array.isArray(array)) array = [array]
+           if (Object.keys(filter).length == 0)
+               return fulfill(array)
+           fulfill(array.filter(a => {
+               return !Object.keys(filter).some(k => {
+                   if (!(k in a)) return true
+                   if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
+                   if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
+                   switch (typeof a[k]) {
+                       case "number": return a[k] !== parseFloat(filter[k])
+                       case "string": return a[k] !== filter[k]
+                       case "object": return !a[k].match(filter[k])
+                   }
+               })
+           }))
+       })
     }
 
 
