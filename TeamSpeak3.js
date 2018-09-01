@@ -21,6 +21,7 @@ const EventEmitter = require("events")
  * @fires TeamSpeak3#ready
  * @fires TeamSpeak3#error
  * @fires TeamSpeak3#close
+ * @fires TeamSpeak3#debug
  * @fires TeamSpeak3#channeldelete
  * @fires TeamSpeak3#channelmoved
  * @fires TeamSpeak3#channelcreate
@@ -30,6 +31,7 @@ const EventEmitter = require("events")
  * @fires TeamSpeak3#textmessage
  * @fires TeamSpeak3#clientdisconnect
  * @fires TeamSpeak3#clientconnect
+ * @fires TeamSpeak3#flooding
  */
 class TeamSpeak3 extends EventEmitter {
     /**
@@ -1350,7 +1352,7 @@ class TeamSpeak3 extends EventEmitter {
     channelGroupClientList(cgid, cid) {
         var properties = { cgid }
         if (typeof cid === "number") properties.cid = cid
-        return this.execute("channelgroupclientlist", properties)
+        return this.execute("channelgroupclientlist", properties).then(this.toArray)
     }
 
 
@@ -1378,7 +1380,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object[]>} gets a list of permissions available
      */
     permissionList() {
-        return this.execute("permissionlist")
+        return this.execute("permissionlist").then(this.toArray)
     }
 
 
@@ -1436,7 +1438,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} gets a list of privilegekeys
      */
     privilegekeyList() {
-        return this.execute("privilegekeylist")
+        return this.execute("privilegekeylist").then(this.toArray)
     }
 
 
@@ -1489,7 +1491,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     messageList() {
-        return this.execute("messagelist")
+        return this.execute("messagelist").then(this.toArray)
     }
 
 
@@ -1552,7 +1554,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     complainList(dbid) {
-        return this.execute("complainlist", { cldbid })
+        return this.execute("complainlist", { cldbid }).then(this.toArray)
     }
 
 
@@ -1592,7 +1594,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     banList() {
-        return this.execute("banlist")
+        return this.execute("banlist").then(this.toArray)
     }
 
 
@@ -1727,6 +1729,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     serverList(filter = {}) {
         return this.execute("serverlist", ["-uid", "-all"])
+          .then(this.toArray)
           .then(servers => this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer))
           .then(servers => this.constructor._filter(servers, filter))
           .then(servers => new Promise((fulfill, reject) => fulfill(servers.map(s => this._servers[s.virtualserver_id]))))
@@ -1742,6 +1745,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     channelGroupList(filter = {}) {
         return this.execute("channelgrouplist")
+          .then(this.toArray)
           .then(groups => this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup))
           .then(groups =>  this.constructor._filter(groups, filter))
           .then(groups => new Promise((fulfill, reject) => fulfill(groups.map(g => this._channelgroups[g.cgid]))))
@@ -1757,6 +1761,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     serverGroupList(filter = {}) {
         return this.execute("servergrouplist")
+          .then(this.toArray)
           .then(groups => this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup))
           .then(groups => this.constructor._filter(groups, filter))
           .then(groups => new Promise((fulfill, reject) => fulfill(groups.map(g => this._servergroups[g.sgid]))))
@@ -1772,6 +1777,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     channelList(filter = {}) {
         return this.execute("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"])
+          .then(this.toArray)
           .then(channels => this._handleCache(this._channels, channels, "cid", TeamSpeakChannel))
           .then(channels => this.constructor._filter(channels, filter))
           .then(channels => new Promise((fulfill, reject) => fulfill(channels.map(c => this._channels[c.cid]))))
@@ -1787,6 +1793,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     clientList(filter = {}) {
         return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"])
+        .then(this.toArray)
         .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
         .then(clients => this.constructor._filter(clients, filter))
         .then(clients => new Promise((fulfill, reject) => fulfill(clients.map(c => this._clients[String(c.clid)]))))
@@ -1803,7 +1810,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
     ftGetFileList(cid, path = "/", cpw = "") {
-        return this.execute("ftgetfilelist", { cid, path, cpw })
+        return this.execute("ftgetfilelist", { cid, path, cpw }).then(this.toArray)
     }
 
 

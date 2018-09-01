@@ -8,8 +8,6 @@ var ts3 = new TeamSpeak3({
     username: "serveradmin",
     password: "password",
     nickname: "NodeJS Query Framework",
-    //antispam: true,
-    antispamtimer: 350,
     keepalive: true
 })
 

@@ -7,8 +7,6 @@ var ts3 = new TeamSpeak3({
     queryport: 10022,
     username: "serveradmin",
     password: "password",
-    antispam: true,
-    antispamtimer: 350,
     keepalive: true
 })
 
