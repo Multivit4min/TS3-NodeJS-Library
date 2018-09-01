@@ -2045,7 +2045,6 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     _handleCache(cache, list, key, Class) {
-        if (!Array.isArray(list)) var list = [list]
         return new Promise((fulfill, reject) => {
             var remainder = Object.keys(cache)
             list.forEach(l => {

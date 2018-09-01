@@ -51,3 +51,12 @@ ts3.on("ready", () => {
 ts3.on("error", e => console.log("Error", e.message))
 ts3.on("close", e => console.log("Connection has been closed!", e))
 ```
+<br/><br/>
+
+##### Flood Protection
+----
+Flooding will be handled automatically.
+
+When the Query gets accused of Flooding then it will return error with id 524 and an error message which states how much time needs to be waited.
+
+This will be parsed automatically and the Query will wait for the given time (normally its 1 second) + 100 additional milliseconds (sometimes it happens the query gets banned when still sending too early)
