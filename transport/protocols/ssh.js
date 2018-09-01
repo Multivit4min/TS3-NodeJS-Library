@@ -23,7 +23,7 @@ class SSH extends EventEmitter {
      * @param {string} username - Username to connect with
      * @param {string} password - This holds Basic Client data
      */
-  constructor(host, port, username, password) {
+  constructor(config) {
     super()
     this._ssh = new Client()
     this._ssh
@@ -31,9 +31,20 @@ class SSH extends EventEmitter {
       .on("banner", this._handleData.bind(this))
       .on("error", this._handleError.bind(this))
       .on("close", this._handleClose.bind(this))
-      .connect({ host, port, username, password })
+      .connect({
+        host: config.host,
+        port: config.port,
+        username: config.username,
+        password: config.password
+      })
   }
 
+
+  /**
+   * Called after the Socket has been established
+   *
+   * @version 1.8
+   */
   _handleReady() {
     this._ssh.shell(false, (err, stream) => {
       if (err) return this.emit("error", err)
@@ -43,14 +54,32 @@ class SSH extends EventEmitter {
     })
   }
 
+ /**
+  * Called when the connection with the Socket gets closed
+  *
+  * @version 1.8
+  */
   _handleClose() {
     this.emit("close", ...arguments)
   }
 
-  _handleError(err) {
+
+  /**
+   * Called when the Socket emits an error
+   * Splits the data with every newline
+   *
+   * @version 1.8
+   */
+  _handleError() {
     this.emit("error", err)
   }
 
+
+  /**
+   * Called when the Socket receives data
+   *
+   * @version 1.8
+   */
   _handleData(chunk) {
     this._data += chunk
     var lines = this._data.split("\n")
@@ -58,12 +87,25 @@ class SSH extends EventEmitter {
     lines.forEach(line => this.emit("line", line))
   }
 
+
+  /**
+   * sends the data in the first argument, appends a newline
+   *
+   * @version 1.8
+   * @param {string} str - the data which should be sent
+   */
   send(str) {
     this._stream.write(str+"\n")
   }
 
+
+  /**
+   * sends a keepalive to the TeamSpeak Server
+   *
+   * @version 1.8
+   */
   sendKeepAlive() {
-    this._stream.write(" \n")
+    tthis._stream.write(" \n")
   }
 }
 

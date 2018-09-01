@@ -7,7 +7,6 @@
  */
 
 const Command = require(__dirname+"/Command.js")
-const Response = require(__dirname+"/Response.js")
 const RAW = require(__dirname+"/protocols/raw.js")
 const SSH = require(__dirname+"/protocols/ssh.js")
 const EventEmitter = require("events")
@@ -22,114 +21,177 @@ class TS3Query extends EventEmitter {
      * Creates a new TS3Query
      * @constructor
      * @version 1.0
-     * @param {string} host - Teamspeak host to connect to
-     * @param {number} port - TeamSpeak query port
-     * @param {string} [proto=raw] - Protocol to use to connect to the Query
-     * @param {string} [username] - Username to connect with, only required when using ssh
-     * @param {string} [password] - This holds Basic Client data, only required when using ssh
+     * @param {object} config - Configuration Object
+     * @param {string} config.host - Teamspeak host to connect to
+     * @param {number} config.port - TeamSpeak query port
+     * @param {string} [config.proto=raw] - Protocol to use to connect to the Query
+     * @param {string} [config.username] - Username to connect with, only required when using ssh
+     * @param {string} [config.password] - This holds Basic Client data, only required when using ssh
      */
-    constructor(host, port, proto = "raw", username, password) {
-        super()
-        this.connected = false
-        this._proto = proto
-        this._ignoreLines = 2
-        this._queue = []
-        this._lastline = ""
-        this._lastevent = ""
-        this._cmdstarted = Date.now()
-        this._handleDoubleEvents = true
-        this._keepalive = false
-        this._keepalivetimer
-        this._active = false
-        this._antiSpamStepping = 0
-        this._data = ""
-        this._doubleEvents = [
-          "notifyclientleftview",
-          "notifyclientmoved",
-          "notifycliententerview"
-        ]
+    constructor(config) {
+      super()
+      this.proto = config.proto || "raw"
+      this.queue = []
+      this.ignoreLines = 2
+      this.lastline = ""
+      this.lastevent = ""
+      this.lastcmd = Date.now()
+      this.active = {}
+      this.connected = false
+      this.keepalive = false
+      this.keepalivetimer = null
+      this.preventDoubleEvents = true
+      this.floodTimeout = null
+      this.doubleEvents = [
+        "notifyclientleftview",
+        "notifyclientmoved",
+        "notifycliententerview"
+      ]
 
-        if (this._proto === "raw") {
-          this._socket = new RAW(host, port)
-        } else if (this._proto === "ssh") {
-          this._socket = new SSH(host, port, username, password)
+      if (this.proto === "raw") {
+        this.socket = new RAW(config)
+      } else if (this.proto === "ssh") {
+        this.socket = new SSH(config)
+      } else {
+        throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
+      }
+
+      this.socket.on("debug", data => this.emit("debug", data))
+      this.socket.on("connect", this.handleConnect.bind(this))
+      this.socket.on("line", this.handleLine.bind(this))
+      this.socket.on("error", this.handleError.bind(this))
+      this.socket.on("close", this.handleClose.bind(this))
+    }
+
+
+    handleConnect() {
+      this.connected = true
+      /**
+       * Query Connect Event
+       * Gets fired when the Query connects to the TeamSpeak Server
+       *
+       * @event TS3Query#connect
+       * @memberof TS3Query
+       */
+      this.emit("connect")
+      this.queueWorker()
+    }
+
+    /**
+     * Handles any TeamSpeak Query Response Line
+     *
+     * @version 1.8
+     * @param {string} line - error line from teamspeak
+     */
+    handleLine(line) {
+      this.lastline = line
+      line = line.trim()
+      this.emit("debug", { type: "receive", data: line })
+      if (this.ignoreLines > 0
+        && line.indexOf("error") !== 0)
+        return this.ignoreLines--
+      if (line.indexOf("error") === 0) {
+        this.handleQueryError(line)
+      } else if (line.indexOf("notify") === 0) {
+        this.handleQueryEvent(line)
+      } else if (this.active.cmd) {
+        this.active.cmd.setResponse(line)
+      }
+    }
+
+    /**
+     * Handles the error line which finnishes a command
+     *
+     * @version 1.8
+     * @param {string} line - error line from teamspeak
+     */
+    handleQueryError(line) {
+      this.lastline = ""
+      this.active.cmd.setError(line)
+      if (this.active.cmd.hasError()) {
+        if (this.active.cmd.getError().id === 524) {
+          this.emit("flooding", this.active.cmd.getError())
+          var match = this.active.cmd.getError().message.match(/(\d*) second/i)
+          clearTimeout(this.floodTimeout)
+          this.floodTimeout = setTimeout(() => {
+            this.active.cmd.reset()
+            this.send(this.active.cmd.build())
+          }, (parseInt(match[1]) || 1) * 1000 + 100)
+          return
         } else {
-          throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
+          this.active.reject(this.active.cmd.getError())
         }
+      } else {
+        this.active.fulfill(this.active.cmd.getResponse())
+      }
+      this.active = {}
+      return this.queueWorker()
+    }
 
-        this._socket.on("connect", () => {
-          this.connected = true
-          /**
-           * Query Connect Event
-           * Gets fired when the Query connects to the TeamSpeak Server
-           *
-           * @event TS3Query#connect
-           * @memberof TS3Query
-           */
-          this.emit("connect")
-          this._queueWorker()
-        })
-        this._socket.on("line", line => {
-          this._lastline = line
-          var line = line.trim()
-          if (this._ignoreLines > 0
-              && line.indexOf("error") !== 0)
-              return this._ignoreLines--
-          if (line.indexOf("error") === 0) {
-              let res = this._active.res
-              this._lastline = ""
-              res.finalize(line)
-              if (res.hasError())
-                  this._active.reject(res.getError())
-              else
-                  this._active.fulfill(res.getResponse())
-              this._active = false
-              return this._queueWorker()
-          } else if (line.indexOf("notify") === 0) {
-              if (this._doubleEvents.some(s => line.indexOf(s) === 0)
-                  && this._handleDoubleEvents
-                  && line === this._lastevent) return
-              this._lastevent = line
-              /**
-               * Query Event
-               * Gets fired when the Query receives an Event
-               *
-               * @event TS3Query#<TeamSpeakEvent>
-               * @memberof  TS3Query
-               * @type {object}
-               * @property {any} data - The data received from the Event
-               */
-              return this.emit(
-                  line.substr(6, line.indexOf(" ") - 6),
-                  Response.parse(line.substr(line.indexOf(" ") + 1)))
-          } else if (this._active) {
-              this._active.res.setLine(line)
-          }
-        })
-        /**
-         * Query Event
-         * Gets fired when the Socket had an Error
-         *
-         * @event TS3Query#<TeamSpeakEvent>
-         * @memberof  TS3Query
-         */
-        this._socket.on("error", err => this.emit("error", err))
-        this._socket.on("close", () => {
-            this.connected = false
-            clearTimeout(this._keepalivetimer)
-            clearTimeout(this._antispamTimeout)
-            var str = (this._lastline.indexOf("error") === 0) ? Response.parse(this._lastline)[0] : ""
-            /**
-             * Query Close Event
-             * Gets fired when the Query disconnects from the TeamSpeak Server
-             *
-             * @event TS3Query#close
-             * @memberof  TS3Query
-             * @type {object}
-             * @property {any} error - The Error Object
-             */
-            this.emit("close", str)
-        })
+
+    /**
+     * Handles an event which has been received from the TeamSpeak Server
+     *
+     * @version 1.8
+     * @param {string} line - event line from TeamSpeak
+     */
+    handleQueryEvent(line) {
+      if (this.doubleEvents.some(s => line.indexOf(s) === 0)
+        && this.preventDoubleEvents
+        && line === this.lastevent) return
+      this.lastevent = line
+      /**
+       * Query Event
+       * Gets fired when the Query receives an Event
+       *
+       * @event TS3Query#<TeamSpeakEvent>
+       * @memberof  TS3Query
+       * @type {object}
+       * @property {any} data - The data received from the Event
+       */
+      return this.emit(
+        line.substr(6, line.indexOf(" ") - 6),
+        Command.parse(line.substr(line.indexOf(" ") + 1))
+      )
+    }
+
+
+    /**
+     * Emits an Error which the given arguments
+     *
+     * @version 1.8
+     * @param {any}
+     */
+    handleError() {
+    /**
+     * Query Event
+     * Gets fired when the Socket had an Error
+     *
+     * @event TS3Query#<TeamSpeakEvent>
+     * @memberof  TS3Query
+     */
+      this.emit("error", ...arguments)
+    }
+
+
+    handleClose() {
+      this.connected = false
+      clearTimeout(this.floodTimeout)
+      clearTimeout(this.keepalivetimer)
+      var error = null
+      if (this.lastline.indexOf("error") === 0) {
+        error = Command().setError(this.lastline).getError()
+      }
+      /**
+       * Query Close Event
+       * Gets fired when the Query disconnects from the TeamSpeak Server
+       *
+       * @event TS3Query#close
+       * @memberof  TS3Query
+       * @type {object}
+       * @property {any|null} error - The Error Object
+       */
+      this.emit("close", error)
     }
 
 
@@ -139,9 +201,10 @@ class TS3Query extends EventEmitter {
      * @param {boolean} [b=true] - Parameter enables or disables the Keepalive Ping
      */
     keepAlive(b = true) {
-        this._keepalive = Boolean(b)
-        if (!b) return clearTimeout(this._keepalivetimer)
-        this._refreshKeepAlive()
+      this._config.keepalive = b
+      if (!this._config.keepalive)
+        return clearTimeout(this.keepalivetimer)
+      this.refreshKeepAlive()
     }
 
 
@@ -151,31 +214,22 @@ class TS3Query extends EventEmitter {
      * @param {boolean} [b=true] - Parameter enables or disables the Double Event Handling
      */
     handleDoubleEvents(b = true) {
-        this._handleDoubleEvents = Boolean(b)
+      this.preventDoubleEvents = Boolean(b)
     }
-
-    /**
-     * Sets the antispam timeout
-     * @version 1.0
-     * @param {number} i - The timeout every command should have (350ms should work good if the Query is not in the whitelist)
-     */
-    antiSpam(i = 0) {
-        this._antiSpamStepping = i
-    }
-
 
     /**
      * Refreshes the Keepalive Timer
      * @version 1.0
      * @private
      */
-    _refreshKeepAlive() {
-        clearTimeout(this._keepalivetimer)
-        this._keepalivetimer = setTimeout(() => {
-            this._cmdstarted = Date.now()
-            this._socket.sendKeepAlive()
-            this._refreshKeepAlive()
-        }, 200 * 1000 - (Date.now() - this._cmdstarted))
+    refreshKeepAlive() {
+      clearTimeout(this.keepalivetimer)
+      this.keepalivetimer = setTimeout(() => {
+        this.emit("debug", { type: "keepalive" })
+        this.lastcmd = Date.now()
+        this.socket.sendKeepAlive()
+        this.refreshKeepAlive()
+      }, 250 * 1000 - (Date.now() - this.lastcmd))
     }
 
 
@@ -189,25 +243,21 @@ class TS3Query extends EventEmitter {
      * @returns {Promise.<object>} Promise object which returns the Information about the Query executed
      */
     execute() {
-        var args = arguments
-        return new Promise((fulfill, reject) => {
-            var cmd = new Command()
-            Object.keys(args).forEach(a => {
-                switch (typeof(args[a])) {
-                    case "string":
-                        return cmd.setCommand(args[a])
-                    case "object":
-                        if (Array.isArray(args[a]))
-                            return cmd.setFlags(args[a])
-                        return cmd.setOptions(args[a])
-                }
-            })
-            this._queueWorker({
-                cmd: cmd,
-                fulfill: fulfill,
-                reject: reject
-            })
+      var args = arguments
+      return new Promise((fulfill, reject) => {
+        var cmd = new Command()
+        Object.values(args).forEach(v => {
+          switch (typeof v) {
+            case "string":
+              return cmd.setCommand(v)
+            case "object":
+              if (Array.isArray(v))
+                return cmd.setFlags(v)
+              return cmd.setOptions(v)
+          }
         })
+        this.queueWorker({ cmd, fulfill, reject })
+      })
     }
 
     /**
@@ -216,20 +266,27 @@ class TS3Query extends EventEmitter {
      * @private
      * @param {object} [cmd] - the next command which should get executedd
      */
-    _queueWorker(cmd = false) {
-        if (cmd) this._queue.push(cmd)
+    queueWorker(cmd = false) {
+        if (cmd) this.queue.push(cmd)
         if (!this.connected
-            || typeof this._active == "object"
-            || this._queue.length == 0) return
-        this._active = this._queue.shift()
-        this._active.res = new Response()
-        this._antispamTimeout = setTimeout(() => {
-            this._cmdstarted = Date.now()
-            this._socket.send(this._active.cmd.build())
-        }, this._antiSpamStepping - (Date.now() - this._cmdstarted))
-        this._refreshKeepAlive()
+          || this.active.cmd instanceof Command
+          || this.queue.length == 0) return
+        this.active = this.queue.shift()
+        this.send(this.active.cmd.build())
     }
 
+    /**
+     * Sends data to the socket
+     * @version 1.8
+     * @private
+     * @param {string} raw - the data which should get sent
+     */
+    send(raw) {
+        this.lastcmd = Date.now()
+        this.emit("debug", { type: "send", data: raw })
+        this.socket.send(raw)
+        this.refreshKeepAlive()
+    }
 }
 
 module.exports = TS3Query

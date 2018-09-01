@@ -101,8 +101,11 @@ module.exports = {
 
     //Client specific
     clid: Number,
+    client_id: Number,
     cldbid: Number,
     client_database_id: Number,
+    client_channel_id: Number,
+    client_origin_server_id: Number,
     client_nickname: String,
     client_type: Number,
     client_away: Number,
@@ -148,6 +151,8 @@ module.exports = {
     client_base64HashClientUID: String,
     connection_connected_time: Number,
     connection_client_ip: String,
+    client_myteamspeak_id: String,
+    client_integrations: Number, //not sure about that one probably only a number
 
 
     //Channel specific

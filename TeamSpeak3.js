@@ -43,8 +43,6 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server
      * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server
      * @param {string} [config.nickname] - The Nickname the Client should have
-     * @param {boolean} [config.antispam=false] - Whether the AntiSpam should be activated or deactivated
-     * @param {number} [config.antispamtimer=350] - The time between every command for the antispam (in ms)
      * @param {boolean} [config.keepalive=true] - Whether the Query should send a keepalive
      */
     constructor(config = {}) {
@@ -57,8 +55,6 @@ class TeamSpeak3 extends EventEmitter {
             username: config.username || false,
             password: config.password || false,
             nickname: config.nickname || false,
-            antispam: Boolean(config.antispam),
-            antispamtimer: parseInt(config.antispamtimer) || 350,
             keepalive: Boolean(config.keepalive)
         }
 
@@ -68,16 +64,7 @@ class TeamSpeak3 extends EventEmitter {
         this._channelgroups = {}
         this._servers = {}
 
-        this._ts3 = new TS3Query(
-          this._config.host,
-          this._config.queryport,
-          this._config.protocol,
-          this._config.username,
-          this._config.password
-        )
-
-        if (this._config.keepalive) this._ts3.keepAlive()
-        if (this._config.antispam) this._ts3.antiSpam(this._config.antispamtimer)
+        this._ts3 = new TS3Query(this._config)
 
         this._ts3.on("cliententerview", this._evcliententerview.bind(this))
         this._ts3.on("clientleftview", this._evclientleftview.bind(this))
@@ -130,6 +117,23 @@ class TeamSpeak3 extends EventEmitter {
          * @returns {object} - return the error object
          */
          this._ts3.on("error", e => super.emit("error", e))
+         /**
+          * Query Flooding Error
+          * Gets fired when the TeamSpeak Query gets flooding errors
+          *
+          * @event TeamSpeak3#flooding
+          * @memberof  TeamSpeak3
+          * @returns {object} - return the error object
+          */
+          this._ts3.on("flooding", e => super.emit("flooding", e))
+          /**
+           * Forwards any debug messages
+           *
+           * @event TeamSpeak3#debug
+           * @memberof  TeamSpeak3
+           * @returns {object} - debug data
+           */
+           this._ts3.on("debug", data => super.emit("debug", data))
     }
 
 

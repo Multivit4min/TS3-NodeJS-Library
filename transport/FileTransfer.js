@@ -38,22 +38,25 @@ class FileTransfer {
      * @returns {Promise<Buffer>} Returns a buffer with the binary data
      */
     download(ftkey, size) {
-        return new Promise(async (fulfill, reject) => {
-            var socket = await this._init(ftkey).catch(reject)
-            var timer = setTimeout(() => {
-                socket.destroy()
-                reject(new Error("Filetransfer Timeout Limit reached"))
-            }, this.timeout)
-            socket.on("error", reject)
-            socket.on("data", data => {
-                this.buffer.push(data)
-                this.bytesreceived += data.byteLength
-                if (this.bytesreceived == size) {
+        return new Promise((fulfill, reject) => {
+            this._init(ftkey)
+              .then(socket => {
+                var timer = setTimeout(() => {
                     socket.destroy()
-                    clearTimeout(timer)
-                    fulfill(Buffer.concat(this.buffer))
-                }
-            })
+                    reject(new Error("Filetransfer Timeout Limit reached"))
+                }, this.timeout)
+                socket.on("error", reject)
+                socket.on("data", data => {
+                    this.buffer.push(data)
+                    this.bytesreceived += data.byteLength
+                    if (this.bytesreceived == size) {
+                        socket.destroy()
+                        clearTimeout(timer)
+                        fulfill(Buffer.concat(this.buffer))
+                    }
+                })
+              })
+              .catch(reject)
         })
     }
 
@@ -66,18 +69,21 @@ class FileTransfer {
      * @returns {Promise}
      */
     upload(ftkey, data) {
-        return new Promise(async (fulfill, reject) => {
-            await this._init(ftkey).catch(reject)
-            var timer = setTimeout(() => {
-                this.socket.destroy()
-                reject(new Error("Filetransfer Timeout Limit reached"))
-            }, this.timeout)
-            this.socket.on("error", reject)
-            this.socket.on("close", () => {
-                clearTimeout(timer)
-                fulfill()
-            })
-            this.socket.write(data)
+        return new Promise((fulfill, reject) => {
+            this._init(ftkey)
+              .then(socket => {
+                var timer = setTimeout(() => {
+                    socket.destroy()
+                    reject(new Error("Filetransfer Timeout Limit reached"))
+                }, this.timeout)
+                socket.on("error", reject)
+                socket.on("close", () => {
+                    clearTimeout(timer)
+                    fulfill()
+                })
+                socket.write(data)
+              })
+              .catch(reject)
         })
     }
 
