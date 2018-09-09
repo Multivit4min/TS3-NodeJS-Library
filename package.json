@@ -1,10 +1,10 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "TeamSpeak3 Server Query API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "ssh2": "^0.6.1"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
   }
 }
