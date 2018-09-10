@@ -2,6 +2,7 @@
 # TS3-NodeJS-Library
 
 [![Build Status](https://travis-ci.com/Multivit4min/TS3-NodeJS-Library.svg?branch=master)](https://travis-ci.com/Multivit4min/TS3-NodeJS-Library)
+[![npm](https://img.shields.io/npm/v/ts3-nodejs-library.svg)](https://www.npmjs.com/package/ts3-nodejs-library)
 
 The TS3 NodeJS Library has been strongly influenced by [PlanetTeamSpeaks TS3 PHP
 Framework](https://docs.planetteamspeak.com/ts3/php/framework/index.html)
