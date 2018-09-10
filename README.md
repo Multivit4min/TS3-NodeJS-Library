@@ -15,7 +15,7 @@ Framework](https://docs.planetteamspeak.com/ts3/php/framework/index.html)
 
 ##### Documentation
 ----
-You can find all necessary documentation on the [GitHub Wiki Page](https://github.com/Multivit4min/TS3-NodeJS-Library/wiki)!
+You can find all necessary documentation [here](https://multivit4min.github.io/TS3-NodeJS-Library)!
 <br/><br/>
 
 ##### Example
