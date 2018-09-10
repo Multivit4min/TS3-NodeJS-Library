@@ -35,7 +35,7 @@ describe("Command", () => {
 
   describe("#build()", () => {
     it("should build a valid command", () => {
-      assert.equal(cmd.build(), "use client_nickname=TeamSpeak\\sQuery 1")
+      assert.equal(cmd.build(), "use 1 client_nickname=TeamSpeak\\sQuery")
     })
   })
 
@@ -72,7 +72,7 @@ describe("Command", () => {
     })
   })
 
-  describe("#setError()", () => {
+  describe("#getError()", () => {
     it("should create a new Instance of ResponseError", () => {
       assert.ok(cmd.getError() instanceof ResponseError)
     })

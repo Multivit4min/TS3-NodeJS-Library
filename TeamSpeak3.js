@@ -453,10 +453,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} port - The Port the Server runs on
+     * @param {string} [client_nickname] - Set Nickname when selecting a server
      * @returns {Promise.<object>}
      */
-    useByPort(port) {
-        return this._cacheCleanUp(this.execute("use", { port }))
+    useByPort(port, client_nickname) {
+        return this._cacheCleanUp(this.execute("use", { port, client_nickname }))
     }
 
 
@@ -465,10 +466,11 @@ class TeamSpeak3 extends EventEmitter {
      * @version 1.0
      * @async
      * @param {number} sid - The Server ID
+     * @param {string} [client_nickname] - Set Nickname when selecting a server
      * @returns {Promise.<object>}
      */
-    useBySid(sid) {
-        return this._cacheCleanUp(this.execute("use", [sid]))
+    useBySid(sid, client_nickname) {
+        return this._cacheCleanUp(this.execute("use", [sid], { client_nickname }))
     }
 
 

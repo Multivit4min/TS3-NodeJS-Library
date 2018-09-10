@@ -184,8 +184,8 @@ class Command {
      */
     build() {
       var cmd = escape(this.cmd)
-      if (this.hasOptions()) cmd += " " + this.buildOptions()
       if (this.hasFlags()) cmd += " " + this.buildFlags()
+      if (this.hasOptions()) cmd += " " + this.buildOptions()
       return cmd
     }
 
