@@ -1,3 +1,13 @@
 language: node_js
 node_js:
   - "lts/*"
+script:
+  - npm install -g documentation
+  - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o out
+deploy:
+  provider: pages
+  github-token: $GITHUB_TOKEN
+  skip-cleanup: true
+  local-dir: docs
+  on:
+    branch: master

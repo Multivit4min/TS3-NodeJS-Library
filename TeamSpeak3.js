@@ -143,6 +143,7 @@ class TeamSpeak3 extends EventEmitter {
      * Client Join Event
      *
      * @event TeamSpeak3#clientconnect
+     * @memberof TeamSpeak3
      * @type {object}
      * @property {TeamSpeakClient} client - The Client which joined the Server
      */
@@ -160,6 +161,7 @@ class TeamSpeak3 extends EventEmitter {
      * Events Object contains all available Informations returned by the query
      *
      * @event TeamSpeak3#clientdisconnect
+     * @memberof TeamSpeak3
      * @type {object}
      * @property {object} client - The data from the last Client List Command
      * @property {object} event - The Data from the disconnect event
