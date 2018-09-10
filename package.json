@@ -2,6 +2,7 @@
   "name": "ts3-nodejs-library",
   "version": "1.8.3",
   "description": "TeamSpeak3 Server Query API",
+  "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
