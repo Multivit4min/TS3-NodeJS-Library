@@ -45,7 +45,7 @@ ts3.on("ready", async () => {
 
       //you can also subscribe to a single event
       //this will send an object with the change
-      client.on("update_client_nickname", change => {
+      client.on("update#client_nickname", change => {
           console.log("Nickname changed", change.from, "=>", change.to)
       })
     })

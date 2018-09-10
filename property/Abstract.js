@@ -100,7 +100,7 @@ const EventEmitter = require("events")
         var changes = this.objectCopy(this._propcache, info)
         if (Object.values(changes).length === 0) return
         Object
-          .values(changes)
+          .keys(changes)
           /**
            * Single Property Change event
            *
@@ -110,7 +110,7 @@ const EventEmitter = require("events")
            * @property {any} from - the old value
            * @property {any} to - the new value
            */
-          .forEach(prop => this.emit("update_"+prop, changes[prop]))
+          .forEach(prop => this.emit("update#"+prop, changes[prop]))
         /**
          * Property Change event, will retrieve all changed properties in an array
          *
