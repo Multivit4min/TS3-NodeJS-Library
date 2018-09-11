@@ -167,7 +167,7 @@ class TS3Query extends EventEmitter {
      * Query Event
      * Gets fired when the Socket had an Error
      *
-     * @event TS3Query#<TeamSpeakEvent>
+     * @event TS3Query#error
      * @memberof  TS3Query
      */
       this.emit("error", ...arguments)

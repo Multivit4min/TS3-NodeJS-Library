@@ -104,7 +104,7 @@ const EventEmitter = require("events")
           /**
            * Single Property Change event
            *
-           * @event Abstract#update_<property>
+           * @event Abstract#update#<property>
            * @memberof Abstract
            * @type {object}
            * @property {any} from - the old value

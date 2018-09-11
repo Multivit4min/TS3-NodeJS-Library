@@ -3,6 +3,7 @@ const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockArray = require("./mocks/mockArray.js")
+const mockResponse = require("./mocks/queryResponse.js")
 var TeamSpeak3 = require("../TeamSpeak3.js")
 
 
@@ -19,74 +20,74 @@ describe("TeamSpeak3", () => {
     stub.resolves()
   })
 
-  it("should test parameters of #clientUpdate()", async () => {
+  it("should verify parameters of #clientUpdate()", async () => {
     await ts3.clientUpdate({ client_nickname: "Test" })
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientupdate", { client_nickname: "Test" })
   })
 
   describe("#registerEvent()", () => {
-    it("should test 2 parameters", async () => {
+    it("should verify 2 parameters", async () => {
       await ts3.registerEvent("channel", 0)
       assert.calledOnce(stub)
       assert.calledWith(stub, "servernotifyregister", { event: "channel", id: 0 })
     })
-    it("should test 1 parameter", async () => {
+    it("should verify 1 parameter", async () => {
       await ts3.registerEvent("channel")
       assert.calledOnce(stub)
       assert.calledWith(stub, "servernotifyregister", { event: "channel", id: undefined })
     })
   })
 
-  it("should test parameters of #login()", async () => {
+  it("should verify parameters of #login()", async () => {
     await ts3.login("serveradmin", "password")
     assert.calledOnce(stub)
     assert.calledWith(stub, "login", ["serveradmin", "password"])
   })
 
-  it("should test parameters of #logout()", async () => {
+  it("should verify parameters of #logout()", async () => {
     await ts3.logout()
     assert.calledOnce(stub)
     assert.calledWith(stub, "logout")
   })
 
-  it("should test parameters of #version()", async () => {
+  it("should verify parameters of #version()", async () => {
     await ts3.version()
     assert.calledOnce(stub)
     assert.calledWith(stub, "version")
   })
 
-  it("should test parameters of #hostInfo()", async () => {
+  it("should verify parameters of #hostInfo()", async () => {
     await ts3.hostInfo()
     assert.calledOnce(stub)
     assert.calledWith(stub, "hostinfo")
   })
 
-  it("should test parameters of #instanceInfo()", async () => {
+  it("should verify parameters of #instanceInfo()", async () => {
     await ts3.instanceInfo()
     assert.calledOnce(stub)
     assert.calledWith(stub, "instanceinfo")
   })
 
-  it("should test parameters of #instanceEdit()", async () => {
+  it("should verify parameters of #instanceEdit()", async () => {
     await ts3.instanceEdit(mockArray.SIMPLE)
     assert.calledOnce(stub)
     assert.calledWith(stub, "instanceedit", mockArray.SIMPLE)
   })
 
-  it("should test parameters of #bindingList()", async () => {
+  it("should verify parameters of #bindingList()", async () => {
     await ts3.bindingList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "bindinglist")
   })
 
   describe("#useByPort()", () => {
-    it("should test 2 parameters", async () => {
+    it("should verify 2 parameters", async () => {
       await ts3.useByPort(9987, "Test")
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", { port: 9987, client_nickname: "Test" })
     })
-    it("should test 1 parameter", async () => {
+    it("should verify 1 parameter", async () => {
       await ts3.useByPort(9987)
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", { port: 9987, client_nickname: undefined })
@@ -94,387 +95,481 @@ describe("TeamSpeak3", () => {
   })
 
   describe("#useBySid()", () => {
-    it("should test 2 parameters", async () => {
+    it("should verify 2 parameters", async () => {
       await ts3.useBySid(1, "Test")
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", [1], { client_nickname: "Test" })
     })
-    it("should test 1 parameter", async () => {
+    it("should verify 1 parameter", async () => {
       await ts3.useBySid(1)
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", [1], { client_nickname: undefined })
     })
   })
 
-  it("should test parameters of #whoami()", async () => {
+  it("should verify parameters of #whoami()", async () => {
     await ts3.whoami()
     assert.calledOnce(stub)
     assert.calledWith(stub, "whoami")
   })
 
-  it("should test parameters of #serverInfo()", async () => {
+  it("should verify parameters of #serverInfo()", async () => {
     await ts3.serverInfo()
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverinfo")
   })
 
-  it("should test parameters of #serverIdGetByPort()", async () => {
+  it("should verify parameters of #serverIdGetByPort()", async () => {
     await ts3.serverIdGetByPort(9987)
     assert.calledOnce(stub)
     assert.calledWith(stub, "serveridgetbyport", { virtualserver_port: 9987 })
   })
 
-  it("should test parameters of #serverEdit()", async () => {
+  it("should verify parameters of #serverEdit()", async () => {
     await ts3.serverEdit(mockArray.SIMPLE)
     assert.calledOnce(stub)
     assert.calledWith(stub, "serveredit", mockArray.SIMPLE)
   })
 
-  it("should test parameters of #serverProcessStop()", async () => {
+  it("should verify parameters of #serverProcessStop()", async () => {
     await ts3.serverProcessStop("Shutdown")
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverprocessstop", { reasonmsg: "Shutdown" })
   })
 
-  it("should test parameters of #connectionInfo()", async () => {
+  it("should verify parameters of #connectionInfo()", async () => {
     await ts3.connectionInfo()
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverrequestconnectioninfo")
   })
 
-  it("should test parameters of #serverCreate()", async () => {
+  it("should verify parameters of #serverCreate()", async () => {
     stub.onCall(0).resolves({ token: "servertoken", sid: 2 })
     await ts3.serverCreate({ virtualserver_name: "Server Name" })
     assert.calledTwice(stub)
     assert.calledWith(stub, "servercreate", { virtualserver_name: "Server Name" })
   })
 
-  it("should test parameters of #serverDelete()", async () => {
+  it("should verify parameters of #serverDelete()", async () => {
     await ts3.serverDelete(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverdelete", { sid: 1 })
   })
 
-  it("should test parameters of #serverStart()", async () => {
+  it("should verify parameters of #serverStart()", async () => {
     await ts3.serverStart(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverstart", { sid: 1 })
   })
 
   describe("#serverStop()", () => {
-    it("should test 2 parameters", async () => {
+    it("should verify 2 parameters", async () => {
       await ts3.serverStop(1, "Shutdown")
       assert.calledOnce(stub)
       assert.calledWith(stub, "serverstop", { sid: 1, reasonmsg: "Shutdown" })
     })
-    it("should test 1 parameter", async () => {
+    it("should verify 1 parameter", async () => {
       await ts3.serverStop(1)
       assert.calledOnce(stub)
       assert.calledWith(stub, "serverstop", { sid: 1, reasonmsg: undefined })
     })
   })
 
-  it("should test parameters of #serverGroupCreate()", async () => {
+  it("should verify parameters of #serverGroupCreate()", async () => {
     stub.onCall(0).resolves({ sgid: 2 })
     await ts3.serverGroupCreate("New Group", 1)
     assert.calledTwice(stub)
     assert.calledWith(stub, "servergroupadd", { name: "New Group", type: 1 })
   })
 
-  it("should test parameters of #serverGroupClientList()", async () => {
+  it("should verify parameters of #serverGroupClientList()", async () => {
     await ts3.serverGroupClientList(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupclientlist", { sgid: 1 }, ["-names"])
   })
 
-  it("should test parameters of #serverGroupAddClient()", async () => {
+  it("should verify parameters of #serverGroupAddClient()", async () => {
     await ts3.serverGroupAddClient(1, 2)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupaddclient", { sgid: 2, cldbid: 1 })
   })
 
-  it("should test parameters of #serverGroupDelClient()", async () => {
+  it("should verify parameters of #serverGroupDelClient()", async () => {
     await ts3.serverGroupDelClient(1, 2)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupdelclient", { sgid: 2, cldbid: 1 })
   })
 
-  it("should test parameters of #serverGroupDel()", async () => {
+  it("should verify parameters of #serverGroupDel()", async () => {
     await ts3.serverGroupDel(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupdel", { sgid: 1, force: 0 })
   })
 
-  it("should test parameters of #serverGroupCopy()", async () => {
+  it("should verify parameters of #serverGroupCopy()", async () => {
     await ts3.serverGroupCopy(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupcopy", { ssgid: 1, tsgid: 0, type: 1 })
   })
 
-  it("should test parameters of #serverGroupRename()", async () => {
+  it("should verify parameters of #serverGroupRename()", async () => {
     await ts3.serverGroupRename(1, "New Name")
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergrouprename", { sgid: 1, name: "New Name" })
   })
 
   describe("#serverGroupPermList()", () => {
-    it("should test 2 parameters", async () => {
+    it("should verify 2 parameters", async () => {
       await ts3.serverGroupPermList(2, true)
       assert.calledOnce(stub)
       assert.calledWith(stub, "servergrouppermlist", { sgid: 2 }, ["-permsid"])
     })
-    it("should test 1 parameter", async () => {
+    it("should verify 1 parameter", async () => {
       await ts3.serverGroupPermList(2)
       assert.calledOnce(stub)
       assert.calledWith(stub, "servergrouppermlist", { sgid: 2 }, [null])
     })
   })
 
-  it("should test parameters of #serverGroupAddPerm()", async () => {
+  it("should verify parameters of #serverGroupAddPerm()", async () => {
     await ts3.serverGroupAddPerm(2, "i_channel_subscribe_power", 25, true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "servergroupaddperm", {sgid: 2, permsid: "i_channel_subscribe_power", permvalue: 25, permskip: 0, permnegated: 0})
+    assert.calledWith(stub, "servergroupaddperm", {
+      sgid: 2,
+      permsid: "i_channel_subscribe_power",
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
   })
 
-  it("should test parameters of #serverGroupDelPerm()", async () => {
+  it("should verify parameters of #serverGroupDelPerm()", async () => {
     await ts3.serverGroupDelPerm(2, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "servergroupdelperm", { sgid: 2, permsid: "i_channel_subscribe_power" })
+    assert.calledWith(stub, "servergroupdelperm", {
+      sgid: 2,
+      permsid: "i_channel_subscribe_power"
+    })
   })
 
-  it("should test parameters of #channelCreate()", async () => {
+  it("should verify parameters of #channelCreate()", async () => {
     stub.onCall(0).resolves({ cid: 2 })
     await ts3.channelCreate("Channel Name")
     assert.calledTwice(stub)
     assert.calledWith(stub, "channelcreate", { channel_name: "Channel Name" })
   })
 
-  it("should test parameters of #channelGroupCreate()", async () => {
+  it("should verify parameters of #channelGroupCreate()", async () => {
     stub.onCall(0).resolves({ cigd: 2 })
     await ts3.channelGroupCreate("Channel Group Name", 0)
     assert.calledTwice(stub)
     assert.calledWith(stub, "channelgroupadd", { name: "Channel Group Name", type: 0 })
   })
 
-  it("should test parameters of #getChannelByID()")
+  it("should verify parameters of #getChannelByID()", async () => {
+    stub.onCall(0).resolves(mockResponse.channellist)
+    var channel = await ts3.getChannelByID(3)
+    assert.match(channel.constructor.name, "TeamSpeakChannel")
+    assert.match(channel.getCache().cid, 3)
+  })
 
-  it("should test parameters of #getChannelByName()")
+  it("should verify parameters of #getChannelByName()", async () => {
+      stub.onCall(0).resolves(mockResponse.channellist)
+      var channel = await ts3.getChannelByName("Channel 3")
+      assert.match(channel.constructor.name, "TeamSpeakChannel")
+      assert.match(channel.getCache().cid, 3)
+  })
 
-  it("should test parameters of #channelInfo()", async () => {
+  it("should verify parameters of #channelInfo()", async () => {
     await ts3.channelInfo(2)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelinfo", { cid: 2 })
   })
 
-  it("should test parameters of #channelMove()", async () => {
+  it("should verify parameters of #channelMove()", async () => {
     await ts3.channelMove(10, 5)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelmove", { cid: 10, cpid: 5, order: 0 })
   })
 
-  it("should test parameters of #channelDelete()", async () => {
+  it("should verify parameters of #channelDelete()", async () => {
     await ts3.channelDelete(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channeldelete", { cid: 10, force: 0 })
   })
 
-  it("should test parameters of #channelEdit()", async () => {
+  it("should verify parameters of #channelEdit()", async () => {
     await ts3.channelEdit(1, { channel_name: "new name" })
     assert.calledOnce(stub)
     assert.calledWith(stub, "channeledit", { cid: 1, channel_name: "new name" })
   })
 
-  it("should test parameters of #channelPermList()", async () => {
+  it("should verify parameters of #channelPermList()", async () => {
     await ts3.channelPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelpermlist", { cid: 10 }, ["-permsid"])
   })
 
-  it("should test parameters of #channelSetPerm()", async () => {
+  it("should verify parameters of #channelSetPerm()", async () => {
     await ts3.channelSetPerm(10, "i_channel_subscribe_power", 25, true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channeladdperm", { cid: 10, permsid: "i_channel_subscribe_power", permvalue: 25 })
+    assert.calledWith(stub, "channeladdperm", {
+      cid: 10,
+      permsid: "i_channel_subscribe_power",
+      permvalue: 25
+    })
   })
 
-  it("should test parameters of #channelDelPerm()", async () => {
+  it("should verify parameters of #channelDelPerm()", async () => {
     await ts3.channelDelPerm(10, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channeldelperm", { cid: 10, permsid: "i_channel_subscribe_power" })
+    assert.calledWith(stub, "channeldelperm", {
+      cid: 10,
+      permsid: "i_channel_subscribe_power"
+    })
   })
 
-  it("should test parameters of #getClientByID()")
+  it("should verify parameters of #getClientByID()", async () => {
+    stub.onCall(0).resolves(mockResponse.clientlist)
+    var client = await ts3.getClientByID(3)
+    assert.match(client.constructor.name, "TeamSpeakClient")
+    assert.match(client.getCache().clid, 3)
+  })
 
-  it("should test parameters of #getClientByDBID()")
+  it("should verify parameters of #getClientByDBID()", async () => {
+    stub.onCall(0).resolves(mockResponse.clientlist)
+    var client = await ts3.getClientByDBID(4)
+    assert.match(client.constructor.name, "TeamSpeakClient")
+    assert.match(client.getCache().client_database_id, 4)
+  })
 
-  it("should test parameters of #getClientByUID()")
+  it("should verify parameters of #getClientByUID()", async () => {
+    stub.onCall(0).resolves(mockResponse.clientlist)
+    var client = await ts3.getClientByUID("NF61yPIiDvYuOJ/Bbeod84bw6dE=")
+    assert.match(client.constructor.name, "TeamSpeakClient")
+    assert.match(client.getCache().client_unique_identifier, "NF61yPIiDvYuOJ/Bbeod84bw6dE=")
+  })
 
-  it("should test parameters of #getClientByName()")
+  it("should verify parameters of #getClientByName()", async () => {
+    stub.onCall(0).resolves(mockResponse.clientlist)
+    var channel = await ts3.getClientByName("Multivitamin | David")
+    assert.match(channel.constructor.name, "TeamSpeakClient")
+    assert.match(channel.getCache().client_nickname, "Multivitamin | David")
+  })
 
-  it("should test parameters of #clientInfo()", async () => {
+  it("should verify parameters of #clientInfo()", async () => {
     await ts3.clientInfo(20)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientinfo", { clid: 20 })
   })
 
-  it("should test parameters of #clientDBList()", async () => {
+  it("should verify parameters of #clientDBList()", async () => {
     await ts3.clientDBList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdblist", { start: 0, duration: 1000 }, ["-count"])
   })
 
-  it("should test parameters of #clientDBInfo()", async () => {
+  it("should verify parameters of #clientDBInfo()", async () => {
     await ts3.clientDBInfo(25)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbinfo", { cldbid: 25 })
   })
 
-  it("should test parameters of #clientKick()", async () => {
+  it("should verify parameters of #clientKick()", async () => {
     await ts3.clientKick(10, 4, "Kicked from Channel")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "clientkick", { clid: 10, reasonid: 4, reasonmsg: "Kicked from Channel" })
+    assert.calledWith(stub, "clientkick", {
+      clid: 10,
+      reasonid: 4,
+      reasonmsg: "Kicked from Channel"
+    })
   })
 
-  it("should test parameters of #clientMove()", async () => {
+  it("should verify parameters of #clientMove()", async () => {
     await ts3.clientMove(25, 10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientmove", { clid: 25, cid: 10, cpw: undefined })
   })
 
-  it("should test parameters of #clientPoke()", async () => {
+  it("should verify parameters of #clientPoke()", async () => {
     await ts3.clientPoke(10, "you have been poked")
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientpoke", { clid: 10, msg: "you have been poked" })
   })
 
-  it("should test parameters of #clientPermList()", async () => {
+  it("should verify parameters of #clientPermList()", async () => {
     await ts3.clientPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientpermlist", { cldbid: 10 }, ["-permsid"])
   })
 
-  it("should test parameters of #clientAddPerm()", async () => {
+  it("should verify parameters of #clientAddPerm()", async () => {
     await ts3.clientAddPerm(10, "i_channel_subscribe_power", 25, true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "clientaddperm", { cldbid: 10, permsid: "i_channel_subscribe_power", permvalue: 25, permskip: 0, permnegated: 0 })
+    assert.calledWith(stub, "clientaddperm", {
+      cldbid: 10,
+      permsid: "i_channel_subscribe_power",
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
   })
 
-  it("should test parameters of #clientDelPerm()", async () => {
+  it("should verify parameters of #clientDelPerm()", async () => {
     await ts3.clientDelPerm(10, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdelperm", { cldbid: 10, permsid: "i_channel_subscribe_power" })
   })
 
-  it("should test parameters of #customSearch()", async () => {
+  it("should verify parameters of #customSearch()", async () => {
     await ts3.customSearch("key", "fdsa")
     assert.calledOnce(stub)
     assert.calledWith(stub, "customsearch", { ident: "key", pattern: "fdsa" })
   })
 
-  it("should test parameters of #customInfo()", async () => {
+  it("should verify parameters of #customInfo()", async () => {
     await ts3.customInfo(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "custominfo", { cldbid: 10 })
   })
 
-  it("should test parameters of #customDelete()", async () => {
+  it("should verify parameters of #customDelete()", async () => {
     await ts3.customDelete(10, "key")
     assert.calledOnce(stub)
     assert.calledWith(stub, "customdelete", { cldbid: 10, ident: "key" })
   })
 
-  it("should test parameters of #customSet()", async () => {
+  it("should verify parameters of #customSet()", async () => {
     await ts3.customSet(10, "key", "value")
     assert.calledOnce(stub)
     assert.calledWith(stub, "customset", { cldbid: 10, ident: "key", value: "value" })
   })
 
-  it("should test parameters of #sendTextMessage()", async () => {
+  it("should verify parameters of #sendTextMessage()", async () => {
     await ts3.sendTextMessage(10, 2, "message to channel chat")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "sendtextmessage", { target: 10, targetmode: 2, msg: "message to channel chat" })
+    assert.calledWith(stub, "sendtextmessage", {
+      target: 10,
+      targetmode: 2,
+      msg: "message to channel chat"
+    })
   })
 
-  it("should test parameters of #getServerGroupByID()")
+  it("should verify parameters of #getServerGroupByID()", async () => {
+    stub.onCall(0).resolves(mockResponse.servergrouplist)
+    var group = await ts3.getServerGroupByID(4)
+    assert.match(group.constructor.name, "TeamSpeakServerGroup")
+    assert.match(group.getCache().name, "Normal")
+  })
 
-  it("should test parameters of #getServerGroupByName()")
+  it("should verify parameters of #getServerGroupByName()", async () => {
+    stub.onCall(0).resolves(mockResponse.servergrouplist)
+    var group = await ts3.getServerGroupByName("Normal")
+    assert.match(group.constructor.name, "TeamSpeakServerGroup")
+    assert.match(group.getCache().name, "Normal")
+  })
 
-  it("should test parameters of #getChannelGroupByID()")
+  it("should verify parameters of #getChannelGroupByID()", async () => {
+    stub.onCall(0).resolves(mockResponse.channelgrouplist)
+    var group = await ts3.getChannelGroupByID(7)
+    assert.match(group.constructor.name, "TeamSpeakChannelGroup")
+    assert.match(group.getCache().cgid, 7)
+  })
 
-  it("should test parameters of #getChannelGroupByName()")
+  it("should verify parameters of #getChannelGroupByName()", async () => {
+    stub.onCall(0).resolves(mockResponse.channelgrouplist)
+    var group = await ts3.getChannelGroupByName("Voice")
+    assert.match(group.constructor.name, "TeamSpeakChannelGroup")
+    assert.match(group.getCache().cgid, 7)
+  })
 
-  it("should test parameters of #setClientChannelGroup()", async () => {
+  it("should verify parameters of #setClientChannelGroup()", async () => {
     await ts3.setClientChannelGroup(10, 5, 3)
     assert.calledOnce(stub)
     assert.calledWith(stub, "setclientchannelgroup", { cgid: 10, cid: 5, cldbid: 3 })
   })
 
-  it("should test parameters of #deleteChannelGroup()", async () => {
+  it("should verify parameters of #deleteChannelGroup()", async () => {
     await ts3.deleteChannelGroup(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupdel", { cgid: 10, force: 0 })
   })
 
-  it("should test parameters of #channelGroupCopy()", async () => {
+  it("should verify parameters of #channelGroupCopy()", async () => {
     await ts3.channelGroupCopy(10, 0, 1, "New Channel Group")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channelgroupcopy", { scgid: 10, tcgid: 0, type: 1, name: "New Channel Group" })
+    assert.calledWith(stub, "channelgroupcopy", {
+      scgid: 10,
+      tcgid: 0,
+      type: 1,
+      name: "New Channel Group"
+    })
   })
 
-  it("should test parameters of #channelGroupRename()", async () => {
+  it("should verify parameters of #channelGroupRename()", async () => {
     await ts3.channelGroupRename(10, "New Name")
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgrouprename", { cgid: 10, name: "New Name" })
   })
 
-  it("should test parameters of #channelGroupPermList()", async () => {
+  it("should verify parameters of #channelGroupPermList()", async () => {
     await ts3.channelGroupPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgrouppermlist", { cgid: 10 }, ["-permsid"])
   })
 
-  it("should test parameters of #channelGroupAddPerm()", async () => {
+  it("should verify parameters of #channelGroupAddPerm()", async () => {
     await ts3.channelGroupAddPerm(10, "i_channel_subscribe_power", 25, true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channelgroupaddperm", { cgid: 10, permsid: "i_channel_subscribe_power", permvalue: 25, permskip: 0, permnegated: 0 })
+    assert.calledWith(stub, "channelgroupaddperm", {
+      cgid: 10,
+      permsid: "i_channel_subscribe_power",
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
   })
 
-  it("should test parameters of #channelGroupDelPerm()", async () => {
+  it("should verify parameters of #channelGroupDelPerm()", async () => {
     await ts3.channelGroupDelPerm(10, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channelgroupdelperm", { cgid: 10, permsid: "i_channel_subscribe_power" })
+    assert.calledWith(stub, "channelgroupdelperm", {
+      cgid: 10,
+      permsid: "i_channel_subscribe_power"
+    })
   })
 
-  it("should test parameters of #channelGroupClientList()", async () => {
+  it("should verify parameters of #channelGroupClientList()", async () => {
     await ts3.channelGroupClientList(10, 5)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupclientlist", { cgid: 10, cid: 5 })
   })
 
-  it("should test parameters of #permOverview()", async () => {
+  it("should verify parameters of #permOverview()", async () => {
     await ts3.permOverview(10, 5, 4)
     assert.calledOnce(stub)
     assert.calledWith(stub, "permoverview", { cldbid: 10, cid: 5, permid: 4 })
   })
 
-  it("should test parameters of #permissionList()", async () => {
+  it("should verify parameters of #permissionList()", async () => {
     await ts3.permissionList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "permissionlist")
   })
 
-  it("should test parameters of #permIdGetByName()", async () => {
+  it("should verify parameters of #permIdGetByName()", async () => {
     await ts3.permIdGetByName(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "permidgetbyname", { permsid: 10 })
   })
 
   describe("#permGet()", () => {
-    it("should test with string parameter", async () => {
+    it("should verify with string parameter", async () => {
       await ts3.permGet("i_channel_subscribe_power")
       assert.calledOnce(stub)
       assert.calledWith(stub, "permget", { permsid: "i_channel_subscribe_power" })
     })
-    it("should test with numeric parameter", async () => {
+    it("should verify with numeric parameter", async () => {
       await ts3.permGet(10)
       assert.calledOnce(stub)
       assert.calledWith(stub, "permget", { permid: 10 })
@@ -482,97 +577,106 @@ describe("TeamSpeak3", () => {
   })
 
   describe("#permFind()", () => {
-    it("should test with string parameter", async () => {
+    it("should verify with string parameter", async () => {
       await ts3.permFind("i_channel_subscribe_power")
       assert.calledOnce(stub)
       assert.calledWith(stub, "permfind", { permsid: "i_channel_subscribe_power" })
     })
-    it("should test with numeric parameter", async () => {
+    it("should verify with numeric parameter", async () => {
       await ts3.permFind(10)
       assert.calledOnce(stub)
       assert.calledWith(stub, "permfind", { permid: 10 })
     })
   })
 
-  it("should test parameters of #permGet()", async () => {
+  it("should verify parameters of #permGet()", async () => {
     await ts3.permGet()
     assert.calledOnce(stub)
     assert.calledWith(stub, "permget")
   })
 
-  it("should test parameters of #permFind()", async () => {
+  it("should verify parameters of #permFind()", async () => {
     await ts3.permFind("i_channel_subscribe_power")
     assert.calledOnce(stub)
     assert.calledWith(stub, "permfind")
   })
 
-  it("should test parameters of #permReset()", async () => {
+  it("should verify parameters of #permReset()", async () => {
     await ts3.permReset()
     assert.calledOnce(stub)
     assert.calledWith(stub, "permreset")
   })
 
-  it("should test parameters of #privilegekeyList()", async () => {
+  it("should verify parameters of #privilegekeyList()", async () => {
     await ts3.privilegekeyList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeylist")
   })
 
-  it("should test parameters of #privilegekeyAdd()", async () => {
+  it("should verify parameters of #privilegekeyAdd()", async () => {
     await ts3.privilegekeyAdd(0, 10, null, "Server Group Token")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "privilegekeyadd", { tokentype: 0, tokenid1: 10, description: "Server Group Token" })
+    assert.calledWith(stub, "privilegekeyadd", {
+      tokentype: 0,
+      tokenid1: 10,
+      description:
+      "Server Group Token"
+    })
   })
 
-  it("should test parameters of #privilegekeyDelete()", async () => {
+  it("should verify parameters of #privilegekeyDelete()", async () => {
     await ts3.privilegekeyDelete("asdf")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeydelete", { token: "asdf" })
   })
 
-  it("should test parameters of #privilegekeyUse()", async () => {
+  it("should verify parameters of #privilegekeyUse()", async () => {
     await ts3.privilegekeyUse("asdf")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeyuse", { token: "asdf" })
   })
 
-  it("should test parameters of #messageList()", async () => {
+  it("should verify parameters of #messageList()", async () => {
     await ts3.messageList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "messagelist")
   })
 
-  it("should test parameters of #messageAdd()", async () => {
+  it("should verify parameters of #messageAdd()", async () => {
     await ts3.messageAdd("uniqueidentifier=", "title", "content")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "messageadd", { cluid: "uniqueidentifier=", subject: "title", text: "content" })
+    assert.calledWith(stub, "messageadd", {
+      cluid: "uniqueidentifier=",
+      subject: "title",
+      text: "content"
+    })
   })
 
-  it("should test parameters of #messageDel()", async () => {
+  it("should verify parameters of #messageDel()", async () => {
     await ts3.messageDel(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "messagedel", { msgid: 10 })
   })
 
-  it("should test parameters of #messageGet()", async () => {
+  it("should verify parameters of #messageGet()", async () => {
     await ts3.messageGet(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "messageget", { msgid: 10 })
   })
 
-  it("should test parameters of #messageUpdate()", async () => {
+  it("should verify parameters of #messageUpdate()", async () => {
     await ts3.messageUpdate(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "messageupdateflag", { msgid: 10, flag: 1 })
   })
 
-  it("should test parameters of #complainList()", async () => {
+  it("should verify parameters of #complainList()", async () => {
     await ts3.complainList(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "complainlist", { cldbid: 10 })
   })
 
-  it("should test parameters of #complainAdd()", async () => {
+  it("should verify parameters of #complainAdd()", async () => {
     await ts3.complainAdd(10, "message")
     assert.calledOnce(stub)
     assert.calledWith(stub, "complainadd", { cldbid: 10, message: "message" })
@@ -591,16 +695,22 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should test parameters of #banList()", async () => {
+  it("should verify parameters of #banList()", async () => {
     await ts3.banList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "banlist")
   })
 
-  it("should test parameters of #banAdd()", async () => {
+  it("should verify parameters of #banAdd()", async () => {
     await ts3.banAdd("127.0.0.1", null, null, null, "spam")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "banadd", { ip: "127.0.0.1", name: null, uid: null, time: null, banreason: "spam" })
+    assert.calledWith(stub, "banadd", {
+      ip: "127.0.0.1",
+      name: null,
+      uid: null,
+      time: null,
+      banreason: "spam"
+    })
   })
 
   describe("#banDel()", () => {
@@ -616,124 +726,156 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should test parameters of #logView()", async () => {
+  it("should verify parameters of #logView()", async () => {
     await ts3.logView()
     assert.calledOnce(stub)
     assert.calledWith(stub, "logview", { lines: 1000, reverse: 0, instance: 0, begin_pos: 0 })
   })
 
-  it("should test parameters of #logAdd()", async () => {
+  it("should verify parameters of #logAdd()", async () => {
     await ts3.logAdd(0, "custom message")
     assert.calledOnce(stub)
     assert.calledWith(stub, "logadd", { loglevel: 0, logmsg: "custom message" })
   })
 
-  it("should test parameters of #gm()", async () => {
+  it("should verify parameters of #gm()", async () => {
     await ts3.gm("Global Message")
     assert.calledOnce(stub)
     assert.calledWith(stub, "gm", { msg: "Global Message" })
   })
 
-  it("should test parameters of #clientDBInfo()", async () => {
+  it("should verify parameters of #clientDBInfo()", async () => {
     await ts3.clientDBInfo(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbinfo", { cldbid: 10 })
   })
 
-  it("should test parameters of #clientDBFind()", async () => {
+  it("should verify parameters of #clientDBFind()", async () => {
     await ts3.clientDBFind("John Doe")
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbfind", { pattern: "John Doe" }, [])
   })
 
-  it("should test parameters of #clientDBEdit()", async () => {
+  it("should verify parameters of #clientDBEdit()", async () => {
     await ts3.clientDBEdit(10, { "foo": "bar" })
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbedit", { cldbid: 10, foo: "bar" })
   })
 
-  it("should test parameters of #clientDBDelete()", async () => {
+  it("should verify parameters of #clientDBDelete()", async () => {
     await ts3.clientDBDelete(10 )
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbdelete", { cldbid: 10 })
   })
 
-  it("should test parameters of #serverList()", async () => {
+  it("should verify parameters of #serverList()", async () => {
     await ts3.serverList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "serverlist", ["-uid", "-all"])
   })
 
-  it("should test parameters of #channelGroupList()", async () => {
+  it("should verify parameters of #channelGroupList()", async () => {
     await ts3.channelGroupList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgrouplist")
   })
 
-  it("should test parameters of #serverGroupList()", async () => {
+  it("should verify parameters of #serverGroupList()", async () => {
     await ts3.serverGroupList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergrouplist")
   })
 
-  it("should test parameters of #channelList()", async () => {
+  it("should verify parameters of #channelList()", async () => {
     await ts3.channelList()
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"])
+    assert.calledWith(
+      stub,
+      "channellist",
+      ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"]
+    )
   })
 
-  it("should test parameters of #clientList()", async () => {
+  it("should verify parameters of #clientList()", async () => {
     await ts3.clientList()
     assert.calledOnce(stub)
-    assert.calledWith(stub, "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"])
+    assert.calledWith(
+      stub,
+      "clientlist",
+      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"]
+    )
   })
 
-  it("should test parameters of #ftGetFileList()", async () => {
+  it("should verify parameters of #ftGetFileList()", async () => {
     await ts3.ftGetFileList(10)
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftgetfilelist", { cid: 10, path: "/", cpw: undefined })
   })
 
-  it("should test parameters of #ftGetFileInfo()", async () => {
+  it("should verify parameters of #ftGetFileInfo()", async () => {
     await ts3.ftGetFileInfo(10, "/file.txt")
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftgetfileinfo", { cid: 10, name: "/file.txt", cpw: undefined })
   })
 
-  it("should test parameters of #ftStop()", async () => {
+  it("should verify parameters of #ftStop()", async () => {
     await ts3.ftStop(109100)
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftstop", { serverftfid: 109100, delete: 1 })
   })
 
-  it("should test parameters of #ftDeleteFile()", async () => {
+  it("should verify parameters of #ftDeleteFile()", async () => {
     await ts3.ftDeleteFile(10, "/file.txt")
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftdeletefile", { cid: 10, name: "/file.txt", cpw: undefined })
   })
 
-  it("should test parameters of #ftCreateDir()", async () => {
+  it("should verify parameters of #ftCreateDir()", async () => {
     await ts3.ftCreateDir(10, "/folder")
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftcreatedir", { cid: 10, dirname: "/folder", "cpw": undefined })
   })
 
-  it("should test parameters of #ftRenameFile()", async () => {
+  it("should verify parameters of #ftRenameFile()", async () => {
     await ts3.ftRenameFile(10, "/file.txt", "/file2.txt", 11)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "ftrenamefile", { cid: 10, oldname: "/file.txt", newname: "/file2.txt", tcid: 11, cpw: undefined, tcpw: undefined })
+    assert.calledWith(stub, "ftrenamefile", {
+      cid: 10,
+      oldname: "/file.txt",
+      newname: "/file2.txt",
+      tcid: 11,
+      cpw: undefined,
+      tcpw: undefined
+    })
   })
 
-  it("should test parameters of #ftInitUpload()", async () => {
+  it("should verify parameters of #ftInitUpload()", async () => {
     await ts3.ftInitUpload({ clientftfid: 123 })
     assert.calledOnce(stub)
-    assert.calledWith(stub, "ftinitupload", { clientftfid: 123, cid: 0, resume: 0, overwrite: 1 })
+    assert.calledWith(stub, "ftinitupload", {
+      clientftfid: 123,
+      cid: 0,
+      resume: 0,
+      overwrite: 1
+    })
   })
 
-  it("should test parameters of #ftInitDownload()", async () => {
+  it("should verify parameters of #ftInitDownload()", async () => {
     await ts3.ftInitDownload({ clientftfid: 123 })
     assert.calledOnce(stub)
-    assert.calledWith(stub, "ftinitdownload", { clientftfid: 123, cid: 0, seekpos: 0, path: "/", cpw: "" })
+    assert.calledWith(stub, "ftinitdownload", {
+      clientftfid: 123,
+      cid: 0,
+      seekpos: 0,
+      path: "/",
+      cpw: ""
+    })
+  })
+
+  it("should verify parameters of #quit()", async () => {
+    await ts3.quit()
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "quit")
   })
 
 
@@ -741,11 +883,17 @@ describe("TeamSpeak3", () => {
 
   describe("#filter()", () => {
     it("should filter an array of objects with 1 filter parameter", async () => {
-      deepEqual(await TeamSpeak3._filter(mockArray.ADVANCED, { foo: "bar" }), [mockArray.ADVANCED[0], mockArray.ADVANCED[2]])
+      deepEqual(
+        await TeamSpeak3._filter(mockArray.ADVANCED, { foo: "bar" }),
+        [mockArray.ADVANCED[0], mockArray.ADVANCED[2]]
+      )
     })
 
     it("should filter an array of objects with 2 filter parameters", async () => {
-      deepEqual(await TeamSpeak3._filter(mockArray.ADVANCED, { age: 40, foo: "baz" }), [mockArray.ADVANCED[1]])
+      deepEqual(
+        await TeamSpeak3._filter(mockArray.ADVANCED, { age: 40, foo: "baz" }),
+        [mockArray.ADVANCED[1]]
+      )
     })
   })
 
@@ -760,7 +908,10 @@ describe("TeamSpeak3", () => {
       deepEqual(await TeamSpeak3.prototype.toArray("foo bar"), ["foo bar"])
     })
     it("should do nothing with an array as argument", async () => {
-      deepEqual(await TeamSpeak3.prototype.toArray(["jane doe", "john doe"]), ["jane doe", "john doe"])
+      deepEqual(
+        await TeamSpeak3.prototype.toArray(["jane doe", "john doe"]),
+        ["jane doe", "john doe"]
+      )
     })
   })
 
