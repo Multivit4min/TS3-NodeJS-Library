@@ -6,13 +6,13 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const TS3Query = require(__dirname+"/transport/TS3Query")
-const FileTransfer = require(__dirname+"/transport/FileTransfer")
-const TeamSpeakClient = require(__dirname+"/property/Client")
-const TeamSpeakChannel = require(__dirname+"/property/Channel")
-const TeamSpeakServer = require(__dirname+"/property/Server")
-const TeamSpeakServerGroup = require(__dirname+"/property/ServerGroup")
-const TeamSpeakChannelGroup = require(__dirname+"/property/ChannelGroup")
+const TS3Query = require("./transport/TS3Query")
+const FileTransfer = require("./transport/FileTransfer")
+const TeamSpeakClient = require("./property/Client")
+const TeamSpeakChannel = require("./property/Channel")
+const TeamSpeakServer = require("./property/Server")
+const TeamSpeakServerGroup = require("./property/ServerGroup")
+const TeamSpeakChannelGroup = require("./property/ChannelGroup")
 
 const EventEmitter = require("events")
 
@@ -1458,7 +1458,7 @@ class TeamSpeak3 extends EventEmitter {
      */
     privilegekeyAdd(tokentype, group, cid, description) {
         var properties = { tokentype, tokenid1: group }
-        if (type === 1) properties.tokenid2 = cid
+        if (tokentype === 1) properties.tokenid2 = cid
         if (description) properties.description = description
         return this.execute("privilegekeyadd", properties)
     }
@@ -1557,7 +1557,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {number} [cldbid] - Filter only for certain Client with the given Database ID
      * @returns {Promise.<object>}
      */
-    complainList(dbid) {
+    complainList(cldbid) {
         return this.execute("complainlist", { cldbid }).then(this.toArray)
     }
 
@@ -1586,7 +1586,7 @@ class TeamSpeak3 extends EventEmitter {
     complainDel(tcldbid, fcldbid = false) {
         var cmd = (fcldbid === false) ? "complaindelall" : "complaindel"
         var properties = { tcldbid }
-        if (fcldbid === false) properties.fcldbid = fcldbid
+        if (fcldbid !== false) properties.fcldbid = fcldbid
         return this.execute(cmd, properties)
     }
 
@@ -1627,8 +1627,8 @@ class TeamSpeak3 extends EventEmitter {
      */
     banDel(banid = false) {
         return this.execute(
-            (id !== false) ? "bandel" : "bandelall",
-            (id !== false) ? { banid } : null
+            (banid !== false) ? "bandel" : "bandelall",
+            (banid !== false) ? { banid } : null
         )
     }
 
@@ -1813,7 +1813,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [cpw] - the channel password
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
-    ftGetFileList(cid, path = "/", cpw = "") {
+    ftGetFileList(cid, path = "/", cpw) {
         return this.execute("ftgetfilelist", { cid, path, cpw }).then(this.toArray)
     }
 
@@ -1827,7 +1827,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [cpw] - the channel password
      * @returns {Promise.<object>} Promise object which returns an Array of Files
      */
-    ftGetFileInfo(cid, name, cpw = "") {
+    ftGetFileInfo(cid, name, cpw) {
         return this.execute("ftgetfileinfo", { cid, name, cpw })
     }
 
