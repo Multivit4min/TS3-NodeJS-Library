@@ -171,6 +171,18 @@ describe("TeamSpeakClient", () => {
     })
   })
 
+  it("should verify execute parameters of #ban()", async () => {
+    await client.ban("Ban Reason", 60)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "banadd", {
+      ip: null,
+      name: null,
+      uid: rawClient.client_unique_identifier,
+      time: 60,
+      banreason: "Ban Reason"
+    })
+  })
+
   it("should verify execute parameters of #move()", async () => {
     await client.move(10, "channel password")
     assert.calledOnce(stub)
