@@ -32,10 +32,11 @@ class TeamSpeakServer extends Abstract {
     /**
      * Selects the Virtual Server
      * @version 1.0
+     * @param {string} [client_nickname] - Set Nickname when selecting a server
      * @returns {Promise.<object>}
      */
-    use() {
-        return super.getParent().useBySid(this._static.sid)
+    use(client_nickname) {
+        return super.getParent().useBySid(this._static.sid, client_nickname)
     }
 
 

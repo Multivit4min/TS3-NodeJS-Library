@@ -258,5 +258,18 @@ module.exports = {
     n_modifyp: 75,
     n_member_addp: 0,
     n_member_removep: 0,
+  }],
+
+  serverlist: [{
+    virtualserver_id: 1,
+    virtualserver_port: 9987,
+    virtualserver_status: "online",
+    virtualserver_clientsonline: 2,
+    virtualserver_queryclientsonline: 1,
+    virtualserver_maxclients: 32,
+    virtualserver_uptime: 118990,
+    virtualserver_name: "TeamSpeak ]I[ Server",
+    virtualserver_autostart: 1,
+    virtualserver_machine_id: ""
   }]
 }
