@@ -78,4 +78,11 @@ describe("TeamSpeakChannel", () => {
     clients.forEach(client => assert.match(client.constructor.name, "TeamSpeakClient"))
   })
 
+  it("should validate the return value of #getIconName()", async () => {
+    stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
+    var name = await channel.getIconName()
+    assert.calledOnce(stub)
+    deepEqual(name, "icon_9999")
+  })
+
 })

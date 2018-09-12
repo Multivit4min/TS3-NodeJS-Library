@@ -15,7 +15,7 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 describe("TeamSpeakClient", () => {
 
   beforeEach(() => {
-    var ts3 = new TeamSpeak3()
+    ts3 = new TeamSpeak3()
     rawClient = mockResponse.clientlist[1]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
@@ -45,6 +45,76 @@ describe("TeamSpeakClient", () => {
       client.getURL(),
       "[URL=client://"+clid+"/"+client_unique_identifier+"~"+encodeURIComponent(client_nickname)+"]"+client_nickname+"[/URL]"
     )
+  })
+
+  describe("event#textmessage", () => {
+    it("should check if the event gets fired with correct parameters", done => {
+      client.on("message", msg => {
+        assert.match(msg, "Text Message Content")
+        done()
+      })
+      ts3.emit("textmessage", { msg: "Text Message Content", invoker: client })
+    })
+    it("should check if the event gets not fired when its not meant for the client", function(done) {
+      this.slow(4000)
+      var timer = setTimeout(() => done(), 50)
+      client.on("message", msg => {
+        clearTimeout(timer)
+        done(Error("Event got fired which should not fire"))
+      })
+      ts3.emit("textmessage", {
+        msg: "Text Message Content",
+        invoker: new TeamSpeakClient(ts3, {
+          client_unique_identifier: "bla=",
+          clid: 25,
+          client_database_id: 100,
+          client_type: 0
+        })
+      })
+    })
+  })
+
+  describe("event#disconnect", () => {
+    it("should check if the event gets fired with correct parameters", done => {
+      client.on("disconnect", () => done())
+      ts3.emit("clientdisconnect", { client: client.getCache() })
+    })
+    it("should check if the event gets not fired when its not meant for the client", function(done) {
+      this.slow(4000)
+      var timer = setTimeout(() => done(), 50)
+      client.on("disconnect", () => {
+        clearTimeout(timer)
+        done(Error("Event got fired which should not fire"))
+      })
+      ts3.emit("clientdisconnect", { client: { clid: 25 } })
+    })
+  })
+
+  describe("event#move", () => {
+    it("should check if the event gets fired with correct parameters", done => {
+      client.on("move", channel => {
+        assert.match(channel, "Fake Payload")
+        done()
+      })
+      ts3.emit("clientmoved", { channel: "Fake Payload", client })
+    })
+    it("should check if the event gets not fired when its not meant for the client", function(done) {
+      this.slow(4000)
+      var timer = setTimeout(() => done(), 50)
+       client.on("move", () => {
+        clearTimeout(timer)
+        done(Error("Event got fired which should not fire"))
+      })
+      ts3.emit("clientmoved", {
+        channel: "Fake Payload",
+        client: new TeamSpeakClient(ts3, {
+          client_unique_identifier: "bla=",
+          clid: 25,
+          client_database_id: 100,
+          client_type: 0
+        })
+      })
+    })
   })
 
   it("should verify execute parameters of #getInfo()", async () => {
@@ -186,6 +256,13 @@ describe("TeamSpeakClient", () => {
     assert.match(await client.getAvatarName(), base64uid)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbinfo", { cldbid: rawClient.client_database_id })
+  })
+
+  it("should validate the return value of #getIconName()", async () => {
+    stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
+    var name = await client.getIconName()
+    assert.calledOnce(stub)
+    deepEqual(name, "icon_9999")
   })
 
 })

@@ -878,6 +878,83 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "quit")
   })
 
+  it("should validate the return value of #getIconName()", async () => {
+    stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
+    var name = await ts3.getIconName(ts3.serverGroupPermList())
+    assert.calledOnce(stub)
+    deepEqual(name, "icon_9999")
+  })
+
+  it("should receive and handle the event clientconnect", done => {
+    try {
+      ts3.on("clientconnect", ev => {
+        deepEqual(ev.client.constructor.name, "TeamSpeakClient")
+        deepEqual(ev.client.getID(), 4)
+        deepEqual(ev.cid, 10)
+        done()
+      })
+      ts3._ts3.emit("cliententerview", {
+        ctid: 10,
+        client_unique_identifier: "uid=",
+        clid: 4,
+        client_database_id: 1,
+        client_type: 0
+      })
+      assert.notCalled(stub)
+    } catch(e) {
+      done(e)
+    }
+  })
+
+  it("should receive and handle the event clientdisconnect", done => {
+    try {
+      ts3.on("clientdisconnect", ev => {
+        deepEqual(ev.event.clid, 4)
+        done()
+      })
+      ts3._ts3.emit("clientleftview", { clid: 4 })
+      assert.notCalled(stub)
+    } catch(e) {
+      done(e)
+    }
+  })
+
+  it("should receive and handle the event textmessage", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
+    try {
+      ts3.on("textmessage", ev => {
+        deepEqual(ev.msg, "Message Content")
+        deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+        deepEqual(ev.invoker.getID(), 10)
+        deepEqual(ev.targetmode, 1)
+        done()
+      })
+      ts3._ts3.emit("textmessage", { msg: "Message Content", invokerid: 10, targetmode: 1 })
+      assert.calledOnce(stub)
+    } catch(e) {
+      done(e)
+    }
+  })
+
+  it("should receive and handle the event clientmoved", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
+    stub.onCall(1).resolves({ cid: 3 })
+    try {
+      ts3.on("clientmoved", ev => {
+        deepEqual(ev.client.constructor.name, "TeamSpeakClient")
+        deepEqual(ev.client.getID(), 10)
+        deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
+        deepEqual(ev.channel.getCache().cid, 3)
+        deepEqual(ev.reasonid, 4)
+        done()
+      })
+      ts3._ts3.emit("clientmoved", { clid: 10, ctid: 3, reasonid: 4 })
+      assert.calledTwice(stub)
+    } catch(e) {
+      done(e)
+    }
+  })
+
 
 
 

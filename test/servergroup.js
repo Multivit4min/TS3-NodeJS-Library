@@ -100,6 +100,13 @@ describe("TeamSpeakServerGroup", () => {
     assert.calledWith(stub, "servergroupclientlist", { sgid: rawGroup.sgid }, ["-names"])
   })
 
+  it("should validate the return value of #getIconName()", async () => {
+    stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
+    var name = await serverGroup.getIconName()
+    assert.calledOnce(stub)
+    deepEqual(name, "icon_9999")
+  })
+
 
 
 })
