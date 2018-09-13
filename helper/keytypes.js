@@ -237,6 +237,30 @@ module.exports = {
     proto: Number,
     datetime: Number,
 
+    //Host Info
+    host_timestamp_utc: Number,
+    instance_uptime: Number,
+    virtualservers_running_total: Number,
+    virtualservers_total_channels_online: Number,
+    virtualservers_total_clients_online: Number,
+    virtualservers_total_maxclients: Number,
+
+    //Instance Info
+    serverinstance_database_version: Number,
+    serverinstance_filetransfer_port: Number,
+    serverinstance_max_download_total_bandwidth: "String", //is actually a number, but may get rounded by JS
+    serverinstance_max_upload_total_bandwidth: "String",
+    serverinstance_guest_serverquery_group: Number,
+    serverinstance_pending_connections_per_ip: Number,
+    serverinstance_permissions_version: Number,
+    serverinstance_serverquery_ban_time: Number,
+    serverinstance_serverquery_flood_commands: Number,
+    serverinstance_serverquery_flood_time: Number,
+    serverinstance_template_channeladmin_group: Number,
+    serverinstance_template_channeldefault_group: Number,
+    serverinstance_template_serveradmin_group: Number,
+    serverinstance_template_serverdefault_group: Number,
+
     //General
     name: String,
 
