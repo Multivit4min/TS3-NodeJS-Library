@@ -199,7 +199,8 @@ class Command {
     buildOptions() {
       return Object
         .keys(this.opts)
-        .filter(key => [undefined, null, NaN, ""].indexOf(this.opts[key]) === -1)
+        .filter(key => [undefined, null].indexOf(this.opts[key]) === -1)
+        .filter(key => typeof this.opts[key] !== "number" || !isNaN(this.opts[key]))
         .map(key => this.escapeKeyValue(key, this.opts[key]))
         .join(" ")
     }

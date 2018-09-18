@@ -8,9 +8,15 @@ describe("Command", () => {
     it("should build a valid command", () => {
       var cmd = new Command()
       cmd.setCommand("use")
-      cmd.setOptions({ client_nickname: "TeamSpeak Query", invalid: null })
+      cmd.setOptions({
+        client_nickname: "TeamSpeak Query",
+        empty: "",
+        invalid1: null,
+        invalid2: NaN,
+        invalid3: undefined
+      })
       cmd.setFlags([1])
-      assert.equal(cmd.build(), "use 1 client_nickname=TeamSpeak\\sQuery")
+      assert.equal(cmd.build(), "use 1 client_nickname=TeamSpeak\\sQuery empty=")
     })
   })
 
