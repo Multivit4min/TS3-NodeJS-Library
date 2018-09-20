@@ -1441,7 +1441,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @returns {Promise.<object>} gets a list of privilegekeys
      */
-    privilegekeyList() {
+    privilegeKeyList() {
         return this.execute("privilegekeylist").then(this.toArray)
     }
 
@@ -1456,11 +1456,38 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [description] - Token Description
      * @returns {Promise.<object>}
      */
-    privilegekeyAdd(tokentype, group, cid, description) {
+    privilegeKeyAdd(tokentype, group, cid, description) {
         var properties = { tokentype, tokenid1: group }
         if (tokentype === 1) properties.tokenid2 = cid
         if (description) properties.description = description
         return this.execute("privilegekeyadd", properties)
+    }
+
+
+    /**
+     * Create a new privilegekey token for a ServerGroup with the given description
+     * @version 1.10
+     * @async
+     * @param {number} group - Server Group which should be generated the token for
+     * @param {string} [description] - Token Description
+     * @returns {Promise.<object>}
+     */
+    serverGroupPrivilegeKeyAdd(group, description) {
+        return this.privilegeKeyAdd(0, group, null, description)
+    }
+
+
+    /**
+     * Create a new privilegekey token for a Channel Group and assigned Channel ID with the given description
+     * @version 1.10
+     * @async
+     * @param {number} group - The Channel Group for which the token should be valid
+     * @param {number} cid - Channel ID for which the token should be valid
+     * @param {string} [description] - Token Description
+     * @returns {Promise.<object>}
+     */
+    channelGroupPrivilegeKeyAdd(group, cid, description) {
+        return this.privilegeKeyAdd(1, group, cid, description)
     }
 
 
@@ -1471,7 +1498,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} token - The token which should be deleted
      * @returns {Promise.<object>}
      */
-    privilegekeyDelete(token) {
+    privilegeKeyDelete(token) {
         return this.execute("privilegekeydelete", { token })
     }
 
@@ -1483,7 +1510,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} token - The token which should be used
      * @returns {Promise.<object>}
      */
-    privilegekeyUse(token) {
+    privilegeKeyUse(token) {
         return this.execute("privilegekeyuse", { token })
     }
 

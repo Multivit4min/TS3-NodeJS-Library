@@ -607,31 +607,51 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "permreset")
   })
 
-  it("should verify parameters of #privilegekeyList()", async () => {
-    await ts3.privilegekeyList()
+  it("should verify parameters of #privilegeKeyList()", async () => {
+    await ts3.privilegeKeyList()
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeylist")
   })
 
-  it("should verify parameters of #privilegekeyAdd()", async () => {
-    await ts3.privilegekeyAdd(0, 10, null, "Server Group Token")
+  it("should verify parameters of #privilegeKeyAdd()", async () => {
+    await ts3.privilegeKeyAdd(0, 10, null, "Server Group Token")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeyadd", {
       tokentype: 0,
       tokenid1: 10,
-      description:
-      "Server Group Token"
+      description: "Server Group Token"
     })
   })
 
-  it("should verify parameters of #privilegekeyDelete()", async () => {
-    await ts3.privilegekeyDelete("asdf")
+  it("should verify parameters of #serverGroupPrivilegeKeyAdd()", async () => {
+    await ts3.serverGroupPrivilegeKeyAdd(10, "Server Group Token")
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "privilegekeyadd", {
+      tokentype: 0,
+      tokenid1: 10,
+      description: "Server Group Token"
+    })
+  })
+
+  it("should verify parameters of #channelGroupPrivilegeKeyAdd()", async () => {
+    await ts3.channelGroupPrivilegeKeyAdd(10, 5, "Channel Group Token")
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "privilegekeyadd", {
+      tokentype: 1,
+      tokenid1: 10,
+      tokenid2: 5,
+      description: "Channel Group Token"
+    })
+  })
+
+  it("should verify parameters of #privilegeKeyDelete()", async () => {
+    await ts3.privilegeKeyDelete("asdf")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeydelete", { token: "asdf" })
   })
 
-  it("should verify parameters of #privilegekeyUse()", async () => {
-    await ts3.privilegekeyUse("asdf")
+  it("should verify parameters of #privilegeKeyUse()", async () => {
+    await ts3.privilegeKeyUse("asdf")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeyuse", { token: "asdf" })
   })
