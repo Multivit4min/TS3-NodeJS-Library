@@ -41,7 +41,9 @@ class TeamSpeakChannel extends Abstract {
 
 
     /**
-     * Moves a channel to a new parent channel with the ID cpid. If order is specified, the channel will be sorted right under the channel with the specified ID. If order is set to 0, the channel will be sorted right below the new parent.
+     * Moves a channel to a new parent channel with the ID cpid.
+     * If order is specified, the channel will be sorted right under the channel with the specified ID.
+     * If order is set to 0, the channel will be sorted right below the new parent.
      * @version 1.0
      * @async
      * @param {number} cpid - Channel Parent ID

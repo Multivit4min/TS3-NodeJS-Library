@@ -404,7 +404,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed connection information about the server instance including uptime, number of virtual servers online, traffic information, etc.
+     * Displays detailed connection information about the server instance including uptime,
+     * number of virtual servers online, traffic information, etc.
      * @version 1.0
      * @async
      * @returns {Promise.<object>}
@@ -415,7 +416,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays the server instance configuration including database revision number, the file transfer port, default group IDs, etc.
+     * Displays the server instance configuration including database revision number,
+     * the file transfer port, default group IDs, etc.
      * @version 1.0
      * @async
      * @returns {Promise.<object>}
@@ -486,7 +488,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays detailed configuration information about the selected virtual server including unique ID, number of clients online, configuration, etc.
+     * Displays detailed configuration information about the selected virtual server
+     * including unique ID, number of clients online, configuration, etc.
      * @version 1.0
      * @async
      * @returns {Promise.<object>}
@@ -509,7 +512,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Changes the selected virtual servers configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
+     * Changes the selected virtual servers configuration using given properties.
+     * Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
      * @version 1.0
      * @async
      * @param {object} properties - The Server Settings which should be changed
@@ -544,7 +548,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key. If virtualserver_port is not specified, the server will test for the first unused UDP port
+     * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key.
+     * If virtualserver_port is not specified, the server will test for the first unused UDP port
      * @version 1.0
      * @async
      * @param {object} properties - The Server Settings
@@ -574,7 +579,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Starts the virtual server. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
+     * Starts the virtual server. Depending on your permissions,
+     * you're able to start either your own virtual server only or all virtual servers in the server instance.
      * @version 1.0
      * @async
      * @param {number} sid - the server id
@@ -586,7 +592,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
+     * Stops the virtual server. Depending on your permissions,
+     * you're able to stop either your own virtual server only or all virtual servers in the server instance.
      * @version 1.0
      * @async
      * @param {number} sid - the server id
@@ -599,7 +606,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a new server group using the name specified with name. The optional type parameter can be used to create ServerQuery groups and template groups.
+     * Creates a new server group using the name specified with name.
+     * The optional type parameter can be used to create ServerQuery groups and template groups.
      * @version 1.0
      * @async
      * @param {string} name - The Name of the Server Group
@@ -626,7 +634,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
+     * Adds the client to the server group specified with sgid.
+     * Please note that a client cannot be added to default groups or template groups.
      * @version 1.0
      * @async
      * @param {string} cldbid - The Client Database ID which should be added
@@ -665,7 +674,10 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a copy of the server group specified with ssgid. If tsgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tsgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
+     * Creates a copy of the server group specified with ssgid.
+     * If tsgid is set to 0, the server will create a new group.
+     * To overwrite an existing group, simply set tsgid to the ID of a designated target group.
+     * If a target group is set, the name parameter will be ignored.
      * @version 1.0
      * @async
      * @param {number} ssgid - the source ServerGroup
@@ -730,7 +742,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Removes a set of specified permissions from the server group. A permission can be specified by permid or permsid.
+     * Removes a set of specified permissions from the server group.
+     * A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
      * @param {number} sgid - the ServerGroup id
@@ -746,7 +759,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a new channel using the given properties. Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
+     * Creates a new channel using the given properties.
+     * Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
      * @version 1.0
      * @async
      * @param {string} name - The Name of the Channel
@@ -762,7 +776,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a new channel group using a given name. The optional type parameter can be used to create ServerQuery groups and template groups.
+     * Creates a new channel group using a given name.
+     * The optional type parameter can be used to create ServerQuery groups and template groups.
      * @version 1.0
      * @async
      * @param {string} name - The Name of the Channel Group
@@ -821,7 +836,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Moves a channel to a new parent channel with the ID cpid. If order is specified, the channel will be sorted right under the channel with the specified ID. If order is set to 0, the channel will be sorted right below the new parent.
+     * Moves a channel to a new parent channel with the ID cpid.
+     * If order is specified, the channel will be sorted right under the channel with the specified ID.
+     * If order is set to 0, the channel will be sorted right below the new parent.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -835,7 +852,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Deletes an existing channel by ID. If force is set to 1, the channel will be deleted even if there are clients within. The clients will be kicked to the default channel with an appropriate reason message.
+     * Deletes an existing channel by ID.
+     * If force is set to 1, the channel will be deleted even if there are clients within.
+     * The clients will be kicked to the default channel with an appropriate reason message.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -848,7 +867,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
+     * Changes a channels configuration using given properties.
+     * Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -875,7 +895,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Adds a set of specified permissions to a channel. Multiple permissions can be added by providing the two parameters of each permission. A permission can be specified by permid or permsid.
+     * Adds a set of specified permissions to a channel.
+     * Multiple permissions can be added by providing the two parameters of each permission.
+     * A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -893,7 +915,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once. A permission can be specified by permid or permsid.
+     * Removes a set of specified permissions from a channel.
+     * Multiple permissions can be removed at once.
+     * A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -1065,7 +1089,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
+     * Adds a set of specified permissions to a client.
+     * Multiple permissions can be added by providing the three parameters of each permission.
+     * A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
      * @param {number} cldbid - the client database id
@@ -1087,7 +1113,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
+     * Removes a set of specified permissions from a client.
+     * Multiple permissions can be removed at once.
+     * A permission can be specified by permid or permsid
      * @version 1.0
      * @async
      * @param {number} cldbid - the client database id
@@ -1160,7 +1188,8 @@ class TeamSpeak3 extends EventEmitter {
 
     /**
      * Sends a text message a specified target.
-     * The type of the target is determined by targetmode while target specifies the ID of the recipient, whether it be a virtual server, a channel or a client.
+     * The type of the target is determined by targetmode while target specifies the ID of the recipient,
+     * whether it be a virtual server, a channel or a client.
      * @version 1.0
      * @async
      * @param {string} target - target to message
@@ -1265,7 +1294,10 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Creates a copy of the channel group. If tcgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tcgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
+     * Creates a copy of the channel group.
+     * If tcgid is set to 0, the server will create a new group.
+     * To overwrite an existing group, simply set tcgid to the ID of a designated target group.
+     * If a target group is set, the name parameter will be ignored.
      * @version 1.0
      * @async
      * @param {number} scgid - the source ChannelGroup
@@ -1361,7 +1393,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays all permissions assigned to a client for the channel specified with cid. If permid is set to 0, all permissions will be displayed. A permission can be specified by permid or permsid.
+     * Displays all permissions assigned to a client for the channel specified with cid.
+     * If permid is set to 0, all permissions will be displayed.
+     * A permission can be specified by permid or permsid.
      * @async
      * @param {number} cldbid - The Client Database ID
      * @param {number} cid - One or more Permission Names
@@ -1401,7 +1435,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Retrieves the current value of the permission for your own connection. This can be useful when you need to check your own privileges.
+     * Retrieves the current value of the permission for your own connection.
+     * This can be useful when you need to check your own privileges.
      * @version 1.0
      * @async
      * @param {number|string} key - Perm ID or Name which should be checked
@@ -1413,7 +1448,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Retrieves detailed information about all assignments of the permission. The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
+     * Retrieves detailed information about all assignments of the permission.
+     * The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
      * @version 1.0
      * @async
      * @param {(number|string)} perm - Perm ID or Name to get
@@ -1425,7 +1461,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Restores the default permission settings on the selected virtual server and creates a new initial administrator token. Please note that in case of an error during the permreset call - e.g. when the database has been modified or corrupted - the virtual server will be deleted from the database.
+     * Restores the default permission settings on the selected virtual server and creates a new initial administrator token.
+     * Please note that in case of an error during the permreset call - e.g. when the database has been modified or corrupted - the virtual server will be deleted from the database.
      * @version 1.0
      * @async
      * @returns {Promise}
@@ -1447,7 +1484,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Create a new token. If type is set to 0, the ID specified with tokenid will be a server group ID. Otherwise, tokenid is used as a channel group ID and you need to provide a valid channel ID using channelid.
+     * Create a new token.
+     * If type is set to 0, the ID specified with tokenid will be a server group ID.
+     * Otherwise, tokenid is used as a channel group ID and you need to provide a valid channel ID using channelid.
      * @version 1.0
      * @async
      * @param {number} tokentype - Token Type
@@ -1504,7 +1543,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Use a token key gain access to a server or channel group. Please note that the server will automatically delete the token after it has been used.
+     * Use a token key gain access to a server or channel group.
+     * Please note that the server will automatically delete the token after it has been used.
      * @version 1.0
      * @async
      * @param {string} token - The token which should be used
@@ -1516,7 +1556,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a list of offline messages you've received. The output contains the senders unique identifier, the messages subject, etc.
+     * Displays a list of offline messages you've received.
+     * The output contains the senders unique identifier, the messages subject, etc.
      * @version 1.0
      * @async
      * @returns {Promise.<object>}
@@ -1578,7 +1619,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a list of complaints on the selected virtual server. If dbid is specified, only complaints about the targeted client will be shown.
+     * Displays a list of complaints on the selected virtual server.
+     * If dbid is specified, only complaints about the targeted client will be shown.
      * @version 1.0
      * @async
      * @param {number} [cldbid] - Filter only for certain Client with the given Database ID
@@ -1603,7 +1645,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Deletes the complaint about the client with ID tdbid submitted by the client with ID fdbid from the server. If dbid will be left empty all complaints for the tdbid will be deleted
+     * Deletes the complaint about the client with ID tdbid submitted by the client with ID fdbid from the server.
+     * If dbid will be left empty all complaints for the tdbid will be deleted
      * @version 1.0
      * @async
      * @param {number} tcldbid - The Target Client Database ID
@@ -1630,7 +1673,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one of the following must be set: ip, name, or uid.
+     * Adds a new ban rule on the selected virtual server.
+     * All parameters are optional but at least one of the following must be set: ip, name, or uid.
      * @version 1.0
      * @async
      * @param {string} [ip] - IP Regex
@@ -1661,7 +1705,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a specified number of entries from the servers log. If instance is set to 1, the server will return lines from the master logfile (ts3server_0.log) instead of the selected virtual server logfile.
+     * Displays a specified number of entries from the servers log.
+     * If instance is set to 1, the server will return lines from the master logfile (ts3server_0.log) instead of the selected virtual server logfile.
      * @version 1.0
      * @async
      * @param {number} [lines=1000] - Lines to receive
@@ -1676,7 +1721,9 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Writes a custom entry into the servers log. Depending on your permissions, you'll be able to add entries into the server instance log and/or your virtual servers log. The loglevel parameter specifies the type of the entry
+     * Writes a custom entry into the servers log.
+     * Depending on your permissions, you'll be able to add entries into the server instance log and/or your virtual servers log.
+     * The loglevel parameter specifies the type of the entry
      * @version 1.0
      * @async
      * @param {number} loglevel - Level 1 to 4
@@ -1713,7 +1760,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a list of client database IDs matching a given pattern. You can either search for a clients last known nickname or his unique identity by using the -uid option.
+     * Displays a list of client database IDs matching a given pattern.
+     * You can either search for a clients last known nickname or his unique identity by using the -uid option.
      * @version 1.0
      * @async
      * @param {string} pattern - The Pattern which should be searched for
@@ -1784,7 +1832,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Displays a list of server groups available. Depending on your permissions, the output may also contain global ServerQuery groups and template groups.
+     * Displays a list of server groups available.
+     * Depending on your permissions, the output may also contain global ServerQuery groups and template groups.
      * @version 1.0
      * @async
      * @param {object} filter - Filter Object
@@ -1901,7 +1950,8 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
-     * Renames a file in a channels file repository. If the two parameters tcid and tcpw are specified, the file will be moved into another channels file repository
+     * Renames a file in a channels file repository.
+     * If the two parameters tcid and tcpw are specified, the file will be moved into another channels file repository
      * @version 1.6
      * @async
      * @param {number} cid - the channel id to check for

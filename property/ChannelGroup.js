@@ -42,7 +42,9 @@ class TeamSpeakChannelGroup extends Abstract {
 
 
     /**
-     * Creates a copy of the channel group. If tcgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tcgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
+     * Creates a copy of the channel group. If tcgid is set to 0, the server will create a new group.
+     * To overwrite an existing group, simply set tcgid to the ID of a designated target group.
+     * If a target group is set, the name parameter will be ignored.
      * @version 1.0
      * @async
      * @param {number} [tcgid=0] - The Target Group, 0 to create a new Group

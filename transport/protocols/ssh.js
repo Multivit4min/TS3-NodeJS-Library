@@ -105,7 +105,7 @@ class SSH extends EventEmitter {
    * @version 1.8
    */
   sendKeepAlive() {
-    tthis._stream.write(" \n")
+    this._stream.write(" \n")
   }
 }
 
