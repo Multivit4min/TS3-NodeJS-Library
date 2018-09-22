@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.10 - upcoming
+### 1.10 - 22.9.2018
 * added function channelGroupPrivilegeKeyAdd
 * added function serverGroupPrivilegeKeyAdd
 * fixed upercase function names for 
