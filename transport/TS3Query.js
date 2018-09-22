@@ -30,7 +30,7 @@ class TS3Query extends EventEmitter {
      */
     constructor(config) {
       super()
-      this.proto = config.proto || "raw"
+      this.protocol = config.protocol || "raw"
       this.queue = []
       this.ignoreLines = 2
       this.lastline = ""
@@ -47,10 +47,9 @@ class TS3Query extends EventEmitter {
         "notifyclientmoved",
         "notifycliententerview"
       ]
-
-      if (this.proto === "raw") {
+      if (this.protocol === "raw") {
         this.socket = new RAW(config)
-      } else if (this.proto === "ssh") {
+      } else if (this.protocol === "ssh") {
         this.socket = new SSH(config)
       } else {
         throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")

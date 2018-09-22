@@ -33,7 +33,7 @@ class SSH extends EventEmitter {
       .on("close", this._handleClose.bind(this))
       .connect({
         host: config.host,
-        port: config.port,
+        port: config.queryport,
         username: config.username,
         password: config.password
       })
@@ -71,7 +71,7 @@ class SSH extends EventEmitter {
    * @version 1.8
    */
   _handleError() {
-    this.emit("error", err)
+    this.emit("error", ...arguments)
   }
 
 
