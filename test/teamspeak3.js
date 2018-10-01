@@ -822,7 +822,7 @@ describe("TeamSpeak3", () => {
     assert.calledWith(
       stub,
       "clientlist",
-      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"]
+      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"]
     )
   })
 
