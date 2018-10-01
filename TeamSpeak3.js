@@ -1872,7 +1872,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise<TeamSpeakClient[]>} Promise object which returns an Array of TeamSpeak Clients
      */
     clientList(filter = {}) {
-        return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country"])
+        return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"])
         .then(this.toArray)
         .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
         .then(clients => this.constructor._filter(clients, filter))
