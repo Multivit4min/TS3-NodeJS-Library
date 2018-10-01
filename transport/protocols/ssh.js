@@ -25,6 +25,7 @@ class SSH extends EventEmitter {
      */
   constructor(config) {
     super()
+    this._data = ""
     this._ssh = new Client()
     this._ssh
       .on("ready", this._handleReady.bind(this))
