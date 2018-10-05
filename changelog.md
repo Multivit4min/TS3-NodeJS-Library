@@ -3,6 +3,7 @@
 ### 1.10.2 - 1.10.2018
 * added ip parameter to clientList
 * added initial variable for this.\_data in ssh
+* fixed close event not displaying correct error data
 
 ### 1.10.1 - 22.9.2018
 * fixed typo in ssh keepalive
