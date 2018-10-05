@@ -55,7 +55,7 @@ class RAW extends EventEmitter {
   * @version 1.8
   */
   _handleClose() {
-    this.emit("close", ...arguments)
+    this.emit("close", String(this._data))
   }
 
   /**

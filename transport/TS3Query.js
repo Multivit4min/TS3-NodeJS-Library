@@ -173,13 +173,13 @@ class TS3Query extends EventEmitter {
     }
 
 
-    handleClose() {
+    handleClose(line) {
       this.connected = false
       clearTimeout(this.floodTimeout)
       clearTimeout(this.keepalivetimer)
       var error = null
-      if (this.lastline.indexOf("error") === 0) {
-        error = Command().setError(this.lastline).getError()
+      if (line.indexOf("error") === 0) {
+        error = new Command().setError(line).getError()
       }
       /**
        * Query Close Event
