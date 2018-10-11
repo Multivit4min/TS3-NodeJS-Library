@@ -25,6 +25,7 @@ class RAW extends EventEmitter {
     super()
     this._data = ""
     this._socket = net.connect(config.queryport, config.host)
+    this._socket.setEncoding("utf8")
     this._socket.on("connect", this._handleConnect.bind(this))
     this._socket.on("data", this._handleData.bind(this))
     this._socket.on("error", this._handleError.bind(this))
