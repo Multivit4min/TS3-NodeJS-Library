@@ -46,6 +46,7 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server
      * @param {string} [config.nickname] - The Nickname the Client should have
      * @param {boolean} [config.keepalive=true] - Whether the Query should send a keepalive
+     * @param {number} [config.readyTimeout=20000] - Maximum wait time for the connection to get established
      */
     constructor(config = {}) {
         super()
@@ -57,7 +58,8 @@ class TeamSpeak3 extends EventEmitter {
             username: config.username || false,
             password: config.password || false,
             nickname: config.nickname || false,
-            keepalive: Boolean(config.keepalive)
+            keepalive: Boolean(config.keepalive),
+            readyTimeout: config.readyTimeout || 20000
         }
 
         this._clients = {}

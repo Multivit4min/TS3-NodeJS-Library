@@ -36,7 +36,8 @@ class SSH extends EventEmitter {
         host: config.host,
         port: config.queryport,
         username: config.username,
-        password: config.password
+        password: config.password,
+        readyTimeout: config.readyTimeout
       })
   }
 
@@ -50,6 +51,7 @@ class SSH extends EventEmitter {
     this._ssh.shell(false, (err, stream) => {
       if (err) return this.emit("error", err)
       this._stream = stream
+      this._stream.setEncoding("utf8")
       this._stream.on("data", chunk => this._handleData(chunk))
       this.emit("connect")
     })

@@ -25,10 +25,23 @@ class RAW extends EventEmitter {
     super()
     this._data = ""
     this._socket = net.connect(config.queryport, config.host)
+    this._socket.setEncoding("utf8")
+    this._socket.setTimeout(config.readyTimeout)
+    this._socket.on("timeout", this._handleTimeout.bind(this))
     this._socket.on("connect", this._handleConnect.bind(this))
     this._socket.on("data", this._handleData.bind(this))
     this._socket.on("error", this._handleError.bind(this))
     this._socket.on("close", this._handleClose.bind(this))
+  }
+
+  /**
+   * Called after the socket was not able to connect within the given timeframe
+   *
+   * @version 1.10.3
+   */
+  _handleTimeout() {
+    this._socket.destroy()
+    this.emit("error", Error("Socket Timeout reached"))
   }
 
   /**
@@ -37,6 +50,7 @@ class RAW extends EventEmitter {
    * @version 1.8
    */
   _handleConnect() {
+    this._socket.setTimeout(0)
     this.emit("connect")
   }
 

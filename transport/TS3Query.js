@@ -177,10 +177,7 @@ class TS3Query extends EventEmitter {
       this.connected = false
       clearTimeout(this.floodTimeout)
       clearTimeout(this.keepalivetimer)
-      var error = null
-      if (line.indexOf("error") === 0) {
-        error = new Command().setError(line).getError()
-      }
+      var cmd = new Command().setError(line)
       /**
        * Query Close Event
        * Gets fired when the Query disconnects from the TeamSpeak Server
@@ -190,7 +187,7 @@ class TS3Query extends EventEmitter {
        * @type {object}
        * @property {any|null} error - The Error Object
        */
-      this.emit("close", error)
+      this.emit("close", cmd.hasError() ? cmd.getError() : null)
     }
 
 
