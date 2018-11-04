@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.11.0 - 4.11.2018
+* added possibility to provide multiple options within a command, this should fix issue #26
+
 ### 1.10.3 - 12.10.2018
 * fixed errors in handling of socket closing, correct ResponseError Object should now get emitted
 * added parameter readyTimeout to prematurely close a connection while its still connecting

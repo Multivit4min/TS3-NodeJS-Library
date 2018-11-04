@@ -20,6 +20,22 @@ describe("Command", () => {
     })
   })
 
+  describe("#build()", () => {
+    it("should build a valid command with multiple options", () => {
+      var cmd = new Command()
+      cmd.setCommand("channeladdperm")
+      cmd.setOptions({ cid: 10 })
+      cmd.setMultiOptions([{
+        permsid: 10,
+        permvalue: 75
+      }, {
+        permsid: 11,
+        permvalue: 80
+      }])
+      assert.equal(cmd.build(), "channeladdperm cid=10 permsid=10 permvalue=75|permsid=11 permvalue=80")
+    })
+  })
+
   describe("#setResponse()", () => {
     it("should set end parse the response data", () => {
       var cmd = new Command()

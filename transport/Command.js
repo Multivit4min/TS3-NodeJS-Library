@@ -26,6 +26,7 @@ class Command {
     constructor() {
       this.cmd = ""
       this.opts = {}
+      this.multiOpts = []
       this.flags = []
       this.reset()
     }
@@ -56,7 +57,7 @@ class Command {
 
 
     /**
-     *Sets the TeamSpeak Key Value Pairs
+     * Sets the TeamSpeak Key Value Pairs
      * @version 1.0
      * @param {object} opts - Sets the Object with the key value pairs which should get sent to the TeamSpeak Query
      * @returns {this}
@@ -68,12 +69,34 @@ class Command {
 
 
     /**
+     * Sets the TeamSpeak Key Value Pairs
+     * @version 1.11
+     * @param {array} opts - Sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+     * @returns {this}
+     */
+    setMultiOptions(opts) {
+      this.multiOpts = opts
+      return this
+    }
+
+
+    /**
      * Checks wether there are options used with this command
      * @version 1.7
      * @returns {boolean}
      */
     hasOptions() {
-      return Object.values(this.opts).length > 0
+      return Object.values(this.opts).length > 0 || this.hasMultiOptions()
+    }
+
+
+    /**
+     * Checks wether there are options used with this command
+     * @version 1.11
+     * @returns {boolean}
+     */
+    hasMultiOptions() {
+      return this.multiOpts.length > 0
     }
 
 
@@ -197,11 +220,24 @@ class Command {
      * @return {string} The parsed String which is readable by the TeamSpeak Query
      */
     buildOptions() {
+      var opts = this.buildOption(this.opts)
+      if (!this.hasMultiOptions()) return opts
+      return opts + " " + this.multiOpts.map(this.buildOption.bind(this)).join("|")
+    }
+
+
+    /**
+     * Builds the query string for options
+     * @version 1.11
+     * @private
+     * @return {string} The parsed String which is readable by the TeamSpeak Query
+     */
+    buildOption(options) {
       return Object
-        .keys(this.opts)
-        .filter(key => [undefined, null].indexOf(this.opts[key]) === -1)
-        .filter(key => typeof this.opts[key] !== "number" || !isNaN(this.opts[key]))
-        .map(key => this.escapeKeyValue(key, this.opts[key]))
+        .keys(options)
+        .filter(key => [undefined, null].indexOf(options[key]) === -1)
+        .filter(key => typeof options[key] !== "number" || !isNaN(options[key]))
+        .map(key => this.escapeKeyValue(key, options[key]))
         .join(" ")
     }
 

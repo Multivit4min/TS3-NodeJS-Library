@@ -62,6 +62,7 @@ class TeamSpeak3 extends EventEmitter {
             readyTimeout: config.readyTimeout || 20000
         }
 
+        this._build = 0
         this._clients = {}
         this._channels = {}
         this._servergroups = {}
@@ -81,23 +82,28 @@ class TeamSpeak3 extends EventEmitter {
         this._ts3.on("textmessage", this._evtextmessage.bind(this))
 
         this._ts3.on("connect", () => {
-            var exec = []
-            if (typeof this._config.username === "string" && this._config.protocol === "raw")
-                exec.push(this.login(this._config.username, this._config.password))
-            if (typeof this._config.serverport === "number")
-                exec.push(this.useByPort(this._config.serverport))
-            if (typeof this._config.nickname === "string")
-                exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
-            Promise.all(exec)
-                /**
-                 * Query Ready Event
-                 * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
-                 *
-                 * @event TeamSpeak3#ready
-                 * @memberof TeamSpeak3
-                 */
-                .then(r => super.emit("ready"))
-                .catch(e => super.emit("error", e))
+            this.version()
+              .then(version => this._build = version.build)
+              .catch(e => this.emit("error", e))
+              .finally(() => {
+                var exec = []
+                if (typeof this._config.username === "string" && this._config.protocol === "raw")
+                    exec.push(this.login(this._config.username, this._config.password))
+                if (typeof this._config.serverport === "number" && this._build >= 1536564584)
+                    exec.push(this.useByPort(this._config.serverport, this._config.nickname))
+                if (typeof this._config.nickname === "string" && this._build < 1536564584)
+                    exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
+                Promise.all(exec)
+                    /**
+                     * Query Ready Event
+                     * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
+                     *
+                     * @event TeamSpeak3#ready
+                     * @memberof TeamSpeak3
+                     */
+                    .then(r => super.emit("ready"))
+                    .catch(e => super.emit("error", e))
+              })
         })
 
 
