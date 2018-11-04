@@ -320,6 +320,17 @@ describe("TeamSpeak3", () => {
     })
   })
 
+  it("should verify parameters of #channelSetPerms()", async () => {
+    await ts3.channelSetPerms(5, [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }])
+    assert.calledOnce(stub)
+    assert.calledWith(
+      stub,
+      "channeladdperm",
+      { cid: 5 },
+      [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }]
+    )
+  })
+
   it("should verify parameters of #channelDelPerm()", async () => {
     await ts3.channelDelPerm(10, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)

@@ -904,8 +904,6 @@ class TeamSpeak3 extends EventEmitter {
 
     /**
      * Adds a set of specified permissions to a channel.
-     * Multiple permissions can be added by providing the two parameters of each permission.
-     * A permission can be specified by permid or permsid.
      * @version 1.0
      * @async
      * @param {number} cid - the channel id
@@ -919,6 +917,22 @@ class TeamSpeak3 extends EventEmitter {
         properties[(sid) ? "permsid" : "permid"] = perm
         properties.permvalue = value
         return this.execute("channeladdperm", properties)
+    }
+
+
+    /**
+     * Adds a set of specified permissions to a channel.
+     * A permission can be specified by permid or permsid.
+     * @version 1.11.1
+     * @async
+     * @param {number} cid - the channel id
+     * @param {array} permissions - the permissions to assign
+     * @return {Promise.<object>}
+     * @example
+     * TeamSpeak3.channelSetPerms(5, [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }])
+     */
+    channelSetPerms(cid, permissions) {
+        return this.execute("channeladdperm", { cid }, permissions)
     }
 
 

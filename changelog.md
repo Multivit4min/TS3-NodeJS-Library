@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.11.1 - 4.11.2018
+* added method channelSetPerms
+
 ### 1.11.0 - 4.11.2018
 * added possibility to provide multiple options within a command, this should fix issue #26
 
