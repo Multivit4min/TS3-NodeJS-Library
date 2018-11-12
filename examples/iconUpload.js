@@ -1,4 +1,4 @@
-const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
+const TeamSpeak3 = require("./../TeamSpeak3")
 const fs = require("fs")
 //if you want to test this example you need to install crc-32
 //  > npm install crc-32

@@ -6,8 +6,8 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const Abstract = require(__dirname+"/Abstract")
-const FileTransfer = require(__dirname+"/../transport/FileTransfer")
+const Abstract = require("./Abstract")
+const FileTransfer = require("./../transport/FileTransfer")
 
  /**
  * Class representing a TeamSpeak Client

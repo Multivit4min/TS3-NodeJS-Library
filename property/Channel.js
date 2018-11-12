@@ -6,7 +6,7 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const Abstract = require(__dirname+"/Abstract")
+const Abstract = require("./Abstract")
 
  /**
  * Class representing a TeamSpeak Channel

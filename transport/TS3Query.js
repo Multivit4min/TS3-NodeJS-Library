@@ -6,9 +6,9 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const Command = require(__dirname+"/Command.js")
-const RAW = require(__dirname+"/protocols/raw.js")
-const SSH = require(__dirname+"/protocols/ssh.js")
+const Command = require("./Command.js")
+const RAW = require("./protocols/raw.js")
+const SSH = require("./protocols/ssh.js")
 const EventEmitter = require("events")
 
 

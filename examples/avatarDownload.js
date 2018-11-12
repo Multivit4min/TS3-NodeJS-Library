@@ -1,4 +1,4 @@
-const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
+const TeamSpeak3 = require("./../TeamSpeak3")
 const fs = require("fs")
 
 var ts3 = new TeamSpeak3({

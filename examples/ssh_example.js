@@ -1,4 +1,4 @@
-const TeamSpeak3 = require(__dirname+"/../TeamSpeak3")
+const TeamSpeak3 = require("./../TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
 var ts3 = new TeamSpeak3({
