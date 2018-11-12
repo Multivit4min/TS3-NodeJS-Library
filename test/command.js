@@ -1,6 +1,6 @@
 const assert = require("assert")
-const Command = require(__dirname+"/../transport/Command.js")
-const ResponseError = require(__dirname+"/../exception/ResponseError.js")
+const Command = require("./../transport/Command.js")
+const ResponseError = require("./../exception/ResponseError.js")
 
 describe("Command", () => {
 

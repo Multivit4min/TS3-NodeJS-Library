@@ -6,10 +6,10 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const escape = require(__dirname+"/../helper/escape.js")
-const unescape = require(__dirname+"/../helper/unescape.js")
-const keytypes = require(__dirname+"/../helper/keytypes.js")
-const ResponseError = require(__dirname+"/../exception/ResponseError.js")
+const escape = require("./../helper/escape.js")
+const unescape = require("./../helper/unescape.js")
+const keytypes = require("./../helper/keytypes.js")
+const ResponseError = require("./../exception/ResponseError.js")
 
 
 /**

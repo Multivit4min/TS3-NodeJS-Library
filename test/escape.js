@@ -1,6 +1,6 @@
 const assert = require("assert")
-const escape = require(__dirname+"/../helper/escape.js")
-const unescape = require(__dirname+"/../helper/unescape.js")
+const escape = require("./../helper/escape.js")
+const unescape = require("./../helper/unescape.js")
 
 describe("escape", () => {
   it("should escape backslash", () => {
