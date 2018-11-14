@@ -15,7 +15,7 @@ A clear and concise description of what you expected to happen.
 
 **Versions used**
  - TeamSpeak Server Version
- - NodeJS Version
+ - NodeJS Version (check with node -v)
  - Library Version
 
 **Additional context**

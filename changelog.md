@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.11.2 - 14.11.2018
+* changed requires to not use \_\_dirname anymore
+* removed finally in initialization in order to support older nodejs versions
+
 ### 1.11.1 - 4.11.2018
 * added method channelSetPerms
 
