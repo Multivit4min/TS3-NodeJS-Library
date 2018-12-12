@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.11.3 - 12.12.2018
+* fixed invalid serverid upon connect for teamspeak servers < 3.5.0 thanks to Janl1
+
 ### 1.11.2 - 14.11.2018
 * changed requires to not use \_\_dirname anymore
 * removed finally in initialization in order to support older nodejs versions
