@@ -366,6 +366,42 @@ class TeamSpeak3 extends EventEmitter {
 
 
     /**
+     * Adds a new query client login, or enables query login for existing clients.
+     * When no virtual server has been selected, the command will create global query logins. 
+     * Otherwise the command enables query login for existing client, and cldbid must be specified.
+     * @param {string} client_login_name - the login name
+     * @param {number} [cldbid] - the database id which should be used
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed
+     */
+    queryLoginAdd(client_login_name, cldbid) {
+        return this.execute("queryloginadd", { client_login_name, cldbid })
+    }
+
+    /**
+     * Deletes an existing server query login on selected server.
+     * When no virtual server has been selected, deletes global query logins instead.
+     * @param {number} cldbid - deletes the querylogin of this client
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed
+     */
+    queryLoginDel(cldbid) {
+        return this.execute("querylogindel", { cldbid })
+    }
+
+    /**
+     * List existing query client logins. 
+     * The pattern parameter can include regular characters and SQL wildcard characters (e.g. %).
+     * Only displays query logins of the selected virtual server, or all query logins when no virtual server have been  selected.
+     * @param {string} [pattern] - the pattern to filter for client login names
+     * @param {number} [start] - the offset from where clients should be listed
+     * @param {number} [duration] - how many clients should be listed
+     * @returns {Promise<object>} Promise object which returns the Information about the Query executed
+     */
+    queryLoginList(pattern, start, duration) {
+        return this.execute("queryloginlist", { pattern, start, duration }, ["-count"])
+    }
+
+
+    /**
      * Change your ServerQuery clients settings using given properties.
      * @version 1.0
      * @async

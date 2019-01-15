@@ -1,6 +1,6 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "1.11.3",
+  "version": "1.12.0",
   "description": "TeamSpeak3 Server Query API",
   "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
   "main": "index.js",
@@ -20,14 +20,14 @@
     "teamspeak3"
   ],
   "author": "Multivitamin <david.kartnaller@gmail.com>",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-3.0",
   "dependencies": {
-    "ssh2": "^0.6.1"
+    "nyc": "^13.1.0",
+    "sinon": "^7.2.2",
+    "ssh2": "^0.8.0"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "mock-require": "^3.0.2",
-    "nyc": "^13.0.1",
-    "sinon": "^6.3.4"
+    "mock-require": "^3.0.2"
   }
 }

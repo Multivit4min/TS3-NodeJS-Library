@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.12.0 - 15.1.2019
+* update to TeamSpeak Server Version 3.6.0
+* added queryloginadd command
+* added querylogindel command
+* added queryloginlist command
+* updated dependencies
+
 ### 1.11.3 - 12.12.2018
 * fixed invalid serverid upon connect for teamspeak servers < 3.5.0 thanks to Janl1
 

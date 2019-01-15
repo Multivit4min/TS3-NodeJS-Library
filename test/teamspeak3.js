@@ -39,6 +39,24 @@ describe("TeamSpeak3", () => {
     })
   })
 
+  it("should verify parameters of #queryloginadd()", async () => {
+    await ts3.queryLoginAdd("name", 3)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "queryloginadd", {client_login_name: "name", cldbid: 3})
+  })
+
+  it("should verify parameters of #querylogindel()", async () => {
+    await ts3.queryLoginDel(3)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "querylogindel", { cldbid: 3 })
+  })
+
+  it("should verify parameters of #queryloginlist()", async () => {
+    await ts3.queryLoginList("search", 0, 10)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "queryloginlist", { pattern: "search", start: 0, duration: 10 }, ["-count"])
+  })
+
   it("should verify parameters of #login()", async () => {
     await ts3.login("serveradmin", "password")
     assert.calledOnce(stub)
