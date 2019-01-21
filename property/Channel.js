@@ -30,7 +30,7 @@ class TeamSpeakChannel extends Abstract {
 
 
     /**
-     * Returns the Database ID of the Client
+     * Returns the ID of the Channel
      * @returns {number} Returns the Channels ID
      */
     getID() {
