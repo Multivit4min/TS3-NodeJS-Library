@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.12.1 - 21.1.2019
+* added getID to channel property
+
 ### 1.12.0 - 15.1.2019
 * update to TeamSpeak Server Version 3.6.0
 * added queryloginadd command
