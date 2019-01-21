@@ -30,6 +30,15 @@ class TeamSpeakChannel extends Abstract {
 
 
     /**
+     * Returns the Database ID of the Client
+     * @returns {number} Returns the Channels ID
+     */
+    getID() {
+        return this._static.cid
+    }
+
+
+    /**
      * Displays detailed configuration information about a channel including ID, topic, description, etc.
      * @version 1.0
      * @async
