@@ -1563,7 +1563,7 @@ class TeamSpeak3 extends EventEmitter {
      * @async
      * @param {number} tokentype - Token Type
      * @param {number} group - Depends on the Type given, add either a valid Channel Group or Server Group
-     * @param {number} [cid] - Depends on the Type given, add a valid Channel ID
+     * @param {number} [cid=0] - Depends on the Type given, add a valid Channel ID
      * @param {string} [description] - Token Description
      * @returns {Promise.<object>}
      */
@@ -1587,7 +1587,7 @@ class TeamSpeak3 extends EventEmitter {
      * @returns {Promise.<object>}
      */
     serverGroupPrivilegeKeyAdd(group, description) {
-        return this.privilegeKeyAdd(0, group, null, description)
+        return this.privilegeKeyAdd(0, group, 0, description)
     }
 
 
