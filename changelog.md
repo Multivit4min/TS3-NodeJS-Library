@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.12.2 - 30.1.2019
+* fixed privilegekeyadd thanks to IronicPickle
+
 ### 1.12.1 - 21.1.2019
 * added getID to channel property
 

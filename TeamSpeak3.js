@@ -1567,9 +1567,12 @@ class TeamSpeak3 extends EventEmitter {
      * @param {string} [description] - Token Description
      * @returns {Promise.<object>}
      */
-    privilegeKeyAdd(tokentype, group, cid, description) {
-        var properties = { tokentype, tokenid1: group }
-        if (tokentype === 1) properties.tokenid2 = cid
+    privilegeKeyAdd(tokentype, group, cid = 0, description) {
+        var properties = { 
+            tokentype,
+            tokenid1: group,
+            tokenid2: cid
+        }
         if (description) properties.description = description
         return this.execute("privilegekeyadd", properties)
     }
