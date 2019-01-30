@@ -643,12 +643,23 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #privilegeKeyAdd()", async () => {
-    await ts3.privilegeKeyAdd(0, 10, null, "Server Group Token")
+    await ts3.privilegeKeyAdd(0, 10, 0, "Server Group Token")
     assert.calledOnce(stub)
     assert.calledWith(stub, "privilegekeyadd", {
       tokentype: 0,
       tokenid1: 10,
+      tokenid2: 0,
       description: "Server Group Token"
+    })
+  })
+
+  it("should verify some parameters of #privilegeKeyAdd()", async () => {
+    await ts3.privilegeKeyAdd(0, 10)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "privilegekeyadd", {
+      tokentype: 0,
+      tokenid1: 10,
+      tokenid2: 0
     })
   })
 
@@ -658,6 +669,7 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "privilegekeyadd", {
       tokentype: 0,
       tokenid1: 10,
+      tokenid2: 0,
       description: "Server Group Token"
     })
   })
