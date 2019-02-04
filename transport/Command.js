@@ -187,7 +187,7 @@ class Command {
   static parse(data = "") {
     const result = data.split("|").map(entry => {
       const res = {}
-      entry.split(" ").foreach(str => {
+      entry.split(" ").forEach(str => {
         if (str.indexOf("=") >= 0) {
           const k = unescape(str.substr(0, str.indexOf("=")))
           res[k] = Command.parseValue(k, unescape(str.substr(str.indexOf("=") + 1)))

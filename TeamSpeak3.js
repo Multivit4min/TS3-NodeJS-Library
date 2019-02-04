@@ -1776,11 +1776,12 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} [banid] - The BanID to remove, if not provided it will remove all bans
    * @returns {Promise.<object>}
    */
-  banDel(banid = false) {
-    return this.execute(
-      banid ? "bandelall" : "bandel",
-      banid ? null : { banid }
-    )
+  banDel(banid) {
+    if (isNaN(banid)) {
+      return this.execute("bandelall")
+    } else {
+      return this.execute("bandel", { banid })
+    }
   }
 
 
@@ -1879,7 +1880,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(this.toArray)
       .then(servers => this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer))
       .then(servers => TeamSpeak3.filter(servers, filter))
-      .then(servers => Promise.fulfill(servers.map(s => this._servers[s.virtualserver_id])))
+      .then(servers => Promise.resolve(servers.map(s => this._servers[s.virtualserver_id])))
   }
 
 
@@ -1895,7 +1896,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(this.toArray)
       .then(groups => this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
-      .then(groups => Promise.fulfill(groups.map(g => this._channelgroups[g.cgid])))
+      .then(groups => Promise.resolve(groups.map(g => this._channelgroups[g.cgid])))
   }
 
 
@@ -1912,7 +1913,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(this.toArray)
       .then(groups => this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
-      .then(groups => Promise.fulfill(groups.map(g => this._servergroups[g.sgid])))
+      .then(groups => Promise.resolve(groups.map(g => this._servergroups[g.sgid])))
   }
 
 
@@ -1928,7 +1929,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(this.toArray)
       .then(channels => this._handleCache(this._channels, channels, "cid", TeamSpeakChannel))
       .then(channels => TeamSpeak3.filter(channels, filter))
-      .then(channels => Promise.fulfill(channels.map(c => this._channels[c.cid])))
+      .then(channels => Promise.resolve(channels.map(c => this._channels[c.cid])))
   }
 
 
@@ -1944,7 +1945,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(this.toArray)
       .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
       .then(clients => TeamSpeak3.filter(clients, filter))
-      .then(clients => Promise.fulfill(clients.map(c => this._clients[String(c.clid)])))
+      .then(clients => Promise.resolve(clients.map(c => this._clients[String(c.clid)])))
   }
 
 
@@ -2224,20 +2225,18 @@ class TeamSpeak3 extends EventEmitter {
   static filter(array, filter) {
     return new Promise(fulfill => {
       if (!Array.isArray(array)) array = [array]
-      if (Object.keys(filter).length === 0) return fulfill(array)
-      fulfill(array.filter(a => Object.keys(filter).every(k => {
-        if (k in a) return false
-        if (filter[k] instanceof RegExp) return filter[k].test(a[k])
-        if (Array.isArray(filter[k])) return filter[k].includes(a[k])
+      if (Object.keys(filter).length === 0)
+        return fulfill(array)
+      fulfill(array.filter(a => !Object.keys(filter).some(k => {
+        if (!(k in a)) return true
+        if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
+        if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
         switch (typeof a[k]) {
-        case "number":
-          return a[k] === parseFloat(filter[k])
-        case "string":
-          return a[k] === filter[k]
-        case "object":
-          return a[k].match(filter[k])
+        case "number": return a[k] !== parseFloat(filter[k])
+        case "string": return a[k] !== filter[k]
+        case "object": return !a[k].match(filter[k])
         }
-        return false
+        return true
       })))
     })
   }

@@ -7,7 +7,6 @@
  */
 
 const EventEmitter = require("events")
-const TeamSpeak3 = require("../TeamSpeak3")
 
 /**
  * Abstract Class
@@ -81,7 +80,7 @@ class Abstract extends EventEmitter {
    * @returns {Promise.<object>} Promise object
    */
   filter(array, filter) {
-    return TeamSpeak3.filter(array, filter)
+    return this.getParent().constructor.filter(array, filter)
   }
 
   /**
