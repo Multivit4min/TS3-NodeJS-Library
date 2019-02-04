@@ -1,10 +1,11 @@
+/*global describe beforeEach it*/
 const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
 const TeamSpeakServerGroup = require("../property/ServerGroup.js")
-var TeamSpeak3 = require("../TeamSpeak3.js")
+let TeamSpeak3 = require("../TeamSpeak3.js")
 
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -13,16 +14,19 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 describe("TeamSpeakServerGroup", () => {
+  let rawGroup = null
+  let stub = null
+  let serverGroup = null
 
   beforeEach(() => {
-    var ts3 = new TeamSpeak3()
+    const ts3 = new TeamSpeak3()
     rawGroup = mockResponse.servergrouplist[5]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
     serverGroup = new TeamSpeakServerGroup(ts3, rawGroup)
   })
 
-  it("should verify return parameters of #getSGID()", async () => {
+  it("should verify return parameters of #getSGID()", () => {
     assert.match(serverGroup.getSGID(), rawGroup.sgid)
   })
 
@@ -102,7 +106,7 @@ describe("TeamSpeakServerGroup", () => {
 
   it("should validate the return value of #getIconName()", async () => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    var name = await serverGroup.getIconName()
+    const name = await serverGroup.getIconName()
     assert.calledOnce(stub)
     deepEqual(name, "icon_9999")
   })

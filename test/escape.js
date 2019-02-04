@@ -1,3 +1,4 @@
+/*global describe it*/
 const assert = require("assert")
 const escape = require("./../helper/escape.js")
 const unescape = require("./../helper/unescape.js")

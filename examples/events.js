@@ -1,7 +1,8 @@
+/* eslint-disable indent */
 const TeamSpeak3 = require("./../TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
-var ts3 = new TeamSpeak3({
+const ts3 = new TeamSpeak3({
     host: "localhost",
     queryport: 10011,
     serverport: 9987,
@@ -13,16 +14,12 @@ var ts3 = new TeamSpeak3({
 
 //The clientconnect event gets fired when a new Client joins the selected TeamSpeak Server
 ts3.on("clientconnect", ev => {
-    var client = ev.client
-    //the .getCache() method returns the data from the last Client List command
-    var nick = client.getCache().client_nickname
-    console.log("Client "+nick+" just connected")
+    const client = ev.client
+    console.log(`Client ${client.getCache().client_nickname} just connected`)
     //Event gets fired when the Client moves to a different Channel
-    client.on("move", channel => console.log(nick+" just moved to Channel "+ channel.getCache().channel_name))
-    //Event gets fired when the Client sends a message to the bot
-    client.on("message", msg => console.log(nick+" just sent '"+msg+"'"))
+    client.on("move", channel => console.log(`${client.getCache().client_nickname} just moved to Channel ${channel.getCache().channel_name}`))
     //Event gets fired when the Client disconnects from the Server
-    client.on("disconnect", () => console.log(nick+" just disconnected :("))
+    client.on("disconnect", cache => console.log(`${cache.client_nickname} just disconnected :(`))
 })
 
 ts3.on("ready", () => {
@@ -38,6 +35,10 @@ ts3.on("ready", () => {
     }).catch(e => {
         console.log("CATCHED", e.message)
     })
+})
+
+ts3.on("textmessage", ev => {
+  console.log(`${ev.invoker.getCache().client_nickname} sent ${ev.msg}`)
 })
 
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens

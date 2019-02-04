@@ -1,22 +1,22 @@
 const TeamSpeak3 = require("./../TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
-var ts3 = new TeamSpeak3({
-    host: "127.0.0.1",
-    queryport: 10011,
-    username: "serveradmin",
-    password: "password",
-    keepalive: true
+const ts3 = new TeamSpeak3({
+  host: "127.0.0.1",
+  queryport: 10011,
+  username: "serveradmin",
+  password: "password",
+  keepalive: true
 })
 
 ts3.on("ready", () => {
-    listServers()
+  listServers()
 })
 
 function listServers() {
   ts3.serverList().then(servers => {
     servers.forEach(server => {
-      var info = server.getCache()
+      const info = server.getCache()
       console.log(`Server ID ${info.virtualserver_id}`)
       console.log(`\tName ${info.virtualserver_name}`)
       console.log(`\tPort ${info.virtualserver_port}`)
@@ -30,11 +30,11 @@ function listServers() {
 
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
 ts3.on("error", e => {
-    console.log("Error", e.message)
+  console.log("Error", e.message)
 })
 
 //Close event gets fired when the Connection to the TeamSpeak Server has been closed
 //the e variable is not always set
 ts3.on("close", e => {
-    console.log("Connection has been closed!", e)
+  console.log("Connection has been closed!", e)
 })

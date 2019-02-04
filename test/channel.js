@@ -1,10 +1,11 @@
+/*global describe beforeEach it*/
 const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
 const TeamSpeakChannel = require("../property/Channel.js")
-var TeamSpeak3 = require("../TeamSpeak3.js")
+let TeamSpeak3 = require("../TeamSpeak3.js")
 
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -13,9 +14,13 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 describe("TeamSpeakChannel", () => {
+  let ts3 = null
+  let rawChannel = null
+  let stub = null
+  let channel = null
 
   beforeEach(() => {
-    var ts3 = new TeamSpeak3()
+    ts3 = new TeamSpeak3()
     rawChannel = mockResponse.channellist[0]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
@@ -73,14 +78,14 @@ describe("TeamSpeakChannel", () => {
 
   it("should verify execute parameters of #getClients()", async () => {
     stub.onCall(0).resolves(mockResponse.clientlist[0])
-    var clients = await channel.getClients()
+    const clients = await channel.getClients()
     assert.match(Array.isArray(clients), true)
     clients.forEach(client => assert.match(client.constructor.name, "TeamSpeakClient"))
   })
 
   it("should validate the return value of #getIconName()", async () => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    var name = await channel.getIconName()
+    const name = await channel.getIconName()
     assert.calledOnce(stub)
     deepEqual(name, "icon_9999")
   })

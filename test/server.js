@@ -1,10 +1,10 @@
-const { deepEqual } = require("assert")
+/*global describe beforeEach it*/
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
 const TeamSpeakServer = require("../property/Server.js")
-var TeamSpeak3 = require("../TeamSpeak3.js")
+let TeamSpeak3 = require("../TeamSpeak3.js")
 
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -13,9 +13,12 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 describe("TeamSpeakServer", () => {
+  let rawServer = null
+  let stub = null
+  let server = null
 
   beforeEach(() => {
-    var ts3 = new TeamSpeak3()
+    const ts3 = new TeamSpeak3()
     rawServer = mockResponse.serverlist[0]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
@@ -25,7 +28,7 @@ describe("TeamSpeakServer", () => {
   it("should verify execute parameters of #use()", async () => {
     await server.use("Nickname")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "use", [rawServer.virtualserver_id] ,{ client_nickname: "Nickname" })
+    assert.calledWith(stub, "use", [rawServer.virtualserver_id], { client_nickname: "Nickname" })
   })
 
   it("should verify execute parameters of #del()", async () => {

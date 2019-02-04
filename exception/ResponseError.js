@@ -7,15 +7,15 @@
  */
 
 
- /**
-  * TeamSpeak Query Response Exception Handler
-  * @version 1.4
-  * @param {object} error - The Error Object
-  * @param {number} error.id - The error id
-  * @param {string} error.msg - The error message
-  * @param {string} [error.extra_msg] - Optional extra message
-  * @param {number} [error.failed_permid] - Optional missing permission id
-  */
+/**
+ * TeamSpeak Query Response Exception Handler
+ * @version 1.4
+ * @param {object} error - The Error Object
+ * @param {number} error.id - The error id
+ * @param {string} error.msg - The error message
+ * @param {string} [error.extra_msg] - Optional extra message
+ * @param {number} [error.failed_permid] - Optional missing permission id
+ */
 function ResponseError(error) {
   this.id = error.id
   this.msg = error.msg
@@ -23,9 +23,9 @@ function ResponseError(error) {
   this.failed_permid = error.failed_permid
   this.message = this.msg
   if (typeof this.extra_msg === "string")
-    this.message += ", "+this.extra_msg
+    this.message += `, ${this.extra_msg}`
   if (typeof this.failed_permid === "number")
-    this.message += ", failed on permid "+this.failed_permid
+    this.message += `, failed on permid ${this.failed_permid}`
 }
 
 ResponseError.prototype = Error.prototype

@@ -14,15 +14,16 @@ const EventEmitter = require("events")
  * @class
  */
 class SSH extends EventEmitter {
-    /**
-     * Creates a new TS3Query
-     * @constructor
-     * @version 1.0
-     * @param {string} host - Teamspeak host to connect to
-     * @param {number} port - TeamSpeak query port
-     * @param {string} username - Username to connect with
-     * @param {string} password - This holds Basic Client data
-     */
+
+  /**
+   * Creates a new TS3Query
+   * @constructor
+   * @version 1.0
+   * @param {string} host - Teamspeak host to connect to
+   * @param {number} port - TeamSpeak query port
+   * @param {string} username - Username to connect with
+   * @param {string} password - This holds Basic Client data
+   */
   constructor(config) {
     super()
     this._data = ""
@@ -57,11 +58,11 @@ class SSH extends EventEmitter {
     })
   }
 
- /**
-  * Called when the connection with the Socket gets closed
-  *
-  * @version 1.8
-  */
+  /**
+   * Called when the connection with the Socket gets closed
+   *
+   * @version 1.8
+   */
   _handleClose() {
     this.emit("close", String(this._data))
   }
@@ -73,8 +74,8 @@ class SSH extends EventEmitter {
    *
    * @version 1.8
    */
-  _handleError() {
-    this.emit("error", ...arguments)
+  _handleError(...args) {
+    this.emit("error", ...args)
   }
 
 
@@ -85,7 +86,7 @@ class SSH extends EventEmitter {
    */
   _handleData(chunk) {
     this._data += chunk
-    var lines = this._data.split("\n")
+    const lines = this._data.split("\n")
     this._data = lines.pop()
     lines.forEach(line => this.emit("line", line))
   }
@@ -98,7 +99,7 @@ class SSH extends EventEmitter {
    * @param {string} str - the data which should be sent
    */
   send(str) {
-    this._stream.write(str+"\n")
+    this._stream.write(`${str}\n`)
   }
 
 

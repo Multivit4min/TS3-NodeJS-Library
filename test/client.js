@@ -1,10 +1,13 @@
+/* eslint-disable no-invalid-this */
+/* eslint-disable func-names */
+/*global describe beforeEach it*/
 const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
 const TeamSpeakClient = require("../property/Client.js")
-var TeamSpeak3 = require("../TeamSpeak3.js")
+let TeamSpeak3 = require("../TeamSpeak3.js")
 
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -13,6 +16,10 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 describe("TeamSpeakClient", () => {
+  let ts3 = null
+  let rawClient = null
+  let stub = null
+  let client = null
 
   beforeEach(() => {
     ts3 = new TeamSpeak3()
@@ -40,10 +47,10 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify return parameters of #getURL()", () => {
-    var { clid, client_unique_identifier, client_nickname } = rawClient
+    const { clid, client_unique_identifier, client_nickname } = rawClient
     assert.match(
       client.getURL(),
-      "[URL=client://"+clid+"/"+client_unique_identifier+"~"+encodeURIComponent(client_nickname)+"]"+client_nickname+"[/URL]"
+      `[URL=client://${clid}/${client_unique_identifier}~${encodeURIComponent(client_nickname)}]${client_nickname}[/URL]`
     )
   })
 
@@ -55,10 +62,10 @@ describe("TeamSpeakClient", () => {
       })
       ts3.emit("textmessage", { msg: "Text Message Content", invoker: client })
     })
-    it("should check if the event gets not fired when its not meant for the client", function(done) {
+    it("should check if the event gets not fired when its not meant for the client", function (done) {
       this.slow(4000)
-      var timer = setTimeout(() => done(), 50)
-      client.on("message", msg => {
+      const timer = setTimeout(() => done(), 50)
+      client.on("message", () => {
         clearTimeout(timer)
         done(Error("Event got fired which should not fire"))
       })
@@ -81,7 +88,7 @@ describe("TeamSpeakClient", () => {
     })
     it("should check if the event gets not fired when its not meant for the client", function(done) {
       this.slow(4000)
-      var timer = setTimeout(() => done(), 50)
+      const timer = setTimeout(() => done(), 50)
       client.on("disconnect", () => {
         clearTimeout(timer)
         done(Error("Event got fired which should not fire"))
@@ -100,8 +107,8 @@ describe("TeamSpeakClient", () => {
     })
     it("should check if the event gets not fired when its not meant for the client", function(done) {
       this.slow(4000)
-      var timer = setTimeout(() => done(), 50)
-       client.on("move", () => {
+      const timer = setTimeout(() => done(), 50)
+      client.on("move", () => {
         clearTimeout(timer)
         done(Error("Event got fired which should not fire"))
       })
@@ -263,7 +270,7 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #getAvatarName()", async () => {
-    var base64uid = Buffer.from(rawClient.client_unique_identifier).toString("base64")
+    const base64uid = Buffer.from(rawClient.client_unique_identifier).toString("base64")
     stub.onCall(0).resolves({ client_base64HashClientUID: base64uid })
     assert.match(await client.getAvatarName(), base64uid)
     assert.calledOnce(stub)
@@ -272,7 +279,7 @@ describe("TeamSpeakClient", () => {
 
   it("should validate the return value of #getIconName()", async () => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    var name = await client.getIconName()
+    const name = await client.getIconName()
     assert.calledOnce(stub)
     deepEqual(name, "icon_9999")
   })

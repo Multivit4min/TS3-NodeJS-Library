@@ -1,10 +1,11 @@
+/*global describe beforeEach it*/
 const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
 const TeamSpeakChannelGroup = require("../property/ChannelGroup.js")
-var TeamSpeak3 = require("../TeamSpeak3.js")
+let TeamSpeak3 = require("../TeamSpeak3.js")
 
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -13,9 +14,12 @@ TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 describe("TeamSpeakServerGroup", () => {
+  let rawGroup = null
+  let stub = null
+  let channelGroup = null
 
   beforeEach(() => {
-    var ts3 = new TeamSpeak3()
+    const ts3 = new TeamSpeak3()
     rawGroup = mockResponse.channelgrouplist[0]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
@@ -90,11 +94,9 @@ describe("TeamSpeakServerGroup", () => {
 
   it("should validate the return value of #getIconName()", async () => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    var name = await channelGroup.getIconName()
+    const name = await channelGroup.getIconName()
     assert.calledOnce(stub)
     deepEqual(name, "icon_9999")
   })
-
-
 
 })

@@ -14,6 +14,7 @@ const EventEmitter = require("events")
  * @class
  */
 class RAW extends EventEmitter {
+
   /**
    * Creates a new RAW Instance
    * @constructor
@@ -63,11 +64,11 @@ class RAW extends EventEmitter {
     this.emit("error", err)
   }
 
- /**
-  * Called when the connection with the Socket gets closed
-  *
-  * @version 1.8
-  */
+  /**
+   * Called when the connection with the Socket gets closed
+   *
+   * @version 1.8
+   */
   _handleClose() {
     this.emit("close", String(this._data))
   }
@@ -80,7 +81,7 @@ class RAW extends EventEmitter {
    */
   _handleData(chunk) {
     this._data += chunk
-    var lines = this._data.split("\n")
+    const lines = this._data.split("\n")
     this._data = lines.pop()
     lines.forEach(line => this.emit("line", line))
   }
@@ -93,7 +94,7 @@ class RAW extends EventEmitter {
    * @param {string} str - the data which should be sent
    */
   send(str) {
-    this._socket.write(str+"\n")
+    this._socket.write(`${str}\n`)
   }
 
 
@@ -107,6 +108,5 @@ class RAW extends EventEmitter {
   }
 
 }
-
 
 module.exports = RAW
