@@ -22,12 +22,12 @@
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
-    "nyc": "^13.1.0",
-    "sinon": "^7.2.2",
     "ssh2": "^0.8.0"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "mock-require": "^3.0.2"
+    "mock-require": "^3.0.2",
+    "nyc": "^13.1.0",
+    "sinon": "^7.2.3"
   }
 }
