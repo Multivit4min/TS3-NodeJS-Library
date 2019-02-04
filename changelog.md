@@ -1,7 +1,11 @@
 # Changelog
 
+### 1.12.3 - 4.2.2019
+* fixed event channelcreate
+* refactored code to use .eslintrc.json
+
 ### 1.12.2 - 30.1.2019
-* fixed privilegekeyadd thanks to IronicPickle
+* fixed privilegekeyadd thanks to IronicPickle for the detailed report
 
 ### 1.12.1 - 21.1.2019
 * added getID to channel property
