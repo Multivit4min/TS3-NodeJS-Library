@@ -1,8 +1,10 @@
 /*global describe it */
 const mock = require('mock-require')
-mock.stop("../TeamSpeak3.js")
 const assert = require("assert")
-const TeamSpeak3 = require("../TeamSpeak3.js")
+
+let TeamSpeak3 = require("../TeamSpeak3.js")
+mock.stopAll()
+TeamSpeak3 = require("../TeamSpeak3.js")
 
 describe("Integration Test", () => {
   it("should connect to a TeamSpeak Server via RAW Query", done => {
