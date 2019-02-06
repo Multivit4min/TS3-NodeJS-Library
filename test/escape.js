@@ -1,7 +1,7 @@
 /*global describe it*/
 const assert = require("assert")
-const escape = require("../../helper/escape.js")
-const unescape = require("../../helper/unescape.js")
+const escape = require("../helper/escape.js")
+const unescape = require("../helper/unescape.js")
 
 describe("escape", () => {
   it("should escape backslash", () => {

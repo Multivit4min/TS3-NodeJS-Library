@@ -1,7 +1,7 @@
 /*global describe it*/
 const assert = require("assert")
-const Command = require("../../transport/Command.js")
-const ResponseError = require("../../exception/ResponseError.js")
+const Command = require("../transport/Command.js")
+const ResponseError = require("../exception/ResponseError.js")
 
 describe("Command", () => {
 

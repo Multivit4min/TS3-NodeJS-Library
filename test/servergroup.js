@@ -3,12 +3,12 @@ const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
-const mockResponse = require("../mocks/queryResponse.js")
-const TeamSpeakServerGroup = require("../../property/ServerGroup.js")
-let TeamSpeak3 = require("../../Teamspeak3.js")
+const mockResponse = require("./mocks/queryResponse.js")
+const TeamSpeakServerGroup = require("../property/ServerGroup.js")
+let TeamSpeak3 = require("../Teamspeak3.js")
 
-mockRequire("../../transport/TS3Query.js", "../mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire("../../TeamSpeak3.js")
+mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
+TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 
