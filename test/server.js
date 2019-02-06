@@ -7,7 +7,7 @@ const TeamSpeakServer = require("../property/Server.js")
 let TeamSpeak3 = require("../TeamSpeak3.js")
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire(`${__dirname}/../TeamSpeak3.js`)
+TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
 
