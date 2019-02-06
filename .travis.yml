@@ -13,6 +13,7 @@ script:
   - npm test
   - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o docs
 after_script:
+  - docker logs teamspeak
   - docker stop teamspeak
 deploy:
   provider: pages
