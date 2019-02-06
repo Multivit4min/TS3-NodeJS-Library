@@ -17,17 +17,17 @@ describe("Integration Test", () => {
       nickname: "NodeJS Query Framework"
     })
 
-    ts3.on("error", e => {
-      console.error("Possible Error", e)
-    })
+    ts3.on("error", e => console.error("Possible Error", e))
+    ts3.on("close", () => done())
 
     ts3.on("ready", async () => {
       const serverinfo = await ts3.serverInfo()
       console.log(serverinfo)
       assert.equal("object", typeof serverinfo)
-      done()
+      ts3.quit()
     })
   }).timeout(10000)
+
 
   it("should connect to a TeamSpeak Server via SSH Query", done => {
     const ts3 = new TeamSpeak3({
@@ -40,15 +40,14 @@ describe("Integration Test", () => {
       nickname: "NodeJS Query Framework"
     })
 
-    ts3.on("error", e => {
-      console.error("Possible Error", e)
-    })
+    ts3.on("error", e => console.error("Possible Error", e))
+    ts3.on("close", () => done())
 
     ts3.on("ready", async () => {
       const serverinfo = await ts3.serverInfo()
       console.log(serverinfo)
       assert.equal("object", typeof serverinfo)
-      done()
+      ts3.quit()
     })
   }).timeout(10000)
 })
