@@ -19,7 +19,7 @@ class SSH extends EventEmitter {
    * Creates a new TS3Query
    * @constructor
    * @version 1.0
-   * @param {string} host - Teamspeak host to connect to
+   * @param {string} host - TeamSpeak host to connect to
    * @param {number} port - TeamSpeak query port
    * @param {string} username - Username to connect with
    * @param {string} password - This holds Basic Client data
