@@ -260,7 +260,7 @@ class TeamSpeak3 extends EventEmitter {
   _evserveredited(event) {
     this.getClientByID(event.invokerid)
       .then(client => {
-        const prop = { invoker: client, modified: {} }
+        const prop = { invoker: client, modified: {}, reasonid: event.reasonid }
         Object.keys(event)
           .filter(k => k.indexOf("virtualserver_") === 0)
           .forEach(k => prop.modified[k] = event[k])
@@ -283,8 +283,8 @@ class TeamSpeak3 extends EventEmitter {
     Promise.all([
       this.getClientByID(event.invokerid),
       this.getChannelByID(event.cid)
-    ]).then(res => {
-      const prop = { invoker: res[0], channel: res[1], modified: {} }
+    ]).then(([invoker, channel]) => {
+      const prop = { invoker, channel, modified: {}, reasonid: event.reasonid }
       Object.keys(event)
         .filter(k => k.indexOf("channel_") === 0)
         .forEach(k => prop.modified[k] = event[k])
@@ -307,8 +307,8 @@ class TeamSpeak3 extends EventEmitter {
     Promise.all([
       this.getClientByID(event.invokerid),
       this.getChannelByID(event.cid)
-    ]).then(res => {
-      const prop = { invoker: res[0], channel: res[1], modified: {} }
+    ]).then(([invoker, channel]) => {
+      const prop = { invoker, channel, modified: {}, cpid: event.cpid }
       Object.keys(event)
         .filter(k => k.indexOf("channel_") === 0)
         .forEach(k => prop.modified[k] = event[k])
@@ -332,11 +332,9 @@ class TeamSpeak3 extends EventEmitter {
       this.getClientByID(event.invokerid),
       this.getChannelByID(event.cid),
       this.getChannelByID(event.cpid)
-    ]).then(res => this.emit("channelmoved", {
-      invoker: res[0],
-      channel: res[1],
-      parent: res[2]
-    })).catch(e => this.emit("error", e))
+    ]).then(([invoker, channel, parent]) => {
+      this.emit("channelmoved", { invoker, channel, parent, order: event.order })
+    }).catch(e => this.emit("error", e))
   }
 
 
@@ -351,7 +349,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   _evchanneldeleted(event) {
     this.getClientByID(event.invokerid)
-      .then(client => this.emit("channeldelete", {invoker: client, cid: event.cid}))
+      .then(invoker => this.emit("channeldelete", {invoker, cid: event.cid}))
       .catch(e => this.emit("error", e))
   }
 
@@ -402,7 +400,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise<object>} Promise object which returns the Information about the Query executed
    */
   queryLoginList(pattern, start, duration) {
-    return this.execute("queryloginlist", { pattern, start, duration }, ["-count"])
+    return this.execute("queryloginlist", { pattern, start, duration }, ["-count"]).then(this.toArray)
   }
 
 
@@ -509,7 +507,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   bindingList() {
-    return this.execute("bindinglist")
+    return this.execute("bindinglist").then(this.toArray)
   }
 
 
@@ -1095,7 +1093,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>} Returns the Client Database Info
    */
   clientDBList(start = 0, duration = 1000, count = true) {
-    return this.execute("clientdblist", { start, duration }, [(count) ? "-count" : null])
+    return this.execute("clientdblist", { start, duration }, [(count) ? "-count" : null]).then(this.toArray)
   }
 
 
@@ -2232,11 +2230,11 @@ class TeamSpeak3 extends EventEmitter {
         if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
         if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
         switch (typeof a[k]) {
-        case "number": return a[k] !== parseFloat(filter[k])
-        case "string": return a[k] !== filter[k]
-        case "object": return !a[k].match(filter[k])
+          case "number": return a[k] !== parseFloat(filter[k])
+          case "string": return a[k] !== filter[k]
+          case "object": return !a[k].match(filter[k])
+          default: return false
         }
-        return true
       })))
     })
   }
