@@ -247,17 +247,19 @@ class TS3Query extends EventEmitter {
       const cmd = new Command()
       Object.values(args).forEach(v => {
         switch (typeof v) {
-        case "string":
-          return cmd.setCommand(v)
-        case "object":
-          if (Array.isArray(v)) {
-            if (v.some(value => value.constructor.name !== "Object")) {
-              return cmd.setFlags(v)
-            } else {
-              return cmd.setMultiOptions(v)
+          case "string":
+            return cmd.setCommand(v)
+          case "object":
+            if (Array.isArray(v)) {
+              if (v.some(value => value.constructor.name !== "Object")) {
+                return cmd.setFlags(v)
+              } else {
+                return cmd.setMultiOptions(v)
+              }
             }
-          }
-          return cmd.setOptions(v)
+            return cmd.setOptions(v)
+          default:
+            return null
         }
       })
       this.queueWorker({ cmd, fulfill, reject })
