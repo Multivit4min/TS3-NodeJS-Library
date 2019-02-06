@@ -15,11 +15,15 @@ describe("Integration Test", () => {
       nickname: "NodeJS Query Framework"
     })
 
+    ts3.on("error", e => {
+      console.error("Possible Error", e)
+    })
+
     ts3.on("ready", async () => {
       const serverinfo = await ts3.serverInfo()
       console.log(serverinfo)
       assert.equal("object", typeof serverinfo)
       done()
     })
-  })
+  }).timeout(15000)
 })
