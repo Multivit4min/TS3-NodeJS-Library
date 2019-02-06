@@ -1,13 +1,7 @@
 /*global describe it process */
 
-//do nothing if we are not on a travis environment
-console.log(process.env)
-if (!process.env.TRAVIS) return
-
-console.log("####################### RUNNING INTEGRATION TESTS #######################")
-
 const assert = require("assert")
-const TeamSpeak3 = require("../TeamSpeak3.js")
+const TeamSpeak3 = require("../../TeamSpeak3.js")
 
 describe("Integration Test", () => {
   it("should connect to a TeamSpeak Server", async () => {
@@ -21,8 +15,8 @@ describe("Integration Test", () => {
     })
 
     const serverinfo = await ts3.serverInfo()
+    console.log(serverinfo)
 
     assert.equal("object", typeof serverinfo)
-    console.log(serverinfo)
   })
 })

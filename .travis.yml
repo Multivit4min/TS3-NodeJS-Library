@@ -7,9 +7,11 @@ before_install:
   - docker pull teamspeak
   - docker run -d -p 10011:10011 -e TS3SERVER_LICENSE=accept -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh teamspeak ts3server serveradmin_password=abc123
 before_script:
+  - npm install
   - npm install -g eslint documentation
 script:
   - eslint ./**/*.js
+  - npm test
   - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o docs
 after_script:
   - docker stop teamspeak

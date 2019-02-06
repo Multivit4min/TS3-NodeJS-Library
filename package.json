@@ -5,7 +5,7 @@
   "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha"
+    "test": "nyc mocha ./test/"
   },
   "repository": {
     "type": "git",
