@@ -7,7 +7,6 @@ const mockArray = require("../mocks/mockArray.js")
 const mockResponse = require("../mocks/queryResponse.js")
 let TeamSpeak3 = require("../../TeamSpeak3.js")
 
-
 mockRequire("../../transport/TS3Query.js", "../mocks/MockQuery.js")
 TeamSpeak3 = mockRequire.reRequire("../../TeamSpeak3.js")
 
