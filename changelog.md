@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.12.4 - 6.2.2019
+* changes to all *List Commands to return an array
+  
 ### 1.12.3 - 4.2.2019
 * fixed event channelcreate
 * refactored code to use .eslintrc.json
