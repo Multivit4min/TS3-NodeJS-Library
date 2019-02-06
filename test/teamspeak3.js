@@ -951,10 +951,11 @@ describe("TeamSpeak3", () => {
 
   it("should receive and handle the event clientconnect", done => {
     try {
-      ts3.on("clientconnect", ev => {
+      ts3.once("clientconnect", ev => {
         deepEqual(ev.client.constructor.name, "TeamSpeakClient")
         deepEqual(ev.client.getID(), 4)
         deepEqual(ev.cid, 10)
+        assert.notCalled(stub)
         done()
       })
       // eslint-disable-next-line no-underscore-dangle
@@ -965,22 +966,21 @@ describe("TeamSpeak3", () => {
         client_database_id: 1,
         client_type: 0
       })
-      assert.notCalled(stub)
-    } catch(e) {
+    } catch (e) {
       done(e)
     }
   })
 
   it("should receive and handle the event clientdisconnect", done => {
     try {
-      ts3.on("clientdisconnect", ev => {
+      ts3.once("clientdisconnect", ev => {
         deepEqual(ev.event.clid, 4)
+        assert.notCalled(stub)
         done()
       })
       // eslint-disable-next-line no-underscore-dangle
       ts3._ts3.emit("clientleftview", { clid: 4 })
-      assert.notCalled(stub)
-    } catch(e) {
+    } catch (e) {
       done(e)
     }
   })
@@ -988,17 +988,17 @@ describe("TeamSpeak3", () => {
   it("should receive and handle the event textmessage", done => {
     stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
     try {
-      ts3.on("textmessage", ev => {
+      ts3.once("textmessage", ev => {
         deepEqual(ev.msg, "Message Content")
         deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
         deepEqual(ev.invoker.getID(), 10)
         deepEqual(ev.targetmode, 1)
+        assert.calledOnce(stub)
         done()
       })
       // eslint-disable-next-line no-underscore-dangle
       ts3._ts3.emit("textmessage", { msg: "Message Content", invokerid: 10, targetmode: 1 })
-      assert.calledOnce(stub)
-    } catch(e) {
+    } catch (e) {
       done(e)
     }
   })
@@ -1007,20 +1007,158 @@ describe("TeamSpeak3", () => {
     stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
     stub.onCall(1).resolves({ cid: 3 })
     try {
-      ts3.on("clientmoved", ev => {
+      ts3.once("clientmoved", ev => {
         deepEqual(ev.client.constructor.name, "TeamSpeakClient")
         deepEqual(ev.client.getID(), 10)
         deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
         deepEqual(ev.channel.getCache().cid, 3)
         deepEqual(ev.reasonid, 4)
+        assert.calledTwice(stub)
         done()
       })
       // eslint-disable-next-line no-underscore-dangle
       ts3._ts3.emit("clientmoved", { clid: 10, ctid: 3, reasonid: 4 })
-      assert.calledTwice(stub)
-    } catch(e) {
+    } catch (e) {
       done(e)
     }
+  })
+
+
+  it("should receive and handle the event serveredit", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    try {
+      ts3.once("serveredit", ev => {
+        deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+        deepEqual(ev.invoker.getID(), 3)
+        deepEqual(ev.modified, { virtualserver_name: "Renamed Server" })
+        deepEqual(ev.reasonid, 10)
+        assert.calledOnce(stub)
+        done()
+      })
+      // eslint-disable-next-line no-underscore-dangle
+      ts3._ts3.emit("serveredited", {
+        reasonid: 10,
+        invokerid: 3,
+        invokername: "TeamSpeakUser",
+        invokeruid: "uid=",
+        virtualserver_name: "Renamed Server"
+      })
+    } catch (e) {
+      done(e)
+    }
+  })
+
+
+  it("should receive and handle the event channeledit", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(1).resolves({ cid: 2 })
+    try {
+      ts3.once("channeledit", ev => {
+        deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+        deepEqual(ev.invoker.getID(), 3)
+        deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
+        deepEqual(ev.channel.getID(), 2)
+        deepEqual(ev.modified, { channel_name: "new name" })
+        deepEqual(ev.reasonid, 10)
+        assert.calledTwice(stub)
+        done()
+      })
+      // eslint-disable-next-line no-underscore-dangle
+      ts3._ts3.emit("channeledited", {
+        cid: 2,
+        reasonid: 10,
+        invokerid: 3,
+        invokername: "TeamSpeakUser",
+        invokeruid: "uid=",
+        channel_name: "new name"
+      })
+    } catch (e) {
+      done(e)
+    }
+  })
+
+
+  it("should receive and handle the event channelcreate", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(1).resolves({ cid: 3 })
+    ts3.once("channelcreate", ev => {
+      deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+      deepEqual(ev.invoker.getID(), 3)
+      deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
+      deepEqual(ev.channel.getID(), 3)
+      deepEqual(ev.modified, {
+        channel_name: "new channel",
+        channel_codec_quality: 6,
+        channel_order: 2,
+        channel_codec_is_unencrypted: 1,
+        channel_flag_maxfamilyclients_unlimited: 0,
+        channel_flag_maxfamilyclients_inherited: 1
+      })
+      deepEqual(ev.cpid, 0)
+      assert.calledTwice(stub)
+      done()
+    })
+    // eslint-disable-next-line no-underscore-dangle
+    ts3._ts3.emit("channelcreated", {
+      cid: 3,
+      cpid: 0,
+      channel_name: "new channel",
+      channel_codec_quality: 6,
+      channel_order: 2,
+      channel_codec_is_unencrypted: 1,
+      channel_flag_maxfamilyclients_unlimited: 0,
+      channel_flag_maxfamilyclients_inherited: 1,
+      invokerid: 3,
+      invokername: "TeamSpeakUser",
+      invokeruid: "uid="
+    })
+  })
+
+
+  it("should receive and handle the event channelmoved", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(1).resolves([{ cid: 3 }, { cid: 2 }])
+    stub.onCall(2).resolves([{ cid: 3 }, { cid: 2 }])
+    ts3.once("channelmoved", ev => {
+      deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+      deepEqual(ev.invoker.getID(), 3)
+      deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
+      deepEqual(ev.channel.getID(), 3)
+      deepEqual(ev.parent.constructor.name, "TeamSpeakChannel")
+      deepEqual(ev.parent.getID(), 2)
+      deepEqual(ev.order, 0)
+      assert.calledThrice(stub)
+      done()
+    })
+    // eslint-disable-next-line no-underscore-dangle
+    ts3._ts3.emit("channelmoved", {
+      cid: 3,
+      cpid: 2,
+      order: 0,
+      reasonid: 1,
+      invokerid: 3,
+      invokername: "TeamSpeakUser",
+      invokeruid: "uid="
+    })
+  })
+
+
+  it("should receive and handle the event channeldelete", done => {
+    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    ts3.once("channeldelete", ev => {
+      deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
+      deepEqual(ev.invoker.getID(), 3)
+      deepEqual(ev.cid, 4)
+      assert.calledOnce(stub)
+      done()
+    })
+    // eslint-disable-next-line no-underscore-dangle
+    ts3._ts3.emit("channeldeleted", {
+      invokerid: 3,
+      invokername: "TeamSpeakUser",
+      invokeruid: "uid=",
+      cid: 4
+    })
   })
 
 
