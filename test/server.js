@@ -10,7 +10,6 @@ mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
 TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
 
 
-
 describe("TeamSpeakServer", () => {
   let rawServer = null
   let stub = null

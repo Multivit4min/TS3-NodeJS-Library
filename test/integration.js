@@ -8,6 +8,7 @@ TeamSpeak3 = mock.reRequire("../TeamSpeak3.js")
 
 describe("Integration Test", () => {
   it("should connect to a TeamSpeak Server via RAW Query", done => {
+    let error = null
     const ts3 = new TeamSpeak3({
       host: "127.0.0.1",
       queryport: 10011,
@@ -17,19 +18,28 @@ describe("Integration Test", () => {
       nickname: "NodeJS Query Framework"
     })
 
-    ts3.on("error", e => console.error("Possible Error", e))
-    ts3.on("close", () => done())
+    ts3.on("error", e => error = e)
+    ts3.on("close", () => done(error))
 
     ts3.on("ready", async () => {
-      const serverinfo = await ts3.serverInfo()
-      console.log(serverinfo)
-      assert.equal("object", typeof serverinfo)
-      ts3.quit()
+      try {
+        const [serverinfo, whoami] = await Promise.all(ts3.serverInfo(), ts3.whoami())
+        assert.equal("object", typeof serverinfo)
+        assert.equal("string", typeof serverinfo.virtualserver_name)
+        assert.equal("object", typeof whoami)
+        assert.equal("NodeJS Query Framework", whoami.client_nickname)
+        ts3.quit()
+      } catch (e) {
+        ts3.quit()
+        throw e
+      }
     })
+
   }).timeout(10000)
 
 
   it("should connect to a TeamSpeak Server via SSH Query", done => {
+    let error = null
     const ts3 = new TeamSpeak3({
       protocol: "ssh",
       host: "127.0.0.1",
@@ -40,14 +50,22 @@ describe("Integration Test", () => {
       nickname: "NodeJS Query Framework"
     })
 
-    ts3.on("error", e => console.error("Possible Error", e))
-    ts3.on("close", () => done())
+    ts3.on("error", e => error = e)
+    ts3.on("close", () => done(error))
 
     ts3.on("ready", async () => {
-      const serverinfo = await ts3.serverInfo()
-      console.log(serverinfo)
-      assert.equal("object", typeof serverinfo)
-      ts3.quit()
+      try {
+        const [serverinfo, whoami] = await Promise.all(ts3.serverInfo(), ts3.whoami())
+        assert.equal("object", typeof serverinfo)
+        assert.equal("string", typeof serverinfo.virtualserver_name)
+        assert.equal("object", typeof whoami)
+        assert.equal("NodeJS Query Framework", whoami.client_nickname)
+        ts3.quit()
+      } catch (e) {
+        ts3.quit()
+        throw e
+      }
     })
+
   }).timeout(10000)
 })
