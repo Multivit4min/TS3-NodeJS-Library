@@ -24,7 +24,7 @@ ts3.on("ready", async () => {
     console.log(`Uploading Icon to /icons/icon_${crc}`)
     await ts3.uploadFile(`/icons/icon_${crc}`, data, 0)
     console.log("File uploaded")
-  } catch(e) {
+  } catch (e) {
     console.log("ERROR", e)
   }
 })
