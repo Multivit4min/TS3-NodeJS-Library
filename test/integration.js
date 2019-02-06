@@ -1,4 +1,4 @@
-/*global describe it process */
+/*global describe it */
 const mock = require('mock-require')
 mock.stop("../TeamSpeak3.js")
 const assert = require("assert")
