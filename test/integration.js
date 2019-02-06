@@ -23,7 +23,7 @@ describe("Integration Test", () => {
 
     ts3.on("ready", async () => {
       try {
-        const [serverinfo, whoami] = await Promise.all(ts3.serverInfo(), ts3.whoami())
+        const [serverinfo, whoami] = await Promise.all([ts3.serverInfo(), ts3.whoami()])
         assert.equal("object", typeof serverinfo)
         assert.equal("string", typeof serverinfo.virtualserver_name)
         assert.equal("object", typeof whoami)
@@ -55,7 +55,7 @@ describe("Integration Test", () => {
 
     ts3.on("ready", async () => {
       try {
-        const [serverinfo, whoami] = await Promise.all(ts3.serverInfo(), ts3.whoami())
+        const [serverinfo, whoami] = await Promise.all([ts3.serverInfo(), ts3.whoami()])
         assert.equal("object", typeof serverinfo)
         assert.equal("string", typeof serverinfo.virtualserver_name)
         assert.equal("object", typeof whoami)
