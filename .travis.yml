@@ -1,10 +1,15 @@
 language: node_js
 node_js:
   - "lts/*"
+services:
+  - docker
+before_install:
+  - docker pull teamspeak
+  - docker run -p 10011:10011 -e TS3SERVER_LICENSE=accept -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh teamspeak serveradmin_password=abc123
+before_script:
+  - npm install -g eslint documentation
 script:
-  - npm install -g eslint
   - eslint ./**/*.js
-  - npm install -g documentation
   - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o docs
 deploy:
   provider: pages
