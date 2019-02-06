@@ -20,7 +20,7 @@
             "never"
         ],
         "array-callback-return": "error",
-        "array-element-newline": "off",
+        "array-element-newline": ["error", "consistent"],
         "arrow-body-style": "error",
         "arrow-parens": [
             "error",
@@ -79,7 +79,7 @@
         "consistent-return": "off",
         "consistent-this": "error",
         "curly": "off",
-        "default-case": "off",
+        "default-case": "error",
         "dot-location": [
             "error",
             "property"
@@ -115,12 +115,12 @@
             "error",
             "beside"
         ],
-        "indent": ["error", 2],
+        "indent": ["error", 2, { "SwitchCase": 1 }],
         "indent-legacy": "off",
         "init-declarations": "error",
         "jsx-quotes": "error",
         "key-spacing": "error",
-        "keyword-spacing": "off",
+        "keyword-spacing": ["error", { "before": true }],
         "line-comment-position": "error",
         "linebreak-style": "off",
         "lines-around-comment": "error",
@@ -145,7 +145,7 @@
         "no-alert": "error",
         "no-array-constructor": "error",
         "no-async-promise-executor": "error",
-        "no-await-in-loop": "error",
+        "no-await-in-loop": "off",
         "no-bitwise": "off",
         "no-buffer-constructor": "error",
         "no-caller": "error",
