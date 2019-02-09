@@ -23,7 +23,7 @@ class TS3Query extends EventEmitter {
    * @constructor
    * @version 1.0
    * @param {object} config - Configuration Object
-   * @param {string} config.host - Teamspeak host to connect to
+   * @param {string} config.host - TeamSpeak host to connect to
    * @param {number} config.port - TeamSpeak query port
    * @param {string} [config.proto=raw] - Protocol to use to connect to the Query
    * @param {string} [config.username] - Username to connect with, only required when using ssh
