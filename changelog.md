@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.12.5 - 10.3.2019
+* fixed a possible memory leak when remove clients/channels/etc from the teamspeak cache object - thanks to elipeF for reporting
+
 ### 1.12.4 - 6.2.2019
 * changes to all *List Commands to return an array
   

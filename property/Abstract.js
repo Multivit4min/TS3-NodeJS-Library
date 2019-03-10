@@ -25,22 +25,20 @@ class Abstract extends EventEmitter {
     this._propcache = c
     this._parent = parent
     this._cache = {}
-    this._cachetime = 50
-    this._events = {}
-    this._parent.on("close", () => this.removeAllListeners())
+    this._listeners = {}
+    this._onParent("close", () => this.destruct())
   }
 
-
   /**
-   * Subscribes to parent Events
-   * @version 1.0
-   * @param {string} name - The Event Name which should be subscribed to
-   * @param {function} cb - The Callback
+   * Subscribes to parent events
+   * @private
+   * @param {string} event the eventname
+   * @param {function} cb the callback function
    */
-  on(name, cb) {
-    if (!(name in this._events)) this._events[name] = []
-    this._events[name].push(cb)
-    this._parent.on(name, cb)
+  _onParent(event, cb) {
+    if (!Array.isArray(this._listeners[event])) this._listeners[event] = []
+    this._listeners[event].push(cb)
+    return this._parent.on(event, cb)
   }
 
 
@@ -48,11 +46,10 @@ class Abstract extends EventEmitter {
    * Safely unsubscribes to all Events
    * @version 1.0
    */
-  removeAllListeners() {
-    Object.keys(this._events).forEach(k => {
-      this._events[k].forEach(cb => {
-        this._parent.removeListener(k, cb)
-      })
+  destruct() {
+    super.removeAllListeners()
+    Object.keys(this._listeners).forEach(key => {
+      this._listeners[key].forEach(f => this._parent.removeListener(key, f))
     })
   }
 

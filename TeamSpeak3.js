@@ -194,11 +194,12 @@ class TeamSpeak3 extends EventEmitter {
    * @property {object} event - The Data from the disconnect event
    */
   _evclientleftview(event) {
+    const { clid } = event
     super.emit("clientdisconnect", {
-      client: (event.clid in this._clients) ? this._clients[event.clid].getCache() : {clid: event.clid},
+      client: (String(clid) in this._clients) ? this._clients[clid].getCache() : { clid },
       event
     })
-    Reflect.deleteProperty(this._clients, String(event.clid))
+    this._removeFromCache(this._clients, clid)
   }
 
 
@@ -2198,15 +2199,29 @@ class TeamSpeak3 extends EventEmitter {
       const remainder = Object.keys(cache)
       list.forEach(l => {
         const k = String(l[key])
-        if (remainder.indexOf(k) >= 0) {
+        if (remainder.includes(k)) {
           cache[k].updateCache(l)
-          return remainder.splice(remainder.indexOf(k), 1)
+          remainder.splice(remainder.indexOf(k), 1)
+        } else {
+          cache[k] = new Class(this, l)
         }
-        cache[k] = new Class(this, l)
       })
-      remainder.forEach(r => Reflect.deleteProperty(cache, String(r)))
+      remainder.forEach(k => this._removeFromCache(cache, k))
       fulfill(list)
     })
+  }
+
+
+  /**
+   * Removes an item from cache and calls the .destruct() method on it
+   * @private
+   * @param {object} cache the cache object from where a key should be deleted
+   * @param {any} key the key which should be deleted
+   */
+  _removeFromCache(cache, key) {
+    if (cache[String(key)] === undefined) return
+    cache[String(key)].destruct()
+    Reflect.deleteProperty(cache, String(key))
   }
 
 
