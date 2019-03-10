@@ -71,7 +71,7 @@ class TeamSpeakClient extends Abstract {
     super.on("clientdisconnect", ev => {
       if (ev.client.clid !== this.getID()) return
       this.emit("disconnect", ev.event)
-      super.removeAllListeners()
+      super.destruct()
     })
   }
 
