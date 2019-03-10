@@ -45,7 +45,7 @@ class TeamSpeakClient extends Abstract {
      * @memberof TeamSpeakClient
      * @returns {TeamSpeakChannel} The Channel where the Client moved to
      */
-    super.on("clientmoved", ev => {
+    super._onParent("clientmoved", ev => {
       if (ev.client.getID() !== this.getID()) return
       this.emit("move", ev.channel)
     })
@@ -57,7 +57,7 @@ class TeamSpeakClient extends Abstract {
      * @memberof TeamSpeakClient
      * @returns {string} The Message which has been sent
      */
-    super.on("textmessage", ev => {
+    super._onParent("textmessage", ev => {
       if (ev.invoker.getID() !== this.getID()) return
       this.emit("message", ev.msg)
     })
@@ -68,7 +68,7 @@ class TeamSpeakClient extends Abstract {
      * @event TeamSpeakClient#clientdisconnect
      * @memberof TeamSpeakClient
      */
-    super.on("clientdisconnect", ev => {
+    super._onParent("clientdisconnect", ev => {
       if (ev.client.clid !== this.getID()) return
       this.emit("disconnect", ev.event)
       super.destruct()
