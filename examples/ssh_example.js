@@ -21,7 +21,8 @@ function listServers() {
       console.log(`\tPort ${server.port}`)
       console.log(`\tStatus ${server.status}`)
       console.log(`\tServerUID ${server.uniqueIdentifier}`)
-      console.log(`\tClients ${server.clientsonline}/${server.maxclients}`)    })
+      console.log(`\tClients ${server.clientsonline}/${server.maxclients}`)
+    })
     setTimeout(listServers, 1000)
   })
 }
