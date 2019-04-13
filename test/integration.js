@@ -89,7 +89,7 @@ describe("Integration Test", () => {
       try {
         const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
         const crc = crc32.buf(data)
-        await ts3.uploadFile(`/icon_${crc}`, data, 0)
+        await ts3.uploadFile(`/icon_${crc >>> 0}`, data, 0)
         const download = await ts3.downloadIcon(`icon_${crc >>> 0}`)
         assert.equal(crc, crc32.buf(download))
         ts3.quit()
