@@ -24,9 +24,71 @@ class Abstract extends EventEmitter {
     super()
     this._propcache = c
     this._parent = parent
-    this._cache = {}
     this._listeners = {}
+    this._registerProps()
     this._onParent("close", () => this.destruct())
+  }
+
+  /**
+   * returns JSONifyable data
+   */
+  toJSON() {
+    return {
+      _namespace: this.getNameSpace(),
+      ...this._propcache
+    }
+  }
+
+  /**
+   * adds getters to all cached props
+   * @private
+   * @param {object} [props] optional properties which should get added
+   */
+  _registerProps(props = false) {
+    Object.keys(props || this._propcache)
+      .forEach(name => this._addGetter(name))
+  }
+
+  /**
+   * adds a new getter on the own object
+   * @private
+   * @param {string} name the name of the property
+   */
+  _addGetter(name) {
+    const translated = this.translatePropName(name)
+    if (Object.prototype.hasOwnProperty.call(this, translated)) return
+    Object.defineProperty(this, translated, {
+      get: this.getPropertyByName.bind(this, name)
+    })
+  }
+
+  /**
+   * retrieves a single property value by the given name
+   * @param {string} name the name from where the value should be retrieved
+   */
+  getPropertyByName(name) {
+    return this._propcache[name]
+  }
+
+  /**
+   * translates a TeamSpeak property key to a JavaScript conform name
+   * @param {string} name the name which will get converted
+   * @returns {string} returns the JavaScript conform name
+   * @example
+   *  //given that the abstract is extending a TeamSpeakClient
+   *  client.translatePropName("client_nickname") //returns "nickname"
+   *  client.translatePropName("client_is_talker") //returns "isTalker"
+   *  client.translatePropName("client_channel_group_id") //returns "channelGroupId"
+   */
+  translatePropName(name) {
+    const prefix = this.getNameSpace()
+    if (name.startsWith(prefix))
+      name = name.replace(new RegExp(`^${prefix}_?`), "")
+    let up = false
+    return name.split("").reduce((acc, str) => {
+      if (str === "_") return (up = true, acc)
+      return [...acc, up ? (up = false, str.toUpperCase()) : str]
+    }, []).join("")
   }
 
   /**
@@ -89,7 +151,6 @@ class Abstract extends EventEmitter {
     return this._propcache
   }
 
-
   /**
    * Sets the Data from the Last List Command
    * @version 1.0
@@ -97,8 +158,8 @@ class Abstract extends EventEmitter {
   updateCache(info) {
     const changes = this.objectCopy(this._propcache, info)
     if (Object.values(changes).length === 0) return
-    Object
-      .keys(changes)
+    this._registerProps(Object.keys(changes).reduce((acc, curr) => ({ [curr]: null, ...acc}), {}))
+    Object.keys(changes)
 
     /**
      * Single Property Change event
