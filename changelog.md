@@ -1,5 +1,31 @@
 # Changelog
 
+### 1.13.0 - 13.4.2019
+* improved general filetransfer
+	* added fileDownload method
+	* improved optional parameters like cpw always requires an empty string
+* added method `toJSON()` to the Abstract class in order to make a client class stringifyable
+* added new way to read cached items from a client to make it more like the javascript way
+	
+	for examle on a client class the property `client_is_channel_commander` will translate to `isChannelCommander` it will remove the `client_` prefix and after each subsequent underscore it will remove the underscore and and make the next character to an UpperCase char. 
+	Side Note: only properties which are readable from clientlist, channellist, ... are available like that
+
+	```javascript
+	//before
+	client.getCache().client_unique_identifier
+	client.getCache().client_nickname
+	client.getCache().client_is_channel_commander
+	channel.getCache().channel_flag_permanent
+	channel.getCache().channel_name
+	//now
+	client.uniqueIdentifier
+	client.nickname
+	client.isChannelCommander
+	channel.flagPermanent
+	channel.name
+	```
+* added FileTransfer to automated tests
+
 ### 1.12.5 - 10.3.2019
 * fixed a possible memory leak when remove clients/channels/etc from the teamspeak cache object - thanks to elipeF for reporting
 
