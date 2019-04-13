@@ -11,6 +11,7 @@ before_script:
 script:
   - eslint ./**/*.js
   - npm test
+  - nyc report --reporter=text-lcov | coveralls
   - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o docs
 after_script:
   - docker stop teamspeak
