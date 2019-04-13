@@ -2046,16 +2046,19 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} transfer.size - Size of the File
    * @param {number} [transfer.cid=0] - Channel ID to upload to
    * @param {string} [transfer.cpw] - Channel Password of the Channel which will be uploaded to
-   * @param {number} [transfer.overwrite=1] - <Description Pending>
+   * @param {number} [transfer.overwrite=1] - Overwrites an existing file
    * @param {number} [transfer.resume=0] - <Description Pending>
    * @returns {Promise.<object>}
    */
   ftInitUpload(transfer) {
-    if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
-    if (!("cid" in transfer)) transfer.cid = 0
-    if (!("resume" in transfer)) transfer.resume = 0
-    if (!("overwrite" in transfer)) transfer.overwrite = 1
-    return this.execute("ftinitupload", transfer)
+    return this.execute("ftinitupload", {
+      clientftfid: Math.floor(Math.random() * 10000),
+      cid: 0,
+      resume: 0,
+      overwrite: 1,
+      cpw: "",
+      ...transfer
+    })
   }
 
 
@@ -2065,7 +2068,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {object} transfer - The Transfer Object
-   * @param {string} transfer.name - Filename to Download
+   * @param {string} transfer.name - Filepath to Download
    * @param {number} [transfer.clientftfid] - Arbitary ID to Identify the Transfer
    * @param {number} [transfer.cid=0] - Channel ID to upload to
    * @param {string} [transfer.cpw=""] - Channel Password of the Channel which will be uploaded to
@@ -2073,38 +2076,46 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   ftInitDownload(transfer) {
-    if (!("clientftfid" in transfer)) transfer.clientftfid = Math.floor(Math.random() * 10000)
-    if (!("seekpos" in transfer)) transfer.seekpos = 0
-    if (!("cpw" in transfer)) transfer.cpw = ""
-    if (!("cid" in transfer)) transfer.cid = 0
-    if (!("path" in transfer)) transfer.path = "/"
-    return this.execute("ftinitdownload", transfer)
+    return this.execute("ftinitdownload", {
+      clientftfid: Math.floor(Math.random() * 10000),
+      seekpos: 0,
+      cpw: "",
+      cid: 0,
+      ...transfer
+    })
   }
 
   /**
-   * Returns an Icon with the given Name
+   * Uploads a file
    * @version 1.0
    * @async
    * @param {string} path - the path whith the filename where the file should be uploaded to
    * @param {string|buffer} data - The data to upload
-   * @param {number} cid - Channel ID to upload to
-   * @param {string} cpw - Channel Password of the Channel which will be uploaded to
+   * @param {number} [cid=0] - Channel ID to upload to
+   * @param {string} [cpw] - Channel Password of the Channel which will be uploaded to
    * @returns {Promise.<object>}
    */
-  uploadFile(path, data, cid, cpw) {
-    return new Promise((fulfill, reject) => {
-      path = name.split("/")
-      const name = `/${path.pop()}`
-      if (typeof data === "string") data = Buffer.from(data)
-      return this.ftInitUpload({ path, name, cid, cpw, size: data.byteLength })
-        .then(res => {
-          if (res.size === 0) return reject(new Error(res.msg))
-          new FileTransfer(this._config.host, res.port)
-            .upload(res.ftkey, data)
-            .then(fulfill)
-            .catch(reject)
-        })
-    })
+  async uploadFile(path, data, cid = 0, cpw = "") {
+    if (typeof data === "string") data = Buffer.from(data)
+    const res = await this.ftInitUpload({ name: path, cid, cpw, size: data.byteLength })
+    if (res.size === 0) throw new Error(res.msg)
+    await new FileTransfer(this._config.host, res.port).upload(res.ftkey, data)
+  }
+
+  /**
+   * Returns the file in the channel with the given path
+   * @version 1.0
+   * @async
+   * @param {string} path - the path whith the filename where the file should be uploaded to
+   * @param {number} [cid=0] - Channel ID to download from
+   * @param {string} [cpw] - Channel Password of the Channel which will be uploaded to
+   * @returns {Promise.<object>}
+   */
+  async downloadFile(path, cid = 0, cpw = "") {
+    const res = await this.ftInitDownload({name: path, cid, cpw })
+    if (res.size === 0) throw new Error(res.msg)
+    const file = await new FileTransfer(this._config.host, res.port).download(res.ftkey, res.size)
+    return file
   }
 
 
@@ -2112,20 +2123,11 @@ class TeamSpeak3 extends EventEmitter {
    * Returns an Icon with the given Name
    * @version 1.0
    * @async
-   * @param {string} name - The Name of the Icon to retrieve
+   * @param {string} name - The Name of the Icon to retrieve eg "icon_262672952"
    * @returns {Promise.<object>}
    */
   downloadIcon(name) {
-    return new Promise((fulfill, reject) => {
-      this.ftInitDownload({name: `/${name}`})
-        .then(res => {
-          if (res.size === 0) return reject(new Error(res.msg))
-          new FileTransfer(this._config.host, res.port)
-            .download(res.ftkey, res.size)
-            .then(fulfill)
-            .catch(reject)
-        })
-    })
+    return this.downloadFile(`/${name}`)
   }
 
 
