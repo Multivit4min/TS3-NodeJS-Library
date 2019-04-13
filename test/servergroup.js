@@ -24,6 +24,10 @@ describe("TeamSpeakServerGroup", () => {
     serverGroup = new TeamSpeakServerGroup(ts3, rawGroup)
   })
 
+  it("should verify the return value of #getNameSpace()", () => {
+    assert.match(serverGroup.getNameSpace(), "servergroup")
+  })
+
   it("should verify return parameters of #getSGID()", () => {
     assert.match(serverGroup.getSGID(), rawGroup.sgid)
   })

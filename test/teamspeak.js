@@ -913,24 +913,26 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #ftInitUpload()", async () => {
-    await ts3.ftInitUpload({ clientftfid: 123 })
+    await ts3.ftInitUpload({ name: "/somefile.iso", clientftfid: 123 })
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftinitupload", {
+      name: "/somefile.iso",
       clientftfid: 123,
       cid: 0,
       resume: 0,
-      overwrite: 1
+      overwrite: 1,
+      cpw: ""
     })
   })
 
   it("should verify parameters of #ftInitDownload()", async () => {
-    await ts3.ftInitDownload({ clientftfid: 123 })
+    await ts3.ftInitDownload({ name: "/somefile.iso", clientftfid: 123 })
     assert.calledOnce(stub)
     assert.calledWith(stub, "ftinitdownload", {
+      name: "/somefile.iso",
       clientftfid: 123,
       cid: 0,
       seekpos: 0,
-      path: "/",
       cpw: ""
     })
   })

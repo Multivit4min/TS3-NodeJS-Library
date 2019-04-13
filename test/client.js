@@ -28,6 +28,9 @@ describe("TeamSpeakClient", () => {
     client = new TeamSpeakClient(ts3, rawClient)
   })
 
+  it("should verify the return value of #getNameSpace()", () => {
+    assert.match(client.getNameSpace(), "client")
+  })
 
   it("should verify return parameters of #getDBID()", () => {
     assert.match(client.getDBID(), rawClient.client_database_id)

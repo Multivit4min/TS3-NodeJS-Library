@@ -25,6 +25,10 @@ describe("TeamSpeakServerGroup", () => {
     channelGroup = new TeamSpeakChannelGroup(ts3, rawGroup)
   })
 
+  it("should verify the return value of #getNameSpace()", () => {
+    assert.match(channelGroup.getNameSpace(), "channelgroup")
+  })
+
   it("should verify execute parameters of #del()", async () => {
     await channelGroup.del(1)
     assert.calledOnce(stub)

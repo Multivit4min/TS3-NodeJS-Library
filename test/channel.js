@@ -26,6 +26,10 @@ describe("TeamSpeakChannel", () => {
     channel = new TeamSpeakChannel(ts3, rawChannel)
   })
 
+  it("should verify the return value of #getNameSpace()", () => {
+    assert.match(channel.getNameSpace(), "channel")
+  })
+
   it("should verify execute parameters of #getInfo()", async () => {
     await channel.getInfo()
     assert.calledOnce(stub)

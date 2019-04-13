@@ -23,6 +23,10 @@ describe("TeamSpeakServer", () => {
     server = new TeamSpeakServer(ts3, rawServer)
   })
 
+  it("should verify the return value of #getNameSpace()", () => {
+    assert.match(server.getNameSpace(), "virtualserver")
+  })
+
   it("should verify execute parameters of #use()", async () => {
     await server.use("Nickname")
     assert.calledOnce(stub)
