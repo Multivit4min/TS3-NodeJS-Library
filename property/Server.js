@@ -29,6 +29,13 @@ class TeamSpeakServer extends Abstract {
     }
   }
 
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return "virtualserver"
+  }
 
   /**
      * Selects the Virtual Server

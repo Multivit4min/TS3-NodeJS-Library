@@ -29,6 +29,14 @@ class TeamSpeakServerGroup extends Abstract {
     }
   }
 
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return "servergroup"
+  }
+
 
   /**
    * Returns the Server Group ID

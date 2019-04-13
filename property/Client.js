@@ -75,6 +75,13 @@ class TeamSpeakClient extends Abstract {
     })
   }
 
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return "client"
+  }
 
   /**
    * Returns the Database ID of the Client

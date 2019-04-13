@@ -29,6 +29,14 @@ class TeamSpeakChannel extends Abstract {
     }
   }
 
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return "channel"
+  }
+
 
   /**
    * Returns the ID of the Channel

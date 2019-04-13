@@ -29,6 +29,14 @@ class TeamSpeakChannelGroup extends Abstract {
     }
   }
 
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return "channelgroup"
+  }
+
 
   /**
    * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
