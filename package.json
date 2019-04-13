@@ -25,6 +25,7 @@
     "ssh2": "^0.8.0"
   },
   "devDependencies": {
+    "crc-32": "^1.2.0",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
     "nyc": "^13.1.0",
