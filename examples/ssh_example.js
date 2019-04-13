@@ -16,14 +16,12 @@ ts3.on("ready", () => listServers())
 function listServers() {
   ts3.serverList().then(servers => {
     servers.forEach(server => {
-      const info = server.getCache()
-      console.log(`Server ID ${info.virtualserver_id}`)
-      console.log(`\tName ${info.virtualserver_name}`)
-      console.log(`\tPort ${info.virtualserver_port}`)
-      console.log(`\tStatus ${info.virtualserver_status}`)
-      console.log(`\tServerUID ${info.virtualserver_unique_identifier}`)
-      console.log(`\tClients ${info.virtualserver_clientsonline}/${info.virtualserver_maxclients}`)
-    })
+      console.log(`Server ID ${server.id}`)
+      console.log(`\tName ${server.name}`)
+      console.log(`\tPort ${server.port}`)
+      console.log(`\tStatus ${server.status}`)
+      console.log(`\tServerUID ${server.uniqueIdentifier}`)
+      console.log(`\tClients ${server.clientsonline}/${server.maxclients}`)    })
     setTimeout(listServers, 1000)
   })
 }

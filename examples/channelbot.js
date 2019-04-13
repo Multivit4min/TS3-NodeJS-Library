@@ -35,7 +35,7 @@ ts3.on("ready", async () => {
     const channels = await ts3.channelList()
     channels.forEach(channel => {
       //Logs the Channel ID and the Channel Name
-      console.log(channel.getCID(), channel.getCache().channel_name)
+      console.log(channel.getCID(), channel.name)
     })
   } else {
     //Edit the Channel when the Bot starts, when a user leaves and when a user connects

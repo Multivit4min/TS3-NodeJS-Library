@@ -13,11 +13,10 @@ const ts3 = new TeamSpeak3({
 
 //The clientconnect event gets fired when a new Client joins the selected TeamSpeak Server
 ts3.on("clientconnect", ({ client }) => {
-  //the .getCache() method returns the data from the last Client List command
-  const nick = client.getCache().client_nickname
+  const nick = client.nickname
   console.log(`Client ${nick} just connected`)
   //Event gets fired when the Client moves to a different Channel
-  client.on("move", channel => console.log(`${nick} just moved to Channel ${channel.getCache().channel_name}`))
+  client.on("move", channel => console.log(`${nick} just moved to Channel ${channel.name}`))
   //Event gets fired when the Client sends a message to the bot
   client.on("message", msg => console.log(`${nick} just sent '${msg}'`))
   //Event gets fired when the Client disconnects from the Server
@@ -31,12 +30,12 @@ ts3.on("ready", async () => {
 
   clients.forEach(client => {
     //subscribe to changes on all clients which had been retrieved
-    console.log("Listening on", client.getCache().client_nickname)
+    console.log("Listening on", client.nickname)
 
     //event when any property changes on the client
     //this will send an array of changes
     client.on("update", changes => {
-      console.log("Changes on", client.getCache().client_nickname)
+      console.log("Changes on", client.nickname)
       Object.keys(changes).forEach(k => {
         console.log(k, changes[k].from, "=>", changes[k].to)
       })

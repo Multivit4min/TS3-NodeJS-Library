@@ -20,7 +20,7 @@ ts3.on("ready", () => {
       return client.getAvatar()
     }).then(buffer => {
       fs.writeFileSync(`${__dirname}/avatar`, buffer)
-      console.log(`Avatar from Client ${client.getCache().client_nickname} downloaded and saved to`, `${__dirname}/avatar`)
+      console.log(`Avatar from Client ${client.nickname} downloaded and saved to`, `${__dirname}/avatar`)
       ts3.quit()
     }).catch(e => console.log("CATCHED", e.message))
 })

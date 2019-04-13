@@ -15,9 +15,9 @@ const ts3 = new TeamSpeak3({
 //The clientconnect event gets fired when a new Client joins the selected TeamSpeak Server
 ts3.on("clientconnect", ev => {
     const client = ev.client
-    console.log(`Client ${client.getCache().client_nickname} just connected`)
+    console.log(`Client ${client.nickname} just connected`)
     //Event gets fired when the Client moves to a different Channel
-    client.on("move", channel => console.log(`${client.getCache().client_nickname} just moved to Channel ${channel.getCache().channel_name}`))
+    client.on("move", channel => console.log(`${client.nickname} just moved to Channel ${channel.name}`))
     //Event gets fired when the Client disconnects from the Server
     client.on("disconnect", cache => console.log(`${cache.client_nickname} just disconnected :(`))
 })
@@ -38,7 +38,7 @@ ts3.on("ready", () => {
 })
 
 ts3.on("textmessage", ev => {
-  console.log(`${ev.invoker.getCache().client_nickname} sent ${ev.msg}`)
+  console.log(`${ev.invoker.nickname} sent ${ev.msg}`)
 })
 
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
