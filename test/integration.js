@@ -1,59 +1,69 @@
-/*global describe it */
+/*global describe after afterEach it */
 const mock = require("mock-require")
 const assert = require("assert")
 const fs = require("fs")
 const crc32 = require("crc-32")
+const ResponseError = require("../exception/ResponseError")
 
 let TeamSpeak3 = require("../TeamSpeak3.js")
 mock.stop("../transport/TS3Query.js")
 TeamSpeak3 = mock.reRequire("../TeamSpeak3.js")
 
 describe("Integration Test", () => {
-  it("should connect to a TeamSpeak Server via RAW Query", done => {
-    let error = null
-    const ts3 = new TeamSpeak3({
-      host: "127.0.0.1",
-      queryport: 10011,
-      serverport: 9987,
-      username: "serveradmin",
-      password: "abc123",
-      nickname: "NodeJS Query Framework"
-    })
+  let ts3 = null
 
-    ts3.on("error", e => error = e)
-    ts3.on("close", () => done(error))
+  after(async () => {
+    if (ts3 instanceof TeamSpeak3) await ts3.quit()
+  })
 
-    ts3.on("ready", async () => {
-      try {
-        const [serverinfo, whoami] = await Promise.all([ts3.serverInfo(), ts3.whoami()])
-        assert.equal("object", typeof serverinfo)
-        assert.equal("string", typeof serverinfo.virtualserver_name)
-        assert.equal("object", typeof whoami)
-        assert.equal("NodeJS Query Framework", whoami.client_nickname)
-        ts3.quit()
-      } catch (e) {
-        ts3.quit()
-        throw e
-      }
-    })
-
-  }).timeout(5000)
-
+  afterEach(() => {
+    if (ts3 instanceof TeamSpeak3) ts3.removeAllListeners()
+  })
 
   it("should connect to a TeamSpeak Server via SSH Query", done => {
     let error = null
-    const ts3 = new TeamSpeak3({
+    const ts3ssh = new TeamSpeak3({
       protocol: "ssh",
       host: "127.0.0.1",
       queryport: 10022,
       serverport: 9987,
       username: "serveradmin",
       password: "abc123",
-      nickname: "NodeJS Query Framework"
+      nickname: "NodeJS SSH"
     })
 
-    ts3.on("error", e => error = e)
-    ts3.on("close", () => done(error))
+    ts3ssh.on("error", e => error = e)
+    ts3ssh.on("close", () => done(error))
+
+    ts3ssh.on("ready", async () => {
+      try {
+        const [serverinfo, whoami] = await Promise.all([ts3ssh.serverInfo(), ts3ssh.whoami()])
+        assert.equal("object", typeof serverinfo)
+        assert.equal("string", typeof serverinfo.virtualserver_name)
+        assert.equal("object", typeof whoami)
+        assert.equal("NodeJS SSH", whoami.client_nickname)
+        // eslint-disable-next-line no-underscore-dangle
+        ts3ssh._ts3.keepAlive()
+        ts3ssh.quit()
+      } catch (e) {
+        error = e
+        ts3ssh.quit()
+      }
+    })
+
+  }).timeout(5000)
+
+  it("should connect to a TeamSpeak Server via RAW Query", done => {
+    ts3 = new TeamSpeak3({
+      host: "127.0.0.1",
+      queryport: 10011,
+      serverport: 9987,
+      username: "serveradmin",
+      password: "abc123",
+      nickname: "NodeJS RAW"
+    })
+
+    ts3.on("error", e => done(e))
 
     ts3.on("ready", async () => {
       try {
@@ -61,41 +71,55 @@ describe("Integration Test", () => {
         assert.equal("object", typeof serverinfo)
         assert.equal("string", typeof serverinfo.virtualserver_name)
         assert.equal("object", typeof whoami)
-        assert.equal("NodeJS Query Framework", whoami.client_nickname)
-        ts3.quit()
+        assert.equal("NodeJS RAW", whoami.client_nickname)
+        // eslint-disable-next-line no-underscore-dangle
+        ts3._ts3.keepAlive()
+        try {
+          await ts3.execute("invalid_command")
+          done(new Error("should have handled an error"))
+        } catch (error) {
+          assert(error instanceof ResponseError)
+        }
+        done()
       } catch (e) {
-        ts3.quit()
-        throw e
+        done(e)
       }
     })
 
   }).timeout(5000)
 
-  it("should test upload and download of a file", done => {
-    let error = null
-    const ts3 = new TeamSpeak3({
-      host: "127.0.0.1",
-      queryport: 10011,
-      serverport: 9987,
-      username: "serveradmin",
-      password: "abc123",
-      nickname: "NodeJS Query Framework"
-    })
 
-    ts3.on("error", e => error = e)
-    ts3.on("close", () => done(error))
+  it("should test upload and download of a file", async () => {
+    if (!(ts3 instanceof TeamSpeak3))
+      throw new Error("can not run test, due to no valid connection")
 
-    ts3.on("ready", async () => {
+    const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
+    const crc = crc32.buf(data)
+    await ts3.uploadFile(`/icon_${crc >>> 0}`, data, 0)
+    const download = await ts3.downloadIcon(`icon_${crc >>> 0}`)
+    assert.equal(crc, crc32.buf(download))
+
+  }).timeout(5000)
+
+  // eslint-disable-next-line arrow-body-style
+  it("should test receiving of an event", () => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (fulfill, reject) => {
+      if (!(ts3 instanceof TeamSpeak3))
+        return reject(new Error("can not run test, due to no valid connection"))
+
+      const servername = `event ${Math.floor(Math.random() * 10000)}`
+
+      ts3.once("serveredit", ev => {
+        assert.deepEqual(ev.modified, { virtualserver_name: servername })
+        fulfill()
+      })
+
       try {
-        const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
-        const crc = crc32.buf(data)
-        await ts3.uploadFile(`/icon_${crc >>> 0}`, data, 0)
-        const download = await ts3.downloadIcon(`icon_${crc >>> 0}`)
-        assert.equal(crc, crc32.buf(download))
-        ts3.quit()
+        await ts3.registerEvent("server")
+        await ts3.serverEdit({ virtualserver_name: servername })
       } catch (e) {
-        ts3.quit()
-        error = e
+        reject(e)
       }
     })
 

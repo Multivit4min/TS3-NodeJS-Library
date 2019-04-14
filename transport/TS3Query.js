@@ -39,7 +39,6 @@ class TS3Query extends EventEmitter {
     this.lastcmd = Date.now()
     this.active = {}
     this.connected = false
-    this.keepalive = false
     this.keepalivetimer = null
     this.preventDoubleEvents = true
     this.floodTimeout = null
@@ -198,13 +197,15 @@ class TS3Query extends EventEmitter {
   /**
    * Sends keepalive to the TeamSpeak Server so the connection will not be closed
    * @version 1.0
-   * @param {boolean} [b=true] - Parameter enables or disables the Keepalive Ping
    */
-  keepAlive(b = true) {
-    this._config.keepalive = b
-    if (!this._config.keepalive)
-      return clearTimeout(this.keepalivetimer)
-    this.refreshKeepAlive()
+  keepAlive() {
+    clearTimeout(this.keepalivetimer)
+    this.keepalivetimer = setTimeout(() => {
+      this.emit("debug", { type: "keepalive" })
+      this.lastcmd = Date.now()
+      this.socket.sendKeepAlive()
+      this.keepAlive()
+    }, 250 * 1000 - (Date.now() - this.lastcmd))
   }
 
 
@@ -215,21 +216,6 @@ class TS3Query extends EventEmitter {
    */
   handleDoubleEvents(b = true) {
     this.preventDoubleEvents = Boolean(b)
-  }
-
-  /**
-   * Refreshes the Keepalive Timer
-   * @version 1.0
-   * @private
-   */
-  refreshKeepAlive() {
-    clearTimeout(this.keepalivetimer)
-    this.keepalivetimer = setTimeout(() => {
-      this.emit("debug", { type: "keepalive" })
-      this.lastcmd = Date.now()
-      this.socket.sendKeepAlive()
-      this.refreshKeepAlive()
-    }, 250 * 1000 - (Date.now() - this.lastcmd))
   }
 
 
@@ -291,7 +277,7 @@ class TS3Query extends EventEmitter {
     this.lastcmd = Date.now()
     this.emit("debug", { type: "send", data: raw })
     this.socket.send(raw)
-    this.refreshKeepAlive()
+    this.keepAlive()
   }
 }
 
