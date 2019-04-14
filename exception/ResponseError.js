@@ -16,33 +16,39 @@
  * @param {string} [error.extra_msg] - Optional extra message
  * @param {number} [error.failed_permid] - Optional missing permission id
  */
-function ResponseError(error) {
-  this.id = error.id
-  this.msg = error.msg
-  this.extra_msg = error.extra_msg
-  this.failed_permid = error.failed_permid
-  this.message = this.msg
-  if (typeof this.extra_msg === "string")
-    this.message += `, ${this.extra_msg}`
-  if (typeof this.failed_permid === "number")
-    this.message += `, failed on permid ${this.failed_permid}`
-}
+class ResponseError extends Error {
+  constructor(error) {
+    super(error.msg)
+    this.id = error.id
+    this.msg = error.msg
+    this.extra_msg = error.extra_msg
+    this.failed_permid = error.failed_permid
+    if (typeof this.extra_msg === "string")
+      this.message += `, ${this.extra_msg}`
+    if (typeof this.failed_permid === "number")
+      this.message += `, failed on permid ${this.failed_permid}`
+  }
 
-ResponseError.prototype = Error.prototype
-ResponseError.prototype.name = "ResponseError"
+  /**
+   * Returns a string representative of this error
+   * @returns {string} the error message
+   */
+  toString() {
+    return this.message
+  }
 
-/**
- * Retrieves the raw error data from the Error Class
- * @version 1.4
- * @returns {<object>} - returns the raw error object
- */
-ResponseError.prototype.getRaw = function getRaw() {
-  return {
-    id: this.id,
-    msg: this.msg,
-    extra_msg: this.extra_msg,
-    failed_permid: this.failed_permid,
-    message: this.message
+  /**
+   * Returns a json encodeable object for this error
+   * @returns {object} the error object
+   */
+  toJSON() {
+    return {
+      id: this.id,
+      msg: this.msg,
+      extra_msg: this.extra_msg,
+      failed_permid: this.failed_permid,
+      message: this.message
+    }
   }
 }
 
