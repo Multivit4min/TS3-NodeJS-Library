@@ -788,14 +788,13 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} sgid - the ServerGroup id
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @returns {Promise.<object>}
    */
-  serverGroupAddPerm(sgid, perm, value, permsid = false, skip = 0, negate = 0) {
+  serverGroupAddPerm(sgid, perm, value, skip = 0, negate = 0) {
     const properties = { sgid }
-    properties[permsid ? "permsid": "permid"] = perm
+    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     properties.permvalue = value
     properties.permskip = skip
     properties.permnegated = negate
@@ -810,12 +809,11 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} sgid - the ServerGroup id
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @returns {Promise.<object>}
    */
-  serverGroupDelPerm(sgid, perm, permsid = false) {
+  serverGroupDelPerm(sgid, perm) {
     const properties = { sgid }
-    properties[permsid ? "permsid" : "permid"] = perm
+    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("servergroupdelperm", properties)
   }
 
@@ -963,12 +961,11 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} cid - the channel id
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - The Value which should be set
-   * @param {boolean} [sid=false] - If the given Perm is a permsid
    * @return {Promise.<object>}
    */
-  channelSetPerm(cid, perm, value, sid = false) {
+  channelSetPerm(cid, perm, value) {
     const properties = { cid }
-    properties[(sid) ? "permsid" : "permid"] = perm
+    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     properties.permvalue = value
     return this.execute("channeladdperm", properties)
   }
@@ -998,12 +995,11 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} cid - the channel id
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} sid - If the given Perm is a permsid
    * @return {Promise.<object>}
    */
-  channelDelPerm(cid, perm, sid = false) {
+  channelDelPerm(cid, perm) {
     const prop = { cid }
-    prop[(sid) ? "permsid" : "permid"] = perm
+    prop[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("channeldelperm", prop)
   }
 
@@ -1173,14 +1169,13 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} cldbid - the client database id
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @return {Promise.<object>}
    */
-  clientAddPerm(cldbid, perm, value, permsid = false, skip = 0, negate = 0) {
+  clientAddPerm(cldbid, perm, value, skip = 0, negate = 0) {
     const properties = { cldbid }
-    properties[(permsid) ? "permsid": "permid"] = perm
+    properties[typeof perm === "string" ? "permsid": "permid"] = perm
     properties.permvalue = value
     properties.permskip = skip
     properties.permnegated = negate
@@ -1196,12 +1191,11 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} cldbid - the client database id
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @return {Promise.<object>}
    */
-  clientDelPerm(cldbid, perm, permsid = false) {
+  clientDelPerm(cldbid, perm) {
     const properties = { cldbid }
-    properties[(permsid) ? "permsid" : "permid"] = perm
+    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("clientdelperm", properties)
   }
 
@@ -1422,14 +1416,13 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} cgid - the ChannelGroup id
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @return {Promise.<object>}
    */
-  channelGroupAddPerm(cgid, perm, value, permsid = false, skip = 0, negate = 0) {
+  channelGroupAddPerm(cgid, perm, value, skip = 0, negate = 0) {
     const properties = { cgid }
-    properties[(permsid) ? "permsid": "permid"] = perm
+    properties[typeof perm === "string" ? "permsid": "permid"] = perm
     properties.permvalue = value
     properties.permskip = skip
     properties.permnegated = negate
@@ -1443,12 +1436,11 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} cgid - the ChannelGroup id
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @return {Promise.<object>}
    */
-  channelGroupDelPerm(cgid, perm, permsid = false) {
+  channelGroupDelPerm(cgid, perm) {
     const properties = { cgid }
-    properties[(permsid) ? "permsid" : "permid"] = perm
+    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("channelgroupdelperm", properties)
   }
 
@@ -2249,7 +2241,6 @@ class TeamSpeak3 extends EventEmitter {
         switch (typeof a[k]) {
           case "number": return a[k] !== parseFloat(filter[k])
           case "string": return a[k] !== filter[k]
-          case "object": return !a[k].match(filter[k])
           default: return false
         }
       })))

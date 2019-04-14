@@ -96,13 +96,12 @@ class TeamSpeakChannelGroup extends Abstract {
    * @async
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @return {Promise.<object>}
    */
-  addPerm(perm, value, permsid = false, skip = 0, negate = 0) {
-    return super.getParent().channelGroupAddPerm(this._static.cgid, perm, value, permsid, skip, negate)
+  addPerm(perm, value, skip = 0, negate = 0) {
+    return super.getParent().channelGroupAddPerm(this._static.cgid, perm, value, skip, negate)
   }
 
 
@@ -114,8 +113,8 @@ class TeamSpeakChannelGroup extends Abstract {
    * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @return {Promise.<object>}
    */
-  delPerm(perm, permsid = false) {
-    return super.getParent().channelGroupDelPerm(this._static.cgid, perm, permsid)
+  delPerm(perm) {
+    return super.getParent().channelGroupDelPerm(this._static.cgid, perm)
   }
 
 

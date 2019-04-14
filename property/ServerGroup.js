@@ -104,13 +104,12 @@ class TeamSpeakServerGroup extends Abstract {
    * @async
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @returns {Promise.<object>}
    */
-  addPerm(perm, value, permsid, skip, negate) {
-    return super.getParent().serverGroupAddPerm(this._static.sgid, perm, value, permsid, skip, negate)
+  addPerm(perm, value, skip, negate) {
+    return super.getParent().serverGroupAddPerm(this._static.sgid, perm, value, skip, negate)
   }
 
 
