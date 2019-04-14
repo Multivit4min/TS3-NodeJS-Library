@@ -59,7 +59,7 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify execute parameters of #addPerm()", async () => {
-    await channelGroup.addPerm("i_channel_subscribe_power", 25, true)
+    await channelGroup.addPerm("i_channel_subscribe_power", 25)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupaddperm", {
       permsid: "i_channel_subscribe_power",
@@ -71,7 +71,7 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify execute parameters of #delPerm()", async () => {
-    await channelGroup.delPerm("i_channel_subscribe_power", true)
+    await channelGroup.delPerm("i_channel_subscribe_power")
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupdelperm", {
       permsid: "i_channel_subscribe_power",

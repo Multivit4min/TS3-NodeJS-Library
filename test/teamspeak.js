@@ -251,8 +251,8 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should verify parameters of #serverGroupAddPerm()", async () => {
-    await ts3.serverGroupAddPerm(2, "i_channel_subscribe_power", 25, true)
+  it("should verify parameters of #serverGroupAddPerm() with permsid", async () => {
+    await ts3.serverGroupAddPerm(2, "i_channel_subscribe_power", 25)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupaddperm", {
       sgid: 2,
@@ -263,13 +263,28 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should verify parameters of #serverGroupDelPerm()", async () => {
+  it("should verify parameters of #serverGroupAddPerm() with permid", async () => {
+    await ts3.serverGroupAddPerm(2, 11, 25)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "servergroupaddperm", {
+      sgid: 2,
+      permid: 11,
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
+  })
+
+  it("should verify parameters of #serverGroupDelPerm() with permsid", async () => {
     await ts3.serverGroupDelPerm(2, "i_channel_subscribe_power", true)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "servergroupdelperm", {
-      sgid: 2,
-      permsid: "i_channel_subscribe_power"
-    })
+    assert.calledWith(stub, "servergroupdelperm", { sgid: 2, permsid: "i_channel_subscribe_power" })
+  })
+
+  it("should verify parameters of #serverGroupDelPerm() with permid", async () => {
+    await ts3.serverGroupDelPerm(2, 10, true)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "servergroupdelperm", { sgid: 2, permid: 10 })
   })
 
   it("should verify parameters of #channelCreate()", async () => {
@@ -324,18 +339,34 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "channeledit", { cid: 1, channel_name: "new name" })
   })
 
-  it("should verify parameters of #channelPermList()", async () => {
+  it("should verify parameters of #channelPermList() with permsid", async () => {
     await ts3.channelPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelpermlist", { cid: 10 }, ["-permsid"])
   })
 
-  it("should verify parameters of #channelSetPerm()", async () => {
+  it("should verify parameters of #channelPermList() with permid", async () => {
+    await ts3.channelPermList(10)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channelpermlist", { cid: 10 })
+  })
+
+  it("should verify parameters of #channelSetPerm() with permsid", async () => {
     await ts3.channelSetPerm(10, "i_channel_subscribe_power", 25, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channeladdperm", {
       cid: 10,
       permsid: "i_channel_subscribe_power",
+      permvalue: 25
+    })
+  })
+
+  it("should verify parameters of #channelSetPerm() with permid", async () => {
+    await ts3.channelSetPerm(10, 11, 25)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channeladdperm", {
+      cid: 10,
+      permid: 11,
       permvalue: 25
     })
   })
@@ -351,13 +382,16 @@ describe("TeamSpeak3", () => {
     )
   })
 
-  it("should verify parameters of #channelDelPerm()", async () => {
-    await ts3.channelDelPerm(10, "i_channel_subscribe_power", true)
+  it("should verify parameters of #channelDelPerm() with permsid", async () => {
+    await ts3.channelDelPerm(10, "i_channel_subscribe_power")
     assert.calledOnce(stub)
-    assert.calledWith(stub, "channeldelperm", {
-      cid: 10,
-      permsid: "i_channel_subscribe_power"
-    })
+    assert.calledWith(stub, "channeldelperm", { cid: 10, permsid: "i_channel_subscribe_power" })
+  })
+
+  it("should verify parameters of #channelDelPerm() with permid", async () => {
+    await ts3.channelDelPerm(10, 11)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channeldelperm", { cid: 10, permid: 11 })
   })
 
   it("should verify parameters of #getClientByID()", async () => {
@@ -428,14 +462,20 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "clientpoke", { clid: 10, msg: "you have been poked" })
   })
 
-  it("should verify parameters of #clientPermList()", async () => {
+  it("should verify parameters of #clientPermList() with permsid", async () => {
     await ts3.clientPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientpermlist", { cldbid: 10 }, ["-permsid"])
   })
 
-  it("should verify parameters of #clientAddPerm()", async () => {
-    await ts3.clientAddPerm(10, "i_channel_subscribe_power", 25, true)
+  it("should verify parameters of #clientPermList() with permid", async () => {
+    await ts3.clientPermList(10)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientpermlist", { cldbid: 10 })
+  })
+
+  it("should verify parameters of #clientAddPerm() with permsid", async () => {
+    await ts3.clientAddPerm(10, "i_channel_subscribe_power", 25)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientaddperm", {
       cldbid: 10,
@@ -446,10 +486,28 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should verify parameters of #clientDelPerm()", async () => {
-    await ts3.clientDelPerm(10, "i_channel_subscribe_power", true)
+  it("should verify parameters of #clientAddPerm() with permid", async () => {
+    await ts3.clientAddPerm(10, 11, 25)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientaddperm", {
+      cldbid: 10,
+      permid: 11,
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
+  })
+
+  it("should verify parameters of #clientDelPerm() with permsid", async () => {
+    await ts3.clientDelPerm(10, "i_channel_subscribe_power")
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdelperm", { cldbid: 10, permsid: "i_channel_subscribe_power" })
+  })
+
+  it("should verify parameters of #clientDelPerm() with permid", async () => {
+    await ts3.clientDelPerm(10, 11)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientdelperm", { cldbid: 10, permid: 11 })
   })
 
   it("should verify parameters of #customSearch()", async () => {
@@ -543,14 +601,20 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "channelgrouprename", { cgid: 10, name: "New Name" })
   })
 
-  it("should verify parameters of #channelGroupPermList()", async () => {
+  it("should verify parameters of #channelGroupPermList() with permsid", async () => {
     await ts3.channelGroupPermList(10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgrouppermlist", { cgid: 10 }, ["-permsid"])
   })
 
-  it("should verify parameters of #channelGroupAddPerm()", async () => {
-    await ts3.channelGroupAddPerm(10, "i_channel_subscribe_power", 25, true)
+  it("should verify parameters of #channelGroupPermList() with permid", async () => {
+    await ts3.channelGroupPermList(10)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channelgrouppermlist", { cgid: 10 })
+  })
+
+  it("should verify parameters of #channelGroupAddPerm() with permsid", async () => {
+    await ts3.channelGroupAddPerm(10, "i_channel_subscribe_power", 25)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupaddperm", {
       cgid: 10,
@@ -561,12 +625,33 @@ describe("TeamSpeak3", () => {
     })
   })
 
-  it("should verify parameters of #channelGroupDelPerm()", async () => {
-    await ts3.channelGroupDelPerm(10, "i_channel_subscribe_power", true)
+  it("should verify parameters of #channelGroupAddPerm() with permid", async () => {
+    await ts3.channelGroupAddPerm(10, 11, 25)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channelgroupaddperm", {
+      cgid: 10,
+      permid: 11,
+      permvalue: 25,
+      permskip: 0,
+      permnegated: 0
+    })
+  })
+
+  it("should verify parameters of #channelGroupDelPerm() with permsid", async () => {
+    await ts3.channelGroupDelPerm(10, "i_channel_subscribe_power")
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupdelperm", {
       cgid: 10,
       permsid: "i_channel_subscribe_power"
+    })
+  })
+
+  it("should verify parameters of #channelGroupDelPerm() with permid", async () => {
+    await ts3.channelGroupDelPerm(10, 11)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channelgroupdelperm", {
+      cgid: 10,
+      permid: 11
     })
   })
 
