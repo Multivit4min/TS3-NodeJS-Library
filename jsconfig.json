@@ -8,6 +8,7 @@
   },
   "source": {
     "include": [
+      "helper/EventEmitter.js",
       "property", 
       "transport", 
       "TeamSpeak3.js"
