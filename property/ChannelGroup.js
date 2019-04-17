@@ -23,18 +23,10 @@ class TeamSpeakChannelGroup extends Abstract {
    * @param {number} c.cgid - The Channel Group ID
    */
   constructor(parent, c) {
-    super(parent, c)
+    super(parent, c, "channelgroup")
     this._static = {
       cgid: c.cgid
     }
-  }
-
-  /**
-   * retrieves the namespace of this class
-   * @returns {string} the current namespace
-   */
-  getNameSpace() {
-    return "channelgroup"
   }
 
 
@@ -110,7 +102,6 @@ class TeamSpeakChannelGroup extends Abstract {
    * @version 1.0
    * @async
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @return {Promise.<object>}
    */
   delPerm(perm) {

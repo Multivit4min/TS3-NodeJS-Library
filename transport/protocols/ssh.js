@@ -11,18 +11,15 @@ const EventEmitter = require("events")
 
 /**
  * TeamSpeak SSH Connection
- * @class
+ * @extends EventEmitter
  */
 class SSH extends EventEmitter {
 
   /**
-   * Creates a new TS3Query
+   * Creates a new TS3Query via Telnet Protocol
    * @constructor
    * @version 1.0
-   * @param {string} host - TeamSpeak host to connect to
-   * @param {number} port - TeamSpeak query port
-   * @param {string} username - Username to connect with
-   * @param {string} password - This holds Basic Client data
+   * @param {ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()

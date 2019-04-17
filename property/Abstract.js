@@ -6,27 +6,39 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+
+
 const EventEmitter = require("events")
 
 /**
  * Abstract Class
- * @class
+ * @extends EventEmitter
  */
 class Abstract extends EventEmitter {
 
   /**
    * Creates a new Abstract Class
    * @version 1.0
-   * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} c - The Properties
+   * @param {TeamSpeak3} parent - The Parent Object which is a TeamSpeak Instance
+   * @param {object} props - The Properties
+   * @param {string} namespace - the namespace of the Abstract used
    */
-  constructor(parent, c) {
+  constructor(parent, props, namespace) {
     super()
-    this._propcache = c
+    this._namespace = namespace
+    this._propcache = { ...props }
     this._parent = parent
     this._listeners = {}
     this._registerProps()
     this._onParent("close", () => this.destruct())
+  }
+
+  /**
+   * retrieves the namespace of this class
+   * @returns {string} the current namespace
+   */
+  getNameSpace() {
+    return this._namespace
   }
 
   /**
@@ -95,12 +107,12 @@ class Abstract extends EventEmitter {
    * Subscribes to parent events
    * @private
    * @param {string} event the eventname
-   * @param {function} cb the callback function
+   * @param {Function} cb the callback function
    */
   _onParent(event, cb) {
     if (!Array.isArray(this._listeners[event])) this._listeners[event] = []
     this._listeners[event].push(cb)
-    return this._parent.on(event, cb)
+    return this.getParent().on(event, cb)
   }
 
 
@@ -111,41 +123,14 @@ class Abstract extends EventEmitter {
   destruct() {
     super.removeAllListeners()
     Object.keys(this._listeners).forEach(key => {
-      this._listeners[key].forEach(f => this._parent.removeListener(key, f))
+      this._listeners[key].forEach(f => this.getParent().removeListener(key, f))
     })
-  }
-
-
-  /**
-   * Sends a command to the TeamSpeak Server.
-   * @version 1.0
-   * @async
-   * @param {string} Command - The Command which should get executed on the TeamSpeak Server
-   * @param {object} [Object] - Optional the Parameters
-   * @param {object} [Array] - Optional Flagwords
-   * @returns {Promise.<object>} Promise object which returns the Information about the Query executed
-   */
-  execute(...args) {
-    return this._parent.execute(...args)
-  }
-
-
-  /**
-   * Filters an Object with given Option
-   * @version 1.0
-   * @async
-   * @param {object} array - The Object which should get filtered
-   * @param {object} filter - Filter Object
-   * @returns {Promise.<object>} Promise object
-   */
-  filter(array, filter) {
-    return this.getParent().constructor.filter(array, filter)
   }
 
   /**
    * Returns the data from the last List Command
    * @version 1.0
-   * @return {Promise.<object>}
+   * @return {object}
    */
   getCache() {
     return this._propcache
@@ -164,7 +149,7 @@ class Abstract extends EventEmitter {
     /**
      * Single Property Change event
      *
-     * @event Abstract#update#<property>
+     * @event Abstract#update:<property>
      * @memberof Abstract
      * @type {object}
      * @property {any} from - the old value
@@ -174,10 +159,9 @@ class Abstract extends EventEmitter {
 
     /**
      * Property Change event, will retrieve all changed properties in an array
-     *
      * @event Abstract#update
      * @memberof Abstract
-     * @type {object[]} change
+     * @type {object[]}
      * @property {any} change[].from - the old value
      * @property {any} change[].to - the new value
      */
@@ -207,7 +191,7 @@ class Abstract extends EventEmitter {
   /**
    * Returns the Parent Class
    * @version 1.0
-   * @returns {TeamSpeak3}
+   * @returns {TeamSpeak3} the teamspeak instance
    */
   getParent() {
     return this._parent

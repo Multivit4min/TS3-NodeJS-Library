@@ -30,7 +30,7 @@ class TeamSpeakClient extends Abstract {
    * @param {string} c.client_unique_identifier - The Client Unique ID
    */
   constructor(parent, c) {
-    super(parent, c)
+    super(parent, c, "client")
     this._static = {
       uid: c.client_unique_identifier,
       clid: c.clid,
@@ -73,14 +73,6 @@ class TeamSpeakClient extends Abstract {
       this.emit("disconnect", ev.event)
       super.destruct()
     })
-  }
-
-  /**
-   * retrieves the namespace of this class
-   * @returns {string} the current namespace
-   */
-  getNameSpace() {
-    return "client"
   }
 
   /**
@@ -265,7 +257,7 @@ class TeamSpeakClient extends Abstract {
    * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
    * @version 1.0
    * @async
-   * @param {string} sgid - The Server Group ID which the Client should be added to
+   * @param {number} sgid - The Server Group ID which the Client should be added to
    * @returns {Promise.<object>} Promise Object
    */
   serverGroupAdd(sgid) {
@@ -277,7 +269,7 @@ class TeamSpeakClient extends Abstract {
    * Removes the client from the server group specified with sgid.
    * @version 1.0
    * @async
-   * @param {string} sgid - The Server Group ID which the Client should be removed from
+   * @param {number} sgid - The Server Group ID which the Client should be removed from
    * @returns {Promise.<object>} Promise Object
    */
   serverGroupDel(sgid) {
@@ -327,13 +319,12 @@ class TeamSpeakClient extends Abstract {
    * @async
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - Value of the Permission
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
    * @return {Promise.<object>}
    */
-  addPerm(perm, value, permsid, skip, negate) {
-    return super.getParent().clientAddPerm(this._static.dbid, perm, value, permsid, skip, negate)
+  addPerm(perm, value, skip, negate) {
+    return super.getParent().clientAddPerm(this._static.dbid, perm, value, skip, negate)
   }
 
 
@@ -342,11 +333,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @return {Promise.<object>}
    */
-  delPerm(perm, permsid = false) {
-    return super.getParent().clientDelPerm(this._static.dbid, perm, permsid)
+  delPerm(perm) {
+    return super.getParent().clientDelPerm(this._static.dbid, perm)
   }
 
 

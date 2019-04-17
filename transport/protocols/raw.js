@@ -11,7 +11,7 @@ const EventEmitter = require("events")
 
 /**
  * TeamSpeak RAW Connection
- * @class
+ * @extends EventEmitter
  */
 class RAW extends EventEmitter {
 
@@ -19,8 +19,7 @@ class RAW extends EventEmitter {
    * Creates a new RAW Instance
    * @constructor
    * @version 1.5
-   * @param {string} host - The Parent Object which is a TeamSpeak Instance
-   * @param {number} port - This holds Basic Client data
+   * @param {ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()

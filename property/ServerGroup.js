@@ -19,22 +19,14 @@ class TeamSpeakServerGroup extends Abstract {
    * Creates a TeamSpeak Server Group
    * @version 1.0
    * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} c - This holds Basic ServerGroup Data
-   * @param {number} c.sgid - The Server Group ID
+   * @param {object} s - This holds Basic ServerGroup Data
+   * @param {number} s.sgid - The Server Group ID
    */
   constructor(parent, s) {
-    super(parent, s)
+    super(parent, s, "servergroup")
     this._static = {
       sgid: s.sgid
     }
-  }
-
-  /**
-   * retrieves the namespace of this class
-   * @returns {string} the current namespace
-   */
-  getNameSpace() {
-    return "servergroup"
   }
 
 
@@ -118,11 +110,10 @@ class TeamSpeakServerGroup extends Abstract {
    * @version 1.0
    * @async
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} [permsid=false] - Whether a permsid or permid should be used
    * @returns {Promise.<object>}
    */
-  delPerm(perm, permsid) {
-    return super.getParent().serverGroupDelPerm(this._static.sgid, perm, permsid)
+  delPerm(perm) {
+    return super.getParent().serverGroupDelPerm(this._static.sgid, perm)
   }
 
 

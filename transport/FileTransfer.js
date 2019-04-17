@@ -65,7 +65,7 @@ class FileTransfer {
   /**
    * Starts the upload of a File
    * @param {string} ftkey - the Filetransfer Key
-   * @param {string} data - the data to send
+   * @param {string|Buffer} data - the data to send
    * @version 1.6
    * @returns {Promise}
    */

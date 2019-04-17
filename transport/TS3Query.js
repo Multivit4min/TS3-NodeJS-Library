@@ -14,7 +14,7 @@ const EventEmitter = require("events")
 
 /**
  * TS3 Query Connection
- * @class
+ * @extends EventEmitter
  */
 class TS3Query extends EventEmitter {
 
@@ -22,12 +22,7 @@ class TS3Query extends EventEmitter {
    * Creates a new TS3Query
    * @constructor
    * @version 1.0
-   * @param {object} config - Configuration Object
-   * @param {string} config.host - TeamSpeak host to connect to
-   * @param {number} config.port - TeamSpeak query port
-   * @param {string} [config.proto=raw] - Protocol to use to connect to the Query
-   * @param {string} [config.username] - Username to connect with, only required when using ssh
-   * @param {string} [config.password] - This holds Basic Client data, only required when using ssh
+   * @param {ConnectionParams} config Configuration Object
    */
   constructor(config) {
     super()
@@ -160,14 +155,13 @@ class TS3Query extends EventEmitter {
    * Emits an Error which the given arguments
    *
    * @version 1.8
-   * @param {any}
+   * @param {...any} args arguments which gets passed to the error event
    */
   handleError(...args) {
 
     /**
      * Query Event
      * Gets fired when the Socket had an Error
-     *
      * @event TS3Query#error
      * @memberof  TS3Query
      */
@@ -184,7 +178,6 @@ class TS3Query extends EventEmitter {
     /**
      * Query Close Event
      * Gets fired when the Query disconnects from the TeamSpeak Server
-     *
      * @event TS3Query#close
      * @memberof  TS3Query
      * @type {object}
@@ -223,9 +216,7 @@ class TS3Query extends EventEmitter {
    * Sends a command to the TeamSpeak Server.
    * @version 1.0
    * @async
-   * @param {string} Command - The Command which should get executed on the TeamSpeak Server
-   * @param {object} [Object] - Optional the Parameters
-   * @param {object} [Array] - Optional Flagwords
+   * @param {...any} args parameters which should get executed
    * @returns {Promise.<object>} Promise object which returns the Information about the Query executed
    */
   execute(...args) {

@@ -6,6 +6,7 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+
 const TS3Query = require("./transport/TS3Query")
 const FileTransfer = require("./transport/FileTransfer")
 const TeamSpeakClient = require("./property/Client")
@@ -18,48 +19,25 @@ const EventEmitter = require("events")
 
 /**
  * Main TeamSpeak Query Class
- * @fires TeamSpeak3#ready
- * @fires TeamSpeak3#error
- * @fires TeamSpeak3#close
- * @fires TeamSpeak3#debug
- * @fires TeamSpeak3#channeldelete
- * @fires TeamSpeak3#channelmoved
- * @fires TeamSpeak3#channelcreate
- * @fires TeamSpeak3#channeledit
- * @fires TeamSpeak3#serveredit
- * @fires TeamSpeak3#clientmoved
- * @fires TeamSpeak3#textmessage
- * @fires TeamSpeak3#clientdisconnect
- * @fires TeamSpeak3#clientconnect
- * @fires TeamSpeak3#flooding
+ * @extends EventEmitter
  */
 class TeamSpeak3 extends EventEmitter {
 
   /**
    * Represents a TeamSpeak Server Instance
    * @version 1.0
-   * @param {object} [config] - The Configuration Object
-   * @param {string} [config.protocol=raw] - The Protocol to use, valid is ssh or raw
-   * @param {string} [config.host=127.0.0.1] - The Host on which the TeamSpeak Server runs
-   * @param {number} [config.queryport=10011] - The Queryport on which the TeamSpeak Server runs
-   * @param {number} [config.serverport=9987] - The Serverport on which the TeamSpeak Instance runs
-   * @param {string} [config.username] - The username to authenticate with the TeamSpeak Server
-   * @param {string} [config.password] - The password to authenticate with the TeamSpeak Server
-   * @param {string} [config.nickname] - The Nickname the Client should have
-   * @param {boolean} [config.keepalive=true] - Whether the Query should send a keepalive
-   * @param {number} [config.readyTimeout=20000] - Maximum wait time for the connection to get established
+   * @param {ConnectionParams} [config={}] - The Configuration Object
    */
   constructor(config = {}) {
     super()
     this._config = {
       protocol: config.protocol || "raw",
       host: config.host || "127.0.0.1",
-      queryport: parseInt(config.queryport, 10) || 10011,
-      serverport: parseInt(config.serverport, 10) || false,
+      queryport: config.queryport || 10011,
+      serverport: config.serverport || false,
       username: config.username || false,
       password: config.password || false,
       nickname: config.nickname || false,
-      keepalive: Boolean(config.keepalive),
       readyTimeout: config.readyTimeout || 20000
     }
 
@@ -87,7 +65,6 @@ class TeamSpeak3 extends EventEmitter {
     /**
      * Query Close Event
      * Gets fired when the Query disconnects from the TeamSpeak Server
-     *
      * @event TeamSpeak3#close
      * @memberof TeamSpeak3
      * @type {object}
@@ -99,7 +76,6 @@ class TeamSpeak3 extends EventEmitter {
      * Query Error Event
      * Gets fired when the TeamSpeak Query had an error while trying to connect
      * and also gets fired when there was an error after receiving an event
-     *
      * @event TeamSpeak3#error
      * @memberof  TeamSpeak3
      * @returns {object} - return the error object
@@ -109,7 +85,6 @@ class TeamSpeak3 extends EventEmitter {
     /**
      * Query Flooding Error
      * Gets fired when the TeamSpeak Query gets flooding errors
-     *
      * @event TeamSpeak3#flooding
      * @memberof  TeamSpeak3
      * @returns {object} - return the error object
@@ -118,7 +93,6 @@ class TeamSpeak3 extends EventEmitter {
 
     /**
      * Forwards any debug messages
-     *
      * @event TeamSpeak3#debug
      * @memberof  TeamSpeak3
      * @returns {object} - debug data
@@ -129,7 +103,6 @@ class TeamSpeak3 extends EventEmitter {
 
   /**
    * Handle after successfully connecting to a TeamSpeak Server
-   *
    * @private
    */
   _handleConnect() {
@@ -142,13 +115,12 @@ class TeamSpeak3 extends EventEmitter {
       if (typeof this._config.serverport === "number" && this._build < 1536564584)
         exec.push(this.useByPort(this._config.serverport))
       if (typeof this._config.nickname === "string" && this._build < 1536564584)
-        exec.push(this.clientUpdate({client_nickname: this._config.nickname}))
+        exec.push(this.clientUpdate({ client_nickname: this._config.nickname }))
       Promise.all(exec)
 
         /**
          * Query Ready Event
          * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
-         *
          * @event TeamSpeak3#ready
          * @memberof TeamSpeak3
          */
@@ -167,15 +139,20 @@ class TeamSpeak3 extends EventEmitter {
   }
 
   /**
-   * Client Join Event
-   *
-   * @event TeamSpeak3#clientconnect
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {TeamSpeakClient} client - The Client which joined the Server
+   * Gets called when a client connects to the TeamSpeak Server
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evcliententerview(event) {
     this._clients[event.clid] = new TeamSpeakClient(this, event)
+
+    /**
+     * Client Join Event
+     * @event TeamSpeak3#clientconnect
+     * @memberof TeamSpeak3
+     * @type {object}
+     * @property {TeamSpeakClient} client - The Client which joined the Server
+     */
     super.emit("clientconnect", {
       client: this._clients[String(event.clid)],
       cid: event.ctid
@@ -184,17 +161,22 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-   * Client Disconnect Event
-   * Events Object contains all available Informations returned by the query
-   *
-   * @event TeamSpeak3#clientdisconnect
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {object} client - The data from the last Client List Command
-   * @property {object} event - The Data from the disconnect event
+   * Gets called when a client discconnects from the TeamSpeak Server
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evclientleftview(event) {
     const { clid } = event
+
+    /**
+     * Client Disconnect Event
+     * Events Object contains all available Informations returned by the query
+     * @event TeamSpeak3#clientdisconnect
+     * @memberof TeamSpeak3
+     * @type {object}
+     * @property {TeamSpeakClient|object} client - The data from the last Client List Command
+     * @property {object} event - The Data from the disconnect event
+     */
     super.emit("clientdisconnect", {
       client: (String(clid) in this._clients) ? this._clients[clid].getCache() : { clid },
       event
@@ -204,129 +186,162 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-   * Textmessage event
-   *
-   * @event TeamSpeak3#textmessage
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which sent a textmessage
-   * @property {string} msg - The Message which has been sent
-   * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
+   * Gets called when a chat message gets received
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evtextmessage(event) {
     this.getClientByID(event.invokerid)
-      .then(c => {
+      .then(invoker => {
+
+        /**
+         * Textmessage event
+         * @event TeamSpeak3#textmessage
+         * @memberof TeamSpeak3
+         * @type {object}
+         * @property {TeamSpeakClient} invoker - The Client which sent a textmessage
+         * @property {string} msg - The Message which has been sent
+         * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
+         */
         super.emit("textmessage", {
-          invoker: c,
+          invoker,
           msg: event.msg,
           targetmode: event.targetmode
         })
       }).catch(e => super.emit("error", e))
   }
 
-
   /**
-   * Client Move Event
-   *
-   * @event TeamSpeak3#clientmoved
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} client - The Client which moved
-   * @property {class} channel - The Channel which the client has been moved to
-   * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
+   * Gets called when a client moves to a different channel
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evclientmoved(event) {
     Promise.all([
       this.getClientByID(event.clid),
       this.getChannelByID(event.ctid)
-    ]).then(res => {
+    ]).then(([client, channel]) => {
+
+      /**
+       * Client Move Event
+       * @event TeamSpeak3#clientmoved
+       * @memberof TeamSpeak3
+       * @type {object}
+       * @property {TeamSpeakClient} client - The Client which moved
+       * @property {TeamSpeakChannel} channel - The Channel which the client has been moved to
+       * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
+       */
       this.emit("clientmoved", {
-        client: res[0],
-        channel: res[1],
+        client,
+        channel,
         reasonid: event.reasonid
       })
     }).catch(e => this.emit("error", e))
   }
 
-
   /**
-   * Server Edit Event
-   *
-   * @event TeamSpeak3#serveredit
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which edited the server
-   * @property {object} modified - The Properties which has been modified
+   * Gets called when the server has been edited
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evserveredited(event) {
     this.getClientByID(event.invokerid)
-      .then(client => {
-        const prop = { invoker: client, modified: {}, reasonid: event.reasonid }
+      .then(invoker => {
+        const modified = {}
         Object.keys(event)
           .filter(k => k.indexOf("virtualserver_") === 0)
-          .forEach(k => prop.modified[k] = event[k])
-        this.emit("serveredit", prop)
+          .forEach(k => modified[k] = event[k])
+
+        /**
+         * Server Edit Event
+         *
+         * @event TeamSpeak3#serveredit
+         * @memberof TeamSpeak3
+         * @type {object}
+         * @property {TeamSpeakClient} invoker - The Client which edited the server
+         * @property {object} modified - The Properties which has been modified
+         * @property {number} reasonid - ReasonID
+         */
+        this.emit("serveredit", {
+          invoker,
+          modified,
+          reasonid: event.reasonid
+        })
       }).catch(e => this.emit("error", e))
   }
 
-
   /**
-   * Channel Edit Event
-   *
-   * @event TeamSpeak3#channeledit
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which edited a channel
-   * @property {class} channel - The Channel which has been edited
-   * @property {object} modified - The Properties which has been modified
+   * Gets called when a channel gets edited
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evchanneledited(event) {
     Promise.all([
       this.getClientByID(event.invokerid),
       this.getChannelByID(event.cid)
     ]).then(([invoker, channel]) => {
-      const prop = { invoker, channel, modified: {}, reasonid: event.reasonid }
+      const modified = {}
       Object.keys(event)
         .filter(k => k.indexOf("channel_") === 0)
-        .forEach(k => prop.modified[k] = event[k])
-      this.emit("channeledit", prop)
+        .forEach(k => modified[k] = event[k])
+
+      /**
+       * Channel Edit Event
+       * @event TeamSpeak3#channeledit
+       * @memberof TeamSpeak3
+       * @type {object}
+       * @property {TeamSpeakClient} invoker - The Client which edited a channel
+       * @property {TeamSpeakChannel} channel - The Channel which has been edited
+       * @property {object} modified - The Properties which has been modified
+       * @property {number} reasonid - ReasonID
+       */
+      this.emit("channeledit", {
+        invoker,
+        channel,
+        modified,
+        reasonid: event.reasonid
+      })
     }).catch(e => this.emit("error", e))
   }
 
-
   /**
-   * Channel Create Event
-   *
-   * @event TeamSpeak3#channelcreate
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which created the channel
-   * @property {class} channel - The Channel which has been created
-   * @property {object} modified - The Properties which has been modified
+   * Gets called when a channel gets edited
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evchannelcreated(event) {
     Promise.all([
       this.getClientByID(event.invokerid),
       this.getChannelByID(event.cid)
     ]).then(([invoker, channel]) => {
-      const prop = { invoker, channel, modified: {}, cpid: event.cpid }
+      const modified = {}
       Object.keys(event)
         .filter(k => k.indexOf("channel_") === 0)
-        .forEach(k => prop.modified[k] = event[k])
-      this.emit("channelcreate", prop)
+        .forEach(k => modified[k] = event[k])
+
+      /**
+       * Channel Create Event
+       * @event TeamSpeak3#channelcreate
+       * @memberof TeamSpeak3
+       * @type {object}
+       * @property {TeamSpeakClient} invoker - The Client which created the channel
+       * @property {TeamSpeakChannel} channel - The Channel which has been created
+       * @property {object} modified - The Properties which has been modified
+       * @property {number} cpid - the new channel parent id
+       */
+      this.emit("channelcreate", {
+        invoker,
+        channel,
+        modified,
+        cpid: event.cpid
+      })
     }).catch(e => this.emit("error", e))
   }
 
-
   /**
-   * Channel Move Event
-   *
-   * @event TeamSpeak3#channelmoved
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which moved the channel
-   * @property {class} channel - The Channel which has been moved
-   * @property {class} parent - The new Parent Channel
+   * Gets called when a channel gets moved
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evchannelmoved(event) {
     Promise.all([
@@ -334,34 +349,51 @@ class TeamSpeak3 extends EventEmitter {
       this.getChannelByID(event.cid),
       this.getChannelByID(event.cpid)
     ]).then(([invoker, channel, parent]) => {
+
+      /**
+       * Channel Move Event
+       * @event TeamSpeak3#channelmoved
+       * @memberof TeamSpeak3
+       * @type {object}
+       * @property {TeamSpeakClient} invoker - The Client which moved the channel
+       * @property {TeamSpeakChannel} channel - The Channel which has been moved
+       * @property {TeamSpeakChannel} parent - The new Parent Channel
+       */
       this.emit("channelmoved", { invoker, channel, parent, order: event.order })
     }).catch(e => this.emit("error", e))
   }
 
-
   /**
-   * Channel Delete Event
-   *
-   * @event TeamSpeak3#channeldelete
-   * @memberof TeamSpeak3
-   * @type {object}
-   * @property {class} invoker - The Client which deleted the channel
-   * @property {class} cid - The Channel ID which has been deleted
+   * Gets called when a channel gets deleted
+   * @private
+   * @param {object} event the raw teamspeak event
    */
   _evchanneldeleted(event) {
     this.getClientByID(event.invokerid)
-      .then(invoker => this.emit("channeldelete", {invoker, cid: event.cid}))
+      .then(invoker => {
+
+        /**
+         * Channel Delete Event
+         * @event TeamSpeak3#channeldelete
+         * @memberof TeamSpeak3
+         * @type {object}
+         * @property {TeamSpeakClient} invoker - The Client which deleted the channel
+         * @property {number} cid - The Channel ID which has been deleted
+         */
+        this.emit("channeldelete", { invoker, cid: event.cid })
+      })
       .catch(e => this.emit("error", e))
   }
 
 
   /**
-   * Sends a command to the TeamSpeak Server.
+   * Sends a raw command to the TeamSpeak Server.
+   * @example
+   * ts3.execute("clientlist", ["-ip"])
+   * ts3.execute("use", [9987], { client_nickname: "test" })
    * @version 1.0
    * @async
-   * @param {string} Command - The Command which should get executed on the TeamSpeak Server
-   * @param {object} [Object] - Optional the Parameters
-   * @param {object} [Array] - Optional Flagwords
+   * @param {...any} args - The Command which should get executed on the TeamSpeak Server
    * @returns {Promise<object>} Promise object which returns the Information about the Query executed
    */
   execute(...args) {
@@ -409,7 +441,7 @@ class TeamSpeak3 extends EventEmitter {
    * Change your ServerQuery clients settings using given properties.
    * @version 1.0
    * @async
-   * @param {string} properties - The Properties which should be changed
+   * @param {object} properties - The Properties which should be changed
    * @returns {Promise.<object>}
    */
   clientUpdate(properties) {
@@ -700,7 +732,7 @@ class TeamSpeak3 extends EventEmitter {
    * Please note that a client cannot be added to default groups or template groups.
    * @version 1.0
    * @async
-   * @param {string} cldbid - The Client Database ID which should be added
+   * @param {number} cldbid - The Client Database ID which should be added
    * @param {number} sgid - The Server Group ID which the Client should be added to
    * @returns {Promise.<object>}
    */
@@ -713,7 +745,7 @@ class TeamSpeak3 extends EventEmitter {
    * Removes the client from the server group specified with sgid.
    * @version 1.0
    * @async
-   * @param {string} cldbid - The Client Database ID which should be removed
+   * @param {number} cldbid - The Client Database ID which should be removed
    * @param {number} sgid - The Server Group ID which the Client should be removed from
    * @returns {Promise.<object>}
    */
@@ -1206,7 +1238,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.3
    * @async
    * @param {string} ident - the key to search for
-   * @param {string} target - the search pattern to use
+   * @param {string} pattern - the search pattern to use
    * @returns {Promise.<object>} Promise Object
    */
   customSearch(ident, pattern) {
@@ -1262,8 +1294,8 @@ class TeamSpeak3 extends EventEmitter {
    * whether it be a virtual server, a channel or a client.
    * @version 1.0
    * @async
-   * @param {string} target - target to message
-   * @param {string} targetmode - targetmode (1: client, 2: channel, 3: server)
+   * @param {number} target - target client id which should receive the message
+   * @param {number} targetmode - targetmode (1: client, 2: channel, 3: server)
    * @param {string} msg - The message the Client should receive
    * @returns {Promise.<object>} Promise Object
    */
@@ -1309,7 +1341,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cgid - the ChannelGroup Id
-   * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
+   * @returns {Promise.<TeamSpeakChannelGroup>} Promise object which returns the ChannelGroup or undefined if not found
    */
   getChannelGroupByID(cgid) {
     return new Promise((fulfill, reject) => {
@@ -1325,7 +1357,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} name - the ChannelGroup name
-   * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ChannelGroup or undefined if not found
+   * @returns {Promise.<TeamSpeakChannelGroup>} Promise object which returns the ChannelGroup or undefined if not found
    */
   getChannelGroupByName(name) {
     return new Promise((fulfill, reject) => {
@@ -1354,7 +1386,7 @@ class TeamSpeak3 extends EventEmitter {
    * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
    * @version 1.0
    * @async
-   * @param {cgid} cgid - the channelgroup id
+   * @param {number} cgid - the channelgroup id
    * @param {number} [force=0] - If set to 1 the Channel Group will be deleted even when Clients are in it
    * @return {Promise.<object>}
    */
@@ -1451,7 +1483,7 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} cgid - the ChannelGroup id
    * @param {number} [cid] - The Channel ID
-   * @return {Promise.<TeamSpeakClient>}
+   * @return {Promise.<TeamSpeakClient[]>}
    */
   channelGroupClientList(cgid, cid) {
     const properties = { cgid }
@@ -1721,13 +1753,13 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} tcldbid - The Target Client Database ID
-   * @param {number} fcldbid - The Client Database ID which filed the Report
+   * @param {number} [fcldbid] - The Client Database ID which filed the Report
    * @returns {Promise.<object>}
    */
-  complainDel(tcldbid, fcldbid = false) {
-    const cmd = (fcldbid === false) ? "complaindelall" : "complaindel"
+  complainDel(tcldbid, fcldbid) {
+    const cmd = fcldbid > 0 ? "complaindel" : "complaindelall"
     const properties = { tcldbid }
-    if (fcldbid !== false) properties.fcldbid = fcldbid
+    if (fcldbid > 0) properties.fcldbid = fcldbid
     return this.execute(cmd, properties)
   }
 
@@ -1852,7 +1884,6 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {string} cldbid - The Client Database ID which should be edited
-   * @param {object} properties - The Properties which should be modified
    * @returns {Promise.<object>}
    */
   clientDBDelete(cldbid) {
@@ -1945,7 +1976,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.6
    * @async
    * @param {number} cid - the channel id to check for
-   * @param {string} [path=/] - the path to list
+   * @param {string} [path="/"] - the path to list
    * @param {string} [cpw] - the channel password
    * @returns {Promise.<object>} Promise object which returns an Array of Files
    */
@@ -2082,7 +2113,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {string} path - the path whith the filename where the file should be uploaded to
-   * @param {string|buffer} data - The data to upload
+   * @param {string|Buffer} data - The data to upload
    * @param {number} [cid=0] - Channel ID to upload to
    * @param {string} [cpw] - Channel Password of the Channel which will be uploaded to
    * @returns {Promise.<object>}
@@ -2127,6 +2158,7 @@ class TeamSpeak3 extends EventEmitter {
    * Gets the Icon Name of a resolveable Perm List
    * @version 1.0
    * @async
+   * @param {Promise} permlist expects a promise which resolves to a permission list
    * @returns {Promise.<object>}
    */
   getIconName(permlist) {
@@ -2185,7 +2217,7 @@ class TeamSpeak3 extends EventEmitter {
    * @param {object} cache - The Cache Object
    * @param {object} list - The List to check against the Cache
    * @param {string} key - The Key used to identify the Object inside the Cache
-   * @param {object} class - The Class which should be used
+   * @param {object} Class - The Class which should be used
    * @returns {Promise.<object>}
    */
   _handleCache(cache, list, key, Class) {
@@ -2222,12 +2254,11 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Filters an Object with given Option
    * @version 1.0
-   * @private
    * @static
    * @async
-   * @param {object} array - The Object which should get filtered
+   * @param {any[]} array - The Object which should get filtered
    * @param {object} filter - Filter Object
-   * @returns {Promise.<object>}
+   * @returns {Promise.<object[]>}
    */
   static filter(array, filter) {
     return new Promise(fulfill => {
@@ -2249,11 +2280,12 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-     * Transforms an Input to an Array
-     * @async
-     * @version 1.0
-     * @returns {any[]}
-     */
+   * Transforms an Input to an Array
+   * @async
+   * @version 1.0
+   * @param {any} input input data which should be converted to an array
+   * @returns {Promise.<any[]>}
+   */
   toArray(input) {
     return new Promise(fulfill => {
       if (typeof input === "undefined" || input === null) return fulfill([])
@@ -2262,8 +2294,20 @@ class TeamSpeak3 extends EventEmitter {
     })
   }
 
-
 }
 
-
 module.exports = TeamSpeak3
+
+
+/**
+ * the TeamSpeak configuration object
+ * @typedef {object} ConnectionParams
+ * @param {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
+ * @param {string} [host="127.0.0.1"] - The Host on which the TeamSpeak Server runs
+ * @param {number} [queryport=10011] - The Queryport on which the TeamSpeak Server runs
+ * @param {number} [serverport=9987] - The Serverport on which the TeamSpeak Instance runs
+ * @param {string} [username] - The username to authenticate with the TeamSpeak Server
+ * @param {string} [password] - The password to authenticate with the TeamSpeak Server
+ * @param {string} [nickname] - The Nickname the Client should have
+ * @param {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
+ */

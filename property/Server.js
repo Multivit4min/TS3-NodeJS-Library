@@ -23,18 +23,10 @@ class TeamSpeakServer extends Abstract {
    * @param {number} s.virtualserver_id - The Server ID
    */
   constructor(parent, s) {
-    super(parent, s)
+    super(parent, s, "virtualserver")
     this._static = {
       sid: s.virtualserver_id
     }
-  }
-
-  /**
-   * retrieves the namespace of this class
-   * @returns {string} the current namespace
-   */
-  getNameSpace() {
-    return "virtualserver"
   }
 
   /**

@@ -23,18 +23,10 @@ class TeamSpeakChannel extends Abstract {
    * @param {number} c.cid - The Channel ID
    */
   constructor(parent, c) {
-    super(parent, c)
+    super(parent, c, "channel")
     this._static = {
       cid: c.cid
     }
-  }
-
-  /**
-   * retrieves the namespace of this class
-   * @returns {string} the current namespace
-   */
-  getNameSpace() {
-    return "channel"
   }
 
 
@@ -89,7 +81,7 @@ class TeamSpeakChannel extends Abstract {
    * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
    * @version 1.0
    * @async
-   * @param {number} properties - The Properties of the Channel which should get changed
+   * @param {object} properties - The Properties of the Channel which should get changed
    * @return {Promise.<object>}
    */
   edit(properties) {
@@ -101,7 +93,7 @@ class TeamSpeakChannel extends Abstract {
    * Displays a list of permissions defined for a channel.
    * @version 1.0
    * @async
-   * @param {boolean} permsid - Whether the Perm SID should be displayed aswell
+   * @param {boolean} [permsid=false] - Whether the Perm SID should be displayed aswell
    * @return {Promise.<object[]>}
    */
   permList(permsid = false) {
@@ -115,11 +107,10 @@ class TeamSpeakChannel extends Abstract {
    * @async
    * @param {(string|number)} perm - The permid or permsid
    * @param {number} value - The Value which should be set
-   * @param {boolean} sid - If the given Perm is a permsid
    * @return {Promise.<object>}
    */
-  setPerm(perm, value, sid = false) {
-    return super.getParent().channelSetPerm(this._static.cid, perm, value, sid)
+  setPerm(perm, value) {
+    return super.getParent().channelSetPerm(this._static.cid, perm, value)
   }
 
 
@@ -128,11 +119,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {(string|number)} perm - The permid or permsid
-   * @param {boolean} sid - If the given Perm is a permsid
    * @return {Promise.<object>}
    */
-  delPerm(perm, sid = false) {
-    return super.getParent().channelDelPerm(this._static.cid, perm, sid)
+  delPerm(perm) {
+    return super.getParent().channelDelPerm(this._static.cid, perm)
   }
 
 
