@@ -1268,17 +1268,17 @@ describe("TeamSpeak3", () => {
 
   describe("#toArray()", () => {
     it("should convert undefined to an empty array", async () => {
-      deepEqual(await TeamSpeak3.prototype.toArray(undefined), [])
+      deepEqual(await TeamSpeak3.toArray(undefined), [])
     })
     it("should convert null to an empty array", async () => {
-      deepEqual(await TeamSpeak3.prototype.toArray(null), [])
+      deepEqual(await TeamSpeak3.toArray(null), [])
     })
     it("should convert a single string to an array with the string in it", async () => {
-      deepEqual(await TeamSpeak3.prototype.toArray("foo bar"), ["foo bar"])
+      deepEqual(await TeamSpeak3.toArray("foo bar"), ["foo bar"])
     })
     it("should do nothing with an array as argument", async () => {
       deepEqual(
-        await TeamSpeak3.prototype.toArray(["jane doe", "john doe"]),
+        await TeamSpeak3.toArray(["jane doe", "john doe"]),
         ["jane doe", "john doe"]
       )
     })
