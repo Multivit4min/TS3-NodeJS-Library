@@ -6,26 +6,31 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * the response of the servergrouplist command for a single servergroup
+ * @typedef {object} ServerGroupListResponse
+ * @param {number} sgid the current id of the servergroup
+ * @param {...any} [any]
+ */
+
 const Abstract = require("./Abstract")
 
 /**
  * Class representing a TeamSpeak ServerGroup
  * @extends Abstract
- * @class
  */
 class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Creates a TeamSpeak Server Group
    * @version 1.0
-   * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} s - This holds Basic ServerGroup Data
-   * @param {number} s.sgid - The Server Group ID
+   * @param {TeamSpeak3} parent the teamspeak instance
+   * @param {ServerGroupListResponse} list response from the servergrouplist command
    */
-  constructor(parent, s) {
-    super(parent, s, "servergroup")
+  constructor(parent, list) {
+    super(parent, list, "servergroup")
     this._static = {
-      sgid: s.sgid
+      sgid: list.sgid
     }
   }
 
@@ -58,7 +63,7 @@ class TeamSpeakServerGroup extends Abstract {
    * @async
    * @param {number} [tsgid=0] - The Target Group, 0 to create a new Group
    * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
-   * @param {(string|boolean)} [name=false] - Name of the Group
+   * @param {string|boolean} [name=false] - Name of the Group
    * @returns {Promise.<object>}
    */
   copy(tsgid, type, name) {
@@ -94,7 +99,7 @@ class TeamSpeakServerGroup extends Abstract {
    * Adds a specified permissions to the server group. A permission can be specified by permid or permsid.
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
@@ -109,7 +114,7 @@ class TeamSpeakServerGroup extends Abstract {
    * Removes a set of specified permissions from the server group. A permission can be specified by permid or permsid.
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @returns {Promise.<object>}
    */
   delPerm(perm) {
@@ -157,7 +162,7 @@ class TeamSpeakServerGroup extends Abstract {
    * Returns a Buffer with the Icon of the Server Group
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Promise with the binary data of the ServerGroup Icon
+   * @returns {Promise.<Buffer>} Promise with the binary data of the ServerGroup Icon
    */
   getIcon() {
     return this.getIconName().then(name => super.getParent().downloadIcon(name))
@@ -169,7 +174,7 @@ class TeamSpeakServerGroup extends Abstract {
    * Gets the Icon Name of the Server Group
    * @version 1.0
    * @async
-   * @returns {Promise.<object>}
+   * @returns {Promise.<string>}
    */
   getIconName() {
     return super.getParent().getIconName(this.permList(true))

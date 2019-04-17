@@ -6,26 +6,31 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * the response of the channellist command for a single channel
+ * @typedef {object} ChannelListResponse
+ * @param {number} id the current id of the channel
+ * @param {...any} [any]
+ */
+
 const Abstract = require("./Abstract")
 
 /**
  * Class representing a TeamSpeak Channel
  * @extends Abstract
- * @class
  */
 class TeamSpeakChannel extends Abstract {
 
   /**
    * Creates a TeamSpeak Channel
    * @version 1.0
-   * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} c - This holds Basic Channel Data received by the Channel List Command
-   * @param {number} c.cid - The Channel ID
+   * @param {TeamSpeak3} parent the teamspeak instance
+   * @param {ChannelListResponse} list response from the channellist command
    */
-  constructor(parent, c) {
-    super(parent, c, "channel")
+  constructor(parent, list) {
+    super(parent, list, "channel")
     this._static = {
-      cid: c.cid
+      cid: list.cid
     }
   }
 
@@ -105,7 +110,7 @@ class TeamSpeakChannel extends Abstract {
    * Adds a set of specified permissions to a channel. Multiple permissions can be added by providing the two parameters of each permission. A permission can be specified by permid or permsid.
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - The Value which should be set
    * @return {Promise.<object>}
    */
@@ -118,7 +123,7 @@ class TeamSpeakChannel extends Abstract {
    * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once. A permission can be specified by permid or permsid.
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @return {Promise.<object>}
    */
   delPerm(perm) {
@@ -143,7 +148,7 @@ class TeamSpeakChannel extends Abstract {
    * Returns a Buffer with the Icon of the Channel
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Promise with the binary data of the Channel Icon
+   * @returns {Promise.<Buffer>} Promise with the binary data of the Channel Icon
    */
   getIcon() {
     return this.getIconName().then(name => super.getParent().downloadIcon(name))
@@ -154,7 +159,7 @@ class TeamSpeakChannel extends Abstract {
    * Gets the Icon Name of the Channel
    * @version 1.0
    * @async
-   * @returns {Promise.<object>}
+   * @returns {Promise.<string>}
    */
   getIconName() {
     return super.getParent().getIconName(this.permList(true))

@@ -6,8 +6,6 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-
-
 const EventEmitter = require("events")
 
 /**
@@ -117,7 +115,7 @@ class Abstract extends EventEmitter {
 
 
   /**
-   * Safely unsubscribes to all Events
+   * Safely unsubscribes from all Events
    * @version 1.0
    */
   destruct() {
@@ -138,10 +136,11 @@ class Abstract extends EventEmitter {
 
   /**
    * Sets the Data from the Last List Command
+   * @param {object} info a object with new key values from the list command
    * @version 1.0
    */
   updateCache(info) {
-    const changes = this.objectCopy(this._propcache, info)
+    const changes = this._objectCopy(this._propcache, info)
     if (Object.values(changes).length === 0) return
     this._registerProps(Object.keys(changes).reduce((acc, curr) => ({ [curr]: null, ...acc}), {}))
     Object.keys(changes)
@@ -171,13 +170,13 @@ class Abstract extends EventEmitter {
 
   /**
    * Copies the the new values and keys from src to dst and returns the changes to dst
-   *
+   * @private
    * @param {object} dst - the object to copy the src object onto
    * @param {object} src - the object with the new values
    * @return {object} returns the updated values from src to dst
    * @version 1.7
    */
-  objectCopy(dst, src) {
+  _objectCopy(dst, src) {
     const changes = {}
     Object.keys(src).forEach(key => {
       if (JSON.stringify(dst[key]) === JSON.stringify(src[key])) return

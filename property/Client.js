@@ -6,36 +6,38 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * the response of the clientlist command for a single client
+ * @typedef {object} ClientListResponse
+ * @param {number} clid the client id
+ * @param {number} client_database_id the client database id
+ * @param {number} client_type the client type (0 = client, 1 = query)
+ * @param {string} client_unique_identifier the client unique id
+ * @param {...any} [any]
+ */
+
 const Abstract = require("./Abstract")
 const FileTransfer = require("./../transport/FileTransfer")
 
 /**
  * Class representing a TeamSpeak Client
  * @extends Abstract
- * @class
- * @fires TeamSpeakClient#move
- * @fires TeamSpeakClient#textmessage
- * @fires TeamSpeakClient#clientdisconnect
  */
 class TeamSpeakClient extends Abstract {
 
   /**
    * Creates a TeamSpeak Client
    * @version 1.0
-   * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} c - This holds Basic Client Data received by the Client List Command
-   * @param {number} c.clid - The Client ID of the TeamSpeak Client
-   * @param {number} c.client_database_id - The Client Database ID
-   * @param {number} c.client_type - The Client Type (0 = Client, 1 = Query)
-   * @param {string} c.client_unique_identifier - The Client Unique ID
+   * @param {TeamSpeak3} parent the teamspeak instance
+   * @param {ClientListResponse} list response from the clientlist command
    */
-  constructor(parent, c) {
-    super(parent, c, "client")
+  constructor(parent, list) {
+    super(parent, list, "client")
     this._static = {
-      uid: c.client_unique_identifier,
-      clid: c.clid,
-      dbid: c.client_database_id,
-      type: c.client_type
+      uid: list.client_unique_identifier,
+      clid: list.clid,
+      dbid: list.client_database_id,
+      type: list.client_type
     }
 
     /**
@@ -223,7 +225,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {Promise.<object>}
    */
   banAdd(ip, name, uid, time, banreason) {
-    return this.execute("banadd", { ip, name, uid, time, banreason })
+    return super.getParent().execute("banadd", { ip, name, uid, time, banreason })
   }
 
 
@@ -317,7 +319,7 @@ class TeamSpeakClient extends Abstract {
    * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
@@ -332,7 +334,7 @@ class TeamSpeakClient extends Abstract {
    * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
    * @version 1.0
    * @async
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @return {Promise.<object>}
    */
   delPerm(perm) {
@@ -350,6 +352,7 @@ class TeamSpeakClient extends Abstract {
   getAvatar() {
     return this.getAvatarName()
       .then(name => super.getParent().ftInitDownload({name: `/${name}`}))
+      // @ts-ignore
       // eslint-disable-next-line no-underscore-dangle
       .then(res => new FileTransfer(super.getParent()._config.host, res.port).download(res.ftkey, res.size))
   }
@@ -372,7 +375,7 @@ class TeamSpeakClient extends Abstract {
    * Gets the Avatar Name of the Client
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Avatar Name
+   * @returns {Promise.<string>} Avatar Name
    */
   getAvatarName() {
     return new Promise((fulfill, reject) => {
@@ -388,7 +391,7 @@ class TeamSpeakClient extends Abstract {
    * Gets the Icon Name of the Client
    * @version 1.0
    * @async
-   * @returns {Promise.<object>}
+   * @returns {Promise.<string>}
    */
   getIconName() {
     return super.getParent().getIconName(this.permList(true))

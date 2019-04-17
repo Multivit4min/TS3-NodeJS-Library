@@ -6,26 +6,31 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * the response of the serverlist command for a single virtual server
+ * @typedef {object} ServerListResponse
+ * @param {number} virtualserver_id the current id of the virtual server
+ * @param {...any} [any]
+ */
+
 const Abstract = require("./Abstract")
 
 /**
  * Class representing a TeamSpeak Server
  * @extends Abstract
- * @class
  */
 class TeamSpeakServer extends Abstract {
 
   /**
    * Creates a TeamSpeak Server
    * @version 1.0
-   * @param {object} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} s - This holds Basic ServerGroup Data
-   * @param {number} s.virtualserver_id - The Server ID
+   * @param {TeamSpeak3} parent the teamspeak instance
+   * @param {ServerListResponse} list response from the serverlist command
    */
-  constructor(parent, s) {
-    super(parent, s, "virtualserver")
+  constructor(parent, list) {
+    super(parent, list, "virtualserver")
     this._static = {
-      sid: s.virtualserver_id
+      sid: list.virtualserver_id
     }
   }
 
