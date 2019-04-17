@@ -1,0 +1,22 @@
+toc:
+  - name: modules
+    description: |
+      Modules which can be imported via `require(<module name>)`
+  - TeamSpeak3
+  - name: nodes
+  - TeamSpeakClient
+  - TeamSpeakChannel
+  - TeamSpeakChannelGroup
+  - TeamSpeakServer
+  - TeamSpeakServerGroup
+  - name: query
+  - TS3Query
+  - FileTransfer
+  - SSH
+  - RAW
+  - name: exceptions
+  - ResponseError
+  - name: interfaces
+  - ConnectionParams
+  - ResponseErrorJSON
+  - name: uncategorized
