@@ -7,7 +7,7 @@
   "scripts": {
     "test": "nyc mocha",
     "eslint": "eslint ./TeamSpeak3.js ./test/**/*.js ./property/**/*.js ./examples/**/*.js ./transport/**/*.js ./helper/**/*.js",
-    "generate-docs": "documentation build TeamSpeak3.js property/**.js --project-name \"TS3-NodeJS-Library\" -f html -o docs",
+    "generate-docs": "documentation build TeamSpeak3.js property/**.js --project-name \"TS3-NodeJS-Library\" -c documentation.yml -f html -o docs",
     "generate-ts": "jsdoc -c jsconfig.json"
   },
   "repository": {
