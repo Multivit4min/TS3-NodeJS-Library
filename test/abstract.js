@@ -12,12 +12,8 @@ describe("Abstract", () => {
   let abstract = null
 
   beforeEach(() => {
-    abstract = new (class Test extends Abstract {
-      getNameSpace() {
-        return "test"
-      }
-    // eslint-disable-next-line camelcase
-    })(new EventEmitter(), { test_init_val: true})
+    // @ts-ignore
+    abstract = new Abstract(new EventEmitter(), { test_init_val: true}, "test")
   })
 
   it("should verify return value of #translatePropName('test_should_work')", () => {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   channellist: [{
     cid: 1,
