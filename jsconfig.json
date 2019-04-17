@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "target": "es2018"
+  },    
+  "opts": {
+    "template": "./node_modules/tsd-jsdoc/dist"
+  },
+  "source": {
+    "include": [
+      "property", 
+      "transport", 
+      "TeamSpeak3.js"
+    ],
+    "exclude": [
+    ]
+  }
+}
