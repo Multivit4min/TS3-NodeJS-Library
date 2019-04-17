@@ -73,4 +73,52 @@ describe("Command", () => {
       assert.ok(cmd.getError() instanceof ResponseError)
     })
   })
+
+  describe("escape", () => {
+    it("should escape backslash", () => {
+      assert.equal(Command.escape("\\"), "\\\\")
+    })
+    it("should escape forwardslash", () => {
+      assert.equal(Command.escape("/"), "\\/")
+    })
+    it("should escape pipe", () => {
+      assert.equal(Command.escape("|"), "\\p")
+    })
+    it("should escape carriage return", () => {
+      assert.equal(Command.escape("\r"), "\\r")
+    })
+    it("should escape horizontal tab", () => {
+      assert.equal(Command.escape("\t"), "\\t")
+    })
+    it("should escape form feed", () => {
+      assert.equal(Command.escape("\f"), "\\f")
+    })
+    it("should escape whitespace", () => {
+      assert.equal(Command.escape(" "), "\\s")
+    })
+  })
+
+  describe("unescape", () => {
+    it("should unescape backslash", () => {
+      assert.equal(Command.unescape("\\\\"), "\\")
+    })
+    it("should unescape forwardslash", () => {
+      assert.equal(Command.unescape("\\/"), "/")
+    })
+    it("should unescape pipe", () => {
+      assert.equal(Command.unescape("\\p"), "|")
+    })
+    it("should unescape carriage return", () => {
+      assert.equal(Command.unescape("\\r"), "\r")
+    })
+    it("should unescape horizontal tab", () => {
+      assert.equal(Command.unescape("\\t"), "\t")
+    })
+    it("should unescape form feed", () => {
+      assert.equal(Command.unescape("\\f"), "\f")
+    })
+    it("should unescape whitespace", () => {
+      assert.equal(Command.unescape("\\s"), " ")
+    })
+  })
 })

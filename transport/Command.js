@@ -6,15 +6,11 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const escape = require("./../helper/escape.js")
-const unescape = require("./../helper/unescape.js")
 const keytypes = require("./../helper/keytypes.js")
 const ResponseError = require("./../exception/ResponseError.js")
 
-
 /**
  * TeamSpeak Query Command Class
- * @class
  */
 class Command {
 
@@ -22,7 +18,6 @@ class Command {
    * Creates the Command Class
    * @constructor
    * @version 1.0
-   * @toc TRANSPORT.Command
    */
   constructor() {
     this.cmd = ""
@@ -189,8 +184,8 @@ class Command {
       const res = {}
       entry.split(" ").forEach(str => {
         if (str.indexOf("=") >= 0) {
-          const k = unescape(str.substr(0, str.indexOf("=")))
-          res[k] = Command.parseValue(k, unescape(str.substr(str.indexOf("=") + 1)))
+          const k = Command.unescape(str.substr(0, str.indexOf("=")))
+          res[k] = Command.parseValue(k, Command.unescape(str.substr(str.indexOf("=") + 1)))
         } else {
           res[str] = undefined
         }
@@ -207,7 +202,7 @@ class Command {
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
   build() {
-    let cmd = escape(this.cmd)
+    let cmd = Command.escape(this.cmd)
     if (this.hasFlags()) cmd += ` ${this.buildFlags()}`
     if (this.hasOptions()) cmd += ` ${this.buildOptions()}`
     return cmd
@@ -253,9 +248,9 @@ class Command {
    */
   escapeKeyValue(key, value) {
     if (Array.isArray(value)) {
-      return value.map(v => `${escape(key)}=${escape(v)}`).join("|")
+      return value.map(v => `${Command.escape(key)}=${Command.escape(v)}`).join("|")
     } else {
-      return `${escape(key)}=${escape(value)}`
+      return `${Command.escape(key)}=${Command.escape(value)}`
     }
   }
 
@@ -267,7 +262,7 @@ class Command {
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
   buildFlags() {
-    return this.flags.map(f => escape(f)).join(" ")
+    return this.flags.map(f => Command.escape(f)).join(" ")
   }
 
 
@@ -276,7 +271,7 @@ class Command {
    * @version 1.0
    * @static
    * @param {string} k - The Key which should get looked up
-   * @param {any} v - The value which should get parsed
+   * @param {string} v - The value which should get parsed
    * @return {any} Returns the parsed Data
    */
   static parseValue(k, v) {
@@ -289,6 +284,44 @@ class Command {
       default:
         return String(v)
     }
+  }
+
+  /**
+   * unescapes a string
+   * @static
+   * @param {string} str the string to escape
+   * @returns {string} the unescaped string
+   */
+  static unescape(str) {
+    return String(str)
+      .replace(/\\s/g, " ")
+      .replace(/\\p/g, "|")
+      .replace(/\\n/g, "\n")
+      .replace(/\\f/g, "\f")
+      .replace(/\\r/g, "\r")
+      .replace(/\\t/g, "\t")
+      .replace(/\\v/g, "\v")
+      .replace(/\\\//g, "/")
+      .replace(/\\\\/g, "\\")
+  }
+
+  /**
+   * escapes a string
+   * @static
+   * @param {string} str the string to escape
+   * @returns {string} the escaped string
+   */
+  static escape(str) {
+    return String(str)
+      .replace(/\\/g, "\\\\")
+      .replace(/\//g, "\\/")
+      .replace(/\|/g, "\\p")
+      .replace(/\n/g, "\\n")
+      .replace(/\r/g, "\\r")
+      .replace(/\t/g, "\\t")
+      .replace(/\v/g, "\\v")
+      .replace(/\f/g, "\\f")
+      .replace(/ /g, "\\s")
   }
 }
 
