@@ -1,5 +1,4 @@
 //Changes the TeamSpeak Channel Name to the Current Users online
-
 const TeamSpeak3 = require("./../TeamSpeak3")
 
 //Define the Channel which should be edited
@@ -24,7 +23,7 @@ function editChannel() {
     //will be like => "10/32 online"
     const name = `${virtualserver_clientsonline}/${virtualserver_maxclients} online`
     //Edits the Channel Name
-    channel.edit({channel_name: name})
+    channel.edit({ channel_name: name })
   })
 }
 
@@ -35,7 +34,7 @@ ts3.on("ready", async () => {
     const channels = await ts3.channelList()
     channels.forEach(channel => {
       //Logs the Channel ID and the Channel Name
-      console.log(channel.getCID(), channel.name)
+      console.log(channel.getID(), channel.name)
     })
   } else {
     //Edit the Channel when the Bot starts, when a user leaves and when a user connects

@@ -11,18 +11,13 @@ const ts3 = new TeamSpeak3({
   keepalive: true
 })
 
-ts3.on("ready", () => {
-  let client = false
-  ts3.clientList({client_type: 0})
-    .then(clients => {
-      if (!clients[0]) return console.log("No Client Found!")
-      client = clients[0]
-      return client.getAvatar()
-    }).then(buffer => {
-      fs.writeFileSync(`${__dirname}/avatar`, buffer)
-      console.log(`Avatar from Client ${client.nickname} downloaded and saved to`, `${__dirname}/avatar`)
-      ts3.quit()
-    }).catch(e => console.log("CATCHED", e.message))
+ts3.on("ready", async () => {
+  const [client] = await ts3.clientList({ client_type: 0 })
+  if (!client) return console.log("No online client found!")
+  const buffer = await client.getAvatar()
+  fs.writeFileSync(`${__dirname}/avatar`, buffer)
+  console.log(`Avatar from Client ${client.nickname} downloaded and saved to`, `${__dirname}/avatar`)
+  ts3.quit()
 })
 
 ts3.on("error", e => {

@@ -2,6 +2,7 @@ const TeamSpeak3 = require("./../TeamSpeak3")
 const fs = require("fs")
 //if you want to test this example you need to install crc-32
 //  > npm install crc-32
+// @ts-ignore
 const CRC32 = require("crc-32")
 
 const path = "/PATH/TO/THE/ICON/YOU/WANT/TO/UPLOAD"
