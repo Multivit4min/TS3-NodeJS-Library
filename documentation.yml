@@ -1,9 +1,10 @@
 toc:
-  - name: modules
+  - name: main
     description: |
-      Modules which can be imported via `require(<module name>)`
+      the exported module which can be required via `require("ts3-nodejs-library")`
   - TeamSpeak3
   - name: nodes
+  - Abstract
   - TeamSpeakClient
   - TeamSpeakChannel
   - TeamSpeakChannelGroup
@@ -19,4 +20,9 @@ toc:
   - name: interfaces
   - ConnectionParams
   - ResponseErrorJSON
+  - ClientListResponse
+  - ChannelListResponse
+  - ChannelGroupListResponse
+  - ServerListResponse
+  - ServerGroupListResponse
   - name: uncategorized
