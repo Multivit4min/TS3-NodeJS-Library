@@ -30,6 +30,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   constructor(config = {}) {
     super()
+
     this._config = {
       protocol: config.protocol || "raw",
       host: config.host || "127.0.0.1",
@@ -433,7 +434,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise<object>} Promise object which returns the Information about the Query executed
    */
   queryLoginList(pattern, start, duration) {
-    return this.execute("queryloginlist", { pattern, start, duration }, ["-count"]).then(this.toArray)
+    return this.execute("queryloginlist", { pattern, start, duration }, ["-count"]).then(TeamSpeak3.toArray)
   }
 
 
@@ -540,7 +541,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   bindingList() {
-    return this.execute("bindinglist").then(this.toArray)
+    return this.execute("bindinglist").then(TeamSpeak3.toArray)
   }
 
 
@@ -777,7 +778,7 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} ssgid - the source ServerGroup
    * @param {number} [tsgid=0] - the target ServerGroup, 0 to create a new Group
    * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
-   * @param {(string|boolean)} [name=false] - Name of the Group
+   * @param {string|boolean} [name=false] - Name of the Group
    * @returns {Promise.<object>}
    */
   serverGroupCopy(ssgid, tsgid = 0, type = 1, name = false) {
@@ -809,7 +810,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   serverGroupPermList(sgid, permsid = false) {
-    return this.execute("servergrouppermlist", { sgid }, [permsid ? "-permsid" : null]).then(this.toArray)
+    return this.execute("servergrouppermlist", { sgid }, [permsid ? "-permsid" : null]).then(TeamSpeak3.toArray)
   }
 
 
@@ -818,7 +819,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} sgid - the ServerGroup id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
@@ -840,7 +841,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} sgid - the ServerGroup id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @returns {Promise.<object>}
    */
   serverGroupDelPerm(sgid, perm) {
@@ -982,7 +983,7 @@ class TeamSpeak3 extends EventEmitter {
    * @return {Promise.<object[]>}
    */
   channelPermList(cid, permsid = false) {
-    return this.execute("channelpermlist", { cid }, (permsid) ? ["-permsid"] : null).then(this.toArray)
+    return this.execute("channelpermlist", { cid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak3.toArray)
   }
 
 
@@ -991,7 +992,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cid - the channel id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - The Value which should be set
    * @return {Promise.<object>}
    */
@@ -1026,7 +1027,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cid - the channel id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @return {Promise.<object>}
    */
   channelDelPerm(cid, perm) {
@@ -1122,7 +1123,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>} Returns the Client Database Info
    */
   clientDBList(start = 0, duration = 1000, count = true) {
-    return this.execute("clientdblist", { start, duration }, [(count) ? "-count" : null]).then(this.toArray)
+    return this.execute("clientdblist", { start, duration }, [(count) ? "-count" : null]).then(TeamSpeak3.toArray)
   }
 
 
@@ -1188,7 +1189,7 @@ class TeamSpeak3 extends EventEmitter {
    * @return {Promise.<object>}
    */
   clientPermList(cldbid, permsid = false) {
-    return this.execute("clientpermlist", { cldbid }, [(permsid) ? "-permsid" : null]).then(this.toArray)
+    return this.execute("clientpermlist", { cldbid }, [(permsid) ? "-permsid" : null]).then(TeamSpeak3.toArray)
   }
 
 
@@ -1199,7 +1200,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cldbid - the client database id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
@@ -1222,7 +1223,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cldbid - the client database id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @return {Promise.<object>}
    */
   clientDelPerm(cldbid, perm) {
@@ -1405,10 +1406,10 @@ class TeamSpeak3 extends EventEmitter {
    * @param {number} scgid - the source ChannelGroup
    * @param {number} [tcgid=0] - the target ChannelGroup (0 to create a new Group)
    * @param {number} [type] - The Type of the Group (0 = Template Group | 1 = Normal Group)
-   * @param {(string|boolean)} [name=false] - Name of the Group
+   * @param {string} [name] - Name of the Group
    * @return {Promise.<object>}
    */
-  channelGroupCopy(scgid, tcgid = 0, type = 1, name = false) {
+  channelGroupCopy(scgid, tcgid = 0, type = 1, name) {
     const properties = { scgid, tcgid, type }
     if (typeof name === "string") properties.name = name
     return this.execute("channelgroupcopy", properties)
@@ -1437,7 +1438,7 @@ class TeamSpeak3 extends EventEmitter {
    * @return {Promise.<object[]>}
    */
   channelGroupPermList(cgid, permsid = false) {
-    return this.execute("channelgrouppermlist", { cgid }, [(permsid) ? "-permsid" : null]).then(this.toArray)
+    return this.execute("channelgrouppermlist", { cgid }, [(permsid) ? "-permsid" : null]).then(TeamSpeak3.toArray)
   }
 
 
@@ -1446,7 +1447,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cgid - the ChannelGroup id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
@@ -1467,7 +1468,7 @@ class TeamSpeak3 extends EventEmitter {
    * @version 1.0
    * @async
    * @param {number} cgid - the ChannelGroup id
-   * @param {(string|number)} perm - The permid or permsid
+   * @param {string|number} perm - The permid or permsid
    * @return {Promise.<object>}
    */
   channelGroupDelPerm(cgid, perm) {
@@ -1488,7 +1489,7 @@ class TeamSpeak3 extends EventEmitter {
   channelGroupClientList(cgid, cid) {
     const properties = { cgid }
     if (typeof cid === "number") properties.cid = cid
-    return this.execute("channelgroupclientlist", properties).then(this.toArray)
+    return this.execute("channelgroupclientlist", properties).then(TeamSpeak3.toArray)
   }
 
 
@@ -1518,7 +1519,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object[]>} gets a list of permissions available
    */
   permissionList() {
-    return this.execute("permissionlist").then(this.toArray)
+    return this.execute("permissionlist").then(TeamSpeak3.toArray)
   }
 
 
@@ -1526,7 +1527,7 @@ class TeamSpeak3 extends EventEmitter {
    * Retrieves the database ID of one or more permissions specified by permsid.
    * @version 1.0
    * @async
-   * @param {(string|array)} permsid - One or more Permission Names
+   * @param {string|array} permsid - One or more Permission Names
    * @returns {Promise.<object>} gets the specified permissions
    */
   permIdGetByName(permsid) {
@@ -1552,7 +1553,7 @@ class TeamSpeak3 extends EventEmitter {
    * The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
    * @version 1.0
    * @async
-   * @param {(number|string)} perm - Perm ID or Name to get
+   * @param {number|string} perm - Perm ID or Name to get
    * @returns {Promise.<object>} gets the permissions
    */
   permFind(perm) {
@@ -1579,7 +1580,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>} gets a list of privilegekeys
    */
   privilegeKeyList() {
-    return this.execute("privilegekeylist").then(this.toArray)
+    return this.execute("privilegekeylist").then(TeamSpeak3.toArray)
   }
 
 
@@ -1666,7 +1667,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   messageList() {
-    return this.execute("messagelist").then(this.toArray)
+    return this.execute("messagelist").then(TeamSpeak3.toArray)
   }
 
 
@@ -1730,7 +1731,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   complainList(cldbid) {
-    return this.execute("complainlist", { cldbid }).then(this.toArray)
+    return this.execute("complainlist", { cldbid }).then(TeamSpeak3.toArray)
   }
 
 
@@ -1771,7 +1772,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   banList() {
-    return this.execute("banlist").then(this.toArray)
+    return this.execute("banlist").then(TeamSpeak3.toArray)
   }
 
 
@@ -1899,7 +1900,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   serverList(filter = {}) {
     return this.execute("serverlist", ["-uid", "-all"])
-      .then(this.toArray)
+      .then(TeamSpeak3.toArray)
       .then(servers => this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer))
       .then(servers => TeamSpeak3.filter(servers, filter))
       .then(servers => Promise.resolve(servers.map(s => this._servers[s.virtualserver_id])))
@@ -1915,7 +1916,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   channelGroupList(filter = {}) {
     return this.execute("channelgrouplist")
-      .then(this.toArray)
+      .then(TeamSpeak3.toArray)
       .then(groups => this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
       .then(groups => Promise.resolve(groups.map(g => this._channelgroups[g.cgid])))
@@ -1932,7 +1933,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   serverGroupList(filter = {}) {
     return this.execute("servergrouplist")
-      .then(this.toArray)
+      .then(TeamSpeak3.toArray)
       .then(groups => this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
       .then(groups => Promise.resolve(groups.map(g => this._servergroups[g.sgid])))
@@ -1948,7 +1949,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   channelList(filter = {}) {
     return this.execute("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"])
-      .then(this.toArray)
+      .then(TeamSpeak3.toArray)
       .then(channels => this._handleCache(this._channels, channels, "cid", TeamSpeakChannel))
       .then(channels => TeamSpeak3.filter(channels, filter))
       .then(channels => Promise.resolve(channels.map(c => this._channels[c.cid])))
@@ -1964,7 +1965,7 @@ class TeamSpeak3 extends EventEmitter {
    */
   clientList(filter = {}) {
     return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"])
-      .then(this.toArray)
+      .then(TeamSpeak3.toArray)
       .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
       .then(clients => TeamSpeak3.filter(clients, filter))
       .then(clients => Promise.resolve(clients.map(c => this._clients[String(c.clid)])))
@@ -1981,7 +1982,7 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>} Promise object which returns an Array of Files
    */
   ftGetFileList(cid, path = "/", cpw) {
-    return this.execute("ftgetfilelist", { cid, path, cpw }).then(this.toArray)
+    return this.execute("ftgetfilelist", { cid, path, cpw }).then(TeamSpeak3.toArray)
   }
 
 
@@ -2242,7 +2243,7 @@ class TeamSpeak3 extends EventEmitter {
    * Removes an item from cache and calls the .destruct() method on it
    * @private
    * @param {object} cache the cache object from where a key should be deleted
-   * @param {any} key the key which should be deleted
+   * @param {string} key the key which should be deleted
    */
   _removeFromCache(cache, key) {
     if (cache[String(key)] === undefined) return
@@ -2281,12 +2282,13 @@ class TeamSpeak3 extends EventEmitter {
 
   /**
    * Transforms an Input to an Array
+   * @static
    * @async
    * @version 1.0
    * @param {any} input input data which should be converted to an array
    * @returns {Promise.<any[]>}
    */
-  toArray(input) {
+  static toArray(input) {
     return new Promise(fulfill => {
       if (typeof input === "undefined" || input === null) return fulfill([])
       if (!Array.isArray(input)) return fulfill([input])
