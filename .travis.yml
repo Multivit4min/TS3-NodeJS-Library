@@ -9,10 +9,10 @@ before_install:
 before_script:
   - npm install -g eslint documentation
 script:
-  - eslint ./**/*.js
+  - npm run eslint
   - npm test
   - nyc report --reporter=text-lcov | coveralls
-  - documentation build TeamSpeak3.js property/**.js --project-name "TS3-NodeJS-Library" -f html -o docs
+  - npm run generate-docs
 after_script:
   - docker stop teamspeak
 deploy:

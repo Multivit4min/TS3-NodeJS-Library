@@ -5,7 +5,10 @@
   "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "eslint": "eslint ./TeamSpeak3.js ./test/**/*.js ./property/**/*.js ./examples/**/*.js ./transport/**/*.js ./helper/**/*.js",
+    "generate-docs": "documentation build TeamSpeak3.js property/**.js --project-name \"TS3-NodeJS-Library\" -f html -o docs",
+    "generate-ts": "jsdoc -c jsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -19,17 +22,23 @@
     "ts",
     "teamspeak3"
   ],
+  "typings": "./tsd/types.d.ts",
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
     "ssh2": "^0.8.0"
   },
   "devDependencies": {
+    "@types/node": "^11.13.4",
     "coveralls": "^3.0.3",
     "crc-32": "^1.2.0",
+    "documentation": "^9.3.1",
+    "eslint": "^5.16.0",
+    "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
     "nyc": "^13.1.0",
-    "sinon": "^7.2.3"
+    "sinon": "^7.2.3",
+    "tsd-jsdoc": "^2.1.3"
   }
 }
