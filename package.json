@@ -26,10 +26,9 @@
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
-    "ssh2": "^0.8.0"
+    "ssh2": "^0.8.2"
   },
   "devDependencies": {
-    "@types/node": "^11.13.4",
     "coveralls": "^3.0.3",
     "crc-32": "^1.2.0",
     "documentation": "^9.3.1",
