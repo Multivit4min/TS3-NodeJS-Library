@@ -1,5 +1,5 @@
 /**
- * @file TeamSpeak3.js
+ * @file ResponseError.js
  * @ignore
  * @copyright David Kartnaller 2017
  * @license GNU GPLv3
