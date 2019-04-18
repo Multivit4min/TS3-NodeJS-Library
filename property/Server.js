@@ -9,8 +9,8 @@
 /**
  * the response of the serverlist command for a single virtual server
  * @typedef {object} ServerListResponse
- * @param {number} virtualserver_id the current id of the virtual server
- * @param {...any} [any]
+ * @property {number} virtualserver_id the current id of the virtual server
+ * @property {...any} [any]
  */
 
 const Abstract = require("./Abstract")

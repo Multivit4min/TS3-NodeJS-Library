@@ -9,8 +9,8 @@
 /**
  * the response of the channelgrouplist command for a single channelgroup
  * @typedef {object} ChannelGroupListResponse
- * @param {number} cgid the current id of the channelgroup
- * @param {...any} [any]
+ * @property {number} cgid the current id of the channelgroup
+ * @property {...any} [any]
  */
 
 const Abstract = require("./Abstract")

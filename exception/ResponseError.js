@@ -56,9 +56,9 @@ module.exports = ResponseError
 
 /**
  * @typedef {object} ResponseErrorJSON
- * @param {number} id the id of the error from the query response
- * @param {string} msg the error message from the query response
- * @param {string} [extra_msg] additional message which may have been received from the query
- * @param {number} [failed_permid] the missing permission id
- * @param {string} message a summary message with msg, extra_msg and failed permid
+ * @property {number} id the id of the error from the query response
+ * @property {string} msg the error message from the query response
+ * @property {string} [extra_msg] additional message which may have been received from the query
+ * @property {number} [failed_permid] the missing permission id
+ * @property {string} message a summary message with msg, extra_msg and failed permid
  */

@@ -9,11 +9,11 @@
 /**
  * the response of the clientlist command for a single client
  * @typedef {object} ClientListResponse
- * @param {number} clid the client id
- * @param {number} client_database_id the client database id
- * @param {number} client_type the client type (0 = client, 1 = query)
- * @param {string} client_unique_identifier the client unique id
- * @param {...any} [any]
+ * @property {number} clid the client id
+ * @property {number} client_database_id the client database id
+ * @property {number} client_type the client type (0 = client, 1 = query)
+ * @property {string} client_unique_identifier the client unique id
+ * @property {...any} [any]
  */
 
 const Abstract = require("./Abstract")

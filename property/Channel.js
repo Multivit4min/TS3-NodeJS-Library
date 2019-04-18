@@ -9,8 +9,8 @@
 /**
  * the response of the channellist command for a single channel
  * @typedef {object} ChannelListResponse
- * @param {number} id the current id of the channel
- * @param {...any} [any]
+ * @property {number} id the current id of the channel
+ * @property {...any} [any]
  */
 
 const Abstract = require("./Abstract")

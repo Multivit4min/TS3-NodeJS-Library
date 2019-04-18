@@ -9,8 +9,8 @@
 /**
  * the response of the servergrouplist command for a single servergroup
  * @typedef {object} ServerGroupListResponse
- * @param {number} sgid the current id of the servergroup
- * @param {...any} [any]
+ * @property {number} sgid the current id of the servergroup
+ * @property {...any} [any]
  */
 
 const Abstract = require("./Abstract")

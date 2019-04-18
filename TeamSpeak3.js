@@ -35,10 +35,10 @@ class TeamSpeak3 extends EventEmitter {
       protocol: config.protocol || "raw",
       host: config.host || "127.0.0.1",
       queryport: config.queryport || 10011,
-      serverport: config.serverport || false,
-      username: config.username || false,
-      password: config.password || false,
-      nickname: config.nickname || false,
+      serverport: config.serverport,
+      username: config.username,
+      password: config.password,
+      nickname: config.nickname,
       readyTimeout: config.readyTimeout || 20000
     }
 
@@ -2304,12 +2304,12 @@ module.exports = TeamSpeak3
 /**
  * the TeamSpeak configuration object
  * @typedef {object} ConnectionParams
- * @param {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
- * @param {string} [host="127.0.0.1"] - The Host on which the TeamSpeak Server runs
- * @param {number} [queryport=10011] - The Queryport on which the TeamSpeak Server runs
- * @param {number} [serverport=9987] - The Serverport on which the TeamSpeak Instance runs
- * @param {string} [username] - The username to authenticate with the TeamSpeak Server
- * @param {string} [password] - The password to authenticate with the TeamSpeak Server
- * @param {string} [nickname] - The Nickname the Client should have
- * @param {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
+ * @property {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
+ * @property {string} [host="127.0.0.1"] - The Host on which the TeamSpeak Server runs
+ * @property {number} [queryport=10011] - The Queryport on which the TeamSpeak Server runs
+ * @property {number} [serverport=9987] - The Serverport on which the TeamSpeak Instance runs
+ * @property {string} [username] - The username to authenticate with the TeamSpeak Server
+ * @property {string} [password] - The password to authenticate with the TeamSpeak Server
+ * @property {string} [nickname] - The Nickname the Client should have
+ * @property {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
  */
