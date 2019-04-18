@@ -103,16 +103,25 @@ declare class EventEmitter {
 /**
  * the TeamSpeak configuration object
  * @typedef {object} ConnectionParams
- * @param {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
- * @param {string} [host="127.0.0.1"] - The Host on which the TeamSpeak Server runs
- * @param {number} [queryport=10011] - The Queryport on which the TeamSpeak Server runs
- * @param {number} [serverport=9987] - The Serverport on which the TeamSpeak Instance runs
- * @param {string} [username] - The username to authenticate with the TeamSpeak Server
- * @param {string} [password] - The password to authenticate with the TeamSpeak Server
- * @param {string} [nickname] - The Nickname the Client should have
- * @param {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
+ * @property {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
+ * @property {string} [host="127.0.0.1"] - The Host on which the TeamSpeak Server runs
+ * @property {number} [queryport=10011] - The Queryport on which the TeamSpeak Server runs
+ * @property {number} [serverport=9987] - The Serverport on which the TeamSpeak Instance runs
+ * @property {string} [username] - The username to authenticate with the TeamSpeak Server
+ * @property {string} [password] - The password to authenticate with the TeamSpeak Server
+ * @property {string} [nickname] - The Nickname the Client should have
+ * @property {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
  */
-declare type ConnectionParams = any;
+declare type ConnectionParams = {
+    protocol?: string;
+    host?: string;
+    queryport?: number;
+    serverport?: number;
+    username?: string;
+    password?: string;
+    nickname?: string;
+    readyTimeout?: number;
+};
 
 /**
  * Main TeamSpeak Query Class
@@ -1563,10 +1572,13 @@ declare class Abstract extends EventEmitter {
 /**
  * the response of the channellist command for a single channel
  * @typedef {object} ChannelListResponse
- * @param {number} id the current id of the channel
- * @param {...any} [any]
+ * @property {number} id the current id of the channel
+ * @property {...any} [any]
  */
-declare type ChannelListResponse = any;
+declare type ChannelListResponse = {
+    id: number;
+    any?: any;
+};
 
 /**
  * Class representing a TeamSpeak Channel
@@ -1713,10 +1725,13 @@ declare class TeamSpeakChannel extends Abstract {
 /**
  * the response of the channelgrouplist command for a single channelgroup
  * @typedef {object} ChannelGroupListResponse
- * @param {number} cgid the current id of the channelgroup
- * @param {...any} [any]
+ * @property {number} cgid the current id of the channelgroup
+ * @property {...any} [any]
  */
-declare type ChannelGroupListResponse = any;
+declare type ChannelGroupListResponse = {
+    cgid: number;
+    any?: any;
+};
 
 /**
  * Class representing a TeamSpeak ChannelGroup
@@ -1863,13 +1878,19 @@ declare class TeamSpeakChannelGroup extends Abstract {
 /**
  * the response of the clientlist command for a single client
  * @typedef {object} ClientListResponse
- * @param {number} clid the client id
- * @param {number} client_database_id the client database id
- * @param {number} client_type the client type (0 = client, 1 = query)
- * @param {string} client_unique_identifier the client unique id
- * @param {...any} [any]
+ * @property {number} clid the client id
+ * @property {number} client_database_id the client database id
+ * @property {number} client_type the client type (0 = client, 1 = query)
+ * @property {string} client_unique_identifier the client unique id
+ * @property {...any} [any]
  */
-declare type ClientListResponse = any;
+declare type ClientListResponse = {
+    clid: number;
+    client_database_id: number;
+    client_type: number;
+    client_unique_identifier: string;
+    any?: any;
+};
 
 /**
  * Class representing a TeamSpeak Client
@@ -2134,10 +2155,13 @@ declare class TeamSpeakClient extends Abstract {
 /**
  * the response of the serverlist command for a single virtual server
  * @typedef {object} ServerListResponse
- * @param {number} virtualserver_id the current id of the virtual server
- * @param {...any} [any]
+ * @property {number} virtualserver_id the current id of the virtual server
+ * @property {...any} [any]
  */
-declare type ServerListResponse = any;
+declare type ServerListResponse = {
+    virtualserver_id: number;
+    any?: any;
+};
 
 /**
  * Class representing a TeamSpeak Server
@@ -2234,10 +2258,13 @@ declare class TeamSpeakServer extends Abstract {
 /**
  * the response of the servergrouplist command for a single servergroup
  * @typedef {object} ServerGroupListResponse
- * @param {number} sgid the current id of the servergroup
- * @param {...any} [any]
+ * @property {number} sgid the current id of the servergroup
+ * @property {...any} [any]
  */
-declare type ServerGroupListResponse = any;
+declare type ServerGroupListResponse = {
+    sgid: number;
+    any?: any;
+};
 
 /**
  * Class representing a TeamSpeak ServerGroup
