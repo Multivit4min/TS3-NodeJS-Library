@@ -4,16 +4,15 @@
     "target": "es2018"
   },    
   "opts": {
+    "destination": "./tsd/",
     "template": "./node_modules/tsd-jsdoc/dist"
   },
   "source": {
     "include": [
       "helper/EventEmitter.js",
-      "property", 
-      "transport", 
-      "TeamSpeak3.js"
-    ],
-    "exclude": [
+      "TeamSpeak3.js",
+      "property",
+      "transport"
     ]
   }
 }
