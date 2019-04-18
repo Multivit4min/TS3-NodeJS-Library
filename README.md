@@ -7,20 +7,23 @@
 
 The TS3 NodeJS Library has been strongly influenced by [PlanetTeamSpeaks TS3 PHP
 Framework](https://docs.planetteamspeak.com/ts3/php/framework/index.html)
-<br/><br/>
 
-##### Install
-----
-`npm install ts3-nodejs-library`
-<br/><br/>
 
-##### Documentation
-----
+## Install
+
+`npm install --save ts3-nodejs-library`
+
+If you want to install additional typings you can do that with:
+
+`npm install --save-dev @types/ts3-nodejs-library`
+
+
+## Documentation
+
 You can find all necessary documentation [here](https://multivit4min.github.io/TS3-NodeJS-Library)!
-<br/><br/>
 
-##### Example
-----
+
+## Example
 
 Send a message to all non Query Clients connected:
 ```javascript
@@ -47,7 +50,7 @@ ts3.on("ready", async () => {
     //Retrieves a List of non Query Clients
     const clients = await ts3.clientList({client_type: 0})
     clients.forEach(client => {
-      console.log("Sending Message to", client.getCache().client_nickname)
+      console.log("Sending Message to", client.nickname)
       //Sends to every Client a "Hello"
       client.message("Hello!")
     })
@@ -60,12 +63,22 @@ ts3.on("ready", async () => {
 ts3.on("error", e => console.log("Error", e.message))
 ts3.on("close", e => console.log("Connection has been closed!", e))
 ```
-<br/><br/>
 
-##### Flood Protection
-----
+
+## Flood Protection
+
 Flooding will be handled automatically.
 
 When the Query gets accused of Flooding then it will return error with id 524 and an error message which states how much time needs to be waited.
 
 This will be parsed automatically and the Query will wait for the given time (normally its 1 second) + 100 additional milliseconds (sometimes it happens the query gets banned when still sending too early)
+
+
+## Authors
+
+* **David Kartnaller** - *Initial work* - [Multivit4min](https://github.com/Multivit4min)
+* **Pascal Sthamer** - *TypeScript typings* - [P4sca1](https://github.com/P4sca1)
+
+
+
+See also the list of [contributors](https://github.com/Multivit4min/TS3-NodeJS-Library/graphs/contributors) who participated in this project.
