@@ -1,5 +1,8 @@
 toc:
-  - name: main
+  - name: readme
+    file: README.md
+  - name: changelog
+    file: CHANGELOG.md
     description: |
       the exported module which can be required via `require("ts3-nodejs-library")`
   - TeamSpeak3
