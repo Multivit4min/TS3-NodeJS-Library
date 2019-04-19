@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.13.1 - 19.4.2019
+* fixed `null` type when adding it as flag
+
 ### 1.13.0 - 13.4.2019
 * improved general filetransfer
 	* added fileDownload method
