@@ -1,4 +1,5 @@
-/*global describe after afterEach it */
+/* global describe after afterEach it */
+
 const mock = require("mock-require")
 const assert = require("assert")
 const fs = require("fs")
@@ -8,6 +9,13 @@ const ResponseError = require("../exception/ResponseError")
 let TeamSpeak3 = require("../TeamSpeak3.js")
 mock.stop("../transport/TS3Query.js")
 TeamSpeak3 = mock.reRequire("../TeamSpeak3.js")
+
+const config = {
+  host: process.env.TS3_HOST || "127.0.0.1",
+  serverport: process.env.TS3_SERVERPORT || 9987,
+  username: process.env.TS3_USERNAME || "serveradmin",
+  password: process.env.TS3_PASSWORD || "abc123"
+}
 
 describe("Integration Test", () => {
   let ts3 = null
@@ -23,12 +31,9 @@ describe("Integration Test", () => {
   it("should connect to a TeamSpeak Server via SSH Query", done => {
     let error = null
     const ts3ssh = new TeamSpeak3({
+      ...config,
       protocol: "ssh",
-      host: "127.0.0.1",
-      queryport: 10022,
-      serverport: 9987,
-      username: "serveradmin",
-      password: "abc123",
+      queryport: process.env.TS3_QUERYPORT_SSH || 10022,
       nickname: "NodeJS SSH"
     })
 
@@ -55,11 +60,8 @@ describe("Integration Test", () => {
 
   it("should connect to a TeamSpeak Server via RAW Query", done => {
     ts3 = new TeamSpeak3({
-      host: "127.0.0.1",
-      queryport: 10011,
-      serverport: 9987,
-      username: "serveradmin",
-      password: "abc123",
+      ...config,
+      queryport: process.env.TS3_QUERYPORT_RAW || 10011,
       nickname: "NodeJS RAW"
     })
 
