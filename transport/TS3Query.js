@@ -228,10 +228,10 @@ class TS3Query extends EventEmitter {
             return cmd.setCommand(v)
           case "object":
             if (Array.isArray(v)) {
-              if (v.some(value => value.constructor.name !== "Object")) {
-                return cmd.setFlags(v)
+              if (v.some(value => typeof value === "object" && value !== null)) {
+                return cmd.setMultiOptions(v.filter(n => n !== null))
               } else {
-                return cmd.setMultiOptions(v)
+                return cmd.setFlags(v)
               }
             }
             return cmd.setOptions(v)
