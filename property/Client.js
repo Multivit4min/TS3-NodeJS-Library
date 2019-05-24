@@ -214,31 +214,15 @@ class TeamSpeakClient extends Abstract {
 
 
   /**
-   * Adds a new ban rule on the selected virtual server. All parameters are optional but at least one of the following must be set: ip, name, or uid.
-   * @version 1.0
+   * Bans the chosen client with its uid
+   * @version 1.14
    * @async
-   * @param {string} [ip] - IP Regex
-   * @param {string} [name] - Name Regex
-   * @param {string} [uid] - UID Regex
-   * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
    * @param {string} banreason - Ban Reason
+   * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
    * @returns {Promise.<object>}
    */
-  banAdd(ip, name, uid, time, banreason) {
-    return super.getParent().execute("banadd", { ip, name, uid, time, banreason })
-  }
-
-
-  /**
-   * creates a new ban with the clients uid
-   * @version 1.9
-   * @async
-   * @param {string} [banreason] - reason message
-   * @param {number} [time] - the time in seconds a client should be banned, leave empty if it should result in a permanent ban
-   * @returns {Promise.<object>} Promise Object
-   */
   ban(banreason, time) {
-    return super.getParent().banAdd(null, null, this._static.uid, time, banreason)
+    return super.getParent().ban({ uid: this._static.uid, time, banreason })
   }
 
 
