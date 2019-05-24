@@ -1781,6 +1781,7 @@ class TeamSpeak3 extends EventEmitter {
    * All parameters are optional but at least one of the following must be set: ip, name, or uid.
    * @version 1.0
    * @async
+   * @deprecated
    * @param {string} [ip] - IP Regex
    * @param {string} [name] - Name Regex
    * @param {string} [uid] - UID Regex
@@ -1789,7 +1790,27 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   banAdd(ip, name, uid, time, banreason) {
+    console.log("TeamSpeak3#banAdd is deprecated please use TeamSpeak3#ban instead!")
     return this.execute("banadd", { ip, name, uid, time, banreason })
+  }
+
+
+  /**
+   * Adds a new ban rule on the selected virtual server.
+   * All parameters are optional but at least one of the following must be set: ip, name, uid or mytsid.
+   * @version 1.14
+   * @async
+   * @param {object} rule the ban rule to add
+   * @param {string} [rule.ip] ip regular expression
+   * @param {string} [rule.name] name regular expression
+   * @param {string} [rule.uid] uid regular expression
+   * @param {string} [rule.mytsid] myteamspeak id, use "empty" to ban all clients without connected myteamspeak
+   * @param {string} [rule.time] bantime in seconds, if left empty it will result in a permaban
+   * @param {string} [rule.banreason] ban reason
+   * @returns {Promise.<object>}
+   */
+  ban({ ip, name, uid, mytsid, time, banreason }) {
+    return this.execute("banadd", { ip, name, uid, mytsid, time, banreason })
   }
 
 
