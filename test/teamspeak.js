@@ -849,16 +849,11 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "banlist")
   })
 
-  it("should verify parameters of #banAdd()", async () => {
-    await ts3.banAdd("127.0.0.1", null, null, null, "spam")
+  it("should verify parameters of #ban()", async () => {
+    const rule = { ip: "127.0.0.1", uid: "something=", name: "FooBar", mytsid: "empty", banreason: "spam", time: 60 }
+    await ts3.ban({ ...rule })
     assert.calledOnce(stub)
-    assert.calledWith(stub, "banadd", {
-      ip: "127.0.0.1",
-      name: null,
-      uid: null,
-      time: null,
-      banreason: "spam"
-    })
+    assert.calledWith(stub, "banadd", { ...rule })
   })
 
   describe("#banDel()", () => {

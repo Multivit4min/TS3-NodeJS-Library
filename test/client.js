@@ -69,7 +69,7 @@ describe("TeamSpeakClient", () => {
       const timer = setTimeout(() => done(), 50)
       client.on("message", () => {
         clearTimeout(timer)
-        done(Error("Event got fired which should not fire"))
+        done(new Error("Event got fired which should not fire"))
       })
       ts3.emit("textmessage", {
         msg: "Text Message Content",
@@ -93,7 +93,7 @@ describe("TeamSpeakClient", () => {
       const timer = setTimeout(() => done(), 50)
       client.on("disconnect", () => {
         clearTimeout(timer)
-        done(Error("Event got fired which should not fire"))
+        done(new Error("Event got fired which should not fire"))
       })
       ts3.emit("clientdisconnect", { client: { clid: 25 } })
     })
@@ -112,7 +112,7 @@ describe("TeamSpeakClient", () => {
       const timer = setTimeout(() => done(), 50)
       client.on("move", () => {
         clearTimeout(timer)
-        done(Error("Event got fired which should not fire"))
+        done(new Error("Event got fired which should not fire"))
       })
       ts3.emit("clientmoved", {
         channel: "Fake Payload",
@@ -184,9 +184,10 @@ describe("TeamSpeakClient", () => {
     await client.ban("Ban Reason", 60)
     assert.calledOnce(stub)
     assert.calledWith(stub, "banadd", {
-      ip: null,
-      name: null,
+      ip: undefined,
+      name: undefined,
       uid: rawClient.client_unique_identifier,
+      mytsid: undefined,
       time: 60,
       banreason: "Ban Reason"
     })
