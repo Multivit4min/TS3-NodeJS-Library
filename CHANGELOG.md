@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.14.0 - 24.5.2019
++ added possibility to ban clients using the mytsid
++ added TeamSpeak3#ban method
+- deprecated TeamSpeak3#banAdd method
+
 ### 1.13.1 - 19.4.2019
 * fixed `null` type when adding it as flag
 
