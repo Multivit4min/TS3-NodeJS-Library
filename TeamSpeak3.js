@@ -145,19 +145,20 @@ class TeamSpeak3 extends EventEmitter {
    * @param {object} event the raw teamspeak event
    */
   _evcliententerview(event) {
-    this._clients[event.clid] = new TeamSpeakClient(this, event)
+    this.clientList()
+      .then(clients => {
+        const client = clients.find(client => client.getID() === event.clid)
 
-    /**
-     * Client Join Event
-     * @event TeamSpeak3#clientconnect
-     * @memberof TeamSpeak3
-     * @type {object}
-     * @property {TeamSpeakClient} client - The Client which joined the Server
-     */
-    super.emit("clientconnect", {
-      client: this._clients[String(event.clid)],
-      cid: event.ctid
-    })
+        /**
+         * Client Join Event
+         * @event TeamSpeak3#clientconnect
+         * @memberof TeamSpeak3
+         * @type {object}
+         * @property {TeamSpeakClient} client - The Client which joined the Server
+         */
+        super.emit("clientconnect", { client, cid: event.ctid })
+      })
+      .catch(error => this.emit("error", error))
   }
 
 
@@ -179,7 +180,7 @@ class TeamSpeak3 extends EventEmitter {
      * @property {object} event - The Data from the disconnect event
      */
     super.emit("clientdisconnect", {
-      client: (String(clid) in this._clients) ? this._clients[clid].getCache() : { clid },
+      client: (String(clid) in this._clients) ? this._clients[clid].toJSON() : { clid },
       event
     })
     this._removeFromCache(this._clients, clid)
@@ -1769,10 +1770,12 @@ class TeamSpeak3 extends EventEmitter {
    * Displays a list of active bans on the selected virtual server.
    * @version 1.0
    * @async
+   * @param {number} [start] optional start from where clients should be listed
+   * @param {number} [duration] optional duration on how much ban entries should be retrieved
    * @returns {Promise.<object>}
    */
-  banList() {
-    return this.execute("banlist").then(TeamSpeak3.toArray)
+  banList(start, duration) {
+    return this.execute("banlist", { start, duration }).then(TeamSpeak3.toArray)
   }
 
 
