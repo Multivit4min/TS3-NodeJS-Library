@@ -25,18 +25,24 @@ class SSH extends EventEmitter {
     super()
     this._data = ""
     this._ssh = new Client()
-    this._ssh
-      .on("ready", this._handleReady.bind(this))
-      .on("banner", this._handleData.bind(this))
-      .on("error", this._handleError.bind(this))
-      .on("close", this._handleClose.bind(this))
-      .connect({
-        host: config.host,
-        port: config.queryport,
-        username: config.username,
-        password: config.password,
-        readyTimeout: config.readyTimeout
-      })
+    process.nextTick(() => {
+      try {
+        this._ssh
+          .on("ready", this._handleReady.bind(this))
+          .on("banner", this._handleData.bind(this))
+          .on("error", this._handleError.bind(this))
+          .on("close", this._handleClose.bind(this))
+          .connect({
+            host: config.host,
+            port: config.queryport,
+            username: config.username,
+            password: config.password,
+            readyTimeout: config.readyTimeout
+          })
+      } catch (e) {
+        this._handleError(e)
+      }
+    })
   }
 
 
@@ -67,7 +73,6 @@ class SSH extends EventEmitter {
 
   /**
    * Called when the Socket emits an error
-   * Splits the data with every newline
    *
    * @version 1.8
    */
