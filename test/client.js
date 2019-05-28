@@ -86,7 +86,7 @@ describe("TeamSpeakClient", () => {
   describe("event#disconnect", () => {
     it("should check if the event gets fired with correct parameters", done => {
       client.on("disconnect", () => done())
-      ts3.emit("clientdisconnect", { client: client.getCache() })
+      ts3.emit("clientdisconnect", { client: client.toJSON() })
     })
     it("should check if the event gets not fired when its not meant for the client", function(done) {
       this.slow(4000)

@@ -305,14 +305,14 @@ describe("TeamSpeak3", () => {
     stub.onCall(0).resolves(mockResponse.channellist)
     const channel = await ts3.getChannelByID(3)
     assert.match(channel.constructor.name, "TeamSpeakChannel")
-    assert.match(channel.getCache().cid, 3)
+    assert.match(channel.cid, 3)
   })
 
   it("should verify parameters of #getChannelByName()", async () => {
     stub.onCall(0).resolves(mockResponse.channellist)
     const channel = await ts3.getChannelByName("Channel 3")
     assert.match(channel.constructor.name, "TeamSpeakChannel")
-    assert.match(channel.getCache().cid, 3)
+    assert.match(channel.cid, 3)
   })
 
   it("should verify parameters of #channelInfo()", async () => {
@@ -398,28 +398,28 @@ describe("TeamSpeak3", () => {
     stub.onCall(0).resolves(mockResponse.clientlist)
     const client = await ts3.getClientByID(3)
     assert.match(client.constructor.name, "TeamSpeakClient")
-    assert.match(client.getCache().clid, 3)
+    assert.match(client.clid, 3)
   })
 
   it("should verify parameters of #getClientByDBID()", async () => {
     stub.onCall(0).resolves(mockResponse.clientlist)
     const client = await ts3.getClientByDBID(4)
     assert.match(client.constructor.name, "TeamSpeakClient")
-    assert.match(client.getCache().client_database_id, 4)
+    assert.match(client.databaseId, 4)
   })
 
   it("should verify parameters of #getClientByUID()", async () => {
     stub.onCall(0).resolves(mockResponse.clientlist)
     const client = await ts3.getClientByUID("NF61yPIiDvYuOJ/Bbeod84bw6dE=")
     assert.match(client.constructor.name, "TeamSpeakClient")
-    assert.match(client.getCache().client_unique_identifier, "NF61yPIiDvYuOJ/Bbeod84bw6dE=")
+    assert.match(client.uniqueIdentifier, "NF61yPIiDvYuOJ/Bbeod84bw6dE=")
   })
 
   it("should verify parameters of #getClientByName()", async () => {
     stub.onCall(0).resolves(mockResponse.clientlist)
     const channel = await ts3.getClientByName("Multivitamin | David")
     assert.match(channel.constructor.name, "TeamSpeakClient")
-    assert.match(channel.getCache().client_nickname, "Multivitamin | David")
+    assert.match(channel.nickname, "Multivitamin | David")
   })
 
   it("should verify parameters of #clientInfo()", async () => {
@@ -548,28 +548,28 @@ describe("TeamSpeak3", () => {
     stub.onCall(0).resolves(mockResponse.servergrouplist)
     const group = await ts3.getServerGroupByID(4)
     assert.match(group.constructor.name, "TeamSpeakServerGroup")
-    assert.match(group.getCache().name, "Normal")
+    assert.match(group.name, "Normal")
   })
 
   it("should verify parameters of #getServerGroupByName()", async () => {
     stub.onCall(0).resolves(mockResponse.servergrouplist)
     const group = await ts3.getServerGroupByName("Normal")
     assert.match(group.constructor.name, "TeamSpeakServerGroup")
-    assert.match(group.getCache().name, "Normal")
+    assert.match(group.name, "Normal")
   })
 
   it("should verify parameters of #getChannelGroupByID()", async () => {
     stub.onCall(0).resolves(mockResponse.channelgrouplist)
     const group = await ts3.getChannelGroupByID(7)
     assert.match(group.constructor.name, "TeamSpeakChannelGroup")
-    assert.match(group.getCache().cgid, 7)
+    assert.match(group.cgid, 7)
   })
 
   it("should verify parameters of #getChannelGroupByName()", async () => {
     stub.onCall(0).resolves(mockResponse.channelgrouplist)
     const group = await ts3.getChannelGroupByName("Voice")
     assert.match(group.constructor.name, "TeamSpeakChannelGroup")
-    assert.match(group.getCache().cgid, 7)
+    assert.match(group.cgid, 7)
   })
 
   it("should verify parameters of #setClientChannelGroup()", async () => {
@@ -844,9 +844,9 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #banList()", async () => {
-    await ts3.banList()
+    await ts3.banList(5, 10)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "banlist")
+    assert.calledWith(stub, "banlist", { start: 5, duration: 10 })
   })
 
   it("should verify parameters of #ban()", async () => {
@@ -1032,11 +1032,18 @@ describe("TeamSpeak3", () => {
 
   it("should receive and handle the event clientconnect", done => {
     try {
+      stub.onCall(0).resolves([{
+        ctid: 10,
+        client_unique_identifier: "uid=",
+        clid: 4,
+        client_database_id: 1,
+        client_type: 0
+      }])
       ts3.once("clientconnect", ev => {
         deepEqual(ev.client.constructor.name, "TeamSpeakClient")
         deepEqual(ev.client.getID(), 4)
         deepEqual(ev.cid, 10)
-        assert.notCalled(stub)
+        assert.calledOnce(stub)
         done()
       })
       // eslint-disable-next-line no-underscore-dangle
@@ -1092,7 +1099,7 @@ describe("TeamSpeak3", () => {
         deepEqual(ev.client.constructor.name, "TeamSpeakClient")
         deepEqual(ev.client.getID(), 10)
         deepEqual(ev.channel.constructor.name, "TeamSpeakChannel")
-        deepEqual(ev.channel.getCache().cid, 3)
+        deepEqual(ev.channel.cid, 3)
         deepEqual(ev.reasonid, 4)
         assert.calledTwice(stub)
         done()
