@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.15.0 - pending
++ added pagination parameter to TeamSpeak3#banList for server version 3.8.0
++ added deprecation warning to Abstract#getCache()
+* fixed a non catchable error when connecting with ssh to a server
+* get client properties from clientlist when teamspeak event clientconnect gets fires
+* improved documentation for Client/Server/Channel/... getters
+
 ### 1.14.0 - 24.5.2019
 + added possibility to ban clients using the mytsid
 + added TeamSpeak3#ban method
