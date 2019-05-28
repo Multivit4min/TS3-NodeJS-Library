@@ -127,10 +127,13 @@ class Abstract extends EventEmitter {
 
   /**
    * Returns the data from the last List Command
+   * @deprecated
    * @version 1.0
    * @return {object}
    */
   getCache() {
+    console.log(`WARNING: Abstract#getCache() is deprecated please use the respective getters`)
+    console.log(`WARNING: you can find a list of available getters on https://multivit4min.github.io/TS3-NodeJS-Library/#teamspeak${this._namespace}`)
     return this._propcache
   }
 
