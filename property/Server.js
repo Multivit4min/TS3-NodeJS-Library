@@ -18,6 +18,17 @@ const Abstract = require("./Abstract")
 /**
  * Class representing a TeamSpeak Server
  * @extends Abstract
+ * @property {number} id
+ * @property {number} port
+ * @property {string} status
+ * @property {number} clientsonline
+ * @property {number} queryclientsonline
+ * @property {number} maxclients
+ * @property {number} uptime
+ * @property {string} name
+ * @property {number} autostart
+ * @property {string} machineId
+ * @property {string} uniqueIdentifier
  */
 class TeamSpeakServer extends Abstract {
 
@@ -47,6 +58,7 @@ class TeamSpeakServer extends Abstract {
 
   /**
    * Gets basic Infos about the Server
+   * @deprecated
    * @version 1.0
    * @async
    * @returns {Promise.<object>}

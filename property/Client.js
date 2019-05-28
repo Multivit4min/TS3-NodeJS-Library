@@ -22,6 +22,35 @@ const FileTransfer = require("./../transport/FileTransfer")
 /**
  * Class representing a TeamSpeak Client
  * @extends Abstract
+ * @property {number} clid
+ * @property {number} cid
+ * @property {number} databaseId
+ * @property {string} nickname
+ * @property {number} type
+ * @property {number} away
+ * @property {string} awayMessage
+ * @property {number} flagTalking
+ * @property {number} inputMuted
+ * @property {number} outputMuted
+ * @property {number} inputHardware
+ * @property {number} outputHardware
+ * @property {number} talkPower
+ * @property {number} isTalker
+ * @property {number} isPrioritySpeaker
+ * @property {number} isRecording
+ * @property {number} isChannelCommander
+ * @property {string} uniqueIdentifier
+ * @property {number[]} servergroups
+ * @property {number} channelGroupId
+ * @property {number} channelGroupInheritedChannelId
+ * @property {string} version
+ * @property {string} platform
+ * @property {number} idleTime
+ * @property {number} created
+ * @property {number} lastconnected
+ * @property {number} iconId
+ * @property {string} country
+ * @property {string} connectionClientIp
  */
 class TeamSpeakClient extends Abstract {
 
@@ -123,8 +152,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {string} returns the TeamSpeak Client URL as Link
    */
   getURL() {
-    const nick = super.getCache().client_nickname
-    return `[URL=client://${this._static.clid}/${this._static.uid}~${encodeURIComponent(nick)}]${nick}[/URL]`
+    return `[URL=client://${this.clid}/${this.uniqueIdentifier}~${encodeURIComponent(this.nickname)}]${this.nickname}[/URL]`
   }
 
 

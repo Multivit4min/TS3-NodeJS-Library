@@ -9,7 +9,7 @@
 /**
  * the response of the channellist command for a single channel
  * @typedef {object} ChannelListResponse
- * @property {number} id the current id of the channel
+ * @property {number} cid the current id of the channel
  * @property {...any} [any]
  */
 
@@ -18,6 +18,25 @@ const Abstract = require("./Abstract")
 /**
  * Class representing a TeamSpeak Channel
  * @extends Abstract
+ * @property {number} cid
+ * @property {number} pid
+ * @property {number} order
+ * @property {string} name
+ * @property {string} topic
+ * @property {number} flagDefault
+ * @property {number} flagPassword
+ * @property {number} flagPermanent
+ * @property {number} flagSemiPermanent
+ * @property {number} codec
+ * @property {number} codecQuality
+ * @property {number} neededTalkPower
+ * @property {number} iconId
+ * @property {number} secondsEmpty
+ * @property {number} totalClientsFamily
+ * @property {number} maxclients
+ * @property {number} maxfamilyclients
+ * @property {number} totalClients
+ * @property {number} neededSubscribePower
  */
 class TeamSpeakChannel extends Abstract {
 

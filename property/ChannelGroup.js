@@ -18,6 +18,16 @@ const Abstract = require("./Abstract")
 /**
  * Class representing a TeamSpeak ChannelGroup
  * @extends Abstract
+ * @property {number} cgid
+ * @property {string} name
+ * @property {number} type
+ * @property {number} iconid
+ * @property {number} savedb
+ * @property {number} sortid
+ * @property {number} namemode
+ * @property {number} nModifyp
+ * @property {number} nMemberAddp
+ * @property {number} nMemberRemovep
  */
 class TeamSpeakChannelGroup extends Abstract {
 
