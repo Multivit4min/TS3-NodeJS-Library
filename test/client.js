@@ -280,6 +280,18 @@ describe("TeamSpeakClient", () => {
     assert.calledWith(stub, "clientdbinfo", { cldbid: rawClient.client_database_id })
   })
 
+  it("should validate the return value of #getIcon()", done => {
+    stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
+    stub.onCall(1).resolves({ size: 0, msg: "nok" })
+    client.getIcon()
+      .then(() => done("Expected Promise to reject!"))
+      .catch(err => {
+        assert.calledTwice(stub)
+        assert.match(err.message, "nok")
+        done()
+      })
+  })
+
   it("should validate the return value of #getIconName()", async () => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
     const name = await client.getIconName()
