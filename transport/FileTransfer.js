@@ -41,18 +41,14 @@ class FileTransfer {
   download(ftkey, size) {
     return new Promise((fulfill, reject) => {
       this._init(ftkey)
-        .then(socket => {
-          const timer = setTimeout(() => {
-            socket.destroy()
-            reject(new Error("Filetransfer Timeout Limit reached"))
-          }, this.timeout)
-          socket.on("error", reject)
+        .then(({ socket, timeout }) => {
+          socket.once("error", reject)
           socket.on("data", data => {
             this.buffer.push(data)
             this.bytesreceived += data.byteLength
             if (this.bytesreceived === size) {
               socket.destroy()
-              clearTimeout(timer)
+              clearTimeout(timeout)
               fulfill(Buffer.concat(this.buffer))
             }
           })
@@ -72,14 +68,11 @@ class FileTransfer {
   upload(ftkey, data) {
     return new Promise((fulfill, reject) => {
       this._init(ftkey)
-        .then(socket => {
-          const timer = setTimeout(() => {
-            socket.destroy()
-            reject(new Error("Filetransfer Timeout Limit reached"))
-          }, this.timeout)
-          socket.on("error", reject)
+        .then(({ socket, timeout }) => {
+          socket.once("error", reject)
           socket.on("close", () => {
-            clearTimeout(timer)
+            clearTimeout(timeout)
+            socket.removeListener("error", reject)
             fulfill()
           })
           socket.write(data)
@@ -98,15 +91,18 @@ class FileTransfer {
    */
   _init(ftkey) {
     return new Promise((fulfill, reject) => {
-      let didFulfill = false
-      this.socket = new net.Socket()
-      this.socket.connect(this.port, this.host)
-      this.socket.on("connect", () => {
-        if (typeof ftkey === "string") this.socket.write(ftkey)
-        didFulfill = true
-        fulfill(this.socket)
+      const socket = new net.Socket()
+      const timeout = setTimeout(() => {
+        socket.destroy()
+        reject(new Error("Filetransfer Timeout Limit reached"))
+      }, this.timeout)
+      socket.connect(this.port, this.host)
+      socket.on("connect", () => {
+        if (typeof ftkey === "string") socket.write(ftkey)
+        socket.removeListener("error", reject)
+        fulfill({ socket, timeout })
       })
-      this.socket.on("error", err => didFulfill ? reject(err) : null)
+      socket.once("error", reject)
     })
   }
 
