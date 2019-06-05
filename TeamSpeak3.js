@@ -32,22 +32,16 @@ class TeamSpeak3 extends EventEmitter {
     super()
 
     this._config = {
-      protocol: config.protocol || "raw",
-      host: config.host || "127.0.0.1",
-      queryport: config.queryport || 10011,
-      serverport: config.serverport,
-      username: config.username,
-      password: config.password,
-      nickname: config.nickname,
-      readyTimeout: config.readyTimeout || 20000
+      protocol: "raw",
+      host: "127.0.0.1",
+      queryport: 10011,
+      readyTimeout: 20000,
+      keepAlive: true,
+      ...config
     }
 
+    this._resetCache()
     this._build = 0
-    this._clients = {}
-    this._channels = {}
-    this._servergroups = {}
-    this._channelgroups = {}
-    this._servers = {}
 
     this._ts3 = new TS3Query(this._config)
 
@@ -129,8 +123,8 @@ class TeamSpeak3 extends EventEmitter {
         .catch(e => super.emit("error", e))
     }
     this.version()
-      .then(version => {
-        this._build = version.build
+      .then(({ build }) => {
+        this._build = build
         postInit()
       })
       .catch(e => {
@@ -461,6 +455,25 @@ class TeamSpeak3 extends EventEmitter {
    */
   registerEvent(event, id) {
     return this.execute("servernotifyregister", { event, id })
+      .then(res => {
+        this._notifyevents.push({ event, id })
+        return res
+      })
+  }
+
+
+  /**
+   * Subscribes to an Event.
+   * @version 1.0
+   * @async
+   * @returns {Promise.<object>}
+   */
+  unregisterEvent() {
+    return this.execute("servernotifyunregister")
+      .then(res => {
+        this._resetCache()
+        return res
+      })
   }
 
 
@@ -484,7 +497,11 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   logout() {
-    return this._cacheCleanUp(this.execute("logout"))
+    return this.execute("logout")
+      .then(res => {
+        this._resetCache()
+        return res
+      })
   }
 
 
@@ -555,7 +572,12 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   useByPort(port, client_nickname) {
-    return this._cacheCleanUp(this.execute("use", { port, client_nickname }))
+    return this.execute("use", { port, client_nickname })
+      .then(res => {
+        this._resetCache()
+        this._selected.port = port
+        return res
+      })
   }
 
 
@@ -568,7 +590,12 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   useBySid(sid, client_nickname) {
-    return this._cacheCleanUp(this.execute("use", [sid], { client_nickname }))
+    return this.execute("use", [sid], { client_nickname })
+      .then(res => {
+        this._resetCache()
+        this._selected.sid = sid
+        return res
+      })
   }
 
 
@@ -654,11 +681,11 @@ class TeamSpeak3 extends EventEmitter {
   serverCreate(properties) {
     let servertoken = ""
     return this.execute("servercreate", properties)
-      .then(({token, sid}) => {
+      .then(({ token, sid }) => {
         servertoken = token
-        return this.serverList({virtualserver_id: sid})
+        return this.serverList({ virtualserver_id: sid })
       })
-      .then(server => new Promise(fulfill => fulfill({ server: server[0], token: servertoken })))
+      .then(([server]) => ({ server, token: servertoken }))
   }
 
 
@@ -859,13 +886,13 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {string} name - The Name of the Channel
    * @param {object} [properties={}] - Properties of the Channel
-   * @returns {Promise.<object>}
+   * @returns {Promise.<TeamSpeakChannel>}
    */
   channelCreate(name, properties = {}) {
     properties.channel_name = name
     return this.execute("channelcreate", properties)
       .then(({cid}) => this.channelList({ cid }))
-      .then(c => new Promise(fulfill => fulfill(c[0])))
+      .then(([channel]) => channel)
   }
 
 
@@ -881,7 +908,7 @@ class TeamSpeak3 extends EventEmitter {
   channelGroupCreate(name, type = 1) {
     return this.execute("channelgroupadd", { name, type })
       .then(({cgid}) => this.channelGroupList({ cgid }))
-      .then(g => new Promise(fulfill => fulfill(g[0])))
+      .then(([group]) => group)
   }
 
 
@@ -893,11 +920,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
    */
   getChannelByID(cid) {
-    return new Promise((fulfill, reject) => {
-      this.channelList({ cid })
-        .then(channel => fulfill(channel[0]))
-        .catch(reject)
-    })
+    return this.channelList({ cid })
+      .then(([channel]) => channel)
   }
 
 
@@ -909,11 +933,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise<TeamSpeakChannel>} Promise object which returns the Channel Object or undefined if not found
    */
   getChannelByName(channel_name) {
-    return new Promise((fulfill, reject) => {
-      this.channelList({ channel_name })
-        .then(channel => fulfill(channel[0]))
-        .catch(reject)
-    })
+    return this.channelList({ channel_name })
+      .then(([channel]) => channel)
   }
 
 
@@ -1046,11 +1067,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
    */
   getClientByID(clid) {
-    return new Promise((fulfill, reject) => {
-      this.clientList({ clid })
-        .then(clients => fulfill(clients[0]))
-        .catch(reject)
-    })
+    return this.clientList({ clid })
+      .then(([client]) => client)
   }
 
 
@@ -1062,11 +1080,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
    */
   getClientByDBID(client_database_id) {
-    return new Promise((fulfill, reject) => {
-      this.clientList({ client_database_id })
-        .then(clients => fulfill(clients[0]))
-        .catch(reject)
-    })
+    return this.clientList({ client_database_id })
+      .then(([client]) => client)
   }
 
 
@@ -1078,11 +1093,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
    */
   getClientByUID(client_unique_identifier) {
-    return new Promise((fulfill, reject) => {
-      this.clientList({ client_unique_identifier })
-        .then(clients => fulfill(clients[0]))
-        .catch(reject)
-    })
+    return this.clientList({ client_unique_identifier })
+      .then(([client]) => client)
   }
 
 
@@ -1094,11 +1106,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakClient>} Promise object which returns the Client or undefined if not found
    */
   getClientByName(client_nickname) {
-    return new Promise((fulfill, reject) => {
-      this.clientList({ client_nickname })
-        .then(clients => fulfill(clients[0]))
-        .catch(reject)
-    })
+    return this.clientList({ client_nickname })
+      .then(([client]) => client)
   }
 
 
@@ -1314,11 +1323,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
    */
   getServerGroupByID(sgid) {
-    return new Promise((fulfill, reject) => {
-      this.serverGroupList({ sgid })
-        .then(groups => fulfill(groups[0]))
-        .catch(reject)
-    })
+    return this.serverGroupList({ sgid })
+      .then(([group]) => group)
   }
 
 
@@ -1330,11 +1336,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakServerGroup>} Promise object which returns the ServerGroup or undefined if not found
    */
   getServerGroupByName(name) {
-    return new Promise((fulfill, reject) => {
-      this.serverGroupList({ name })
-        .then(groups => fulfill(groups[0]))
-        .catch(reject)
-    })
+    return this.serverGroupList({ name })
+      .then(([group]) => group)
   }
 
 
@@ -1346,11 +1349,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakChannelGroup>} Promise object which returns the ChannelGroup or undefined if not found
    */
   getChannelGroupByID(cgid) {
-    return new Promise((fulfill, reject) => {
-      this.channelGroupList({ cgid })
-        .then(groups => fulfill(groups[0]))
-        .catch(reject)
-    })
+    return this.channelGroupList({ cgid })
+      .then(([group]) => group)
   }
 
 
@@ -1362,11 +1362,8 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<TeamSpeakChannelGroup>} Promise object which returns the ChannelGroup or undefined if not found
    */
   getChannelGroupByName(name) {
-    return new Promise((fulfill, reject) => {
-      this.channelGroupList({ name })
-        .then(groups => fulfill(groups[0]))
-        .catch(reject)
-    })
+    return this.channelGroupList({ name })
+      .then(([group]) => group)
   }
 
 
@@ -1927,7 +1924,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(TeamSpeak3.toArray)
       .then(servers => this._handleCache(this._servers, servers, "virtualserver_id", TeamSpeakServer))
       .then(servers => TeamSpeak3.filter(servers, filter))
-      .then(servers => Promise.resolve(servers.map(s => this._servers[s.virtualserver_id])))
+      .then(servers => servers.map(s => this._servers[s.virtualserver_id]))
   }
 
 
@@ -1943,7 +1940,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(TeamSpeak3.toArray)
       .then(groups => this._handleCache(this._channelgroups, groups, "cgid", TeamSpeakChannelGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
-      .then(groups => Promise.resolve(groups.map(g => this._channelgroups[g.cgid])))
+      .then(groups => groups.map(g => this._channelgroups[g.cgid]))
   }
 
 
@@ -1960,7 +1957,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(TeamSpeak3.toArray)
       .then(groups => this._handleCache(this._servergroups, groups, "sgid", TeamSpeakServerGroup))
       .then(groups => TeamSpeak3.filter(groups, filter))
-      .then(groups => Promise.resolve(groups.map(g => this._servergroups[g.sgid])))
+      .then(groups => groups.map(g => this._servergroups[g.sgid]))
   }
 
 
@@ -1976,7 +1973,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(TeamSpeak3.toArray)
       .then(channels => this._handleCache(this._channels, channels, "cid", TeamSpeakChannel))
       .then(channels => TeamSpeak3.filter(channels, filter))
-      .then(channels => Promise.resolve(channels.map(c => this._channels[c.cid])))
+      .then(channels => channels.map(c => this._channels[c.cid]))
   }
 
 
@@ -1992,7 +1989,7 @@ class TeamSpeak3 extends EventEmitter {
       .then(TeamSpeak3.toArray)
       .then(clients => this._handleCache(this._clients, clients, "clid", TeamSpeakClient))
       .then(clients => TeamSpeak3.filter(clients, filter))
-      .then(clients => Promise.resolve(clients.map(c => this._clients[String(c.clid)])))
+      .then(clients => clients.map(c => this._clients[String(c.clid)]))
   }
 
 
@@ -2214,30 +2211,34 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-   * Cleans up the cache after a server deselect
+   * Forcefully closes the socket connection
    * @version 1.0
    * @async
-   * @private
-   * @param {object} promise - The Promise which will be waited for before the cleanup
-   * @returns {Promise.<object>}
    */
-  _cacheCleanUp(promise) {
-    return new Promise((fulfill, reject) => {
-      promise.then(res => {
-        this._servergroups = []
-        this._channels = []
-        this._clients = []
-        this._channelgroups = []
-        fulfill(res)
-      }).catch(reject)
-    })
+  forceQuit() {
+    return this._ts3.forceQuit()
+  }
+
+
+  /**
+   * Resets the cache to default values
+   * @version 1.0
+   * @private
+   */
+  _resetCache() {
+    this._servers = []
+    this._servergroups = []
+    this._channels = []
+    this._clients = []
+    this._channelgroups = []
+    this._notifyevents = []
+    this._selected = { port: 0, sid: 0 }
   }
 
 
   /**
    * Parses the whole Cache by given Objects
    * @version 1.0
-   * @async
    * @private
    * @param {object} cache - The Cache Object
    * @param {object} list - The List to check against the Cache
@@ -2246,20 +2247,18 @@ class TeamSpeak3 extends EventEmitter {
    * @returns {Promise.<object>}
    */
   _handleCache(cache, list, key, Class) {
-    return new Promise(fulfill => {
-      const remainder = Object.keys(cache)
-      list.forEach(l => {
-        const k = String(l[key])
-        if (remainder.includes(k)) {
-          cache[k].updateCache(l)
-          remainder.splice(remainder.indexOf(k), 1)
-        } else {
-          cache[k] = new Class(this, l)
-        }
-      })
-      remainder.forEach(k => this._removeFromCache(cache, k))
-      fulfill(list)
+    const remainder = Object.keys(cache)
+    list.forEach(l => {
+      const k = String(l[key])
+      if (remainder.includes(k)) {
+        cache[k].updateCache(l)
+        remainder.splice(remainder.indexOf(k), 1)
+      } else {
+        cache[k] = new Class(this, l)
+      }
     })
+    remainder.forEach(k => this._removeFromCache(cache, k))
+    return list
   }
 
 
@@ -2283,24 +2282,21 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {any[]} array - The Object which should get filtered
    * @param {object} filter - Filter Object
-   * @returns {Promise.<object[]>}
+   * @returns {object[]}
    */
   static filter(array, filter) {
-    return new Promise(fulfill => {
-      if (!Array.isArray(array)) array = [array]
-      if (Object.keys(filter).length === 0)
-        return fulfill(array)
-      fulfill(array.filter(a => !Object.keys(filter).some(k => {
-        if (!(k in a)) return true
-        if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
-        if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
-        switch (typeof a[k]) {
-          case "number": return a[k] !== parseFloat(filter[k])
-          case "string": return a[k] !== filter[k]
-          default: return false
-        }
-      })))
-    })
+    if (!Array.isArray(array)) array = [array]
+    if (Object.keys(filter).length === 0) return array
+    return array.filter(a => !Object.keys(filter).some(k => {
+      if (!(k in a)) return true
+      if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
+      if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
+      switch (typeof a[k]) {
+        case "number": return a[k] !== parseFloat(filter[k])
+        case "string": return a[k] !== filter[k]
+        default: return false
+      }
+    }))
   }
 
 
@@ -2310,14 +2306,12 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @version 1.0
    * @param {any} input input data which should be converted to an array
-   * @returns {Promise.<any[]>}
+   * @returns {any[]}
    */
   static toArray(input) {
-    return new Promise(fulfill => {
-      if (typeof input === "undefined" || input === null) return fulfill([])
-      if (!Array.isArray(input)) return fulfill([input])
-      fulfill(input)
-    })
+    if (typeof input === "undefined" || input === null) return []
+    if (!Array.isArray(input)) return [input]
+    return input
   }
 
 }
@@ -2336,4 +2330,5 @@ module.exports = TeamSpeak3
  * @property {string} [password] - The password to authenticate with the TeamSpeak Server
  * @property {string} [nickname] - The Nickname the Client should have
  * @property {number} [readyTimeout=20000] - Maximum wait time for the connection to get established
+ * @property {boolean} [keepAlive=true] - wether a keepalive should be sent or not
  */
