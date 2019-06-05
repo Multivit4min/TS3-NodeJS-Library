@@ -26,7 +26,7 @@ class TS3Query extends EventEmitter {
    */
   constructor(config) {
     super()
-    this.protocol = config.protocol || "raw"
+    this.config = { protocol: "raw", ...config }
     this.queue = []
     this.ignoreLines = 2
     this.lastline = ""
@@ -42,10 +42,10 @@ class TS3Query extends EventEmitter {
       "notifyclientmoved",
       "notifycliententerview"
     ]
-    if (this.protocol === "raw") {
-      this.socket = new RAW(config)
-    } else if (this.protocol === "ssh") {
-      this.socket = new SSH(config)
+    if (this.config.protocol === "raw") {
+      this.socket = new RAW(this.config)
+    } else if (this.config.protocol === "ssh") {
+      this.socket = new SSH(this.config)
     } else {
       throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
     }
@@ -192,6 +192,7 @@ class TS3Query extends EventEmitter {
    * @version 1.0
    */
   keepAlive() {
+    if (!this.config.keepAlive) return
     clearTimeout(this.keepalivetimer)
     this.keepalivetimer = setTimeout(() => {
       this.emit("debug", { type: "keepalive" })
@@ -259,16 +260,23 @@ class TS3Query extends EventEmitter {
   }
 
   /**
-     * Sends data to the socket
-     * @version 1.8
-     * @private
-     * @param {string} raw - the data which should get sent
-     */
+   * Sends data to the socket
+   * @version 1.8
+   * @private
+   * @param {string} raw - the data which should get sent
+   */
   send(raw) {
     this.lastcmd = Date.now()
     this.emit("debug", { type: "send", data: raw })
     this.socket.send(raw)
     this.keepAlive()
+  }
+
+  /**
+   * Forcefully closes the socket connection
+   */
+  forceQuit() {
+    return this.socket.close()
   }
 }
 
