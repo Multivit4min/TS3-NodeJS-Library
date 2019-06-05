@@ -758,7 +758,8 @@ describe("TeamSpeak3", () => {
       tokentype: 0,
       tokenid1: 10,
       tokenid2: 0,
-      description: "Server Group Token"
+      tokendescription: "Server Group Token",
+      tokencustomset: ""
     })
   })
 
@@ -768,7 +769,9 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "privilegekeyadd", {
       tokentype: 0,
       tokenid1: 10,
-      tokenid2: 0
+      tokenid2: 0,
+      tokendescription: "",
+      tokencustomset: ""
     })
   })
 
@@ -779,7 +782,8 @@ describe("TeamSpeak3", () => {
       tokentype: 0,
       tokenid1: 10,
       tokenid2: 0,
-      description: "Server Group Token"
+      tokendescription: "Server Group Token",
+      tokencustomset: ""
     })
   })
 
@@ -790,7 +794,8 @@ describe("TeamSpeak3", () => {
       tokentype: 1,
       tokenid1: 10,
       tokenid2: 5,
-      description: "Channel Group Token"
+      tokendescription: "Channel Group Token",
+      tokencustomset: ""
     })
   })
 
@@ -818,7 +823,7 @@ describe("TeamSpeak3", () => {
     assert.calledWith(stub, "messageadd", {
       cluid: "uniqueidentifier=",
       subject: "title",
-      text: "content"
+      message: "content"
     })
   })
 
