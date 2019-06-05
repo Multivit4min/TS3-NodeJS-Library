@@ -1,10 +1,15 @@
 /*global describe beforeEach it*/
-const { deepEqual } = require("assert")
+const assertOk = require("assert")
+const { deepEqual, strictEqual } = assertOk
 const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockArray = require("./mocks/mockArray.js")
 const mockResponse = require("./mocks/queryResponse.js")
+const TeamSpeakServer = require("../property/Server")
+const TeamSpeakServerGroup = require("../property/ServerGroup")
+const TeamSpeakChannel = require("../property/Channel")
+const TeamSpeakChannelGroup = require("../property/ChannelGroup")
 let TeamSpeak3 = require("../TeamSpeak3.js")
 
 mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
@@ -106,11 +111,15 @@ describe("TeamSpeak3", () => {
       await ts3.useByPort(9987, "Test")
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", { port: 9987, client_nickname: "Test" })
+      // eslint-disable-next-line no-underscore-dangle
+      deepEqual(ts3._selected, { port: 9987, sid: 0 })
     })
     it("should verify 1 parameter", async () => {
       await ts3.useByPort(9987)
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", { port: 9987, client_nickname: undefined })
+      // eslint-disable-next-line no-underscore-dangle
+      deepEqual(ts3._selected, { port: 9987, sid: 0 })
     })
   })
 
@@ -119,11 +128,15 @@ describe("TeamSpeak3", () => {
       await ts3.useBySid(1, "Test")
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", [1], { client_nickname: "Test" })
+      // eslint-disable-next-line no-underscore-dangle
+      deepEqual(ts3._selected, { port: 0, sid: 1 })
     })
     it("should verify 1 parameter", async () => {
       await ts3.useBySid(1)
       assert.calledOnce(stub)
       assert.calledWith(stub, "use", [1], { client_nickname: undefined })
+      // eslint-disable-next-line no-underscore-dangle
+      deepEqual(ts3._selected, { port: 0, sid: 1 })
     })
   })
 
@@ -165,7 +178,10 @@ describe("TeamSpeak3", () => {
 
   it("should verify parameters of #serverCreate()", async () => {
     stub.onCall(0).resolves({ token: "servertoken", sid: 2 })
-    await ts3.serverCreate({ virtualserver_name: "Server Name" })
+    stub.onCall(1).resolves([{ virtualserver_id: 2 }])
+    const { server, token } = await ts3.serverCreate({ virtualserver_name: "Server Name" })
+    assertOk(server instanceof TeamSpeakServer)
+    strictEqual(token, "servertoken")
     assert.calledTwice(stub)
     assert.calledWith(stub, "servercreate", { virtualserver_name: "Server Name" })
   })
@@ -197,7 +213,9 @@ describe("TeamSpeak3", () => {
 
   it("should verify parameters of #serverGroupCreate()", async () => {
     stub.onCall(0).resolves({ sgid: 2 })
-    await ts3.serverGroupCreate("New Group", 1)
+    stub.onCall(1).resolves([{ sgid: 2 }])
+    const group = await ts3.serverGroupCreate("New Group", 1)
+    assertOk(group instanceof TeamSpeakServerGroup)
     assert.calledTwice(stub)
     assert.calledWith(stub, "servergroupadd", { name: "New Group", type: 1 })
   })
@@ -289,14 +307,18 @@ describe("TeamSpeak3", () => {
 
   it("should verify parameters of #channelCreate()", async () => {
     stub.onCall(0).resolves({ cid: 2 })
-    await ts3.channelCreate("Channel Name")
+    stub.onCall(1).resolves([{ cid: 2 }])
+    const channel = await ts3.channelCreate("Channel Name")
+    assertOk(channel instanceof TeamSpeakChannel)
     assert.calledTwice(stub)
     assert.calledWith(stub, "channelcreate", { channel_name: "Channel Name" })
   })
 
   it("should verify parameters of #channelGroupCreate()", async () => {
-    stub.onCall(0).resolves({ cigd: 2 })
-    await ts3.channelGroupCreate("Channel Group Name", 0)
+    stub.onCall(0).resolves({ cgid: 2 })
+    stub.onCall(1).resolves([{ cgid: 2 }])
+    const group = await ts3.channelGroupCreate("Channel Group Name", 0)
+    assertOk(group instanceof TeamSpeakChannelGroup)
     assert.calledTwice(stub)
     assert.calledWith(stub, "channelgroupadd", { name: "Channel Group Name", type: 0 })
   })
@@ -1253,36 +1275,33 @@ describe("TeamSpeak3", () => {
 
 
   describe("#filter()", () => {
-    it("should filter an array of objects with 1 filter parameter", async () => {
+    it("should filter an array of objects with 1 filter parameter", () => {
       deepEqual(
-        await TeamSpeak3.filter(mockArray.ADVANCED, { foo: "bar" }),
+        TeamSpeak3.filter(mockArray.ADVANCED, { foo: "bar" }),
         [mockArray.ADVANCED[0], mockArray.ADVANCED[2]]
       )
     })
 
-    it("should filter an array of objects with 2 filter parameters", async () => {
+    it("should filter an array of objects with 2 filter parameters", () => {
       deepEqual(
-        await TeamSpeak3.filter(mockArray.ADVANCED, { age: 40, foo: "baz" }),
+        TeamSpeak3.filter(mockArray.ADVANCED, { age: 40, foo: "baz" }),
         [mockArray.ADVANCED[1]]
       )
     })
   })
 
   describe("#toArray()", () => {
-    it("should convert undefined to an empty array", async () => {
-      deepEqual(await TeamSpeak3.toArray(undefined), [])
+    it("should convert undefined to an empty array", () => {
+      deepEqual(TeamSpeak3.toArray(undefined), [])
     })
-    it("should convert null to an empty array", async () => {
-      deepEqual(await TeamSpeak3.toArray(null), [])
+    it("should convert null to an empty array", () => {
+      deepEqual(TeamSpeak3.toArray(null), [])
     })
-    it("should convert a single string to an array with the string in it", async () => {
-      deepEqual(await TeamSpeak3.toArray("foo bar"), ["foo bar"])
+    it("should convert a single string to an array with the string in it", () => {
+      deepEqual(TeamSpeak3.toArray("foo bar"), ["foo bar"])
     })
-    it("should do nothing with an array as argument", async () => {
-      deepEqual(
-        await TeamSpeak3.toArray(["jane doe", "john doe"]),
-        ["jane doe", "john doe"]
-      )
+    it("should do nothing with an array as argument", () => {
+      deepEqual(TeamSpeak3.toArray(["jane doe", "john doe"]), ["jane doe", "john doe"])
     })
   })
 

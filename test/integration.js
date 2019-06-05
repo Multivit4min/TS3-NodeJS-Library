@@ -20,8 +20,8 @@ const config = {
 describe("Integration Test", () => {
   let ts3 = null
 
-  after(async () => {
-    if (ts3 instanceof TeamSpeak3) await ts3.quit()
+  after(() => {
+    if (ts3 instanceof TeamSpeak3) ts3.forceQuit()
   })
 
   afterEach(() => {
