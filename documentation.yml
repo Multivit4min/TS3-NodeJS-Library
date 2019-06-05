@@ -28,4 +28,46 @@ toc:
   - ChannelGroupListResponse
   - ServerListResponse
   - ServerGroupListResponse
+  - name: types
+  - PrivilegeKeyListResponse
+  - TokenResponse
+  - PermFindResponse
+  - PermGetResponse
+  - PermissionListResponse
+  - PermOverviewResponse
+  - CustomInfoResponse
+  - CustomSearchResponse
+  - ClientDBInfoResponse
+  - ClientInfoResponse
+  - ChannelInfoResponse
+  - PermListResponse
+  - ChannelGroupCopyResponse
+  - ServerGroupCopyResponse
+  - ServerGroupClientListResponse
+  - ServerRequestConnectionInfoResponse
+  - ServerIdGetByPortResponse
+  - ServerInfoResponse
+  - WhoamiResponse
+  - BindingListResponse
+  - InstanceInfoResponse
+  - HostInfoResponse
+  - VersionResponse
+  - QueryLoginListResponse
+  - QueryLoginAddResponse
+  - ServerCreateResponse
+  - FTInitDownloadResponse
+  - FTInitUploadResponse
+  - FTGetFileInfoResponse
+  - FTGetFileListResponse
+  - ClientDBFindResponse
+  - LogViewResponse
+  - BanListResponse
+  - BanAddResponse
+  - ComplainListResponse
+  - MessageGetResponse
+  - MessageListResponse
+  - ClientDBListResponse
+  - PermIdGetByNameResponse
   - name: uncategorized
+    children:
+      - Command
