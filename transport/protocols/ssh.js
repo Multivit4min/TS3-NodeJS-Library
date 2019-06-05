@@ -113,6 +113,14 @@ class SSH extends EventEmitter {
   sendKeepAlive() {
     this._stream.write(" \n")
   }
+
+  /**
+   * Forcefully closes the socket
+   */
+  close() {
+    return this._ssh.end()
+  }
+
 }
 
 

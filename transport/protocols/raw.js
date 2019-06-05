@@ -106,6 +106,13 @@ class RAW extends EventEmitter {
     this._socket.write(" \n")
   }
 
+  /**
+   * Forcefully closes the socket
+   */
+  close() {
+    return this._socket.destroy()
+  }
+
 }
 
 module.exports = RAW
