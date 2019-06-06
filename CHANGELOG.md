@@ -5,12 +5,13 @@
 + added deprecation warning to Abstract#getCache()
 + added tokencustomset parameter to TeamSpeak3#privilegekeyadd()
 + added TeamSpeak3#forceQuit() method
++ library supports now intellisense autocomplete
++ added detailed response documentation for each query command
 * removed some unnecessary Promises
 * fixed TeamSpeak3#messageAdd parameter
 * fixed a non catchable error when connecting with ssh to a server
-* get client properties from clientlist when teamspeak event clientconnect gets fires
+* get client properties from clientlist when teamspeak event clientconnect gets fired
 * improved documentation for Client/Server/Channel/... getters
-* added detailed response documentation for each query command
 
 ### 1.14.0 - 24.5.2019
 + added possibility to ban clients using the mytsid
