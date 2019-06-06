@@ -126,7 +126,7 @@
         "no-misleading-character-class": "error",
         "no-mixed-operators": "off",
         "no-mixed-requires": "error",
-        "no-multi-assign": "error",
+        "no-multi-assign": "off",
         "no-multi-spaces": "error",
         "no-multi-str": "error",
         "no-multiple-empty-lines": "off",

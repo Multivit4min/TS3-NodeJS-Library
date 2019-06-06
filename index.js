@@ -1,1 +1,1 @@
-module.exports = require("./TeamSpeak3.js")
+module.exports = require("./src/TeamSpeak3.js")

@@ -10,13 +10,11 @@ const net = require("net")
 
 /**
  * Class representing a File Transfer
- * @class
  */
 class FileTransfer {
 
   /**
    * Initializes a File Transfer
-   * @constructor
    * @version 1.0
    * @param {string} host - TeamSpeak's File transfer Host
    * @param {number} [port=30033] - TeamSpeak's File transfer Port
@@ -33,9 +31,10 @@ class FileTransfer {
 
   /**
    * Starts the download of a File
+   * @async
+   * @version 1.0
    * @param {string} ftkey - The Filetransfer Key
    * @param {number} size - The Data Length
-   * @version 1.0
    * @returns {Promise<Buffer>} Returns a buffer with the binary data
    */
   download(ftkey, size) {
@@ -60,9 +59,9 @@ class FileTransfer {
 
   /**
    * Starts the upload of a File
+   * @version 1.6
    * @param {string} ftkey - the Filetransfer Key
    * @param {string|Buffer} data - the data to send
-   * @version 1.6
    * @returns {Promise}
    */
   upload(ftkey, data) {

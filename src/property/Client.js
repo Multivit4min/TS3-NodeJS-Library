@@ -6,51 +6,26 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-/**
- * the response of the clientlist command for a single client
- * @typedef {object} ClientListResponse
- * @property {number} clid the client id
- * @property {number} client_database_id the client database id
- * @property {number} client_type the client type (0 = client, 1 = query)
- * @property {string} client_unique_identifier the client unique id
- * @property {...any} [any]
- */
-
 const Abstract = require("./Abstract")
 const FileTransfer = require("./../transport/FileTransfer")
 
 /**
+ * workaround for vscode intellisense and documentation generation
+ *
+ * @typedef {import("../TeamSpeak3")} TeamSpeak3
+ * @typedef {import("../helper/types").ClientListResponse} ClientListResponse
+ * @typedef {import("../helper/types").ClientInfoResponse} ClientInfoResponse
+ * @typedef {import("../helper/types").ClientDBInfoResponse} ClientDBInfoResponse
+ * @typedef {import("../helper/types").CustomInfoResponse} CustomInfoResponse
+ * @typedef {import("../helper/types").BanAddResponse} BanAddResponse
+ * @typedef {import("../helper/types").PermListResponse} PermListResponse
+ * @ignore
+ */
+
+
+/**
  * Class representing a TeamSpeak Client
  * @extends Abstract
- * @property {number} clid
- * @property {number} cid
- * @property {number} databaseId
- * @property {string} nickname
- * @property {number} type
- * @property {number} away
- * @property {string} awayMessage
- * @property {number} flagTalking
- * @property {number} inputMuted
- * @property {number} outputMuted
- * @property {number} inputHardware
- * @property {number} outputHardware
- * @property {number} talkPower
- * @property {number} isTalker
- * @property {number} isPrioritySpeaker
- * @property {number} isRecording
- * @property {number} isChannelCommander
- * @property {string} uniqueIdentifier
- * @property {number[]} servergroups
- * @property {number} channelGroupId
- * @property {number} channelGroupInheritedChannelId
- * @property {string} version
- * @property {string} platform
- * @property {number} idleTime
- * @property {number} created
- * @property {number} lastconnected
- * @property {number} iconId
- * @property {string} country
- * @property {string} connectionClientIp
  */
 class TeamSpeakClient extends Abstract {
 
@@ -62,12 +37,6 @@ class TeamSpeakClient extends Abstract {
    */
   constructor(parent, list) {
     super(parent, list, "client")
-    this._static = {
-      uid: list.client_unique_identifier,
-      clid: list.clid,
-      dbid: list.client_database_id,
-      type: list.client_type
-    }
 
     /**
      * Move event
@@ -106,13 +75,159 @@ class TeamSpeakClient extends Abstract {
     })
   }
 
+  /** @type {number} */
+  get clid() {
+    return super.getPropertyByName("clid")
+  }
+
+  /** @type {number} */
+  get cid() {
+    return super.getPropertyByName("cid")
+  }
+
+  /** @type {number} */
+  get databaseId() {
+    return super.getPropertyByName("client_database_id")
+  }
+
+  /** @type {string} */
+  get nickname() {
+    return super.getPropertyByName("client_nickname")
+  }
+
+  /** @type {number} */
+  get type() {
+    return super.getPropertyByName("client_type")
+  }
+
+  /** @type {number} */
+  get away() {
+    return super.getPropertyByName("client_away")
+  }
+
+  /** @type {string} */
+  get awayMessage() {
+    return super.getPropertyByName("client_away_message")
+  }
+
+  /** @type {number} */
+  get flagTalking() {
+    return super.getPropertyByName("client_flag_talking")
+  }
+
+  /** @type {number} */
+  get inputMuted() {
+    return super.getPropertyByName("client_input_muted")
+  }
+
+  /** @type {number} */
+  get outputMuted() {
+    return super.getPropertyByName("client_output_muted")
+  }
+
+  /** @type {number} */
+  get inputHardware() {
+    return super.getPropertyByName("client_input_hardware")
+  }
+
+  /** @type {number} */
+  get outputHardware() {
+    return super.getPropertyByName("client_output_hardware")
+  }
+
+  /** @type {number} */
+  get talkPower() {
+    return super.getPropertyByName("client_talk_power")
+  }
+
+  /** @type {number} */
+  get isTalker() {
+    return super.getPropertyByName("client_is_talker")
+  }
+
+  /** @type {number} */
+  get isPrioritySpeaker() {
+    return super.getPropertyByName("client_is_priority_speaker")
+  }
+
+  /** @type {number} */
+  get isRecording() {
+    return super.getPropertyByName("client_is_recording")
+  }
+
+  /** @type {number} */
+  get isChannelCommander() {
+    return super.getPropertyByName("client_is_channel_commander")
+  }
+
+  /** @type {string} */
+  get uniqueIdentifier() {
+    return super.getPropertyByName("client_unique_identifier")
+  }
+
+  /** @type {string[]} */
+  get servergroups() {
+    return super.getPropertyByName("client_servergroups")
+  }
+
+  /** @type {number} */
+  get channelGroupId() {
+    return super.getPropertyByName("client_channel_group_id")
+  }
+
+  /** @type {number} */
+  get channelGroupInheritedChannelId() {
+    return super.getPropertyByName("client_channel_group_inherited_channel_id")
+  }
+
+  /** @type {string} */
+  get version() {
+    return super.getPropertyByName("client_version")
+  }
+
+  /** @type {string} */
+  get platform() {
+    return super.getPropertyByName("client_platform")
+  }
+
+  /** @type {number} */
+  get idleTime() {
+    return super.getPropertyByName("client_idle_time")
+  }
+
+  /** @type {number} */
+  get created() {
+    return super.getPropertyByName("client_created")
+  }
+
+  /** @type {number} */
+  get lastconnected() {
+    return super.getPropertyByName("client_lastconnected")
+  }
+
+  /** @type {string} */
+  get country() {
+    return super.getPropertyByName("client_country")
+  }
+
+  /** @type {string} */
+  get connectionClientIp() {
+    return super.getPropertyByName("connection_client_ip")
+  }
+
+  /** @type {string} */
+  get badges() {
+    return super.getPropertyByName("client_badges")
+  }
+
+
   /**
    * Returns the Database ID of the Client
    * @version 1.0
    * @returns {number} Returns the Clients Database ID
    */
   getDBID() {
-    return this._static.dbid
+    return this.databaseId
   }
 
 
@@ -122,7 +237,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {number} Returns the Client ID
    */
   getID() {
-    return this._static.clid
+    return this.clid
   }
 
 
@@ -132,7 +247,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {string} Returns the Client UniqueID
    */
   getUID() {
-    return this._static.uid
+    return this.uniqueIdentifier
   }
 
 
@@ -142,7 +257,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {boolean} true when the Client is a Server Query Client
    */
   isQuery() {
-    return this._static.type === 1
+    return this.type === 1
   }
 
 
@@ -160,10 +275,10 @@ class TeamSpeakClient extends Abstract {
    * Returns General Info of the Client, requires the Client to be online
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Promise with the Client Information
+   * @returns {Promise<ClientInfoResponse>} Promise with the Client Information
    */
   getInfo() {
-    return super.getParent().clientInfo(this._static.clid)
+    return super.getParent().clientInfo(this.clid)
   }
 
 
@@ -171,10 +286,10 @@ class TeamSpeakClient extends Abstract {
    * Returns the Clients Database Info
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Returns the Client Database Info
+   * @returns {Promise<ClientDBInfoResponse>} Returns the Client Database Info
    */
   getDBInfo() {
-    return super.getParent().clientDBInfo(this._static.dbid)
+    return super.getParent().clientDBInfo(this.databaseId)
   }
 
 
@@ -182,10 +297,10 @@ class TeamSpeakClient extends Abstract {
    * Displays a list of custom properties for the client
    * @version 1.3
    * @async
-   * @returns {Promise.<object>}
+   * @returns {Promise<CustomInfoResponse[]>}
    */
   customInfo() {
-    return super.getParent().customInfo(this._static.dbid)
+    return super.getParent().customInfo(this.databaseId)
   }
 
 
@@ -195,10 +310,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.3
    * @async
    * @param {string} ident - The Key which should be deleted
-   * @returns {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   customDelete(ident) {
-    return super.getParent().customDelete(this._static.dbid, ident)
+    return super.getParent().customDelete(this.databaseId, ident)
   }
 
 
@@ -210,10 +325,10 @@ class TeamSpeakClient extends Abstract {
    * @async
    * @param {string} ident - The Key which should be set
    * @param {string} value - The Value which should be set
-   * @returns {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   customSet(ident, value) {
-    return super.getParent().customSet(this._static.dbid, ident, value)
+    return super.getParent().customSet(this.databaseId, ident, value)
   }
 
 
@@ -222,10 +337,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {string} msg - The Message the Client should receive when getting kicked
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   kickFromServer(msg) {
-    return super.getParent().clientKick(this._static.clid, 5, msg)
+    return super.getParent().clientKick(this.clid, 5, msg)
   }
 
 
@@ -234,10 +349,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {string} msg - The Message the Client should receive when getting kicked (max 40 Chars)
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   kickFromChannel(msg) {
-    return super.getParent().clientKick(this._static.clid, 4, msg)
+    return super.getParent().clientKick(this.clid, 4, msg)
   }
 
 
@@ -247,10 +362,10 @@ class TeamSpeakClient extends Abstract {
    * @async
    * @param {string} banreason - Ban Reason
    * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
-   * @returns {Promise.<object>}
+   * @return {Promise<BanAddResponse>}
    */
   ban(banreason, time) {
-    return super.getParent().ban({ uid: this._static.uid, time, banreason })
+    return super.getParent().ban({ uid: this.uniqueIdentifier, time, banreason })
   }
 
 
@@ -260,10 +375,10 @@ class TeamSpeakClient extends Abstract {
    * @async
    * @param {number} cid - Channel ID in which the Client should get moved
    * @param {string} [cpw=""] - The Channel Password
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   move(cid, cpw) {
-    return super.getParent().clientMove(this._static.clid, cid, cpw)
+    return super.getParent().clientMove(this.clid, cid, cpw)
   }
 
 
@@ -272,10 +387,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {number} sgid - The Server Group ID which the Client should be added to
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   serverGroupAdd(sgid) {
-    return super.getParent().serverGroupAddClient(this._static.dbid, sgid)
+    return super.getParent().serverGroupAddClient(this.databaseId, sgid)
   }
 
 
@@ -284,10 +399,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {number} sgid - The Server Group ID which the Client should be removed from
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   serverGroupDel(sgid) {
-    return super.getParent().serverGroupDelClient(this._static.dbid, sgid)
+    return super.getParent().serverGroupDelClient(this.databaseId, sgid)
   }
 
 
@@ -296,10 +411,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {string} msg - The message the Client should receive
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   poke(msg) {
-    return super.getParent().clientPoke(this._static.clid, msg)
+    return super.getParent().clientPoke(this.clid, msg)
   }
 
 
@@ -308,10 +423,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {string} msg - The message the Client should receive
-   * @returns {Promise.<object>} Promise Object
+   * @return {Promise} resolves on success
    */
   message(msg) {
-    return super.getParent().sendTextMessage(this._static.clid, 1, msg)
+    return super.getParent().sendTextMessage(this.clid, 1, msg)
   }
 
 
@@ -320,10 +435,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
-   * @return {Promise.<object>}
+   * @return {Promise<PermListResponse[]>}
    */
   permList(permsid) {
-    return super.getParent().clientPermList(this._static.dbid, permsid)
+    return super.getParent().clientPermList(this.databaseId, permsid)
   }
 
 
@@ -335,10 +450,10 @@ class TeamSpeakClient extends Abstract {
    * @param {number} value - Value of the Permission
    * @param {number} [skip=0] - Whether the skip flag should be set
    * @param {number} [negate=0] - Whether the negate flag should be set
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   addPerm(perm, value, skip, negate) {
-    return super.getParent().clientAddPerm(this._static.dbid, perm, value, skip, negate)
+    return super.getParent().clientAddPerm(this.databaseId, perm, value, skip, negate)
   }
 
 
@@ -347,10 +462,10 @@ class TeamSpeakClient extends Abstract {
    * @version 1.0
    * @async
    * @param {string|number} perm - The permid or permsid
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   delPerm(perm) {
-    return super.getParent().clientDelPerm(this._static.dbid, perm)
+    return super.getParent().clientDelPerm(this.databaseId, perm)
   }
 
 
@@ -359,7 +474,7 @@ class TeamSpeakClient extends Abstract {
    * Returns a Buffer with the Avatar of the User
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Promise with the binary data of the avatar
+   * @returns {Promise<Buffer>} Promise with the binary data of the avatar
    */
   getAvatar() {
     return this.getAvatarName()
@@ -375,7 +490,7 @@ class TeamSpeakClient extends Abstract {
    * Returns a Buffer with the Icon of the Client
    * @version 1.0
    * @async
-   * @returns {Promise.<object>} Promise with the binary data of the Client Icon
+   * @returns {Promise<Buffer>} Promise with the binary data of the Client Icon
    */
   getIcon() {
     return this.getIconName().then(name => super.getParent().downloadIcon(name))
@@ -387,7 +502,7 @@ class TeamSpeakClient extends Abstract {
    * Gets the Avatar Name of the Client
    * @version 1.0
    * @async
-   * @returns {Promise.<string>} Avatar Name
+   * @returns {Promise<string>} Avatar Name
    */
   getAvatarName() {
     return new Promise((fulfill, reject) => {
@@ -403,7 +518,7 @@ class TeamSpeakClient extends Abstract {
    * Gets the Icon Name of the Client
    * @version 1.0
    * @async
-   * @returns {Promise.<string>}
+   * @returns {Promise<string>}
    */
   getIconName() {
     return super.getParent().getIconName(this.permList(true))

@@ -1,6 +1,6 @@
 /*global describe it*/
 const assert = require("assert")
-const ResponseError = require("../exception/ResponseError")
+const ResponseError = require("../src/exception/ResponseError")
 
 
 describe("Exception", () => {

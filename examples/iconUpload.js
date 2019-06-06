@@ -1,4 +1,4 @@
-const TeamSpeak3 = require("./../TeamSpeak3")
+const TeamSpeak3 = require("../src/TeamSpeak3")
 const fs = require("fs")
 //if you want to test this example you need to install crc-32
 //  > npm install crc-32
@@ -14,7 +14,7 @@ const ts3 = new TeamSpeak3({
   username: "serveradmin",
   password: "password",
   nickname: "NodeJS Query Framework",
-  keepalive: true
+  keepAlive: true
 })
 
 ts3.on("ready", async () => {

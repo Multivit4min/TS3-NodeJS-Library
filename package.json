@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
-    "eslint": "eslint ./TeamSpeak3.js ./test/**/*.js ./property/**/*.js ./examples/**/*.js ./transport/**/*.js ./helper/**/*.js",
-    "generate-docs": "documentation build TeamSpeak3.js property/**.js --project-name \"TS3-NodeJS-Library\" -c documentation.yml -f html -o docs",
+    "eslint": "eslint ./src/**/*.js ./test/**/*.js ./examples/**/*.js",
+    "generate-docs": "documentation build ./src/**/*.js ./src/TeamSpeak3.js --project-name \"TS3-NodeJS-Library\" -c documentation.yml -f html -o docs",
     "generate-ts": "jsdoc -c jsconfig.json"
   },
   "repository": {
@@ -31,13 +31,11 @@
     "@types/mocha": "^5.2.6",
     "coveralls": "^3.0.3",
     "crc-32": "^1.2.0",
-    "documentation": "^9.3.1",
+    "documentation": "^11.0.0",
     "eslint": "^5.16.0",
-    "jsdoc": "^3.6.2",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
     "nyc": "^14.1.1",
-    "sinon": "^7.2.3",
-    "tsd-jsdoc": "^2.1.3"
+    "sinon": "^7.2.3"
   }
 }

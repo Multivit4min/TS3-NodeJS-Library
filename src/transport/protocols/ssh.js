@@ -19,7 +19,7 @@ class SSH extends EventEmitter {
    * Creates a new TS3Query via Telnet Protocol
    * @constructor
    * @version 1.0
-   * @param {ConnectionParams} config connection configuration
+   * @param {import("../../helper/types").ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()

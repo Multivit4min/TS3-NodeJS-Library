@@ -5,7 +5,7 @@
 const sinon = require("sinon")
 const EventEmitter = require("events")
 const { assert } = sinon
-const Abstract = require("../property/Abstract.js")
+const Abstract = require("../src/property/Abstract.js")
 
 
 describe("Abstract", () => {
@@ -14,18 +14,6 @@ describe("Abstract", () => {
   beforeEach(() => {
     // @ts-ignore
     abstract = new Abstract(new EventEmitter(), { test_init_val: true}, "test")
-  })
-
-  it("should verify return value of #translatePropName('test_should_work')", () => {
-    assert.match(abstract.translatePropName("test_should_work"), "shouldWork")
-  })
-
-  it("should verify return value of #translatePropName('should_work')", () => {
-    assert.match(abstract.translatePropName("should_work"), "shouldWork")
-  })
-
-  it("should verify that getters are getting set correctly", () => {
-    assert.match(abstract.initVal, true)
   })
 
   it("should verify that changes are getting emitted correctly", done => {

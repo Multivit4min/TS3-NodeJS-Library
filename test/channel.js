@@ -4,11 +4,11 @@ const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
-const TeamSpeakChannel = require("../property/Channel.js")
-let TeamSpeak3 = require("../TeamSpeak3.js")
+const TeamSpeakChannel = require("../src/property/Channel.js")
+let TeamSpeak3 = require("../src/TeamSpeak3.js")
 
-mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
+mockRequire("../src/transport/TS3Query.js", "./mocks/MockQuery.js")
+TeamSpeak3 = mockRequire.reRequire("../src/TeamSpeak3.js")
 
 
 

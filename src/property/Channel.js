@@ -6,37 +6,23 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+const Abstract = require("./Abstract")
+
 /**
- * the response of the channellist command for a single channel
- * @typedef {object} ChannelListResponse
- * @property {number} cid the current id of the channel
- * @property {...any} [any]
+ * workaround for vscode intellisense and documentation generation
+ *
+ * @typedef {import("../TeamSpeak3")} TeamSpeak3
+ * @typedef {import("./Client")} TeamSpeakClient
+ * @typedef {import("../helper/types").ChannelListResponse} ChannelListResponse
+ * @typedef {import("../helper/types").ChannelInfoResponse} ChannelInfoResponse
+ * @typedef {import("../helper/types").PermListResponse} PermListResponse
+ * @ignore
  */
 
-const Abstract = require("./Abstract")
 
 /**
  * Class representing a TeamSpeak Channel
  * @extends Abstract
- * @property {number} cid
- * @property {number} pid
- * @property {number} order
- * @property {string} name
- * @property {string} topic
- * @property {number} flagDefault
- * @property {number} flagPassword
- * @property {number} flagPermanent
- * @property {number} flagSemiPermanent
- * @property {number} codec
- * @property {number} codecQuality
- * @property {number} neededTalkPower
- * @property {number} iconId
- * @property {number} secondsEmpty
- * @property {number} totalClientsFamily
- * @property {number} maxclients
- * @property {number} maxfamilyclients
- * @property {number} totalClients
- * @property {number} neededSubscribePower
  */
 class TeamSpeakChannel extends Abstract {
 
@@ -48,9 +34,101 @@ class TeamSpeakChannel extends Abstract {
    */
   constructor(parent, list) {
     super(parent, list, "channel")
-    this._static = {
-      cid: list.cid
-    }
+  }
+
+  /** @type {number} */
+  get cid() {
+    return super.getPropertyByName("cid")
+  }
+
+  /** @type {number} */
+  get pid() {
+    return super.getPropertyByName("pid")
+  }
+
+  /** @type {number} */
+  get order() {
+    return super.getPropertyByName("channel_order")
+  }
+
+  /** @type {string} */
+  get name() {
+    return super.getPropertyByName("channel_name")
+  }
+
+  /** @type {string} */
+  get topic() {
+    return super.getPropertyByName("channel_topic")
+  }
+
+  /** @type {number} */
+  get flagDefault() {
+    return super.getPropertyByName("channel_flag_default")
+  }
+
+  /** @type {number} */
+  get flagPassword() {
+    return super.getPropertyByName("channel_flag_password")
+  }
+
+  /** @type {number} */
+  get flagPermanent() {
+    return super.getPropertyByName("channel_flag_permanent")
+  }
+
+  /** @type {number} */
+  get flagSemiPermanent() {
+    return super.getPropertyByName("channel_flag_semi_permanent")
+  }
+
+  /** @type {number} */
+  get codec() {
+    return super.getPropertyByName("channel_codec")
+  }
+
+  /** @type {number} */
+  get codecQuality() {
+    return super.getPropertyByName("channel_codec_quality")
+  }
+
+  /** @type {number} */
+  get neededTalkPower() {
+    return super.getPropertyByName("channel_needed_talk_power")
+  }
+
+  /** @type {number} */
+  get iconId() {
+    return super.getPropertyByName("channel_icon_id")
+  }
+
+  /** @type {number} */
+  get secondsEmpty() {
+    return super.getPropertyByName("seconds_empty")
+  }
+
+  /** @type {number} */
+  get totalClientsFamily() {
+    return super.getPropertyByName("total_clients_family")
+  }
+
+  /** @type {number} */
+  get maxclients() {
+    return super.getPropertyByName("channel_maxclients")
+  }
+
+  /** @type {number} */
+  get maxfamilyclients() {
+    return super.getPropertyByName("channel_maxfamilyclients")
+  }
+
+  /** @type {number} */
+  get totalClients() {
+    return super.getPropertyByName("total_clients")
+  }
+
+  /** @type {number} */
+  get neededSubscribePower() {
+    return super.getPropertyByName("channel_needed_subscribe_power")
   }
 
 
@@ -59,7 +137,7 @@ class TeamSpeakChannel extends Abstract {
    * @returns {number} Returns the Channels ID
    */
   getID() {
-    return this._static.cid
+    return this.cid
   }
 
 
@@ -67,10 +145,10 @@ class TeamSpeakChannel extends Abstract {
    * Displays detailed configuration information about a channel including ID, topic, description, etc.
    * @version 1.0
    * @async
-   * @return {Promise.<object>}
+   * @return {Promise<ChannelInfoResponse>}
    */
   getInfo() {
-    return super.getParent().channelInfo(this._static.cid)
+    return super.getParent().channelInfo(this.cid)
   }
 
 
@@ -82,10 +160,10 @@ class TeamSpeakChannel extends Abstract {
    * @async
    * @param {number} cpid - Channel Parent ID
    * @param {number} [order=0] - Channel Sort Order
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   move(cpid, order = 0) {
-    return super.getParent().channelMove(this._static.cid, cpid, order)
+    return super.getParent().channelMove(this.cid, cpid, order)
   }
 
 
@@ -94,10 +172,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   del(force = 0) {
-    return super.getParent().channelDelete(this._static.cid, force)
+    return super.getParent().channelDelete(this.cid, force)
   }
 
 
@@ -106,10 +184,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {object} properties - The Properties of the Channel which should get changed
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   edit(properties) {
-    return super.getParent().channelEdit(this._static.cid, properties)
+    return super.getParent().channelEdit(this.cid, properties)
   }
 
 
@@ -118,10 +196,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {boolean} [permsid=false] - Whether the Perm SID should be displayed aswell
-   * @return {Promise.<object[]>}
+   * @return {Promise<PermListResponse[]>}
    */
   permList(permsid = false) {
-    return super.getParent().channelPermList(this._static.cid, permsid)
+    return super.getParent().channelPermList(this.cid, permsid)
   }
 
 
@@ -131,10 +209,10 @@ class TeamSpeakChannel extends Abstract {
    * @async
    * @param {string|number} perm - The permid or permsid
    * @param {number} value - The Value which should be set
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   setPerm(perm, value) {
-    return super.getParent().channelSetPerm(this._static.cid, perm, value)
+    return super.getParent().channelSetPerm(this.cid, perm, value)
   }
 
 
@@ -143,10 +221,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {string|number} perm - The permid or permsid
-   * @return {Promise.<object>}
+   * @return {Promise} resolves on success
    */
   delPerm(perm) {
-    return super.getParent().channelDelPerm(this._static.cid, perm)
+    return super.getParent().channelDelPerm(this.cid, perm)
   }
 
 
@@ -155,10 +233,10 @@ class TeamSpeakChannel extends Abstract {
    * @version 1.0
    * @async
    * @param {object} filter - The Filter Object
-   * @return {Promise.<object>}
+   * @return {Promise<TeamSpeakClient[]>}
    */
   getClients(filter = {}) {
-    filter.cid = this._static.cid
+    filter.cid = this.cid
     return super.getParent().clientList(filter)
   }
 
@@ -167,7 +245,7 @@ class TeamSpeakChannel extends Abstract {
    * Returns a Buffer with the Icon of the Channel
    * @version 1.0
    * @async
-   * @returns {Promise.<Buffer>} Promise with the binary data of the Channel Icon
+   * @returns {Promise<Buffer>} Promise with the binary data of the Channel Icon
    */
   getIcon() {
     return this.getIconName().then(name => super.getParent().downloadIcon(name))
@@ -178,7 +256,7 @@ class TeamSpeakChannel extends Abstract {
    * Gets the Icon Name of the Channel
    * @version 1.0
    * @async
-   * @returns {Promise.<string>}
+   * @returns {Promise<string>}
    */
   getIconName() {
     return super.getParent().getIconName(this.permList(true))

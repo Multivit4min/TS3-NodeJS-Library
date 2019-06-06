@@ -1,4 +1,4 @@
-const TeamSpeak3 = require("./../TeamSpeak3")
+const TeamSpeak3 = require("../src/TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
 const ts3 = new TeamSpeak3({
@@ -8,7 +8,7 @@ const ts3 = new TeamSpeak3({
   queryport: 10022,
   username: "serveradmin",
   password: "password",
-  keepalive: true
+  keepAlive: true
 })
 
 ts3.on("ready", () => listServers())

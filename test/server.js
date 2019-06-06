@@ -3,11 +3,11 @@ const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
-const TeamSpeakServer = require("../property/Server.js")
-let TeamSpeak3 = require("../TeamSpeak3.js")
+const TeamSpeakServer = require("../src/property/Server.js")
+let TeamSpeak3 = require("../src/TeamSpeak3.js")
 
-mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
+mockRequire("../src/transport/TS3Query.js", "./mocks/MockQuery.js")
+TeamSpeak3 = mockRequire.reRequire("../src/TeamSpeak3.js")
 
 
 describe("TeamSpeakServer", () => {
@@ -20,6 +20,7 @@ describe("TeamSpeakServer", () => {
     rawServer = mockResponse.serverlist[0]
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
+    // @ts-ignore
     server = new TeamSpeakServer(ts3, rawServer)
   })
 

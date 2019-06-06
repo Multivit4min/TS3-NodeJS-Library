@@ -2,17 +2,5 @@
   "compilerOptions": {
     "checkJs": true,
     "target": "es2018"
-  },    
-  "opts": {
-    "destination": "./tsd/",
-    "template": "./node_modules/tsd-jsdoc/dist"
-  },
-  "source": {
-    "include": [
-      "helper/EventEmitter.js",
-      "TeamSpeak3.js",
-      "property",
-      "transport"
-    ]
   }
 }

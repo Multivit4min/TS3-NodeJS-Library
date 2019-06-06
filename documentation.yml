@@ -23,12 +23,12 @@ toc:
   - name: interfaces
   - ConnectionParams
   - ResponseErrorJSON
+  - name: types
   - ClientListResponse
   - ChannelListResponse
   - ChannelGroupListResponse
   - ServerListResponse
   - ServerGroupListResponse
-  - name: types
   - PrivilegeKeyListResponse
   - TokenResponse
   - PermFindResponse

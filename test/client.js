@@ -6,11 +6,11 @@ const sinon = require("sinon")
 const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockResponse = require("./mocks/queryResponse.js")
-const TeamSpeakClient = require("../property/Client.js")
-let TeamSpeak3 = require("../TeamSpeak3.js")
+const TeamSpeakClient = require("../src/property/Client.js")
+let TeamSpeak3 = require("../src/TeamSpeak3.js")
 
-mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
+mockRequire("../src/transport/TS3Query.js", "./mocks/MockQuery.js")
+TeamSpeak3 = mockRequire.reRequire("../src/TeamSpeak3.js")
 
 
 
@@ -73,6 +73,7 @@ describe("TeamSpeakClient", () => {
       })
       ts3.emit("textmessage", {
         msg: "Text Message Content",
+        // @ts-ignore
         invoker: new TeamSpeakClient(ts3, {
           client_unique_identifier: "bla=",
           clid: 25,
@@ -116,6 +117,7 @@ describe("TeamSpeakClient", () => {
       })
       ts3.emit("clientmoved", {
         channel: "Fake Payload",
+        // @ts-ignore
         client: new TeamSpeakClient(ts3, {
           client_unique_identifier: "bla=",
           clid: 25,

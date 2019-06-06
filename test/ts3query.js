@@ -1,8 +1,8 @@
 /*global describe it */
 const mock = require("mock-require")
 const assert = require("assert")
-mock.stop("../transport/TS3Query.js")
-const TS3Query = require("../transport/TS3Query")
+mock.stop("../src/transport/TS3Query.js")
+const TS3Query = require("../src/transport/TS3Query")
 
 
 describe("TS3Query", () => {

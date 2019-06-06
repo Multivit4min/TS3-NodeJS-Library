@@ -1,4 +1,4 @@
-const TeamSpeak3 = require("./../TeamSpeak3")
+const TeamSpeak3 = require("../src/TeamSpeak3")
 
 //Creates a new Connection to a TeamSpeak Server
 const ts3 = new TeamSpeak3({
@@ -8,7 +8,7 @@ const ts3 = new TeamSpeak3({
   username: "serveradmin",
   password: "password",
   nickname: "NodeJS Query Framework",
-  keepalive: true
+  keepAlive: true
 })
 
 //The clientconnect event gets fired when a new Client joins the selected TeamSpeak Server

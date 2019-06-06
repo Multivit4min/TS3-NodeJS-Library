@@ -6,14 +6,14 @@ const { assert } = sinon
 const mockRequire = require("mock-require")
 const mockArray = require("./mocks/mockArray.js")
 const mockResponse = require("./mocks/queryResponse.js")
-const TeamSpeakServer = require("../property/Server")
-const TeamSpeakServerGroup = require("../property/ServerGroup")
-const TeamSpeakChannel = require("../property/Channel")
-const TeamSpeakChannelGroup = require("../property/ChannelGroup")
-let TeamSpeak3 = require("../TeamSpeak3.js")
+const TeamSpeakServer = require("../src/property/Server")
+const TeamSpeakServerGroup = require("../src/property/ServerGroup")
+const TeamSpeakChannel = require("../src/property/Channel")
+const TeamSpeakChannelGroup = require("../src/property/ChannelGroup")
+let TeamSpeak3 = require("../src/TeamSpeak3.js")
 
-mockRequire("../transport/TS3Query.js", "./mocks/MockQuery.js")
-TeamSpeak3 = mockRequire.reRequire("../TeamSpeak3.js")
+mockRequire("../src/transport/TS3Query.js", "./mocks/MockQuery.js")
+TeamSpeak3 = mockRequire.reRequire("../src/TeamSpeak3.js")
 
 
 

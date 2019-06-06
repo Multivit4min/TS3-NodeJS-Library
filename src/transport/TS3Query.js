@@ -11,6 +11,12 @@ const RAW = require("./protocols/raw.js")
 const SSH = require("./protocols/ssh.js")
 const EventEmitter = require("events")
 
+/**
+ * workaround for vscode intellisense and documentation generation
+ *
+ * @typedef {import("../helper/types").ConnectionParams} ConnectionParams
+ * @ignore
+ */
 
 /**
  * TS3 Query Connection
@@ -218,7 +224,7 @@ class TS3Query extends EventEmitter {
    * @version 1.0
    * @async
    * @param {...any} args parameters which should get executed
-   * @returns {Promise.<object>} Promise object which returns the Information about the Query executed
+   * @returns {Promise<any>} Promise object which returns the Information about the Query executed
    */
   execute(...args) {
     return new Promise((fulfill, reject) => {

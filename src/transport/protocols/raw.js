@@ -19,7 +19,7 @@ class RAW extends EventEmitter {
    * Creates a new RAW Instance
    * @constructor
    * @version 1.5
-   * @param {ConnectionParams} config connection configuration
+   * @param {import("../../helper/types").ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()
