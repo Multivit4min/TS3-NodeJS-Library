@@ -392,7 +392,7 @@ describe("TeamSpeakClient", () => {
 
   it("should verify execute parameters of #getAvatarName()", async () => {
     const base64uid = Buffer.from(rawClient.client_unique_identifier).toString("base64")
-    stub.onCall(0).resolves({ client_base64HashClientUID: base64uid })
+    stub.onCall(0).resolves([{ client_base64HashClientUID: base64uid }])
     assert.match(await client.getAvatarName(), base64uid)
     assert.calledOnce(stub)
     assert.calledWith(stub, "clientdbinfo", { cldbid: rawClient.client_database_id })
@@ -400,7 +400,7 @@ describe("TeamSpeakClient", () => {
 
   it("should validate the return value of #getIcon()", done => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    stub.onCall(1).resolves({ size: 0, msg: "nok" })
+    stub.onCall(1).resolves([{ size: 0, msg: "nok" }])
     client.getIcon()
       .then(() => done("Expected Promise to reject!"))
       .catch(err => {

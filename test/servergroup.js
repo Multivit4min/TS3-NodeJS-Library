@@ -144,7 +144,7 @@ describe("TeamSpeakServerGroup", () => {
 
   it("should validate the return value of #getIcon()", done => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    stub.onCall(1).resolves({ size: 0, msg: "nok" })
+    stub.onCall(1).resolves([{ size: 0, msg: "nok" }])
     serverGroup.getIcon()
       .then(() => done("Expected Promise to reject!"))
       .catch(err => {

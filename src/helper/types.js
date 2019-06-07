@@ -337,7 +337,8 @@
 /**
  * permission response
  * @typedef {object} PermListResponse
- * @property {number} permid
+ * @property {number} [permid]
+ * @property {string} [permsid]
  * @property {number} permvalue
  * @property {number} permnegated
  * @property {number} permskip
@@ -573,7 +574,7 @@
  * messagelist response
  * @typedef {object} MessageListResponse
  * @property {number} msgid
- * @property {number} cluid
+ * @property {string} cluid
  * @property {string} subject
  * @property {number} timestamp
  * @property {number} flag_read
@@ -584,7 +585,7 @@
  * messageget response
  * @typedef {object} MessageGetResponse
  * @property {number} msgid
- * @property {number} cluid
+ * @property {string} cluid
  * @property {string} subject
  * @property {string} message
  * @property {number} timestamp

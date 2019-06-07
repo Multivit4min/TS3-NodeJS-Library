@@ -12,8 +12,6 @@ const SSH = require("./protocols/ssh.js")
 const EventEmitter = require("events")
 
 /**
- * workaround for vscode intellisense and documentation generation
- *
  * @typedef {import("../helper/types").ConnectionParams} ConnectionParams
  * @ignore
  */
@@ -27,7 +25,6 @@ class TS3Query extends EventEmitter {
   /**
    * Creates a new TS3Query
    * @constructor
-   * @version 1.0
    * @param {ConnectionParams} config Configuration Object
    */
   constructor(config) {
@@ -70,7 +67,6 @@ class TS3Query extends EventEmitter {
     /**
      * Query Connect Event
      * Gets fired when the Query connects to the TeamSpeak Server
-     *
      * @event TS3Query#connect
      * @memberof TS3Query
      */
@@ -80,9 +76,7 @@ class TS3Query extends EventEmitter {
 
   /**
    * Handles any TeamSpeak Query Response Line
-   *
-   * @version 1.8
-   * @param {string} line - error line from teamspeak
+   * @param {string} line error line from teamspeak
    */
   handleLine(line) {
     this.lastline = line
@@ -101,9 +95,7 @@ class TS3Query extends EventEmitter {
 
   /**
    * Handles the error line which finnishes a command
-   *
-   * @version 1.8
-   * @param {string} line - error line from teamspeak
+   * @param {string} line error line from teamspeak
    */
   handleQueryError(line) {
     this.lastline = ""
@@ -131,9 +123,7 @@ class TS3Query extends EventEmitter {
 
   /**
    * Handles an event which has been received from the TeamSpeak Server
-   *
-   * @version 1.8
-   * @param {string} line - event line from TeamSpeak
+   * @param {string} line event line from TeamSpeak
    */
   handleQueryEvent(line) {
     if (this.doubleEvents.some(s => line.indexOf(s) === 0) &&
@@ -144,23 +134,20 @@ class TS3Query extends EventEmitter {
     /**
      * Query Event
      * Gets fired when the Query receives an Event
-     *
      * @event TS3Query#<TeamSpeakEvent>
      * @memberof  TS3Query
      * @type {object}
-     * @property {any} data - The data received from the Event
+     * @property {any} data the data received from the event
      */
     return this.emit(
       line.substr(6, line.indexOf(" ") - 6),
-      Command.parse(line.substr(line.indexOf(" ") + 1))
+      Command.parse(line.substr(line.indexOf(" ") + 1))[0]
     )
   }
 
 
   /**
    * Emits an Error which the given arguments
-   *
-   * @version 1.8
    * @param {...any} args arguments which gets passed to the error event
    */
   handleError(...args) {
@@ -195,7 +182,6 @@ class TS3Query extends EventEmitter {
 
   /**
    * Sends keepalive to the TeamSpeak Server so the connection will not be closed
-   * @version 1.0
    */
   keepAlive() {
     if (!this.config.keepAlive) return
@@ -211,7 +197,6 @@ class TS3Query extends EventEmitter {
 
   /**
    * Whether Double Events should be handled or not
-   * @version 1.0
    * @param {boolean} [b=true] - Parameter enables or disables the Double Event Handling
    */
   handleDoubleEvents(b = true) {
@@ -221,7 +206,6 @@ class TS3Query extends EventEmitter {
 
   /**
    * Sends a command to the TeamSpeak Server.
-   * @version 1.0
    * @async
    * @param {...any} args parameters which should get executed
    * @returns {Promise<any>} Promise object which returns the Information about the Query executed
@@ -252,7 +236,6 @@ class TS3Query extends EventEmitter {
 
   /**
    * Executes the next command
-   * @version 1.0
    * @private
    * @param {object} [cmd] - the next command which should get executedd
    */
@@ -267,7 +250,6 @@ class TS3Query extends EventEmitter {
 
   /**
    * Sends data to the socket
-   * @version 1.8
    * @private
    * @param {string} raw - the data which should get sent
    */

@@ -41,7 +41,7 @@ describe("Command", () => {
     it("should set and parse the response data", () => {
       const cmd = new Command()
       cmd.setResponse("virtualserver_status=online virtualserver_id=1 virtualserver_unique_identifier=Ygn7V8+jiDXLDO5+zrxK/WptJBw= virtualserver_port=9987 client_id=1 client_channel_id=1 client_nickname=Unknown\\sfrom\\s[::1]:0000 client_database_id=0 client_login_name client_unique_identifier client_origin_server_id=0")
-      assert.deepEqual(cmd.getResponse(), {
+      assert.deepEqual(cmd.getResponse(), [{
         virtualserver_status: "online",
         virtualserver_id: 1,
         virtualserver_unique_identifier: "Ygn7V8+jiDXLDO5+zrxK/WptJBw=",
@@ -53,7 +53,7 @@ describe("Command", () => {
         client_login_name: undefined,
         client_unique_identifier: undefined,
         client_origin_server_id: 0
-      })
+      }])
     })
   })
 

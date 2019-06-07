@@ -6,8 +6,12 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
-const keytypes = require("./../helper/keytypes.js")
-const ResponseError = require("./../exception/ResponseError.js")
+/**
+ * @typedef {import("../helper/keytypes").RawQueryResponse} RawQueryResponse
+ */
+
+const keytypes = require("../helper/keytypes.js")
+const ResponseError = require("../exception/ResponseError.js")
 
 /**
  * TeamSpeak Query Command Class
@@ -17,7 +21,6 @@ class Command {
   /**
    * Creates the Command Class
    * @constructor
-   * @version 1.0
    */
   constructor() {
     this.cmd = ""
@@ -30,7 +33,6 @@ class Command {
 
   /**
    * Initializes the Respone with default values
-   * @version 1.8
    * @returns {this}
    */
   reset() {
@@ -42,8 +44,7 @@ class Command {
 
   /**
    * Sets the main command to send
-   * @version 1.0
-   * @param {string} cmd - Sets the command which will be sent to the TeamSpeak Query
+   * @param {string} cmd sets the command which will be sent to the TeamSpeak Query
    * @returns {this}
    */
   setCommand(cmd) {
@@ -54,8 +55,7 @@ class Command {
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @version 1.0
-   * @param {object} opts - Sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    * @returns {this}
    */
   setOptions(opts) {
@@ -66,8 +66,7 @@ class Command {
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @version 1.11
-   * @param {array} opts - Sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param {array} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    * @returns {this}
    */
   setMultiOptions(opts) {
@@ -78,7 +77,6 @@ class Command {
 
   /**
    * Checks wether there are options used with this command
-   * @version 1.7
    * @returns {boolean}
    */
   hasOptions() {
@@ -88,7 +86,6 @@ class Command {
 
   /**
    * Checks wether there are options used with this command
-   * @version 1.11
    * @returns {boolean}
    */
   hasMultiOptions() {
@@ -98,8 +95,7 @@ class Command {
 
   /**
    * Set TeamSpeak Flags
-   * @version 1.0
-   * @param {object} flags - Sets the Flags which should get sent to the TeamSpeak Query
+   * @param {object} flags sets the flags which should get sent to the teamspeak query
    * @returns {this}
    */
   setFlags(flags) {
@@ -110,7 +106,6 @@ class Command {
 
   /**
    * Checks wether there are flags used with this command
-   * @version 1.7
    * @returns {boolean}
    */
   hasFlags() {
@@ -120,9 +115,8 @@ class Command {
 
   /**
    * Set the Line which has been received from the TeamSpeak Query
-   * @version 1.0
-   * @param {string} line - The Line which has been received from the TeamSpeak Query
-   * @returns {this}
+   * @param {string} line the line which has been received from the teamSpeak query
+   * @returns {Command}
    */
   setResponse(line) {
     this.response = Command.parse(line)
@@ -132,19 +126,17 @@ class Command {
 
   /**
    * Set the error line which has been received from the TeamSpeak Query
-   * @version 1.0
    * @param {string} error - The error Line which has been received from the TeamSpeak Query
-   * @returns {this}
+   * @returns {Command}
    */
   setError(error) {
-    this.error = Command.parse(error)
+    this.error = Command.parse(error)[0]
     return this
   }
 
 
   /**
    * Get the Parsed Error Object which has been received from the TeamSpeak Query
-   * @version 1.0
    * @return {object} Returns the Parsed Error Object
    */
   getError() {
@@ -154,7 +146,6 @@ class Command {
 
   /**
    * Checks if a error has been received
-   * @version 1.0
    * @return {boolean} Returns true when a error has been received
    */
   hasError() {
@@ -164,23 +155,22 @@ class Command {
 
   /**
    * Get the Parsed Response Object which has been received from the TeamSpeak Query
-   * @version 1.0
    * @return {object} Returns the Parsed Response Object
    */
   getResponse() {
-    return this.response || null
+    return this.response || []
   }
 
 
   /**
    * Parses a Query Response
-   * @version 1.0
    * @static
    * @param {string} data - The Line which has been received
-   * @return {object} Returns the parsed Data
+   * @return {RawQueryResponse[]} Returns the parsed Data
    */
   static parse(data = "") {
-    const result = data.split("|").map(entry => {
+    // @ts-ignore
+    return data.split("|").map(entry => {
       const res = {}
       entry.split(" ").forEach(str => {
         if (str.indexOf("=") >= 0) {
@@ -192,13 +182,11 @@ class Command {
       })
       return res
     })
-    return (result.length === 1) ? result[0] : result
   }
 
 
   /**
    * Checks if a error has been received
-   * @version 1.0
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
   build() {
@@ -211,7 +199,6 @@ class Command {
 
   /**
    * Builds the query string for options
-   * @version 1.7
    * @private
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
@@ -224,7 +211,6 @@ class Command {
 
   /**
    * Builds the query string for options
-   * @version 1.11
    * @private
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
@@ -240,7 +226,6 @@ class Command {
 
   /**
    * Escapes a key and a value
-   * @version 1.7
    * @private
    * @param {string} key - the key used
    * @param {string|string[]} value - the value or an array of values
@@ -257,7 +242,6 @@ class Command {
 
   /**
    * Builds the query string for flags
-   * @version 1.7
    * @private
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
@@ -268,10 +252,9 @@ class Command {
 
   /**
    * Parses a value to the type which the key represents
-   * @version 1.0
    * @static
-   * @param {string} k - The Key which should get looked up
-   * @param {string} v - The value which should get parsed
+   * @param {string} k the key which should get looked up
+   * @param {string} v the value which should get parsed
    * @return {any} Returns the parsed Data
    */
   static parseValue(k, v) {
@@ -281,8 +264,7 @@ class Command {
       case Boolean: return Boolean(v)
       case Number: return parseFloat(v)
       case String: return String(v)
-      default:
-        return String(v)
+      default: return String(v)
     }
   }
 

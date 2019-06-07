@@ -22,6 +22,7 @@
         "brace-style": ["error", "1tbs"],
         "callback-return": "error",
         "camelcase": ["error", { "allow": [
+            "^server_",
             "^client_", 
             "^virtualserver_", 
             "^channel_", 

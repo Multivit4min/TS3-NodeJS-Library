@@ -12,7 +12,7 @@ TeamSpeak3 = mockRequire.reRequire("../src/TeamSpeak3.js")
 
 
 
-describe("TeamSpeakServerGroup", () => {
+describe("TeamSpeakChannelGroup", () => {
   let rawGroup = null
   let stub = null
   let channelGroup = null
@@ -133,7 +133,7 @@ describe("TeamSpeakServerGroup", () => {
 
   it("should validate the return value of #getIcon()", done => {
     stub.onCall(0).resolves([{ permsid: "i_icon_id", permvalue: 9999 }])
-    stub.onCall(1).resolves({ size: 0, msg: "nok" })
+    stub.onCall(1).resolves([{ size: 0, msg: "nok" }])
     channelGroup.getIcon()
       .then(() => done("Expected Promise to reject!"))
       .catch(err => {

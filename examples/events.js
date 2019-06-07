@@ -40,6 +40,8 @@ ts3.on("textmessage", ev => {
   console.log(`${ev.invoker.nickname} sent ${ev.msg}`)
 })
 
+
+
 //Error event gets fired when an Error during connecting or an Error during Processing of an Event happens
 ts3.on("error", e => {
   console.log("Error", e.message)

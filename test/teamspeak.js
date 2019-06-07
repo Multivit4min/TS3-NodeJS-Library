@@ -177,7 +177,7 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #serverCreate()", async () => {
-    stub.onCall(0).resolves({ token: "servertoken", sid: 2 })
+    stub.onCall(0).resolves([{ token: "servertoken", sid: 2 }])
     stub.onCall(1).resolves([{ virtualserver_id: 2 }])
     const { server, token } = await ts3.serverCreate({ virtualserver_name: "Server Name" })
     assertOk(server instanceof TeamSpeakServer)
@@ -212,7 +212,7 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #serverGroupCreate()", async () => {
-    stub.onCall(0).resolves({ sgid: 2 })
+    stub.onCall(0).resolves([{ sgid: 2 }])
     stub.onCall(1).resolves([{ sgid: 2 }])
     const group = await ts3.serverGroupCreate("New Group", 1)
     assertOk(group instanceof TeamSpeakServerGroup)
@@ -306,7 +306,7 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #channelCreate()", async () => {
-    stub.onCall(0).resolves({ cid: 2 })
+    stub.onCall(0).resolves([{ cid: 2 }])
     stub.onCall(1).resolves([{ cid: 2 }])
     const channel = await ts3.channelCreate("Channel Name")
     assertOk(channel instanceof TeamSpeakChannel)
@@ -315,7 +315,7 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #channelGroupCreate()", async () => {
-    stub.onCall(0).resolves({ cgid: 2 })
+    stub.onCall(0).resolves([{ cgid: 2 }])
     stub.onCall(1).resolves([{ cgid: 2 }])
     const group = await ts3.channelGroupCreate("Channel Group Name", 0)
     assertOk(group instanceof TeamSpeakChannelGroup)
@@ -1101,7 +1101,7 @@ describe("TeamSpeak3", () => {
   })
 
   it("should receive and handle the event textmessage", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 }])
     try {
       ts3.once("textmessage", ev => {
         deepEqual(ev.msg, "Message Content")
@@ -1119,8 +1119,8 @@ describe("TeamSpeak3", () => {
   })
 
   it("should receive and handle the event clientmoved", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 })
-    stub.onCall(1).resolves({ cid: 3 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 10, client_database_id: 1, client_type: 0 }])
+    stub.onCall(1).resolves([{ cid: 3 }])
     try {
       ts3.once("clientmoved", ev => {
         deepEqual(ev.client.constructor.name, "TeamSpeakClient")
@@ -1140,7 +1140,7 @@ describe("TeamSpeak3", () => {
 
 
   it("should receive and handle the event serveredit", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 }])
     try {
       ts3.once("serveredit", ev => {
         deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
@@ -1165,8 +1165,8 @@ describe("TeamSpeak3", () => {
 
 
   it("should receive and handle the event channeledit", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
-    stub.onCall(1).resolves({ cid: 2 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 }])
+    stub.onCall(1).resolves([{ cid: 2 }])
     try {
       ts3.once("channeledit", ev => {
         deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
@@ -1194,8 +1194,8 @@ describe("TeamSpeak3", () => {
 
 
   it("should receive and handle the event channelcreate", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
-    stub.onCall(1).resolves({ cid: 3 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 }])
+    stub.onCall(1).resolves([{ cid: 3 }])
     ts3.once("channelcreate", ev => {
       deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
       deepEqual(ev.invoker.getID(), 3)
@@ -1231,7 +1231,7 @@ describe("TeamSpeak3", () => {
 
 
   it("should receive and handle the event channelmoved", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 }])
     stub.onCall(1).resolves([{ cid: 3 }, { cid: 2 }])
     stub.onCall(2).resolves([{ cid: 3 }, { cid: 2 }])
     ts3.once("channelmoved", ev => {
@@ -1259,7 +1259,7 @@ describe("TeamSpeak3", () => {
 
 
   it("should receive and handle the event channeldelete", done => {
-    stub.onCall(0).resolves({ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 })
+    stub.onCall(0).resolves([{ client_unique_identifier: "uid=", clid: 3, client_database_id: 1, client_type: 0 }])
     ts3.once("channeldelete", ev => {
       deepEqual(ev.invoker.constructor.name, "TeamSpeakClient")
       deepEqual(ev.invoker.getID(), 3)
