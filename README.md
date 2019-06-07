@@ -65,6 +65,11 @@ ts3.on("error", e => console.log("Error", e.message))
 ts3.on("close", e => console.log("Connection has been closed!", e))
 ```
 
+## Visual Studio Code
+
+![Visual Studio Code IntelliSense demo](./demo/vscode_intellisense.gif)
+
+
 
 ## Flood Protection
 
