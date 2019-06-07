@@ -90,8 +90,9 @@ module.exports = {
     client_idle_time: 32019,
     client_created: 0,
     client_lastconnected: 0,
-    client_icon_id: 0,
-    client_country: ""
+    client_country: "",
+    connection_client_ip: "127.0.0.1",
+    client_badges: ""
   }, {
     clid: 3,
     cid: 1,
@@ -119,8 +120,9 @@ module.exports = {
     client_idle_time: 922332,
     client_created: 1535478249,
     client_lastconnected: 1536700781,
-    client_icon_id: 0,
-    client_country: "AT"
+    client_country: "AT",
+    connection_client_ip: "127.0.0.1",
+    client_badges: ""
   }],
 
 

@@ -26,6 +26,82 @@ describe("TeamSpeakChannel", () => {
     channel = new TeamSpeakChannel(ts3, rawChannel)
   })
 
+  it("should verify the getter value of #cid()", () => {
+    assert.match(channel.cid, rawChannel.cid)
+  })
+
+  it("should verify the getter value of #pid()", () => {
+    assert.match(channel.pid, rawChannel.pid)
+  })
+
+  it("should verify the getter value of #order()", () => {
+    assert.match(channel.order, rawChannel.channel_order)
+  })
+
+  it("should verify the getter value of #name()", () => {
+    assert.match(channel.name, rawChannel.channel_name)
+  })
+
+  it("should verify the getter value of #topic()", () => {
+    assert.match(channel.topic, rawChannel.channel_topic)
+  })
+
+  it("should verify the getter value of #flagDefault()", () => {
+    assert.match(channel.flagDefault, rawChannel.channel_flag_default)
+  })
+
+  it("should verify the getter value of #flagPassword()", () => {
+    assert.match(channel.flagPassword, rawChannel.channel_flag_password)
+  })
+
+  it("should verify the getter value of #flagPermanent()", () => {
+    assert.match(channel.flagPermanent, rawChannel.channel_flag_permanent)
+  })
+
+  it("should verify the getter value of #flagSemiPermanent()", () => {
+    assert.match(channel.flagSemiPermanent, rawChannel.channel_flag_semi_permanent)
+  })
+
+  it("should verify the getter value of #codec()", () => {
+    assert.match(channel.codec, rawChannel.channel_codec)
+  })
+
+  it("should verify the getter value of #codecQuality()", () => {
+    assert.match(channel.codecQuality, rawChannel.channel_codec_quality)
+  })
+
+  it("should verify the getter value of #neededTalkPower()", () => {
+    assert.match(channel.neededTalkPower, rawChannel.channel_needed_talk_power)
+  })
+
+  it("should verify the getter value of #iconId()", () => {
+    assert.match(channel.iconId, rawChannel.channel_icon_id)
+  })
+
+  it("should verify the getter value of #secondsEmpty()", () => {
+    assert.match(channel.secondsEmpty, rawChannel.seconds_empty)
+  })
+
+  it("should verify the getter value of #totalClientsFamily()", () => {
+    assert.match(channel.totalClientsFamily, rawChannel.total_clients_family)
+  })
+
+  it("should verify the getter value of #maxclients()", () => {
+    assert.match(channel.maxclients, rawChannel.channel_maxclients)
+  })
+
+  it("should verify the getter value of #maxfamilyclients()", () => {
+    assert.match(channel.maxfamilyclients, rawChannel.channel_maxfamilyclients)
+  })
+
+  it("should verify the getter value of #totalClients()", () => {
+    assert.match(channel.totalClients, rawChannel.total_clients)
+  })
+
+  it("should verify the getter value of #neededSubscribePower()", () => {
+    assert.match(channel.neededSubscribePower, rawChannel.channel_needed_subscribe_power)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     assert.match(channel.getNameSpace(), "channel")
   })

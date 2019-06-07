@@ -1,6 +1,6 @@
 /* eslint-disable no-invalid-this */
 /* eslint-disable func-names */
-/*global describe beforeEach it*/
+/* global describe beforeEach it */
 const { deepEqual } = require("assert")
 const sinon = require("sinon")
 const { assert } = sinon
@@ -26,6 +26,122 @@ describe("TeamSpeakClient", () => {
     stub = sinon.stub(ts3, "execute")
     stub.resolves()
     client = new TeamSpeakClient(ts3, rawClient)
+  })
+
+  it("should verify the getter value of #clid()", () => {
+    assert.match(client.clid, rawClient.clid)
+  })
+
+  it("should verify the getter value of #cid()", () => {
+    assert.match(client.cid, rawClient.cid)
+  })
+
+  it("should verify the getter value of #databaseId()", () => {
+    assert.match(client.databaseId, rawClient.client_database_id)
+  })
+
+  it("should verify the getter value of #nickname()", () => {
+    assert.match(client.nickname, rawClient.client_nickname)
+  })
+
+  it("should verify the getter value of #type()", () => {
+    assert.match(client.type, rawClient.client_type)
+  })
+
+  it("should verify the getter value of #away()", () => {
+    assert.match(client.away, rawClient.client_away)
+  })
+
+  it("should verify the getter value of #awayMessage()", () => {
+    assert.match(client.awayMessage, rawClient.client_away_message)
+  })
+
+  it("should verify the getter value of #flagTalking()", () => {
+    assert.match(client.flagTalking, rawClient.client_flag_talking)
+  })
+
+  it("should verify the getter value of #inputMuted()", () => {
+    assert.match(client.inputMuted, rawClient.client_input_muted)
+  })
+
+  it("should verify the getter value of #outputMuted()", () => {
+    assert.match(client.outputMuted, rawClient.client_output_muted)
+  })
+
+  it("should verify the getter value of #inputHardware()", () => {
+    assert.match(client.inputHardware, rawClient.client_input_hardware)
+  })
+
+  it("should verify the getter value of #outputHardware()", () => {
+    assert.match(client.outputHardware, rawClient.client_output_hardware)
+  })
+
+  it("should verify the getter value of #talkPower()", () => {
+    assert.match(client.talkPower, rawClient.client_talk_power)
+  })
+
+  it("should verify the getter value of #isTalker()", () => {
+    assert.match(client.isTalker, rawClient.client_is_talker)
+  })
+
+  it("should verify the getter value of #isPrioritySpeaker()", () => {
+    assert.match(client.isPrioritySpeaker, rawClient.client_is_priority_speaker)
+  })
+
+  it("should verify the getter value of #isRecording()", () => {
+    assert.match(client.isRecording, rawClient.client_is_recording)
+  })
+
+  it("should verify the getter value of #isChannelCommander()", () => {
+    assert.match(client.isChannelCommander, rawClient.client_is_channel_commander)
+  })
+
+  it("should verify the getter value of #uniqueIdentifier()", () => {
+    assert.match(client.uniqueIdentifier, rawClient.client_unique_identifier)
+  })
+
+  it("should verify the getter value of #servergroups()", () => {
+    assert.match(client.servergroups, rawClient.client_servergroups)
+  })
+
+  it("should verify the getter value of #channelGroupId()", () => {
+    assert.match(client.channelGroupId, rawClient.client_channel_group_id)
+  })
+
+  it("should verify the getter value of #channelGroupInheritedChannelId()", () => {
+    assert.match(client.channelGroupInheritedChannelId, rawClient.client_channel_group_inherited_channel_id)
+  })
+
+  it("should verify the getter value of #version()", () => {
+    assert.match(client.version, rawClient.client_version)
+  })
+
+  it("should verify the getter value of #platform()", () => {
+    assert.match(client.platform, rawClient.client_platform)
+  })
+
+  it("should verify the getter value of #idleTime()", () => {
+    assert.match(client.idleTime, rawClient.client_idle_time)
+  })
+
+  it("should verify the getter value of #created()", () => {
+    assert.match(client.created, rawClient.client_created)
+  })
+
+  it("should verify the getter value of #lastconnected()", () => {
+    assert.match(client.lastconnected, rawClient.client_lastconnected)
+  })
+
+  it("should verify the getter value of #country()", () => {
+    assert.match(client.country, rawClient.client_country)
+  })
+
+  it("should verify the getter value of #connectionClientIp()", () => {
+    assert.match(client.connectionClientIp, rawClient.connection_client_ip)
+  })
+
+  it("should verify the getter value of #badges()", () => {
+    assert.match(client.badges, rawClient.client_badges)
   })
 
   it("should verify the return value of #getNameSpace()", () => {

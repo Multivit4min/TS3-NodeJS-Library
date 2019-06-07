@@ -24,6 +24,42 @@ describe("TeamSpeakServerGroup", () => {
     serverGroup = new TeamSpeakServerGroup(ts3, rawGroup)
   })
 
+  it("should verify the getter value of #sgid()", () => {
+    assert.match(serverGroup.sgid, rawGroup.sgid)
+  })
+
+  it("should verify the getter value of #name()", () => {
+    assert.match(serverGroup.name, rawGroup.name)
+  })
+
+  it("should verify the getter value of #type()", () => {
+    assert.match(serverGroup.type, rawGroup.type)
+  })
+
+  it("should verify the getter value of #iconid()", () => {
+    assert.match(serverGroup.iconid, rawGroup.iconid)
+  })
+
+  it("should verify the getter value of #savedb()", () => {
+    assert.match(serverGroup.savedb, rawGroup.savedb)
+  })
+
+  it("should verify the getter value of #sortid()", () => {
+    assert.match(serverGroup.sortid, rawGroup.sortid)
+  })
+
+  it("should verify the getter value of #namemode()", () => {
+    assert.match(serverGroup.namemode, rawGroup.namemode)
+  })
+
+  it("should verify the getter value of #nModifyp()", () => {
+    assert.match(serverGroup.nModifyp, rawGroup.n_modifyp)
+  })
+
+  it("should verify the getter value of #nMemberAddp()", () => {
+    assert.match(serverGroup.nMemberAddp, rawGroup.n_member_addp)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     assert.match(serverGroup.getNameSpace(), "servergroup")
   })

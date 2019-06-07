@@ -24,6 +24,50 @@ describe("TeamSpeakServer", () => {
     server = new TeamSpeakServer(ts3, rawServer)
   })
 
+  it("should verify the getter value of #id()", () => {
+    assert.match(server.id, rawServer.virtualserver_id)
+  })
+
+  it("should verify the getter value of #port()", () => {
+    assert.match(server.port, rawServer.virtualserver_port)
+  })
+
+  it("should verify the getter value of #status()", () => {
+    assert.match(server.status, rawServer.virtualserver_status)
+  })
+
+  it("should verify the getter value of #clientsonline()", () => {
+    assert.match(server.clientsonline, rawServer.virtualserver_clientsonline)
+  })
+
+  it("should verify the getter value of #queryclientsonline()", () => {
+    assert.match(server.queryclientsonline, rawServer.virtualserver_queryclientsonline)
+  })
+
+  it("should verify the getter value of #maxclients()", () => {
+    assert.match(server.maxclients, rawServer.virtualserver_maxclients)
+  })
+
+  it("should verify the getter value of #uptime()", () => {
+    assert.match(server.uptime, rawServer.virtualserver_uptime)
+  })
+
+  it("should verify the getter value of #name()", () => {
+    assert.match(server.name, rawServer.virtualserver_name)
+  })
+
+  it("should verify the getter value of #autostart()", () => {
+    assert.match(server.autostart, rawServer.virtualserver_autostart)
+  })
+
+  it("should verify the getter value of #machineId()", () => {
+    assert.match(server.machineId, rawServer.virtualserver_machine_id)
+  })
+
+  it("should verify the getter value of #uniqueIdentifier()", () => {
+    assert.match(server.uniqueIdentifier, rawServer.virtualserver_unique_identifier)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     assert.match(server.getNameSpace(), "virtualserver")
   })
