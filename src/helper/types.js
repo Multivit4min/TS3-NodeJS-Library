@@ -1,4 +1,9 @@
 /**
+ * @typedef {import("../property/Client")} TeamSpeakClient
+ * @typedef {import("../property/Channel")} TeamSpeakChannel
+ */
+
+/**
  * the TeamSpeak configuration object
  * @typedef {object} ConnectionParams
  * @property {string} [protocol=raw] - The Protocol to use, valid is ssh or raw
@@ -688,6 +693,75 @@
  * @property {string} [ftkey] exists when file is uploadable
  * @property {number} [port] exists when file is uploadable
  * @property {number} [proto] exists when file is uploadable
+ */
+
+/**
+ * debug events fired from the query handler
+ * @typedef {object} DebugEvent
+ * @property {string} type
+ * @property {string} [data]
+ */
+
+/**
+ * @typedef {object} ClientConnectEvent
+ * @property {TeamSpeakClient} client
+ */
+
+/**
+ * @typedef {object} ClientDisconnectEvent
+ * @property {ClientListResponse} client
+ * @property {object} event
+ */
+
+/**
+ * @typedef {object} TextMessageEvent
+ * @property {TeamSpeakClient} invoker
+ * @property {string} msg
+ * @property {number} targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
+ */
+
+/**
+ * @typedef {object} ClientMovedEvent
+ * @property {TeamSpeakClient} client the client which was moved
+ * @property {TeamSpeakChannel} channel the channel where the client has been moved to
+ * @property {number} reasonid (4 = Channel Kick)
+ */
+
+/**
+ * @typedef {object} ServerEditEvent
+ * @property {TeamSpeakClient} invoker the Client which edited the server
+ * @property {object} modified properties as key => value which has been modified
+ * @property {number} reasonid
+ */
+
+/**
+ * @typedef {object} ChannelEditEvent
+ * @property {TeamSpeakClient} invoker the client which edited the channel
+ * @property {TeamSpeakChannel} channel the channel which has been edited
+ * @property {object} modified properties as key => value which has been modified
+ * @property {number} reasonid
+ */
+
+/**
+ * @typedef {object} ChannelCreateEvent
+ * @property {TeamSpeakClient} invoker the client which created the channel
+ * @property {TeamSpeakChannel} channel the channel which has been created
+ * @property {object} modified properties as key => value which has been modified
+ * @property {number} cpid the new channel parent id
+ */
+
+/**
+ * @typedef {object} ChannelMoveEvent
+ * @property {TeamSpeakClient} invoker the client which moved the channel
+ * @property {TeamSpeakChannel} channel the channel which has been moved
+ * @property {TeamSpeakChannel} parent the new parent channel
+ * @property {number} order
+ */
+
+/**
+ * @typedef {object} ChannelDeleteEvent
+ * @property {TeamSpeakClient} invoker the client which deleted the channel
+ * @property {number} cid the channel id which has been deleted
  */
 
 module.exports = {}

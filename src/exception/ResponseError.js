@@ -9,14 +9,16 @@
 
 /**
  * TeamSpeak Query Response Exception Handler
- * @version 1.4
- * @param {object} error - The Error Object
- * @param {number} error.id - The error id
- * @param {string} error.msg - The error message
- * @param {string} [error.extra_msg] - Optional extra message
- * @param {number} [error.failed_permid] - Optional missing permission id
  */
 class ResponseError extends Error {
+
+  /**
+    * @param {object} error - The Error Object
+    * @param {number} error.id - The error id
+    * @param {string} error.msg - The error message
+    * @param {string} [error.extra_msg] - Optional extra message
+    * @param {number} [error.failed_permid] - Optional missing permission id
+    */
   constructor(error) {
     super(error.msg)
     this.id = error.id

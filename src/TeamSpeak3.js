@@ -7,8 +7,6 @@
  */
 
 /**
- * workaround for vscode intellisense and documentation generation
- *
  * @typedef {import("./helper/types").ClientInfoResponse} ClientInfoResponse
  * @typedef {import("./helper/types").ConnectionParams} ConnectionParams
  * @typedef {import("./helper/types").QueryLoginAddResponse} QueryLoginAddResponse
@@ -49,6 +47,19 @@
  * @typedef {import("./helper/types").FTGetFileInfoResponse} FTGetFileInfoResponse
  * @typedef {import("./helper/types").FTInitUploadResponse} FTInitUploadResponse
  * @typedef {import("./helper/types").FTInitDownloadResponse} FTInitDownloadResponse
+ *
+ * @typedef {import("./exception/ResponseError") } ResponseError
+ *
+ * @typedef {import("./helper/types").DebugEvent } DebugEvent
+ * @typedef {import("./helper/types").ClientConnectEvent } ClientConnectEvent
+ * @typedef {import("./helper/types").ClientDisconnectEvent } ClientDisconnectEvent
+ * @typedef {import("./helper/types").TextMessageEvent } TextMessageEvent
+ * @typedef {import("./helper/types").ClientMovedEvent } ClientMovedEvent
+ * @typedef {import("./helper/types").ServerEditEvent } ServerEditEvent
+ * @typedef {import("./helper/types").ChannelEditEvent } ChannelEditEvent
+ * @typedef {import("./helper/types").ChannelCreateEvent } ChannelCreateEvent
+ * @typedef {import("./helper/types").ChannelMoveEvent } ChannelMoveEvent
+ * @typedef {import("./helper/types").ChannelDeleteEvent } ChannelDeleteEvent
  * @ignore
  */
 
@@ -73,7 +84,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Represents a TeamSpeak Server Instance
    * @version 1.0
-   * @param {ConnectionParams} [config={}] - The Configuration Object
+   * @param {ConnectionParams} [config={}] the Configuration Object
    */
   constructor(config = {}) {
     super()
@@ -109,8 +120,7 @@ class TeamSpeak3 extends EventEmitter {
      * Gets fired when the Query disconnects from the TeamSpeak Server
      * @event TeamSpeak3#close
      * @memberof TeamSpeak3
-     * @type {object}
-     * @returns {object} - may return an error object
+     * @type {Error}
      */
     this._ts3.on("close", e => super.emit("close", e))
 
@@ -120,7 +130,7 @@ class TeamSpeak3 extends EventEmitter {
      * and also gets fired when there was an error after receiving an event
      * @event TeamSpeak3#error
      * @memberof  TeamSpeak3
-     * @returns {object} - return the error object
+     * @type {Error} may not be present
      */
     this._ts3.on("error", e => super.emit("error", e))
 
@@ -129,7 +139,7 @@ class TeamSpeak3 extends EventEmitter {
      * Gets fired when the TeamSpeak Query gets flooding errors
      * @event TeamSpeak3#flooding
      * @memberof  TeamSpeak3
-     * @returns {object} - return the error object
+     * @type {ResponseError} - return the error object
      */
     this._ts3.on("flooding", e => super.emit("flooding", e))
 
@@ -137,7 +147,7 @@ class TeamSpeak3 extends EventEmitter {
      * Forwards any debug messages
      * @event TeamSpeak3#debug
      * @memberof  TeamSpeak3
-     * @returns {object} - debug data
+     * @type {DebugEvent}
      */
     this._ts3.on("debug", data => super.emit("debug", data))
   }
@@ -194,8 +204,7 @@ class TeamSpeak3 extends EventEmitter {
          * Client Join Event
          * @event TeamSpeak3#clientconnect
          * @memberof TeamSpeak3
-         * @type {object}
-         * @property {TeamSpeakClient} client - The Client which joined the Server
+         * @type {ClientConnectEvent}
          */
         super.emit("clientconnect", { client, cid: event.ctid })
       })
@@ -216,9 +225,7 @@ class TeamSpeak3 extends EventEmitter {
      * Events Object contains all available Informations returned by the query
      * @event TeamSpeak3#clientdisconnect
      * @memberof TeamSpeak3
-     * @type {object}
-     * @property {TeamSpeakClient|object} client - The data from the last Client List Command
-     * @property {object} event - The Data from the disconnect event
+     * @type {ClientDisconnectEvent}
      */
     super.emit("clientdisconnect", {
       client: (String(clid) in this._clients) ? this._clients[clid].toJSON() : { clid },
@@ -241,10 +248,7 @@ class TeamSpeak3 extends EventEmitter {
          * Textmessage event
          * @event TeamSpeak3#textmessage
          * @memberof TeamSpeak3
-         * @type {object}
-         * @property {TeamSpeakClient} invoker - The Client which sent a textmessage
-         * @property {string} msg - The Message which has been sent
-         * @property {number} targetmode - The Targetmode (1 = Client, 2 = Channel, 3 = Virtual Server)
+         * @type {TextMessageEvent}
          */
         super.emit("textmessage", {
           invoker,
@@ -269,10 +273,7 @@ class TeamSpeak3 extends EventEmitter {
        * Client Move Event
        * @event TeamSpeak3#clientmoved
        * @memberof TeamSpeak3
-       * @type {object}
-       * @property {TeamSpeakClient} client - The Client which moved
-       * @property {TeamSpeakChannel} channel - The Channel which the client has been moved to
-       * @property {number} reasonid - Reason ID why the Client has moved (4 = Channel Kick)
+       * @type {ClientMovedEvent}
        */
       this.emit("clientmoved", {
         client,
@@ -300,10 +301,7 @@ class TeamSpeak3 extends EventEmitter {
          *
          * @event TeamSpeak3#serveredit
          * @memberof TeamSpeak3
-         * @type {object}
-         * @property {TeamSpeakClient} invoker - The Client which edited the server
-         * @property {object} modified - The Properties which has been modified
-         * @property {number} reasonid - ReasonID
+         * @type {ServerEditEvent}
          */
         this.emit("serveredit", {
           invoker,
@@ -332,11 +330,7 @@ class TeamSpeak3 extends EventEmitter {
        * Channel Edit Event
        * @event TeamSpeak3#channeledit
        * @memberof TeamSpeak3
-       * @type {object}
-       * @property {TeamSpeakClient} invoker - The Client which edited a channel
-       * @property {TeamSpeakChannel} channel - The Channel which has been edited
-       * @property {object} modified - The Properties which has been modified
-       * @property {number} reasonid - ReasonID
+       * @type {ChannelEditEvent}
        */
       this.emit("channeledit", {
         invoker,
@@ -366,11 +360,7 @@ class TeamSpeak3 extends EventEmitter {
        * Channel Create Event
        * @event TeamSpeak3#channelcreate
        * @memberof TeamSpeak3
-       * @type {object}
-       * @property {TeamSpeakClient} invoker - The Client which created the channel
-       * @property {TeamSpeakChannel} channel - The Channel which has been created
-       * @property {object} modified - The Properties which has been modified
-       * @property {number} cpid - the new channel parent id
+       * @type {ChannelCreateEvent}
        */
       this.emit("channelcreate", {
         invoker,
@@ -397,10 +387,7 @@ class TeamSpeak3 extends EventEmitter {
        * Channel Move Event
        * @event TeamSpeak3#channelmoved
        * @memberof TeamSpeak3
-       * @type {object}
-       * @property {TeamSpeakClient} invoker - The Client which moved the channel
-       * @property {TeamSpeakChannel} channel - The Channel which has been moved
-       * @property {TeamSpeakChannel} parent - The new Parent Channel
+       * @type {ChannelMoveEvent}
        */
       this.emit("channelmoved", { invoker, channel, parent, order: event.order })
     }).catch(e => this.emit("error", e))
@@ -419,9 +406,7 @@ class TeamSpeak3 extends EventEmitter {
          * Channel Delete Event
          * @event TeamSpeak3#channeldelete
          * @memberof TeamSpeak3
-         * @type {object}
-         * @property {TeamSpeakClient} invoker - The Client which deleted the channel
-         * @property {number} cid - The Channel ID which has been deleted
+         * @type {ChannelDeleteEvent}
          */
         this.emit("channeldelete", { invoker, cid: event.cid })
       })
