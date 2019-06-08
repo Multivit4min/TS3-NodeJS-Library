@@ -13,6 +13,8 @@ const EventEmitter = require("events")
 
 /**
  * @typedef {import("../helper/types").ConnectionParams} ConnectionParams
+ * @typedef {import("../helper/keytypes").RawQueryResponse} RawQueryResponse
+ * @typedef {import("../helper/QueryProtocol").QueryProtocol} QueryProtocol
  * @ignore
  */
 
@@ -30,21 +32,47 @@ class TS3Query extends EventEmitter {
   constructor(config) {
     super()
     this.config = { protocol: "raw", ...config }
+
+    /** @type {QueueItem[]} */
     this.queue = []
+
+    /** @type {number} */
     this.ignoreLines = 2
+
+    /** @type {string} */
     this.lastline = ""
+
+    /** @type {string} */
     this.lastevent = ""
+
+    /** @type {number} */
     this.lastcmd = Date.now()
-    this.active = {}
+
+    /** @type {QueueItem} */
+    this.active = null
+
+    /** @type {boolean} */
     this.connected = false
+
+    /** @type {any} */
     this.keepalivetimer = null
+
+    /** @type {boolean} */
     this.preventDoubleEvents = true
+
+    /** @type {any} */
     this.floodTimeout = null
+
+    /** @type {string[]} */
     this.doubleEvents = [
       "notifyclientleftview",
       "notifyclientmoved",
       "notifycliententerview"
     ]
+
+    /** @type {QueryProtocol} */
+    this.socket = null
+
     if (this.config.protocol === "raw") {
       this.socket = new RAW(this.config)
     } else if (this.config.protocol === "ssh") {
@@ -116,7 +144,7 @@ class TS3Query extends EventEmitter {
     } else {
       this.active.fulfill(this.active.cmd.getResponse())
     }
-    this.active = {}
+    this.active = null
     return this.queueWorker()
   }
 
@@ -137,7 +165,6 @@ class TS3Query extends EventEmitter {
      * @event TS3Query#<TeamSpeakEvent>
      * @memberof  TS3Query
      * @type {object}
-     * @property {any} data the data received from the event
      */
     return this.emit(
       line.substr(6, line.indexOf(" ") - 6),
@@ -208,7 +235,7 @@ class TS3Query extends EventEmitter {
    * Sends a command to the TeamSpeak Server.
    * @async
    * @param {...any} args parameters which should get executed
-   * @returns {Promise<any>} Promise object which returns the Information about the Query executed
+   * @returns {Promise<RawQueryResponse[]>} Promise object which returns the Information about the Query executed
    */
   execute(...args) {
     return new Promise((fulfill, reject) => {
@@ -237,13 +264,15 @@ class TS3Query extends EventEmitter {
   /**
    * Executes the next command
    * @private
-   * @param {object} [cmd] - the next command which should get executedd
+   * @param {QueueItem} [cmd] the next command which should get executedd
    */
-  queueWorker(cmd = false) {
+  queueWorker(cmd) {
     if (cmd) this.queue.push(cmd)
-    if (!this.connected ||
-        this.active.cmd instanceof Command ||
-        this.queue.length === 0) return
+    if (
+      !this.connected ||
+      this.active ||
+      this.queue.length === 0
+    ) return
     this.active = this.queue.shift()
     this.send(this.active.cmd.build())
   }
@@ -251,7 +280,7 @@ class TS3Query extends EventEmitter {
   /**
    * Sends data to the socket
    * @private
-   * @param {string} raw - the data which should get sent
+   * @param {string} raw the data which should get sent
    */
   send(raw) {
     this.lastcmd = Date.now()
@@ -269,3 +298,10 @@ class TS3Query extends EventEmitter {
 }
 
 module.exports = TS3Query
+
+/**
+ * @typedef QueueItem
+ * @property {function} fulfill
+ * @property {function} reject
+ * @property {Command} cmd
+ */

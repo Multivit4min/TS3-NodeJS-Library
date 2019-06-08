@@ -33,10 +33,10 @@ class Command {
 
   /**
    * Initializes the Respone with default values
-   * @returns {this}
+   * @returns {Command}
    */
   reset() {
-    this.response = ""
+    this.response = []
     this.error = null
     return this
   }
@@ -45,7 +45,7 @@ class Command {
   /**
    * Sets the main command to send
    * @param {string} cmd sets the command which will be sent to the TeamSpeak Query
-   * @returns {this}
+   * @returns {Command}
    */
   setCommand(cmd) {
     this.cmd = cmd.trim()
@@ -56,7 +56,7 @@ class Command {
   /**
    * Sets the TeamSpeak Key Value Pairs
    * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
-   * @returns {this}
+   * @returns {Command}
    */
   setOptions(opts) {
     this.opts = opts
@@ -66,8 +66,8 @@ class Command {
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @param {array} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
-   * @returns {this}
+   * @param {object[]} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @returns {Command}
    */
   setMultiOptions(opts) {
     this.multiOpts = opts
@@ -95,8 +95,8 @@ class Command {
 
   /**
    * Set TeamSpeak Flags
-   * @param {object} flags sets the flags which should get sent to the teamspeak query
-   * @returns {this}
+   * @param {string[]} flags sets the flags which should get sent to the teamspeak query
+   * @returns {Command}
    */
   setFlags(flags) {
     this.flags = flags
@@ -126,7 +126,7 @@ class Command {
 
   /**
    * Set the error line which has been received from the TeamSpeak Query
-   * @param {string} error - The error Line which has been received from the TeamSpeak Query
+   * @param {string} error the error line which has been received from the TeamSpeak Query
    * @returns {Command}
    */
   setError(error) {
@@ -155,7 +155,7 @@ class Command {
 
   /**
    * Get the Parsed Response Object which has been received from the TeamSpeak Query
-   * @return {object} Returns the Parsed Response Object
+   * @return {RawQueryResponse[]} Returns the Parsed Response Object
    */
   getResponse() {
     return this.response || []
@@ -165,8 +165,8 @@ class Command {
   /**
    * Parses a Query Response
    * @static
-   * @param {string} data - The Line which has been received
-   * @return {RawQueryResponse[]} Returns the parsed Data
+   * @param {string} data the line which has been received
+   * @return {RawQueryResponse[]} returns the parsed data
    */
   static parse(data = "") {
     // @ts-ignore
@@ -227,8 +227,8 @@ class Command {
   /**
    * Escapes a key and a value
    * @private
-   * @param {string} key - the key used
-   * @param {string|string[]} value - the value or an array of values
+   * @param {string} key the key used
+   * @param {string|string[]} value the value or an array of values
    * @return {string} The parsed String which is readable by the TeamSpeak Query
    */
   escapeKeyValue(key, value) {
@@ -243,7 +243,7 @@ class Command {
   /**
    * Builds the query string for flags
    * @private
-   * @return {string} The parsed String which is readable by the TeamSpeak Query
+   * @return {string} the parsed string which is readable by the TeamSpeak Query
    */
   buildFlags() {
     return this.flags.map(f => Command.escape(f)).join(" ")

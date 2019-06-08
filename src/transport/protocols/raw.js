@@ -6,11 +6,18 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * @typedef {import("../../helper/types").ConnectionParams} ConnectionParams
+ * @typedef {import("../../helper/QueryProtocol").QueryProtocol} QueryProtocol
+ * @ignore
+ */
+
 const net = require("net")
 const EventEmitter = require("events")
 
 /**
  * TeamSpeak RAW Connection
+ * @implements {QueryProtocol}
  * @extends EventEmitter
  */
 class RAW extends EventEmitter {
@@ -18,8 +25,7 @@ class RAW extends EventEmitter {
   /**
    * Creates a new RAW Instance
    * @constructor
-   * @version 1.5
-   * @param {import("../../helper/types").ConnectionParams} config connection configuration
+   * @param {ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()
@@ -36,8 +42,6 @@ class RAW extends EventEmitter {
 
   /**
    * Called after the socket was not able to connect within the given timeframe
-   *
-   * @version 1.10.3
    */
   _handleTimeout() {
     this._socket.destroy()
@@ -46,8 +50,6 @@ class RAW extends EventEmitter {
 
   /**
    * Called after the Socket has been established
-   *
-   * @version 1.8
    */
   _handleConnect() {
     this._socket.setTimeout(0)
@@ -56,8 +58,6 @@ class RAW extends EventEmitter {
 
   /**
    * Called when the Socket emits an error
-   *
-   * @version 1.8
    */
   _handleError(err) {
     this.emit("error", err)
@@ -65,8 +65,6 @@ class RAW extends EventEmitter {
 
   /**
    * Called when the connection with the Socket gets closed
-   *
-   * @version 1.8
    */
   _handleClose() {
     this.emit("close", String(this._data))
@@ -75,8 +73,6 @@ class RAW extends EventEmitter {
   /**
    * Called when the Socket receives data
    * Splits the data with every newline
-   *
-   * @version 1.8
    */
   _handleData(chunk) {
     this._data += chunk
@@ -88,9 +84,7 @@ class RAW extends EventEmitter {
 
   /**
    * sends the data in the first argument, appends a newline
-   *
-   * @version 1.8
-   * @param {string} str - the data which should be sent
+   * @param {string} str the data which should be sent
    */
   send(str) {
     this._socket.write(`${str}\n`)
@@ -99,8 +93,6 @@ class RAW extends EventEmitter {
 
   /**
    * sends a keepalive to the TeamSpeak Server
-   *
-   * @version 1.8
    */
   sendKeepAlive() {
     this._socket.write(" \n")

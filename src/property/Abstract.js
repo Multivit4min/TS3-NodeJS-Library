@@ -6,6 +6,11 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * @typedef {import("../TeamSpeak3")} TeamSpeak3
+ * @ignore
+ */
+
 const EventEmitter = require("events")
 
 /**
@@ -16,10 +21,9 @@ class Abstract extends EventEmitter {
 
   /**
    * Creates a new Abstract Class
-   * @version 1.0
-   * @param {import("../TeamSpeak3")} parent - The Parent Object which is a TeamSpeak Instance
-   * @param {object} props - The Properties
-   * @param {string} namespace - the namespace of the Abstract used
+   * @param {TeamSpeak3} parent the parent object which is a teamspeak instance
+   * @param {object} props props from the list command
+   * @param {string} namespace the namespace of the Abstract used
    */
   constructor(parent, props, namespace) {
     super()
@@ -72,7 +76,6 @@ class Abstract extends EventEmitter {
 
   /**
    * Safely unsubscribes from all Events
-   * @version 1.0
    */
   destruct() {
     super.removeAllListeners()
@@ -84,7 +87,6 @@ class Abstract extends EventEmitter {
   /**
    * Returns the data from the last List Command
    * @deprecated
-   * @version 1.0
    * @return {object}
    */
   getCache() {
@@ -96,7 +98,6 @@ class Abstract extends EventEmitter {
   /**
    * Sets the Data from the Last List Command
    * @param {object} info a object with new key values from the list command
-   * @version 1.0
    */
   updateCache(info) {
     const changes = this._objectCopy(this._propcache, info)
@@ -105,12 +106,11 @@ class Abstract extends EventEmitter {
 
     /**
      * Single Property Change event
-     *
      * @event Abstract#update:<property>
      * @memberof Abstract
      * @type {object}
-     * @property {any} from - the old value
-     * @property {any} to - the new value
+     * @property {any} from the old value
+     * @property {any} to the new value
      */
       .forEach(prop => this.emit(`update#${prop}`, changes[prop]))
 
@@ -119,8 +119,8 @@ class Abstract extends EventEmitter {
      * @event Abstract#update
      * @memberof Abstract
      * @type {object[]}
-     * @property {any} change[].from - the old value
-     * @property {any} change[].to - the new value
+     * @property {any} change[].from the old value
+     * @property {any} change[].to the new value
      */
     this.emit("update", changes)
   }
@@ -129,10 +129,9 @@ class Abstract extends EventEmitter {
   /**
    * Copies the the new values and keys from src to dst and returns the changes to dst
    * @private
-   * @param {object} dst - the object to copy the src object onto
-   * @param {object} src - the object with the new values
+   * @param {object} dst the object to copy the src object onto
+   * @param {object} src the object with the new values
    * @return {object} returns the updated values from src to dst
-   * @version 1.7
    */
   _objectCopy(dst, src) {
     const changes = {}
@@ -147,8 +146,7 @@ class Abstract extends EventEmitter {
 
   /**
    * Returns the Parent Class
-   * @version 1.0
-   * @returns {import("../TeamSpeak3")} the teamspeak instance
+   * @returns {TeamSpeak3} the teamspeak instance
    */
   getParent() {
     return this._parent

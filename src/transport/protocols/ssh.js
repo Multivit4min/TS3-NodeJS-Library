@@ -6,20 +6,25 @@
  * @author David Kartnaller <david.kartnaller@gmail.com>
  */
 
+/**
+ * @typedef {import("../../helper/types").ConnectionParams} ConnectionParams
+ * @typedef {import("../../helper/QueryProtocol").QueryProtocol} QueryProtocol
+ * @ignore
+ */
+
 const { Client } = require("ssh2")
 const EventEmitter = require("events")
 
 /**
  * TeamSpeak SSH Connection
+ * @implements {QueryProtocol}
  * @extends EventEmitter
  */
 class SSH extends EventEmitter {
 
   /**
    * Creates a new TS3Query via Telnet Protocol
-   * @constructor
-   * @version 1.0
-   * @param {import("../../helper/types").ConnectionParams} config connection configuration
+   * @param {ConnectionParams} config connection configuration
    */
   constructor(config) {
     super()
@@ -48,8 +53,6 @@ class SSH extends EventEmitter {
 
   /**
    * Called after the Socket has been established
-   *
-   * @version 1.8
    */
   _handleReady() {
     this._ssh.shell(false, (err, stream) => {
@@ -63,8 +66,6 @@ class SSH extends EventEmitter {
 
   /**
    * Called when the connection with the Socket gets closed
-   *
-   * @version 1.8
    */
   _handleClose() {
     this.emit("close", String(this._data))
@@ -73,8 +74,6 @@ class SSH extends EventEmitter {
 
   /**
    * Called when the Socket emits an error
-   *
-   * @version 1.8
    */
   _handleError(...args) {
     this.emit("error", ...args)
@@ -83,8 +82,6 @@ class SSH extends EventEmitter {
 
   /**
    * Called when the Socket receives data
-   *
-   * @version 1.8
    */
   _handleData(chunk) {
     this._data += chunk
@@ -96,9 +93,7 @@ class SSH extends EventEmitter {
 
   /**
    * sends the data in the first argument, appends a newline
-   *
-   * @version 1.8
-   * @param {string} str - the data which should be sent
+   * @param {string} str the data which should be sent
    */
   send(str) {
     this._stream.write(`${str}\n`)
@@ -107,8 +102,6 @@ class SSH extends EventEmitter {
 
   /**
    * sends a keepalive to the TeamSpeak Server
-   *
-   * @version 1.8
    */
   sendKeepAlive() {
     this._stream.write(" \n")
