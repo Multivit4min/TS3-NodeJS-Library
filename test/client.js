@@ -339,6 +339,15 @@ describe("TeamSpeakClient", () => {
     })
   })
 
+  it("should verify execute parameters of #dbEdit()", async () => {
+    await client.dbEdit({ client_description: "test" })
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientdbedit", {
+      cldbid: rawClient.client_database_id,
+      client_description: "test"
+    })
+  })
+
   it("should verify execute parameters of #poke()", async () => {
     await client.poke("poke message")
     assert.calledOnce(stub)
