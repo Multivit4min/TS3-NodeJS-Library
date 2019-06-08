@@ -9,13 +9,11 @@
 const Abstract = require("./Abstract")
 
 /**
- * workaround for vscode intellisense and documentation generation
- *
  * @typedef {import("../TeamSpeak3")} TeamSpeak3
- * @typedef {import("./Client")} TeamSpeakClient
  * @typedef {import("../helper/types").ChannelGroupListResponse} ChannelGroupListResponse
  * @typedef {import("../helper/types").ChannelGroupCopyResponse} ChannelGroupCopyResponse
  * @typedef {import("../helper/types").PermListResponse} PermListResponse
+ * @typedef {import("../helper/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
  * @ignore
  */
 
@@ -89,7 +87,7 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
    * @async
-   * @param {number} [force=0] - If set to 1 the Channel Group will be deleted even when Clients are in it
+   * @param {number} [force=0] if set to 1 the channelgroup will be deleted even when clients are in it
    * @return {Promise} resolves on success
    */
   del(force) {
@@ -102,9 +100,9 @@ class TeamSpeakChannelGroup extends Abstract {
    * To overwrite an existing group, simply set tcgid to the ID of a designated target group.
    * If a target group is set, the name parameter will be ignored.
    * @async
-   * @param {number} [tcgid=0] - The Target Group, 0 to create a new Group
-   * @param {number} [type] - The Type of the Group (0 = Template Group | 1 = Normal Group)
-   * @param {string} [name] - Name of the Group
+   * @param {number} [tcgid=0] the target group, 0 to create a new group
+   * @param {number} [type] the type of the group (0 = Template Group | 1 = Normal Group)
+   * @param {string} [name] name of the group
    * @return {Promise<ChannelGroupCopyResponse>}
    */
   copy(tcgid, type, name) {
@@ -115,7 +113,7 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Changes the name of the channel group
    * @async
-   * @param {string} name - Name of the Group
+   * @param {string} name name of the group
    * @return {Promise} resolves on success
    */
   rename(name) {
@@ -126,7 +124,7 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Displays a list of permissions assigned to the channel group specified with cgid.
    * @async
-   * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+   * @param {boolean} [permsid=false] if the permsid option is set to true the output will contain the permission names
    * @return {Promise<PermListResponse[]>}
    */
   permList(permsid = false) {
@@ -137,10 +135,10 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Adds a specified permissions to the channel group. A permission can be specified by permid or permsid.
    * @async
-   * @param {string|number} perm - The permid or permsid
-   * @param {number} value - Value of the Permission
-   * @param {number} [skip=0] - Whether the skip flag should be set
-   * @param {number} [negate=0] - Whether the negate flag should be set
+   * @param {string|number} perm the permid or permsid
+   * @param {number} value value of the Permission
+   * @param {number} [skip=0] whether the skip flag should be set
+   * @param {number} [negate=0] whether the negate flag should be set
    * @return {Promise} resolves on success
    */
   addPerm(perm, value, skip = 0, negate = 0) {
@@ -151,7 +149,7 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Removes a set of specified permissions from the channel group. A permission can be specified by permid or permsid.
    * @async
-   * @param {string|number} perm - The permid or permsid
+   * @param {string|number} perm the permid or permsid
    * @return {Promise} resolves on success
    */
   delPerm(perm) {
@@ -162,8 +160,8 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Sets the channel group of a client
    * @async
-   * @param {number} cid - The Channel in which the Client should be assigned the Group
-   * @param {number} cldbid - The Client Database ID which should be added to the Group
+   * @param {number} cid the channel in which the client should be assigned the Group
+   * @param {number} cldbid the client database id which should be added to the Group
    * @return {Promise} resolves on success
    */
   setClient(cid, cldbid) {
@@ -174,8 +172,8 @@ class TeamSpeakChannelGroup extends Abstract {
   /**
    * Displays the IDs of all clients currently residing in the channel group.
    * @async
-   * @param {number} [cid] - The Channel ID
-   * @return {Promise<TeamSpeakClient[]>}
+   * @param {number} [cid] the channel id
+   * @return {Promise<ChannelGroupClientListResponse[]>}
    */
   clientList(cid) {
     return super.getParent().channelGroupClientList(this.cgid, cid)

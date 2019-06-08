@@ -25,7 +25,6 @@ class TeamSpeakServer extends Abstract {
 
   /**
    * Creates a TeamSpeak Server
-   * @version 1.0
    * @param {TeamSpeak3} parent the teamspeak instance
    * @param {ServerListResponse} list response from the serverlist command
    */
@@ -89,11 +88,10 @@ class TeamSpeakServer extends Abstract {
   }
 
   /**
-     * Selects the Virtual Server
-     * @version 1.0
-     * @param {string} [client_nickname] - Set Nickname when selecting a server
+   * Selects the Virtual Server
+   * @param {string} [client_nickname] sets the nickname when selecting a server
    * @return {Promise} resolves on success
-     */
+   */
   use(client_nickname) {
     return super.getParent().useBySid(this.id, client_nickname)
   }
@@ -102,18 +100,16 @@ class TeamSpeakServer extends Abstract {
   /**
    * Gets basic Infos about the Server
    * @deprecated
-   * @version 1.0
    * @async
    * @returns {Promise<ServerListResponse>}
    */
   getInfo() {
-    return this.toJSON(false)
+    return this.getCache()
   }
 
 
   /**
    * Deletes the Server.
-   * @version 1.0
    * @async
    * @return {Promise} resolves on success
    */
@@ -124,7 +120,6 @@ class TeamSpeakServer extends Abstract {
 
   /**
    * Starts the virtual server. Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
-   * @version 1.0
    * @async
    * @return {Promise} resolves on success
    */
@@ -135,9 +130,8 @@ class TeamSpeakServer extends Abstract {
 
   /**
    * Stops the virtual server. Depending on your permissions, you're able to stop either your own virtual server only or all virtual servers in the server instance.
-   * @version 1.0
    * @async
-   * @param {string} [msg] - Specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
+   * @param {string} [msg] specifies a text message that is sent to the clients before the client disconnects (requires TeamSpeak Server 3.2.0 or newer).
    * @return {Promise} resolves on success
    */
   stop(msg) {

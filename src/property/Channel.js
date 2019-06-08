@@ -9,13 +9,13 @@
 const Abstract = require("./Abstract")
 
 /**
- * workaround for vscode intellisense and documentation generation
- *
  * @typedef {import("../TeamSpeak3")} TeamSpeak3
  * @typedef {import("./Client")} TeamSpeakClient
  * @typedef {import("../helper/types").ChannelListResponse} ChannelListResponse
  * @typedef {import("../helper/types").ChannelInfoResponse} ChannelInfoResponse
  * @typedef {import("../helper/types").PermListResponse} PermListResponse
+ * @typedef {import("../helper/types").ChannelListFilter} ChannelListFilter
+ * @typedef {import("../helper/types").ChannelEditProps} ChannelEditProps
  * @ignore
  */
 
@@ -28,7 +28,6 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Creates a TeamSpeak Channel
-   * @version 1.0
    * @param {TeamSpeak3} parent the teamspeak instance
    * @param {ChannelListResponse} list response from the channellist command
    */
@@ -143,7 +142,6 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Displays detailed configuration information about a channel including ID, topic, description, etc.
-   * @version 1.0
    * @async
    * @return {Promise<ChannelInfoResponse>}
    */
@@ -156,10 +154,9 @@ class TeamSpeakChannel extends Abstract {
    * Moves a channel to a new parent channel with the ID cpid.
    * If order is specified, the channel will be sorted right under the channel with the specified ID.
    * If order is set to 0, the channel will be sorted right below the new parent.
-   * @version 1.0
    * @async
-   * @param {number} cpid - Channel Parent ID
-   * @param {number} [order=0] - Channel Sort Order
+   * @param {number} cpid channel parent id
+   * @param {number} [order=0] channel sort order
    * @return {Promise} resolves on success
    */
   move(cpid, order = 0) {
@@ -169,9 +166,8 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Deletes an existing channel by ID. If force is set to 1, the channel will be deleted even if there are clients within. The clients will be kicked to the default channel with an appropriate reason message.
-   * @version 1.0
    * @async
-   * @param {number} force - If set to 1 the Channel will be deleted even when Clients are in it
+   * @param {number} force if set to 1 the channel will be deleted even when clients are in it
    * @return {Promise} resolves on success
    */
   del(force = 0) {
@@ -181,9 +177,8 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
-   * @version 1.0
    * @async
-   * @param {object} properties - The Properties of the Channel which should get changed
+   * @param {ChannelEditProps} properties the properties of the channel which should get changed
    * @return {Promise} resolves on success
    */
   edit(properties) {
@@ -193,9 +188,8 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Displays a list of permissions defined for a channel.
-   * @version 1.0
    * @async
-   * @param {boolean} [permsid=false] - Whether the Perm SID should be displayed aswell
+   * @param {boolean} [permsid=false] whether the permsid should be displayed aswell
    * @return {Promise<PermListResponse[]>}
    */
   permList(permsid = false) {
@@ -205,10 +199,9 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Adds a set of specified permissions to a channel. Multiple permissions can be added by providing the two parameters of each permission. A permission can be specified by permid or permsid.
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
-   * @param {number} value - The Value which should be set
+   * @param {string|number} perm the permid or permsid
+   * @param {number} value the value which should be set
    * @return {Promise} resolves on success
    */
   setPerm(perm, value) {
@@ -218,9 +211,8 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Removes a set of specified permissions from a channel. Multiple permissions can be removed at once. A permission can be specified by permid or permsid.
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
+   * @param {string|number} perm the permid or permsid
    * @return {Promise} resolves on success
    */
   delPerm(perm) {
@@ -230,9 +222,8 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Gets a List of Clients in the current Channel
-   * @version 1.0
    * @async
-   * @param {object} filter - The Filter Object
+   * @param {ChannelListFilter} [filter] the filter object
    * @return {Promise<TeamSpeakClient[]>}
    */
   getClients(filter = {}) {
@@ -243,7 +234,6 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Returns a Buffer with the Icon of the Channel
-   * @version 1.0
    * @async
    * @returns {Promise<Buffer>} Promise with the binary data of the Channel Icon
    */
@@ -254,7 +244,6 @@ class TeamSpeakChannel extends Abstract {
 
   /**
    * Gets the Icon Name of the Channel
-   * @version 1.0
    * @async
    * @returns {Promise<string>}
    */

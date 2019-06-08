@@ -165,6 +165,7 @@
  * @property {number} pid
  * @property {number} cpid
  * @property {number} order
+ * @property {number} channel_cpid
  * @property {number} channel_order
  * @property {string} channel_name
  * @property {string} channel_password
@@ -174,6 +175,7 @@
  * @property {number} channel_flag_password
  * @property {number} channel_flag_permanent
  * @property {number} channel_flag_semi_permanent
+ * @property {number} channel_flag_temporary
  * @property {number} channel_codec
  * @property {number} channel_codec_quality
  * @property {number} channel_needed_talk_power
@@ -246,7 +248,7 @@
  * @property {number} serverinstance_guest_serverquery_group
  * @property {number} serverinstance_pending_connections_per_ip
  * @property {number} serverinstance_permissions_version
- * @property {number} serverinstance_serverquery_ban_time
+ * @property {number} serverinstance_serverquery_flood_ban_time
  * @property {number} serverinstance_serverquery_flood_commands
  * @property {number} serverinstance_serverquery_flood_time
  * @property {number} serverinstance_template_channeladmin_group
@@ -444,6 +446,7 @@ module.exports = {
   pid: Number,
   cpid: Number,
   order: Number,
+  channel_cpid: Number,
   channel_order: Number,
   channel_name: String,
   channel_password: String,
@@ -453,6 +456,7 @@ module.exports = {
   channel_flag_password: Number,
   channel_flag_permanent: Number,
   channel_flag_semi_permanent: Number,
+  channel_flag_temporary: Number,
   channel_codec: Number,
   channel_codec_quality: Number,
   channel_needed_talk_power: Number,

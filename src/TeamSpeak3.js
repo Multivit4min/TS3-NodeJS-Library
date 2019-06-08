@@ -15,6 +15,12 @@
  * @typedef {import("./property/ServerGroup")} TeamSpeakServerGroup
  * @typedef {import("./property/ChannelGroup")} TeamSpeakChannelGroup
  *
+ * @typedef {import("./helper/types").InstanceEditProps} InstanceEditProps
+ * @typedef {import("./helper/types").ChannelEditProps} ChannelEditProps
+ * @typedef {import("./helper/types").ServerEditProps} ServerEditProps
+ * @typedef {import("./helper/types").ClientDBEditProps} ClientDBEditProps
+ * @typedef {import("./helper/types").ClientUpdateProps} ClientUpdateProps
+ *
  * @typedef {import("./helper/types").ClientInfoResponse} ClientInfoResponse
  * @typedef {import("./helper/types").ConnectionParams} ConnectionParams
  * @typedef {import("./helper/types").QueryLoginAddResponse} QueryLoginAddResponse
@@ -30,6 +36,7 @@
  * @typedef {import("./helper/types").ServerCreateResponse} ServerCreateResponse
  * @typedef {import("./helper/types").ServerGroupClientListResponse} ServerGroupClientListResponse
  * @typedef {import("./helper/types").ServerGroupCopyResponse} ServerGroupCopyResponse
+ * @typedef {import("./helper/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
  * @typedef {import("./helper/types").PermListResponse} PermListResponse
  * @typedef {import("./helper/types").ChannelInfoResponse} ChannelInfoResponse
  * @typedef {import("./helper/types").ClientDBListResponse} ClientDBListResponse
@@ -55,6 +62,11 @@
  * @typedef {import("./helper/types").FTGetFileInfoResponse} FTGetFileInfoResponse
  * @typedef {import("./helper/types").FTInitUploadResponse} FTInitUploadResponse
  * @typedef {import("./helper/types").FTInitDownloadResponse} FTInitDownloadResponse
+ * @typedef {import("./helper/types").ServerGroupListFilter} ServerGroupListFilter
+ * @typedef {import("./helper/types").ChannelGroupListFilter} ChannelGroupListFilter
+ * @typedef {import("./helper/types").ClientListFilter} ClientListFilter
+ * @typedef {import("./helper/types").ChannelListFilter} ChannelListFilter
+ * @typedef {import("./helper/types").ServerListFilter} ServerListFilter
  *
  * @typedef {import("./exception/ResponseError") } ResponseError
  *
@@ -514,7 +526,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Change your ServerQuery clients settings using given properties.
    * @async
-   * @param {object} properties the properties which should be changed
+   * @param {ClientUpdateProps} properties the properties which should be changed
    * @returns {Promise} resolves on success
    */
   clientUpdate(properties) {
@@ -613,7 +625,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Changes the server instance configuration using given properties.
    * @async
-   * @param {object} properties - The stuff you want to change
+   * @param {InstanceEditProps} properties - The stuff you want to change
    * @returns {Promise} resolves on success
    */
   instanceEdit(properties) {
@@ -701,7 +713,7 @@ class TeamSpeak3 extends EventEmitter {
    * Changes the selected virtual servers configuration using given properties.
    * Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
    * @async
-   * @param {object} properties the server settings which should be changed
+   * @param {ServerEditProps} properties the server settings which should be changed
    * @returns {Promise} resolves on success
    */
   serverEdit(properties) {
@@ -734,7 +746,7 @@ class TeamSpeak3 extends EventEmitter {
    * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key.
    * If virtualserver_port is not specified, the server will test for the first unused UDP port
    * @async
-   * @param {object} properties the server properties
+   * @param {ServerEditProps} properties the server properties
    * @returns {Promise<ServerCreateResponse>} returns the server admin token for the new server and the response from the server creation
    */
   serverCreate(properties) {
@@ -805,10 +817,10 @@ class TeamSpeak3 extends EventEmitter {
    * Displays the IDs of all clients currently residing in the server group.
    * @async
    * @param {number} sgid the servergroup id
-   * @returns {Promise<ServerGroupClientListResponse>}
+   * @returns {Promise<ServerGroupClientListResponse[]>}
    */
   serverGroupClientList(sgid) {
-    return this.execute("servergroupclientlist", { sgid }, ["-names"]).then(TeamSpeak3.singleResponse)
+    return this.execute("servergroupclientlist", { sgid }, ["-names"]).then(TeamSpeak3.toArray)
   }
 
 
@@ -932,7 +944,7 @@ class TeamSpeak3 extends EventEmitter {
    * Note that this command accepts multiple properties which means that you're able to specifiy all settings of the new channel at once.
    * @async
    * @param {string} name the name of the channel
-   * @param {object} [properties={}] properties of the channel
+   * @param {ChannelEditProps} [properties={}] properties of the channel
    * @returns {Promise<TeamSpeakChannel>}
    */
   channelCreate(name, properties = {}) {
@@ -975,7 +987,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Retrieves a Single Channel by the given Channel Name
    * @async
-   * @param {number} channel_name the name of the channel
+   * @param {string} channel_name the name of the channel
    * @returns {Promise<TeamSpeakChannel>} Promise object which returns the channel object or undefined if not found
    */
   getChannelByName(channel_name) {
@@ -1029,7 +1041,7 @@ class TeamSpeak3 extends EventEmitter {
    * Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
    * @async
    * @param {number} cid the channel id
-   * @param {object} [properties={}] the properties of the channel which should get changed
+   * @param {ChannelEditProps} [properties={}] the properties of the channel which should get changed
    * @return {Promise} resolves on success
    */
   channelEdit(cid, properties = {}) {
@@ -1350,7 +1362,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Retrieves a single ServerGroup by the given ServerGroup Name
    * @async
-   * @param {number} name the servergroup name
+   * @param {string} name the servergroup name
    * @returns {Promise<TeamSpeakServerGroup>} Promise object which returns the srvergroup or undefined if not found
    */
   getServerGroupByName(name) {
@@ -1374,7 +1386,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Retrieves a single ChannelGroup by the given ChannelGroup Name
    * @async
-   * @param {number} name the channelGroup name
+   * @param {string} name the channelGroup name
    * @returns {Promise<TeamSpeakChannelGroup>} Promise object which returns the channelgroup or undefined if not found
    */
   getChannelGroupByName(name) {
@@ -1490,7 +1502,7 @@ class TeamSpeak3 extends EventEmitter {
    * @async
    * @param {number} cgid the channelgroup id
    * @param {number} [cid] the channel id
-   * @return {Promise<TeamSpeakClient[]>}
+   * @return {Promise<ChannelGroupClientListResponse[]>}
    */
   channelGroupClientList(cgid, cid) {
     const properties = { cgid }
@@ -1875,8 +1887,8 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Changes a clients settings using given properties.
    * @async
-   * @param {string} cldbid the client database id which should be edited
-   * @param {object} [properties={}] the properties which should be modified
+   * @param {number} cldbid the client database id which should be edited
+   * @param {ClientDBEditProps} [properties={}] the properties which should be modified
    * @returns {Promise} resolves on success
    */
   clientDBEdit(cldbid, properties = {}) {
@@ -1899,6 +1911,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Displays a list of virtual servers including their ID, status, number of clients online, etc.
    * @async
+   * @param {ServerListFilter} filter filter object
    * @returns {Promise<TeamSpeakServer[]>}
    */
   serverList(filter = {}) {
@@ -1913,7 +1926,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Displays a list of channel groups available. Depending on your permissions, the output may also contain template groups.
    * @async
-   * @param {object} filter filter object
+   * @param {ChannelGroupListFilter} filter filter object
    * @returns {Promise<TeamSpeakChannelGroup[]>}
    */
   channelGroupList(filter = {}) {
@@ -1929,7 +1942,7 @@ class TeamSpeak3 extends EventEmitter {
    * Displays a list of server groups available.
    * Depending on your permissions, the output may also contain global ServerQuery groups and template groups.
    * @async
-   * @param {object} filter filter object
+   * @param {ServerGroupListFilter} filter filter object
    * @returns {Promise<TeamSpeakServerGroup[]>}
    */
   serverGroupList(filter = {}) {
@@ -1944,7 +1957,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Lists all Channels with a given Filter
    * @async
-   * @param {object} filter filter object
+   * @param {ChannelListFilter} filter filter object
    * @returns {Promise<TeamSpeakChannel[]>}
    */
   channelList(filter = {}) {
@@ -1959,7 +1972,7 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Lists all Clients with a given Filter
    * @async
-   * @param {object} filter filter object
+   * @param {ClientListFilter} filter filter object
    * @returns {Promise<TeamSpeakClient[]>}
    */
   clientList(filter = {}) {

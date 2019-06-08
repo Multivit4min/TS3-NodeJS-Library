@@ -52,6 +52,40 @@
  */
 
 /**
+ * clientlist filter
+ * @typedef {object} ClientListFilter
+ * @property {number} [clid]
+ * @property {number} [cid]
+ * @property {number} [client_database_id]
+ * @property {string} [client_nickname]
+ * @property {number} [client_type]
+ * @property {number} [client_away]
+ * @property {string} [client_away_message]
+ * @property {number} [client_flag_talking]
+ * @property {number} [client_input_muted]
+ * @property {number} [client_output_muted]
+ * @property {number} [client_input_hardware]
+ * @property {number} [client_output_hardware]
+ * @property {number} [client_talk_power]
+ * @property {number} [client_is_talker]
+ * @property {number} [client_is_priority_speaker]
+ * @property {number} [client_is_recording]
+ * @property {number} [client_is_channel_commander]
+ * @property {string} [client_unique_identifier]
+ * @property {number[]} [client_servergroups]
+ * @property {number} [client_channel_group_id]
+ * @property {number} [client_channel_group_inherited_channel_id]
+ * @property {string} [client_version]
+ * @property {string} [client_platform]
+ * @property {number} [client_idle_time]
+ * @property {number} [client_created]
+ * @property {number} [client_lastconnected]
+ * @property {string} [client_country]
+ * @property {string} [connection_client_ip]
+ * @property {string} [client_badges]
+ */
+
+/**
  * channellist response
  * @typedef {object} ChannelListResponse
  * @property {number} cid
@@ -76,6 +110,30 @@
  */
 
 /**
+ * channellist filter
+ * @typedef {object} ChannelListFilter
+ * @property {number} [cid]
+ * @property {number} [pid]
+ * @property {number} [channel_order]
+ * @property {string} [channel_name]
+ * @property {string} [channel_topic]
+ * @property {number} [channel_flag_default]
+ * @property {number} [channel_flag_password]
+ * @property {number} [channel_flag_permanent]
+ * @property {number} [channel_flag_semi_permanent]
+ * @property {number} [channel_codec]
+ * @property {number} [channel_codec_quality]
+ * @property {number} [channel_needed_talk_power]
+ * @property {number} [channel_icon_id]
+ * @property {number} [seconds_empty]
+ * @property {number} [total_clients_family]
+ * @property {number} [channel_maxclients]
+ * @property {number} [channel_maxfamilyclients]
+ * @property {number} [total_clients]
+ * @property {number} [channel_needed_subscribe_power]
+ */
+
+/**
  * servergrouplist response
  * @typedef {object} ServerGroupListResponse
  * @property {number} sgid
@@ -88,6 +146,21 @@
  * @property {number} n_modifyp
  * @property {number} n_member_addp
  * @property {number} n_member_removep
+ */
+
+/**
+ * servergrouplist filter
+ * @typedef {object} ServerGroupListFilter
+ * @property {number} [sgid]
+ * @property {string} [name]
+ * @property {number} [type]
+ * @property {number} [iconid]
+ * @property {number} [savedb]
+ * @property {number} [sortid]
+ * @property {number} [namemode]
+ * @property {number} [n_modifyp]
+ * @property {number} [n_member_addp]
+ * @property {number} [n_member_removep]
  */
 
 /**
@@ -106,6 +179,21 @@
  */
 
 /**
+ * channelgrouplist filter
+ * @typedef {object} ChannelGroupListFilter
+ * @property {number} [cgid]
+ * @property {string} [name]
+ * @property {number} [type]
+ * @property {number} [iconid]
+ * @property {number} [savedb]
+ * @property {number} [sortid]
+ * @property {number} [namemode]
+ * @property {number} [n_modifyp]
+ * @property {number} [n_member_addp]
+ * @property {number} [n_member_removep]
+ */
+
+/**
  * serverlist response
  * @typedef {object} ServerListResponse
  * @property {number} virtualserver_id
@@ -119,6 +207,22 @@
  * @property {number} virtualserver_autostart
  * @property {string} virtualserver_machine_id
  * @property {string} virtualserver_unique_identifier
+ */
+
+/**
+ * serverlist filter
+ * @typedef {object} ServerListFilter
+ * @property {number} [virtualserver_id]
+ * @property {number} [virtualserver_port]
+ * @property {string} [virtualserver_status]
+ * @property {number} [virtualserver_clientsonline]
+ * @property {number} [virtualserver_queryclientsonline]
+ * @property {number} [virtualserver_maxclients]
+ * @property {number} [virtualserver_uptime]
+ * @property {string} [virtualserver_name]
+ * @property {number} [virtualserver_autostart]
+ * @property {string} [virtualserver_machine_id]
+ * @property {string} [virtualserver_unique_identifier]
  */
 
 /**
@@ -190,8 +294,7 @@
  * @property {number} serverinstance_max_upload_total_bandwidth
  * @property {number} serverinstance_guest_serverquery_group
  * @property {number} serverinstance_serverquery_flood_commands
- * @property {number} serverinstance_serverquery_flood_time
- * @property {number} serverinstance_serverquery_ban_time
+ * @property {number} serverinstance_serverquery_flood_ban_time
  * @property {number} serverinstance_template_serveradmin_group
  * @property {number} serverinstance_template_serverdefault_group
  * @property {number} serverinstance_template_channeladmin_group
@@ -333,6 +436,13 @@
  * @property {number} [cgid] only available when a new group has been creeated
  */
 
+/**
+ * channelgroupclientlist response
+ * @typedef {object} ChannelGroupClientListResponse
+ * @property {number} [cid]
+ * @property {number} [cldbid]
+ * @property {number} [cgid]
+ */
 
 /**
  * permission response
@@ -694,6 +804,113 @@
  * @property {string} [ftkey] exists when file is uploadable
  * @property {number} [port] exists when file is uploadable
  * @property {number} [proto] exists when file is uploadable
+ */
+
+/**
+ * clientupdate properties
+ * @typedef {object} ClientUpdateProps
+ * @property {string} [client_nickname]
+ */
+
+/**
+ * clientdbedit properties
+ * @typedef {object} ClientDBEditProps
+ * @property {number} [cldbid]
+ * @property {string} [client_description]
+ */
+
+/**
+ * serveredit properties
+ * @typedef {object} ServerEditProps
+ * @property {string} [virtualserver_name]
+ * @property {string} [virtualserver_welcomemessage]
+ * @property {number} [virtualserver_maxclients]
+ * @property {string} [virtualserver_password]
+ * @property {string} [virtualserver_hostmessage]
+ * @property {number} [virtualserver_hostmessage_mode]
+ * @property {number} [virtualserver_default_server_group]
+ * @property {number} [virtualserver_default_channel_group]
+ * @property {number} [virtualserver_default_channel_admin_group]
+ * @property {number} [virtualserver_max_download_total_bandwidth]
+ * @property {number} [virtualserver_max_upload_total_bandwidth]
+ * @property {string} [virtualserver_hostbanner_url]
+ * @property {string} [virtualserver_hostbanner_gfx_url]
+ * @property {number} [virtualserver_hostbanner_gfx_interval]
+ * @property {number} [virtualserver_complain_autoban_count]
+ * @property {number} [virtualserver_complain_autoban_time]
+ * @property {number} [virtualserver_complain_remove_time]
+ * @property {number} [virtualserver_min_clients_in_channel_before_forced_silence]
+ * @property {number} [virtualserver_priority_speaker_dimm_modificator]
+ * @property {number} [virtualserver_antiflood_points_tick_reduce]
+ * @property {number} [virtualserver_antiflood_points_needed_command_block]
+ * @property {number} [virtualserver_antiflood_points_needed_plugin_block]
+ * @property {number} [virtualserver_antiflood_points_needed_ip_block]
+ * @property {string} [virtualserver_hostbanner_mode]
+ * @property {string} [virtualserver_hostbutton_tooltip]
+ * @property {string} [virtualserver_hostbutton_gfx_url]
+ * @property {string} [virtualserver_hostbutton_url]
+ * @property {number} [virtualserver_download_quota]
+ * @property {number} [virtualserver_upload_quota]
+ * @property {string} [virtualserver_machine_id]
+ * @property {number} [virtualserver_port]
+ * @property {number} [virtualserver_autostart]
+ * @property {number} [virtualserver_status]
+ * @property {number} [virtualserver_log_client]
+ * @property {number} [virtualserver_log_query]
+ * @property {number} [virtualserver_log_channel]
+ * @property {number} [virtualserver_log_permissions]
+ * @property {number} [virtualserver_log_server]
+ * @property {number} [virtualserver_log_filetransfer]
+ * @property {number} [virtualserver_min_client_version]
+ * @property {number} [virtualserver_min_android_version]
+ * @property {number} [virtualserver_min_ios_version]
+ * @property {number} [virtualserver_needed_identity_security_level]
+ * @property {string} [virtualserver_name_phonetic]
+ * @property {number} [virtualserver_icon_id]
+ * @property {number} [virtualserver_reserved_slots]
+ * @property {number} [virtualserver_weblist_enabled]
+ * @property {number} [virtualserver_codec_encryption_mode]
+ */
+
+/**
+ * channeledit properties
+ * @typedef {object} ChannelEditProps
+ * @property {number} [cid]
+ * @property {string} [channel_name]
+ * @property {string} [channel_topic]
+ * @property {string} [channel_description]
+ * @property {number} [channel_codec]
+ * @property {number} [channel_codec_quality]
+ * @property {number} [channel_maxclients]
+ * @property {number} [channel_maxfamilyclients]
+ * @property {number} [channel_order]
+ * @property {number} [channel_flag_permanent]
+ * @property {number} [channel_flag_semi_permanent]
+ * @property {number} [channel_flag_temporary]
+ * @property {number} [channel_flag_default]
+ * @property {number} [channel_flag_maxclients_unlimited]
+ * @property {number} [channel_flag_maxclients_unlimited]
+ * @property {number} [channel_flag_maxfamilyclients_inherited]
+ * @property {number} [channel_needed_talk_power]
+ * @property {string} [channel_name_phonetic]
+ * @property {number} [channel_icon_id]
+ * @property {number} [channel_codec_is_unencrypted]
+ * @property {number} [channel_cpid]
+ */
+
+/**
+ * instanceedit properties
+ * @typedef {object} InstanceEditProps
+ * @property {number} [serverinstance_template_serveradmin_group]
+ * @property {number} [serverinstance_filetransfer_port]
+ * @property {number} [serverinstance_max_download_total_bandwidth]
+ * @property {number} [serverinstance_max_upload_total_bandwidth]
+ * @property {number} [serverinstance_template_serverdefault_group]
+ * @property {number} [serverinstance_template_channeldefault_group]
+ * @property {number} [serverinstance_template_channeladmin_group]
+ * @property {number} [serverinstance_serverquery_flood_commands]
+ * @property {number} [serverinstance_serverquery_flood_time]
+ * @property {number} [serverinstance_serverquery_flood_ban_time]
  */
 
 /**

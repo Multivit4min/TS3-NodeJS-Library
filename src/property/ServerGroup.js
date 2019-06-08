@@ -27,7 +27,6 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Creates a TeamSpeak Server Group
-   * @version 1.0
    * @param {TeamSpeak3} parent the teamspeak instance
    * @param {ServerGroupListResponse} list response from the servergrouplist command
    */
@@ -88,7 +87,6 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Returns the Server Group ID
-   * @version 1.0
    * @return {number}
    */
   getSGID() {
@@ -98,9 +96,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Deletes the server group. If force is set to 1, the server group will be deleted even if there are clients within.
-   * @version 1.0
    * @async
-   * @param {number} force - If set to 1 the ServerGroup will be deleted even when Clients are in it
+   * @param {number} force if set to 1 the servergroup will be deleted even when clients are in it
    * @return {Promise} resolves on success
    */
   del(force = 0) {
@@ -110,11 +107,10 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Creates a copy of the server group specified with ssgid. If tsgid is set to 0, the server will create a new group. To overwrite an existing group, simply set tsgid to the ID of a designated target group. If a target group is set, the name parameter will be ignored.
-   * @version 1.0
    * @async
-   * @param {number} [tsgid=0] - The Target Group, 0 to create a new Group
-   * @param {number} [type] - The Type of the Group (0 = Query Group | 1 = Normal Group)
-   * @param {string} [name] - Name of the Group
+   * @param {number} [tsgid=0] the target group, 0 to create a new group
+   * @param {number} [type] type of the group (0 = Query Group | 1 = Normal Group)
+   * @param {string} [name] name of the group
    * @return {Promise<ServerGroupCopyResponse>}
    */
   copy(tsgid, type, name) {
@@ -124,9 +120,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Changes the name of the server group
-   * @version 1.0
    * @async
-   * @param {string} name - Name of the Group
+   * @param {string} name name of the group
    * @return {Promise} resolves on success
    */
   rename(name) {
@@ -136,9 +131,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Displays a list of permissions assigned to the server group specified with sgid.
-   * @version 1.0
    * @async
-   * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+   * @param {boolean} [permsid=false] if the permsid option is set to true the output will contain the permission names
    * @returns {Promise<PermListResponse[]>}
    */
   permList(permsid) {
@@ -148,12 +142,11 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Adds a specified permissions to the server group. A permission can be specified by permid or permsid.
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
-   * @param {number} value - Value of the Permission
-   * @param {number} [skip=0] - Whether the skip flag should be set
-   * @param {number} [negate=0] - Whether the negate flag should be set
+   * @param {string|number} perm the permid or permsid
+   * @param {number} value value of the permission
+   * @param {number} [skip=0] whether the skip flag should be set
+   * @param {number} [negate=0] whether the negate flag should be set
    * @return {Promise} resolves on success
    */
   addPerm(perm, value, skip, negate) {
@@ -163,9 +156,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Removes a set of specified permissions from the server group. A permission can be specified by permid or permsid.
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
+   * @param {string|number} perm the permid or permsid
    * @return {Promise} resolves on success
    */
   delPerm(perm) {
@@ -175,9 +167,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Adds a client to the server group. Please note that a client cannot be added to default groups or template groups.
-   * @version 1.0
    * @async
-   * @param {number} cldbid - The Client Database ID which should be added to the Group
+   * @param {number} cldbid the client database id which should be added to the Group
    * @return {Promise} resolves on success
    */
   addClient(cldbid) {
@@ -187,9 +178,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Removes a client specified with cldbid from the server group.
-   * @version 1.0
    * @async
-   * @param {number} cldbid - The Client Database ID which should be removed from the Group
+   * @param {number} cldbid the client database id which should be removed from the group
    * @return {Promise} resolves on success
    */
   delClient(cldbid) {
@@ -199,9 +189,8 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Displays the IDs of all clients currently residing in the server group.
-   * @version 1.0
    * @async
-   * @returns {Promise<ServerGroupClientListResponse>}
+   * @returns {Promise<ServerGroupClientListResponse[]>}
    */
   clientList() {
     return super.getParent().serverGroupClientList(this.sgid)
@@ -211,7 +200,6 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Returns a Buffer with the Icon of the Server Group
-   * @version 1.0
    * @async
    * @returns {Promise<Buffer>} Promise with the binary data of the ServerGroup Icon
    */
@@ -223,7 +211,6 @@ class TeamSpeakServerGroup extends Abstract {
 
   /**
    * Gets the Icon Name of the Server Group
-   * @version 1.0
    * @async
    * @returns {Promise<string>}
    */

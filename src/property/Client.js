@@ -19,6 +19,7 @@ const FileTransfer = require("./../transport/FileTransfer")
  * @typedef {import("../helper/types").CustomInfoResponse} CustomInfoResponse
  * @typedef {import("../helper/types").BanAddResponse} BanAddResponse
  * @typedef {import("../helper/types").PermListResponse} PermListResponse
+ * @typedef {import("../helper/types").ClientDBEditProps} ClientDBEditProps
  * @ignore
  */
 
@@ -31,7 +32,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Creates a TeamSpeak Client
-   * @version 1.0
    * @param {TeamSpeak3} parent the teamspeak instance
    * @param {ClientListResponse} list response from the clientlist command
    */
@@ -40,7 +40,6 @@ class TeamSpeakClient extends Abstract {
 
     /**
      * Move event
-     *
      * @event TeamSpeakClient#move
      * @memberof TeamSpeakClient
      * @returns {TeamSpeakChannel} The Channel where the Client moved to
@@ -52,7 +51,6 @@ class TeamSpeakClient extends Abstract {
 
     /**
      * Textmessage event
-     *
      * @event TeamSpeakClient#textmessage
      * @memberof TeamSpeakClient
      * @returns {string} The Message which has been sent
@@ -64,7 +62,6 @@ class TeamSpeakClient extends Abstract {
 
     /**
      * Client Disconnect Event
-     *
      * @event TeamSpeakClient#clientdisconnect
      * @memberof TeamSpeakClient
      */
@@ -223,7 +220,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns the Database ID of the Client
-   * @version 1.0
    * @returns {number} Returns the Clients Database ID
    */
   getDBID() {
@@ -233,7 +229,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns the Client ID
-   * @version 1.0
    * @returns {number} Returns the Client ID
    */
   getID() {
@@ -243,7 +238,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns the Client Unique ID
-   * @version 1.0
    * @returns {string} Returns the Client UniqueID
    */
   getUID() {
@@ -253,7 +247,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Evaluates if the Client is a Query Client or a normal Client
-   * @version 1.0
    * @returns {boolean} true when the Client is a Server Query Client
    */
   isQuery() {
@@ -263,7 +256,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Retrieves a displayable Client Link for the TeamSpeak Chat
-   * @version 1.0
    * @returns {string} returns the TeamSpeak Client URL as Link
    */
   getURL() {
@@ -273,7 +265,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns General Info of the Client, requires the Client to be online
-   * @version 1.0
    * @async
    * @returns {Promise<ClientInfoResponse>} Promise with the Client Information
    */
@@ -284,7 +275,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns the Clients Database Info
-   * @version 1.0
    * @async
    * @returns {Promise<ClientDBInfoResponse>} Returns the Client Database Info
    */
@@ -295,7 +285,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Displays a list of custom properties for the client
-   * @version 1.3
    * @async
    * @returns {Promise<CustomInfoResponse[]>}
    */
@@ -307,9 +296,8 @@ class TeamSpeakClient extends Abstract {
   /**
    * Removes a custom property from the client
    * This requires TeamSpeak Server Version 3.2.0 or newer.
-   * @version 1.3
    * @async
-   * @param {string} ident - The Key which should be deleted
+   * @param {string} ident the key which should be deleted
    * @return {Promise} resolves on success
    */
   customDelete(ident) {
@@ -321,10 +309,9 @@ class TeamSpeakClient extends Abstract {
    * Creates or updates a custom property for the client.
    * Ident and value can be any value, and are the key value pair of the custom property.
    * This requires TeamSpeak Server Version 3.2.0 or newer.
-   * @version 1.3
    * @async
-   * @param {string} ident - The Key which should be set
-   * @param {string} value - The Value which should be set
+   * @param {string} ident the key which should be set
+   * @param {string} value the value which should be set
    * @return {Promise} resolves on success
    */
   customSet(ident, value) {
@@ -334,9 +321,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Kicks the Client from the Server
-   * @version 1.0
    * @async
-   * @param {string} msg - The Message the Client should receive when getting kicked
+   * @param {string} msg the message the client should receive when getting kicked
    * @return {Promise} resolves on success
    */
   kickFromServer(msg) {
@@ -346,9 +332,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Kicks the Client from their currently joined Channel
-   * @version 1.0
    * @async
-   * @param {string} msg - The Message the Client should receive when getting kicked (max 40 Chars)
+   * @param {string} msg the message the client should receive when getting kicked (max 40 Chars)
    * @return {Promise} resolves on success
    */
   kickFromChannel(msg) {
@@ -358,10 +343,9 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Bans the chosen client with its uid
-   * @version 1.14
    * @async
-   * @param {string} banreason - Ban Reason
-   * @param {number} time - Bantime in Seconds, if left empty it will result in a permaban
+   * @param {string} banreason ban reason
+   * @param {number} time bantime in seconds, if left empty it will result in a permaban
    * @return {Promise<BanAddResponse>}
    */
   ban(banreason, time) {
@@ -371,10 +355,9 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Moves the Client to a different Channel
-   * @version 1.0
    * @async
-   * @param {number} cid - Channel ID in which the Client should get moved
-   * @param {string} [cpw=""] - The Channel Password
+   * @param {number} cid channel id in which the client should get moved
+   * @param {string} [cpw=""] the channel password
    * @return {Promise} resolves on success
    */
   move(cid, cpw) {
@@ -384,9 +367,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
-   * @version 1.0
    * @async
-   * @param {number} sgid - The Server Group ID which the Client should be added to
+   * @param {number} sgid the servergroup id which the client should be added to
    * @return {Promise} resolves on success
    */
   serverGroupAdd(sgid) {
@@ -396,9 +378,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Removes the client from the server group specified with sgid.
-   * @version 1.0
    * @async
-   * @param {number} sgid - The Server Group ID which the Client should be removed from
+   * @param {number} sgid the servergroup id which the client should be removed from
    * @return {Promise} resolves on success
    */
   serverGroupDel(sgid) {
@@ -407,10 +388,20 @@ class TeamSpeakClient extends Abstract {
 
 
   /**
-   * Pokes the Client with a certain message
-   * @version 1.0
+   * Changes a clients settings using given properties.
    * @async
-   * @param {string} msg - The message the Client should receive
+   * @param {ClientDBEditProps} [properties={}] the properties which should be modified
+   * @returns {Promise} resolves on success
+   */
+  dbEdit(properties = {}) {
+    return this.getParent().clientDBEdit(this.databaseId, properties)
+  }
+
+
+  /**
+   * Pokes the Client with a certain message
+   * @async
+   * @param {string} msg the message the client should receive
    * @return {Promise} resolves on success
    */
   poke(msg) {
@@ -420,9 +411,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Sends a textmessage to the Client
-   * @version 1.0
    * @async
-   * @param {string} msg - The message the Client should receive
+   * @param {string} msg the message the client should receive
    * @return {Promise} resolves on success
    */
   message(msg) {
@@ -432,9 +422,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Displays a list of permissions defined for a client
-   * @version 1.0
    * @async
-   * @param {boolean} [permsid=false] - If the permsid option is set to true the output will contain the permission names.
+   * @param {boolean} [permsid=false] if the permsid option is set to true the output will contain the permission names.
    * @return {Promise<PermListResponse[]>}
    */
   permList(permsid) {
@@ -444,12 +433,11 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Adds a set of specified permissions to a client. Multiple permissions can be added by providing the three parameters of each permission. A permission can be specified by permid or permsid.
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
-   * @param {number} value - Value of the Permission
-   * @param {number} [skip=0] - Whether the skip flag should be set
-   * @param {number} [negate=0] - Whether the negate flag should be set
+   * @param {string|number} perm the permid or permsid
+   * @param {number} value value of the permission
+   * @param {number} [skip=0] whether the skip flag should be set
+   * @param {number} [negate=0] whether the negate flag should be set
    * @return {Promise} resolves on success
    */
   addPerm(perm, value, skip, negate) {
@@ -459,9 +447,8 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Removes a set of specified permissions from a client. Multiple permissions can be removed at once. A permission can be specified by permid or permsid
-   * @version 1.0
    * @async
-   * @param {string|number} perm - The permid or permsid
+   * @param {string|number} perm the permid or permsid
    * @return {Promise} resolves on success
    */
   delPerm(perm) {
@@ -472,14 +459,12 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns a Buffer with the Avatar of the User
-   * @version 1.0
    * @async
    * @returns {Promise<Buffer>} Promise with the binary data of the avatar
    */
   getAvatar() {
     return this.getAvatarName()
       .then(name => super.getParent().ftInitDownload({name: `/${name}`}))
-      // @ts-ignore
       // eslint-disable-next-line no-underscore-dangle
       .then(res => new FileTransfer(super.getParent()._config.host, res.port).download(res.ftkey, res.size))
   }
@@ -488,7 +473,6 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Returns a Buffer with the Icon of the Client
-   * @version 1.0
    * @async
    * @returns {Promise<Buffer>} Promise with the binary data of the Client Icon
    */
@@ -500,23 +484,17 @@ class TeamSpeakClient extends Abstract {
 
   /**
    * Gets the Avatar Name of the Client
-   * @version 1.0
    * @async
    * @returns {Promise<string>} Avatar Name
    */
   getAvatarName() {
-    return new Promise((fulfill, reject) => {
-      this.getDBInfo()
-        .then(data => fulfill(`avatar_${data.client_base64HashClientUID}`))
-        .catch(reject)
-    })
+    return this.getDBInfo().then(data => `avatar_${data.client_base64HashClientUID}`)
   }
 
 
 
   /**
    * Gets the Icon Name of the Client
-   * @version 1.0
    * @async
    * @returns {Promise<string>}
    */
