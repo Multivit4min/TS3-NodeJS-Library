@@ -261,7 +261,6 @@ class Command {
     switch (keytypes[k]) {
       case "ArrayOfInt": return v.split(",").map(i => parseFloat(i))
       case "ArrayOfString": return v.split(",").map(i => String(i))
-      case Boolean: return Boolean(v)
       case Number: return parseFloat(v)
       case String: return String(v)
       default: return String(v)

@@ -16,7 +16,7 @@ describe("Command", () => {
         invalid2: NaN,
         invalid3: undefined
       })
-      cmd.setFlags([1])
+      cmd.setFlags(["1"])
       assert.equal(cmd.build(), "use 1 client_nickname=TeamSpeak\\sQuery empty=")
     })
   })
@@ -34,6 +34,13 @@ describe("Command", () => {
         permvalue: 80
       }])
       assert.equal(cmd.build(), "channeladdperm cid=10 permsid=10 permvalue=75|permsid=11 permvalue=80")
+    })
+  })
+
+  describe("#getResponse()", () => {
+    it("should validate an empty response", () => {
+      const cmd = new Command()
+      assert.deepEqual(cmd.getResponse(), [])
     })
   })
 
@@ -71,6 +78,13 @@ describe("Command", () => {
       cmd.setError("error id=1024 msg=invalid\\sserverID")
       assert.ok(cmd.hasError())
       assert.ok(cmd.getError() instanceof ResponseError)
+    })
+  })
+
+  describe("#escapeKeyValue()", () => {
+    it("should escape multiple values", () => {
+      const cmd = new Command()
+      assert.ok(cmd.escapeKeyValue("test", ["a", "b"]), "test=a|test=b")
     })
   })
 
