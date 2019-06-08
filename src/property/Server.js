@@ -96,7 +96,7 @@ class TeamSpeakServer extends Abstract {
     return super.getParent().useBySid(this.id, client_nickname)
   }
 
-
+  /* istanbul ignore next */
   /**
    * Gets basic Infos about the Server
    * @deprecated

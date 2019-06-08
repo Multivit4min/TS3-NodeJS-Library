@@ -84,6 +84,7 @@ class Abstract extends EventEmitter {
     })
   }
 
+  /* istanbul ignore next */
   /**
    * Returns the data from the last List Command
    * @deprecated

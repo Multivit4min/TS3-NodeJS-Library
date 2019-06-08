@@ -61,14 +61,24 @@ describe("TeamSpeakChannelGroup", () => {
     assert.match(channelGroup.nMemberAddp, rawGroup.n_member_addp)
   })
 
+  it("should verify the getter value of #nMemberRemovep()", () => {
+    assert.match(channelGroup.nMemberRemovep, rawGroup.n_member_removep)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     assert.match(channelGroup.getNameSpace(), "channelgroup")
   })
 
-  it("should verify execute parameters of #del()", async () => {
+  it("should verify execute parameters of #del(1)", async () => {
     await channelGroup.del(1)
     assert.calledOnce(stub)
     assert.calledWith(stub, "channelgroupdel", { cgid: rawGroup.cgid, force: 1 })
+  })
+
+  it("should verify execute parameters of #del()", async () => {
+    await channelGroup.del()
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "channelgroupdel", { cgid: rawGroup.cgid, force: 0 })
   })
 
   it("should verify execute parameters of #copy()", async () => {

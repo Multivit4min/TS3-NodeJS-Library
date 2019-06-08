@@ -5,6 +5,7 @@
 const sinon = require("sinon")
 const EventEmitter = require("events")
 const { assert } = sinon
+const { deepEqual } = require("assert")
 const Abstract = require("../src/property/Abstract.js")
 
 
@@ -14,6 +15,14 @@ describe("Abstract", () => {
   beforeEach(() => {
     // @ts-ignore
     abstract = new Abstract(new EventEmitter(), { test_init_val: true}, "test")
+  })
+
+  it("should check return parameters of #toJSON()", () => {
+    deepEqual(abstract.toJSON(), {
+      _namespace: "test",
+      test_init_val: true
+    })
+    deepEqual(abstract.toJSON(false), { test_init_val: true })
   })
 
   it("should verify that changes are getting emitted correctly", done => {

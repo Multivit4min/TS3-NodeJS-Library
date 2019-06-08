@@ -60,6 +60,10 @@ describe("TeamSpeakServerGroup", () => {
     assert.match(serverGroup.nMemberAddp, rawGroup.n_member_addp)
   })
 
+  it("should verify the getter value of #nMemberRemovep()", () => {
+    assert.match(serverGroup.nMemberRemovep, rawGroup.n_member_removep)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     assert.match(serverGroup.getNameSpace(), "servergroup")
   })
