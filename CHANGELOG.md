@@ -12,6 +12,8 @@
 * fixed a non catchable error when connecting with ssh to a server
 * get client properties from clientlist when teamspeak event clientconnect gets fired
 * improved documentation for Client/Server/Channel/... getters
+* added nearly all types
+* changed behaviour of the return value from TeamSpeak3#execute to always return an array with the responses
 
 ### 1.14.0 - 24.5.2019
 + added possibility to ban clients using the mytsid
