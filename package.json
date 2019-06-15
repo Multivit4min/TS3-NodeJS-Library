@@ -28,13 +28,13 @@
     "ssh2": "^0.8.2"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^12.0.7",
-    "@types/sinon": "^7.0.12",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.8",
+    "@types/sinon": "^7.0.13",
     "@types/ssh2": "^0.5.38",
-    "coveralls": "^3.0.3",
+    "coveralls": "^3.0.4",
     "crc-32": "^1.2.0",
-    "documentation": "^11.0.0",
+    "documentation": "^11.0.1",
     "eslint": "^5.16.0",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
