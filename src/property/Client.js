@@ -13,13 +13,13 @@ const FileTransfer = require("./../transport/FileTransfer")
  * workaround for vscode intellisense and documentation generation
  *
  * @typedef {import("../TeamSpeak3")} TeamSpeak3
- * @typedef {import("../helper/types").ClientListResponse} ClientListResponse
- * @typedef {import("../helper/types").ClientInfoResponse} ClientInfoResponse
- * @typedef {import("../helper/types").ClientDBInfoResponse} ClientDBInfoResponse
- * @typedef {import("../helper/types").CustomInfoResponse} CustomInfoResponse
- * @typedef {import("../helper/types").BanAddResponse} BanAddResponse
- * @typedef {import("../helper/types").PermListResponse} PermListResponse
- * @typedef {import("../helper/types").ClientDBEditProps} ClientDBEditProps
+ * @typedef {import("../types/types").ClientListResponse} ClientListResponse
+ * @typedef {import("../types/types").ClientInfoResponse} ClientInfoResponse
+ * @typedef {import("../types/types").ClientDBInfoResponse} ClientDBInfoResponse
+ * @typedef {import("../types/types").CustomInfoResponse} CustomInfoResponse
+ * @typedef {import("../types/types").BanAddResponse} BanAddResponse
+ * @typedef {import("../types/types").PermListResponse} PermListResponse
+ * @typedef {import("../types/types").ClientDBEditProps} ClientDBEditProps
  * @ignore
  */
 
@@ -269,7 +269,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {Promise<ClientInfoResponse>} Promise with the Client Information
    */
   getInfo() {
-    return super.getParent().clientInfo(this.clid)
+    return super.getParent().clientInfo(this.clid).then(data => data[0])
   }
 
 
@@ -279,7 +279,7 @@ class TeamSpeakClient extends Abstract {
    * @returns {Promise<ClientDBInfoResponse>} Returns the Client Database Info
    */
   getDBInfo() {
-    return super.getParent().clientDBInfo(this.databaseId)
+    return super.getParent().clientDBInfo(this.databaseId).then(data => data[0])
   }
 
 
@@ -366,12 +366,36 @@ class TeamSpeakClient extends Abstract {
 
 
   /**
+   * Adds the client to one or more groups
+   * @async
+   * @param {number|number[]} sgid one or more servergroup ids which the client should be added to
+   * @return {Promise} resolves on success
+   */
+  addGroups(sgid) {
+    return super.getParent().clientAddServerGroup(this.databaseId, sgid)
+  }
+
+
+  /**
+   * Removes the client from one or more groups
+   * @async
+   * @param {number|number[]} sgid one or more servergroup ids which the client should be added to
+   * @return {Promise} resolves on success
+   */
+  delGroups(sgid) {
+    return super.getParent().clientDelServerGroup(this.databaseId, sgid)
+  }
+
+
+  /**
    * Adds the client to the server group specified with sgid. Please note that a client cannot be added to default groups or template groups.
    * @async
+   * @deprecated
    * @param {number} sgid the servergroup id which the client should be added to
    * @return {Promise} resolves on success
    */
   serverGroupAdd(sgid) {
+    console.log(`WARNING: TeamSpeakClient#serverGroupAdd() is deprecated please use TeamSpeakClient#addGroups()`)
     return super.getParent().serverGroupAddClient(this.databaseId, sgid)
   }
 
@@ -379,10 +403,12 @@ class TeamSpeakClient extends Abstract {
   /**
    * Removes the client from the server group specified with sgid.
    * @async
+   * @deprecated
    * @param {number} sgid the servergroup id which the client should be removed from
    * @return {Promise} resolves on success
    */
   serverGroupDel(sgid) {
+    console.log(`WARNING: TeamSpeakClient#serverGroupDel() is deprecated please use TeamSpeakClient#delGroups()`)
     return super.getParent().serverGroupDelClient(this.databaseId, sgid)
   }
 

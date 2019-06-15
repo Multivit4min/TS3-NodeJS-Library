@@ -7,7 +7,7 @@
  */
 
 /**
- * @typedef {import("./helper/keytypes").RawQueryResponse} RawQueryResponse
+ * @typedef {import("./types/keytypes").RawQueryResponse} RawQueryResponse
  *
  * @typedef {import("./property/Channel")} TeamSpeakChannel
  * @typedef {import("./property/Server")} TeamSpeakServer
@@ -15,71 +15,72 @@
  * @typedef {import("./property/ServerGroup")} TeamSpeakServerGroup
  * @typedef {import("./property/ChannelGroup")} TeamSpeakChannelGroup
  *
- * @typedef {import("./helper/types").InstanceEditProps} InstanceEditProps
- * @typedef {import("./helper/types").ChannelEditProps} ChannelEditProps
- * @typedef {import("./helper/types").ServerEditProps} ServerEditProps
- * @typedef {import("./helper/types").ClientDBEditProps} ClientDBEditProps
- * @typedef {import("./helper/types").ClientUpdateProps} ClientUpdateProps
+ * @typedef {import("./types/types").InstanceEditProps} InstanceEditProps
+ * @typedef {import("./types/types").ChannelEditProps} ChannelEditProps
+ * @typedef {import("./types/types").ServerEditProps} ServerEditProps
+ * @typedef {import("./types/types").ClientDBEditProps} ClientDBEditProps
+ * @typedef {import("./types/types").ClientUpdateProps} ClientUpdateProps
  *
- * @typedef {import("./helper/types").ClientInfoResponse} ClientInfoResponse
- * @typedef {import("./helper/types").ConnectionParams} ConnectionParams
- * @typedef {import("./helper/types").QueryLoginAddResponse} QueryLoginAddResponse
- * @typedef {import("./helper/types").QueryLoginListResponse} QueryLoginListResponse
- * @typedef {import("./helper/types").VersionResponse} VersionResponse
- * @typedef {import("./helper/types").HostInfoResponse} HostInfoResponse
- * @typedef {import("./helper/types").InstanceInfoResponse} InstanceInfoResponse
- * @typedef {import("./helper/types").BindingListResponse} BindingListResponse
- * @typedef {import("./helper/types").WhoamiResponse} WhoamiResponse
- * @typedef {import("./helper/types").ServerInfoResponse} ServerInfoResponse
- * @typedef {import("./helper/types").ServerIdGetByPortResponse} ServerIdGetByPortResponse
- * @typedef {import("./helper/types").ServerRequestConnectionInfoResponse} ServerRequestConnectionInfoResponse
- * @typedef {import("./helper/types").ServerCreateResponse} ServerCreateResponse
- * @typedef {import("./helper/types").ServerGroupClientListResponse} ServerGroupClientListResponse
- * @typedef {import("./helper/types").ServerGroupCopyResponse} ServerGroupCopyResponse
- * @typedef {import("./helper/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
- * @typedef {import("./helper/types").PermListResponse} PermListResponse
- * @typedef {import("./helper/types").ChannelInfoResponse} ChannelInfoResponse
- * @typedef {import("./helper/types").ClientDBListResponse} ClientDBListResponse
- * @typedef {import("./helper/types").ClientDBInfoResponse} ClientDBInfoResponse
- * @typedef {import("./helper/types").CustomSearchResponse} CustomSearchResponse
- * @typedef {import("./helper/types").CustomInfoResponse} CustomInfoResponse
- * @typedef {import("./helper/types").ChannelGroupCopyResponse} ChannelGroupCopyResponse
- * @typedef {import("./helper/types").PermOverviewResponse} PermOverviewResponse
- * @typedef {import("./helper/types").PermissionListResponse} PermissionListResponse
- * @typedef {import("./helper/types").PermIdGetByNameResponse} PermIdGetByNameResponse
- * @typedef {import("./helper/types").PermGetResponse} PermGetResponse
- * @typedef {import("./helper/types").PermFindResponse} PermFindResponse
- * @typedef {import("./helper/types").TokenResponse} TokenResponse
- * @typedef {import("./helper/types").PrivilegeKeyListResponse} PrivilegeKeyListResponse
- * @typedef {import("./helper/types").MessageListResponse} MessageListResponse
- * @typedef {import("./helper/types").MessageGetResponse} MessageGetResponse
- * @typedef {import("./helper/types").ComplainListResponse} ComplainListResponse
- * @typedef {import("./helper/types").BanListResponse} BanListResponse
- * @typedef {import("./helper/types").BanAddResponse} BanAddResponse
- * @typedef {import("./helper/types").LogViewResponse} LogViewResponse
- * @typedef {import("./helper/types").ClientDBFindResponse} ClientDBFindResponse
- * @typedef {import("./helper/types").FTGetFileListResponse} FTGetFileListResponse
- * @typedef {import("./helper/types").FTGetFileInfoResponse} FTGetFileInfoResponse
- * @typedef {import("./helper/types").FTInitUploadResponse} FTInitUploadResponse
- * @typedef {import("./helper/types").FTInitDownloadResponse} FTInitDownloadResponse
- * @typedef {import("./helper/types").ServerGroupListFilter} ServerGroupListFilter
- * @typedef {import("./helper/types").ChannelGroupListFilter} ChannelGroupListFilter
- * @typedef {import("./helper/types").ClientListFilter} ClientListFilter
- * @typedef {import("./helper/types").ChannelListFilter} ChannelListFilter
- * @typedef {import("./helper/types").ServerListFilter} ServerListFilter
+ * @typedef {import("./types/types").ClientInfoResponse} ClientInfoResponse
+ * @typedef {import("./types/types").ConnectionParams} ConnectionParams
+ * @typedef {import("./types/types").QueryLoginAddResponse} QueryLoginAddResponse
+ * @typedef {import("./types/types").QueryLoginListResponse} QueryLoginListResponse
+ * @typedef {import("./types/types").VersionResponse} VersionResponse
+ * @typedef {import("./types/types").HostInfoResponse} HostInfoResponse
+ * @typedef {import("./types/types").InstanceInfoResponse} InstanceInfoResponse
+ * @typedef {import("./types/types").BindingListResponse} BindingListResponse
+ * @typedef {import("./types/types").WhoamiResponse} WhoamiResponse
+ * @typedef {import("./types/types").ServerInfoResponse} ServerInfoResponse
+ * @typedef {import("./types/types").ServerIdGetByPortResponse} ServerIdGetByPortResponse
+ * @typedef {import("./types/types").ServerRequestConnectionInfoResponse} ServerRequestConnectionInfoResponse
+ * @typedef {import("./types/types").ServerCreateResponse} ServerCreateResponse
+ * @typedef {import("./types/types").ServerGroupClientListResponse} ServerGroupClientListResponse
+ * @typedef {import("./types/types").ServerGroupCopyResponse} ServerGroupCopyResponse
+ * @typedef {import("./types/types").ServerTempPasswordListResponse} ServerTempPasswordListResponse
+ * @typedef {import("./types/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
+ * @typedef {import("./types/types").PermListResponse} PermListResponse
+ * @typedef {import("./types/types").ChannelInfoResponse} ChannelInfoResponse
+ * @typedef {import("./types/types").ClientDBListResponse} ClientDBListResponse
+ * @typedef {import("./types/types").ClientDBInfoResponse} ClientDBInfoResponse
+ * @typedef {import("./types/types").CustomSearchResponse} CustomSearchResponse
+ * @typedef {import("./types/types").CustomInfoResponse} CustomInfoResponse
+ * @typedef {import("./types/types").ChannelGroupCopyResponse} ChannelGroupCopyResponse
+ * @typedef {import("./types/types").PermOverviewResponse} PermOverviewResponse
+ * @typedef {import("./types/types").PermissionListResponse} PermissionListResponse
+ * @typedef {import("./types/types").PermIdGetByNameResponse} PermIdGetByNameResponse
+ * @typedef {import("./types/types").PermGetResponse} PermGetResponse
+ * @typedef {import("./types/types").PermFindResponse} PermFindResponse
+ * @typedef {import("./types/types").TokenResponse} TokenResponse
+ * @typedef {import("./types/types").PrivilegeKeyListResponse} PrivilegeKeyListResponse
+ * @typedef {import("./types/types").MessageListResponse} MessageListResponse
+ * @typedef {import("./types/types").MessageGetResponse} MessageGetResponse
+ * @typedef {import("./types/types").ComplainListResponse} ComplainListResponse
+ * @typedef {import("./types/types").BanListResponse} BanListResponse
+ * @typedef {import("./types/types").BanAddResponse} BanAddResponse
+ * @typedef {import("./types/types").LogViewResponse} LogViewResponse
+ * @typedef {import("./types/types").ClientDBFindResponse} ClientDBFindResponse
+ * @typedef {import("./types/types").FTGetFileListResponse} FTGetFileListResponse
+ * @typedef {import("./types/types").FTGetFileInfoResponse} FTGetFileInfoResponse
+ * @typedef {import("./types/types").FTInitUploadResponse} FTInitUploadResponse
+ * @typedef {import("./types/types").FTInitDownloadResponse} FTInitDownloadResponse
+ * @typedef {import("./types/types").ServerGroupListFilter} ServerGroupListFilter
+ * @typedef {import("./types/types").ChannelGroupListFilter} ChannelGroupListFilter
+ * @typedef {import("./types/types").ClientListFilter} ClientListFilter
+ * @typedef {import("./types/types").ChannelListFilter} ChannelListFilter
+ * @typedef {import("./types/types").ServerListFilter} ServerListFilter
  *
  * @typedef {import("./exception/ResponseError") } ResponseError
  *
- * @typedef {import("./helper/types").DebugEvent } DebugEvent
- * @typedef {import("./helper/types").ClientConnectEvent } ClientConnectEvent
- * @typedef {import("./helper/types").ClientDisconnectEvent } ClientDisconnectEvent
- * @typedef {import("./helper/types").TextMessageEvent } TextMessageEvent
- * @typedef {import("./helper/types").ClientMovedEvent } ClientMovedEvent
- * @typedef {import("./helper/types").ServerEditEvent } ServerEditEvent
- * @typedef {import("./helper/types").ChannelEditEvent } ChannelEditEvent
- * @typedef {import("./helper/types").ChannelCreateEvent } ChannelCreateEvent
- * @typedef {import("./helper/types").ChannelMoveEvent } ChannelMoveEvent
- * @typedef {import("./helper/types").ChannelDeleteEvent } ChannelDeleteEvent
+ * @typedef {import("./types/types").DebugEvent } DebugEvent
+ * @typedef {import("./types/types").ClientConnectEvent } ClientConnectEvent
+ * @typedef {import("./types/types").ClientDisconnectEvent } ClientDisconnectEvent
+ * @typedef {import("./types/types").TextMessageEvent } TextMessageEvent
+ * @typedef {import("./types/types").ClientMovedEvent } ClientMovedEvent
+ * @typedef {import("./types/types").ServerEditEvent } ServerEditEvent
+ * @typedef {import("./types/types").ChannelEditEvent } ChannelEditEvent
+ * @typedef {import("./types/types").ChannelCreateEvent } ChannelCreateEvent
+ * @typedef {import("./types/types").ChannelMoveEvent } ChannelMoveEvent
+ * @typedef {import("./types/types").ChannelDeleteEvent } ChannelDeleteEvent
  * @ignore
  */
 
@@ -825,11 +826,11 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-   * Adds the client to the server group specified with sgid.
+   * Adds one or more clients to a server group specified with sgid.
    * Please note that a client cannot be added to default groups or template groups
    * @async
-   * @param {number} cldbid the client database id which should be added
-   * @param {number} sgid the server group id which the client should be added to
+   * @param {number|number[]} cldbid one or more client database ids which should be added
+   * @param {number} sgid the servergroup id which the client(s) should be added to
    * @returns {Promise} resolves on success
    */
   serverGroupAddClient(cldbid, sgid) {
@@ -838,14 +839,39 @@ class TeamSpeak3 extends EventEmitter {
 
 
   /**
-   * Removes the client from the server group specified with sgid.
+   * Removes one or more clients from the server group specified with sgid.
    * @async
-   * @param {number} cldbid the client database id which should be removed
-   * @param {number} sgid the servergroup id which the Client should be removed from
+   * @param {number|number[]} cldbid one or more client database ids which should be added
+   * @param {number} sgid the servergroup id which the client(s) should be removed from
    * @returns {Promise} resolves on success
    */
   serverGroupDelClient(cldbid, sgid) {
     return this.execute("servergroupdelclient", { cldbid, sgid })
+  }
+
+
+  /**
+   * Adds one or more servergroups to a client.
+   * Please note that a client cannot be added to default groups or template groups
+   * @async
+   * @param {number} cldbid one or more client database ids which should be added
+   * @param {number|number[]} sgid one or more servergroup ids which the client should be added to
+   * @returns {Promise} resolves on success
+   */
+  clientAddServerGroup(cldbid, sgid) {
+    return this.execute("clientaddservergroup", { sgid, cldbid })
+  }
+
+
+  /**
+   * Removes one or more servergroups from the client.
+   * @async
+   * @param {number} cldbid one or more client database ids which should be added
+   * @param {number|number[]} sgid one or more servergroup ids which the client should be removed from
+   * @returns {Promise} resolves on success
+   */
+  clientDelServerGroup(cldbid, sgid) {
+    return this.execute("clientdelservergroup", { cldbid, sgid })
   }
 
 
@@ -936,6 +962,43 @@ class TeamSpeak3 extends EventEmitter {
     const properties = { sgid }
     properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("servergroupdelperm", properties)
+  }
+
+  /**
+   * Sets a new temporary server password specified with pw. The temporary
+   * password will be valid for the number of seconds specified with duration. The
+   * client connecting with this password will automatically join the channel
+   * specified with tcid. If tcid is set to 0, the client will join the default
+   * channel.
+   * @param {object} props
+   * @param {string} props.pw the temporary password
+   * @param {string} [props.desc] description of the password
+   * @param {number} props.duration the duration in seconds
+   * @param {number} [props.tcid=0] the channel to join to
+   * @param {string} [props.tcpw] the password to the channel
+   * @returns {Promise} resolves on success
+   */
+  serverTempPasswordAdd(props) {
+    return this.execute("servertemppasswordadd", { tcid: 0, tcpw: "", desc: "", ...props })
+  }
+
+  /**
+   * Deletes the temporary server password specified with pw.
+   * @param {string} pw the password to delete
+   * @returns {Promise} resolves on success
+   */
+  serverTempPasswordDel(pw) {
+    return this.execute("servertemppassworddel", { pw })
+  }
+
+  /**
+   * Returns a list of active temporary server passwords. The output contains the
+   * clear-text password, the nickname and unique identifier of the creating
+   * client.
+   * @returns {Promise<ServerTempPasswordListResponse[]>}
+   */
+  serverTempPasswordList() {
+    return this.execute("servertemppasswordlist").then(TeamSpeak3.toArray)
   }
 
 
@@ -1160,11 +1223,11 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Returns General Info of the Client, requires the Client to be online
    * @async
-   * @param {number} clid the client id
-   * @returns {Promise<ClientInfoResponse>}
+   * @param {number|number[]} clid one or more client ids to get
+   * @returns {Promise<ClientInfoResponse[]>}
    */
   clientInfo(clid) {
-    return this.execute("clientinfo", { clid }).then(TeamSpeak3.singleResponse)
+    return this.execute("clientinfo", { clid }).then(TeamSpeak3.toArray)
   }
 
 
@@ -1184,11 +1247,11 @@ class TeamSpeak3 extends EventEmitter {
   /**
    * Returns the Clients Database Info
    * @async
-   * @param {number} cldbid the client database id
-   * @returns {Promise<ClientDBInfoResponse>}
+   * @param {number|number[]} cldbid one or more client database ids to get
+   * @returns {Promise<ClientDBInfoResponse[]>}
    */
   clientDBInfo(cldbid) {
-    return this.execute("clientdbinfo", { cldbid }).then(TeamSpeak3.singleResponse)
+    return this.execute("clientdbinfo", { cldbid }).then(TeamSpeak3.toArray)
   }
 
 
