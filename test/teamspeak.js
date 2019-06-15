@@ -227,15 +227,27 @@ describe("TeamSpeak3", () => {
   })
 
   it("should verify parameters of #serverGroupAddClient()", async () => {
-    await ts3.serverGroupAddClient(1, 2)
+    await ts3.serverGroupAddClient([1, 3], 2)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "servergroupaddclient", { sgid: 2, cldbid: 1 })
+    assert.calledWith(stub, "servergroupaddclient", { sgid: 2, cldbid: [1, 3] })
   })
 
   it("should verify parameters of #serverGroupDelClient()", async () => {
-    await ts3.serverGroupDelClient(1, 2)
+    await ts3.serverGroupDelClient([1, 3], 2)
     assert.calledOnce(stub)
-    assert.calledWith(stub, "servergroupdelclient", { sgid: 2, cldbid: 1 })
+    assert.calledWith(stub, "servergroupdelclient", { sgid: 2, cldbid: [1, 3] })
+  })
+
+  it("should verify parameters of #clientAddServerGroup()", async () => {
+    await ts3.clientAddServerGroup(1, [2, 5])
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientaddservergroup", { sgid: [2, 5], cldbid: 1 })
+  })
+
+  it("should verify parameters of #clientDelServerGroup()", async () => {
+    await ts3.clientDelServerGroup(1, [2, 5])
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientdelservergroup", { sgid: [2, 5], cldbid: 1 })
   })
 
   it("should verify parameters of #serverGroupDel()", async () => {
@@ -303,6 +315,25 @@ describe("TeamSpeak3", () => {
     await ts3.serverGroupDelPerm(2, 10, true)
     assert.calledOnce(stub)
     assert.calledWith(stub, "servergroupdelperm", { sgid: 2, permid: 10 })
+  })
+
+  it("should verify parameters of #serverTempPasswordAdd()", async () => {
+    const expect = { duration: 60, pw: "pass", desc: "description", tcid: 0, tcpw: "" }
+    await ts3.serverTempPasswordAdd(expect)
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "servertemppasswordadd", expect)
+  })
+
+  it("should verify parameters of #serverTempPasswordDel()", async () => {
+    await ts3.serverTempPasswordDel("test")
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "servertemppassworddel", { pw: "test" })
+  })
+
+  it("should verify parameters of #serverTempPasswordList()", async () => {
+    await ts3.serverTempPasswordList()
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "servertemppasswordlist")
   })
 
   it("should verify parameters of #channelCreate()", async () => {

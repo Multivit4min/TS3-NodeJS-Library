@@ -321,6 +321,24 @@ describe("TeamSpeakClient", () => {
     })
   })
 
+  it("should verify execute parameters of #addGroups()", async () => {
+    await client.addGroups([1, 5])
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientaddservergroup", {
+      cldbid: rawClient.client_database_id,
+      sgid: [1, 5]
+    })
+  })
+
+  it("should verify execute parameters of #delGroups()", async () => {
+    await client.delGroups([1, 5])
+    assert.calledOnce(stub)
+    assert.calledWith(stub, "clientdelservergroup", {
+      cldbid: rawClient.client_database_id,
+      sgid: [1, 5]
+    })
+  })
+
   it("should verify execute parameters of #serverGroupAdd()", async () => {
     await client.serverGroupAdd(5)
     assert.calledOnce(stub)
