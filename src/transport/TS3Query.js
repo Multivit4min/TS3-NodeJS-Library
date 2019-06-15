@@ -12,9 +12,9 @@ const SSH = require("./protocols/ssh.js")
 const EventEmitter = require("events")
 
 /**
- * @typedef {import("../helper/types").ConnectionParams} ConnectionParams
- * @typedef {import("../helper/keytypes").RawQueryResponse} RawQueryResponse
- * @typedef {import("../helper/QueryProtocol").QueryProtocol} QueryProtocol
+ * @typedef {import("../types/types").ConnectionParams} ConnectionParams
+ * @typedef {import("../types/keytypes").RawQueryResponse} RawQueryResponse
+ * @typedef {import("../types/QueryProtocol").QueryProtocol} QueryProtocol
  * @ignore
  */
 

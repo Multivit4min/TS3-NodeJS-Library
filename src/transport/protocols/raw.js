@@ -7,8 +7,8 @@
  */
 
 /**
- * @typedef {import("../../helper/types").ConnectionParams} ConnectionParams
- * @typedef {import("../../helper/QueryProtocol").QueryProtocol} QueryProtocol
+ * @typedef {import("../../types/types").ConnectionParams} ConnectionParams
+ * @typedef {import("../../types/QueryProtocol").QueryProtocol} QueryProtocol
  * @ignore
  */
 

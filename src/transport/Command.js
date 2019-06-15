@@ -7,11 +7,11 @@
  */
 
 /**
- * @typedef {import("../helper/keytypes").RawQueryResponse} RawQueryResponse
+ * @typedef {import("../types/keytypes").RawQueryResponse} RawQueryResponse
  */
 
-const keytypes = require("../helper/keytypes.js")
-const ResponseError = require("../exception/ResponseError.js")
+const keytypes = require("../types/keytypes")
+const ResponseError = require("../exception/ResponseError")
 
 /**
  * TeamSpeak Query Command Class

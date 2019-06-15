@@ -1,4 +1,4 @@
-import { ConnectionParams } from "../helper/types"
+import { ConnectionParams } from "./types"
 
 export interface QueryProtocol {
   send(str: string): void

@@ -10,10 +10,10 @@ const Abstract = require("./Abstract")
 
 /**
  * @typedef {import("../TeamSpeak3")} TeamSpeak3
- * @typedef {import("../helper/types").ChannelGroupListResponse} ChannelGroupListResponse
- * @typedef {import("../helper/types").ChannelGroupCopyResponse} ChannelGroupCopyResponse
- * @typedef {import("../helper/types").PermListResponse} PermListResponse
- * @typedef {import("../helper/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
+ * @typedef {import("../types/types").ChannelGroupListResponse} ChannelGroupListResponse
+ * @typedef {import("../types/types").ChannelGroupCopyResponse} ChannelGroupCopyResponse
+ * @typedef {import("../types/types").PermListResponse} PermListResponse
+ * @typedef {import("../types/types").ChannelGroupClientListResponse} ChannelGroupClientListResponse
  * @ignore
  */
 

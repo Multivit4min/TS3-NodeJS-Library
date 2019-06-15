@@ -436,6 +436,20 @@
  * @property {number} [cgid] only available when a new group has been creeated
  */
 
+
+/**
+ * servertemppasswordlist response
+ * @typedef {object} ServerTempPasswordListResponse
+ * @property {string} nickname
+ * @property {string} uid
+ * @property {string} desc
+ * @property {string} pw_clear
+ * @property {number} start
+ * @property {number} end
+ * @property {number} tcid
+ */
+
+
 /**
  * channelgroupclientlist response
  * @typedef {object} ChannelGroupClientListResponse
@@ -893,7 +907,6 @@
  * @property {number} [channel_flag_maxfamilyclients_inherited]
  * @property {number} [channel_needed_talk_power]
  * @property {string} [channel_name_phonetic]
- * @property {number} [channel_icon_id]
  * @property {number} [channel_codec_is_unencrypted]
  * @property {number} [channel_cpid]
  */

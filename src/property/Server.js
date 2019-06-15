@@ -12,7 +12,7 @@ const Abstract = require("./Abstract")
  * workaround for vscode intellisense and documentation generation
  *
  * @typedef {import("../TeamSpeak3")} TeamSpeak3
- * @typedef {import("../helper/types").ServerListResponse} ServerListResponse
+ * @typedef {import("../types/types").ServerListResponse} ServerListResponse
  * @ignore
  */
 
