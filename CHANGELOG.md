@@ -1,6 +1,19 @@
 # Changelog
 
-### 1.15.0 - pending
+### 1.16.0 - pending
++ added TeamSpeak3#serverTempPasswordAdd()
++ added TeamSpeak3#serverTempPasswordDel()
++ added TeamSpeak3#serverTempPasswordDel()
++ added TeamSpeak3#clientAddServerGroup() (available in server 3.9.0)
++ added TeamSpeak3#clientDelServerGroup() (available in server 3.9.0)
++ added TeamSpeakClient#addGroups() to add multiple groups
++ added TeamSpeakClient#delGroups() to delete multiple groups
+* added deprecation warning for TeamSpeakClient#serverGroupAdd()
+* added deprecation warning for TeamSpeakClient#serverGroupDel()
+* changed output format of clientdbinfo and clientinfo to an array response in order to allow info for multiple clients
+- removed type icon_id from channeledit command (removed in server 3.9.0)
+
+### 1.15.0 - 08.06.2019
 + added pagination parameter to TeamSpeak3#banList for server version 3.8.0
 + added deprecation warning to Abstract#getCache()
 + added tokencustomset parameter to TeamSpeak3#privilegekeyadd()
