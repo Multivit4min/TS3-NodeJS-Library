@@ -12,6 +12,7 @@
 * added deprecation warning for TeamSpeakClient#serverGroupDel()
 * changed output format of clientdbinfo and clientinfo to an array response in order to allow info for multiple clients
 - removed type icon_id from channeledit command (removed in server 3.9.0)
+- less strict type checking for teamspeak connection configuration
 
 ### 1.15.0 - 08.06.2019
 + added pagination parameter to TeamSpeak3#banList for server version 3.8.0
