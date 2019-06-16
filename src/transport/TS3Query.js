@@ -300,7 +300,8 @@ class TS3Query extends EventEmitter {
 module.exports = TS3Query
 
 /**
- * @typedef QueueItem
+ * @ignore
+ * @typedef {object} QueueItem
  * @property {function} fulfill
  * @property {function} reject
  * @property {Command} cmd

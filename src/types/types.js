@@ -1,6 +1,7 @@
 /**
  * @typedef {import("../property/Client")} TeamSpeakClient
  * @typedef {import("../property/Channel")} TeamSpeakChannel
+ * @ignore
  */
 
 /**
