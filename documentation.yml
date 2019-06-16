@@ -6,26 +6,27 @@ toc:
     description: |
       the exported module which can be required via `require("ts3-nodejs-library")`
   - TeamSpeak3
-  - name: nodes
+  - name: Nodes
   - Abstract
   - TeamSpeakClient
   - TeamSpeakChannel
   - TeamSpeakChannelGroup
   - TeamSpeakServer
   - TeamSpeakServerGroup
-  - name: query
+  - name: Query
     children:
     - TS3Query
     - FileTransfer
     - SSH
     - RAW
-  - name: exceptions
-  - ResponseError
+  - name: Exceptions
+    children:
+    - ResponseError
   - name: interfaces
     children:
     - ConnectionParams
     - ResponseErrorJSON
-  - name: types
+  - name: Types
     children:
     - ClientListResponse
     - ChannelListResponse
@@ -71,6 +72,30 @@ toc:
     - MessageListResponse
     - ClientDBListResponse
     - PermIdGetByNameResponse
+    - RawQueryResponse
+    - ChannelEditProps
+    - ChannelDeleteEvent
+    - ChannelCreateEvent
+    - ChannelEditEvent
+    - ServerEditEvent
+    - ClientMovedEvent
+    - TextMessageEvent
+    - ClientDisconnectEvent
+    - ClientConnectEvent
+    - DebugEvent
+    - InstanceEditProps
+    - ClientListFilter
+    - ServerEditProps
+    - ClientDBEditProps
+    - ClientUpdateProps
+    - ChannelGroupClientListResponse
+    - ServerTempPasswordListResponse
+    - ServerListFilter
+    - ChannelGroupListFilter
+    - ServerGroupListFilter
+    - ChannelListFilter
+    - ChannelMoveEvent
+    - keytypes
   - name: uncategorized
     children:
       - Command
