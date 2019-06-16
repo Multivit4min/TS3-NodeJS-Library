@@ -220,13 +220,13 @@ class TeamSpeak3 extends EventEmitter {
   _handleConnect() {
     const postInit = () => {
       const exec = []
-      if (typeof this._config.username === "string" && this._config.protocol === "raw")
+      if (this._config.username && this._config.protocol === "raw")
         exec.push(this.login(this._config.username, this._config.password))
-      if (typeof this._config.serverport === "number" && this._build >= 1536564584)
+      if (this._config.serverport && this._build >= 1536564584)
         exec.push(this.useByPort(this._config.serverport, this._config.nickname))
-      if (typeof this._config.serverport === "number" && this._build < 1536564584)
+      if (this._config.serverport && this._build < 1536564584)
         exec.push(this.useByPort(this._config.serverport))
-      if (typeof this._config.nickname === "string" && this._build < 1536564584)
+      if (this._config.nickname && this._build < 1536564584)
         exec.push(this.clientUpdate({ client_nickname: this._config.nickname }))
       Promise.all(exec)
 
