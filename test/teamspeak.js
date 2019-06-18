@@ -1308,8 +1308,6 @@ describe("TeamSpeak3", () => {
   })
 
 
-
-
   describe("#filter()", () => {
     it("should filter an array of objects with 1 filter parameter", () => {
       deepEqual(
@@ -1322,6 +1320,20 @@ describe("TeamSpeak3", () => {
       deepEqual(
         TeamSpeak3.filter(mockArray.ADVANCED, { age: 40, foo: "baz" }),
         [mockArray.ADVANCED[1]]
+      )
+    })
+
+    it("should filter an array of objects with an array with 1 item as filter array", () => {
+      deepEqual(
+        TeamSpeak3.filter(mockArray.ADVANCED, { list: ["c"] }),
+        [mockArray.ADVANCED[1], mockArray.ADVANCED[2]]
+      )
+    })
+
+    it("should filter an array of objects with an array with 2 item as filter array", () => {
+      deepEqual(
+        TeamSpeak3.filter(mockArray.ADVANCED, { list: ["c", "d"] }),
+        [mockArray.ADVANCED[2]]
       )
     })
   })

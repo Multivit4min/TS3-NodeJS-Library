@@ -2322,13 +2322,19 @@ class TeamSpeak3 extends EventEmitter {
   static filter(array, filter) {
     if (!Array.isArray(array)) array = [array]
     if (Object.keys(filter).length === 0) return array
-    return array.filter(a => !Object.keys(filter).some(k => {
-      if (!(k in a)) return true
-      if (filter[k] instanceof RegExp) return !a[k].match(filter[k])
-      if (Array.isArray(filter[k])) return filter[k].indexOf(a[k]) === -1
+    return array.filter(a => Object.keys(filter).every(k => {
+      if (!Object.keys(a).includes(k)) return false
+      if (filter[k] instanceof RegExp) return a[k].match(filter[k])
+      if (Array.isArray(filter[k])) {
+        if (Array.isArray(a[k])) {
+          return filter[k].every(e => a[k].includes(e))
+        } else {
+          return filter[k].includes(a[k])
+        }
+      }
       switch (typeof a[k]) {
-        case "number": return a[k] !== parseFloat(filter[k])
-        case "string": return a[k] !== filter[k]
+        case "number": return a[k] === parseFloat(filter[k])
+        case "string": return a[k] === filter[k]
         default: return false
       }
     }))
