@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.16.0 - pending
+### 1.16.0 - 25.06.2019
 + added TeamSpeak3#serverTempPasswordAdd()
 + added TeamSpeak3#serverTempPasswordDel()
 + added TeamSpeak3#serverTempPasswordDel()
