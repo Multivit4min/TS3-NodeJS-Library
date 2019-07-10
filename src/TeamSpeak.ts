@@ -363,7 +363,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   /**
    * Sends a raw command to the TeamSpeak Server.
    * @param {...any} args the command which should get executed on the teamspeak server
-   * @returns {Promise<RawQueryResponse[]>} Promise object which returns the information about the query executed
    * @example
    * ts3.execute("clientlist", ["-ip"])
    * ts3.execute("use", [9987], { client_nickname: "test" })
@@ -379,7 +378,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Otherwise the command enables query login for existing client, and cldbid must be specified.
    * @param client_login_name the login name
    * @param cldbid the database id which should be used
-   * @returns {Promise<QueryLoginAddResponse>} Promise object which returns the Information about the Query executed
    */
   queryLoginAdd(client_login_name: string, cldbid?: number): Promise<Response.QueryLoginAdd> {
     return this.execute("queryloginadd", { client_login_name, cldbid }).then(TeamSpeak.singleResponse)
@@ -553,7 +551,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
 
   /**
    * returns detailed connection information about the selected virtual server including uptime, traffic information, etc.
-   * @returns {Promise<ServerRequestConnectionInfoResponse>}
    */
   connectionInfo(): Promise<Response.ServerRequestConnectionInfo> {
     return this.execute("serverrequestconnectioninfo").then(TeamSpeak.singleResponse)
@@ -564,7 +561,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Creates a new virtual server using the given properties and displays its ID, port and initial administrator privilege key.
    * If virtualserver_port is not specified, the server will test for the first unused UDP port
    * @param properties the server properties
-   * @returns returns the server admin token for the new server and the response from the server creation
    */
   serverCreate(properties: ServerEditProps): Promise<Response.ServerCreate> {
     let servertoken = ""
@@ -856,7 +852,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
 
 
   /**
-   * @todo
    * Changes a channels configuration using given properties.
    * Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
    * @param cid the channel id
@@ -1024,7 +1019,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Displays a list of permissions defined for a client
    * @param cldbid the client database id
    * @param permsid if the permsid option is set to true the output will contain the permission names
-   * @return {Promise<PermListResponse[]>}
    */
   clientPermList(cldbid: number, permsid: boolean = false): Promise<Response.PermList[]> {
     return this.execute("clientpermlist", { cldbid }, [(permsid) ? "-permsid" : null]).then(TeamSpeak.toArray)
@@ -1307,7 +1301,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Retrieves detailed information about all assignments of the permission.
    * The output is similar to permoverview which includes the type and the ID of the client, channel or group associated with the permission.
    * @param perm perm id or name to retrieve
-   * @returns {Promise<PermFindResponse[]>}
    */
   permFind(perm: number|string): Promise<Response.PermFind[]> {
     return this.execute("permfind", (typeof perm === "number") ? { permid: perm } : { permsid: perm }).then(TeamSpeak.toArray)
@@ -1397,7 +1390,6 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   /**
    * Displays a list of offline messages you've received.
    * The output contains the senders unique identifier, the messages subject, etc.
-   * @returns {Promise<MessageListResponse[]>}
    */
   messageList(): Promise<Response.MessageList[]> {
     return this.execute("messagelist").then(TeamSpeak.toArray)

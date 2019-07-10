@@ -134,7 +134,6 @@ export class TeamSpeakClient extends Abstract {
 
   /**
    * Retrieves a displayable Client Link for the TeamSpeak Chat
-   * @returns returns the TeamSpeak Client URL as Link
    */
   getURL() {
     return `[URL=client://${this.clid}/${this.uniqueIdentifier}~${encodeURIComponent(this.nickname)}]${this.nickname}[/URL]`
@@ -226,7 +225,6 @@ export class TeamSpeakClient extends Abstract {
   /**
    * Changes a clients settings using given properties.
    * @param properties the properties which should be modified
-   * @returns {Promise} resolves on success
    */
   dbEdit(properties: ClientDBEditProps) {
     return this.getParent().clientDBEdit(this.databaseId, properties)

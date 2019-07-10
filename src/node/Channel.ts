@@ -1,6 +1,7 @@
 import { Abstract } from "./Abstract"
 import TeamSpeak from "../TeamSpeak"
-import { ChannelList } from "../types/ResponseTypes"
+import { ChannelList, ClientList } from "../types/ResponseTypes"
+import { ChannelEditProps } from "types/PropertyTypes";
 
 export class TeamSpeakChannel extends Abstract {
 
@@ -111,19 +112,16 @@ export class TeamSpeakChannel extends Abstract {
   }
 
   /**
-   * @todo
    * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
-   * @param {ChannelEditProps} properties the properties of the channel which should get changed
-   * @return {Promise} resolves on success
+   * @param properties the properties of the channel which should get changed
    */
-  edit(properties: any) {
+  edit(properties: ChannelEditProps) {
     return super.getParent().channelEdit(this.cid, properties)
   }
 
   /**
    * Displays a list of permissions defined for a channel.
    * @param permsid whether the permsid should be displayed aswell
-   * @return {Promise<PermListResponse[]>}
    */
   permList(permsid: boolean = false) {
     return super.getParent().channelPermList(this.cid, permsid)
@@ -151,12 +149,10 @@ export class TeamSpeakChannel extends Abstract {
   }
 
   /**
-   * @todo
    * Gets a List of Clients in the current Channel
-   * @param {ChannelListFilter} [filter] the filter object
-   * @return {Promise<TeamSpeakClient[]>}
+   * @param filter the filter object
    */
-  getClients(filter: any = {}) {
+  getClients(filter: Partial<ClientList> = {}) {
     filter.cid = this.cid
     return super.getParent().clientList(filter)
   }

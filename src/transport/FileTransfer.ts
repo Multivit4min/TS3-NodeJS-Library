@@ -73,7 +73,7 @@ export class FileTransfer {
   /**
    * connects to the File Transfer Server
    * @param ftkey the Filetransfer Key
-   * @returns {Promise} returns a Promise Object with the socket
+   * @returns returns a Promise Object with the socket
    */
   private init(ftkey?: string): Promise<{ socket: Socket, timeout: ReturnType<typeof setTimeout> }> {
     return new Promise((fulfill, reject) => {

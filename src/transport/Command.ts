@@ -32,7 +32,6 @@ export class Command {
   /**
    * Sets the TeamSpeak Key Value Pairs
    * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
-   * @returns {Command}
    */
   setOptions(options: Record<string, string>): Command {
     this.options = options
@@ -43,7 +42,6 @@ export class Command {
   /**
    * Sets the TeamSpeak Key Value Pairs
    * @param {object[]} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
-   * @returns {Command}
    */
   setMultiOptions(options: Record<string, string[]>[]): Command {
     this.multiOpts = options
@@ -154,7 +152,7 @@ export class Command {
 
   /**
    * Checks if a error has been received
-   * @return {string} The parsed String which is readable by the TeamSpeak Query
+   * @return The parsed String which is readable by the TeamSpeak Query
    */
   build() {
     let cmd = Command.escape(this.cmd)
@@ -166,7 +164,7 @@ export class Command {
 
   /**
    * builds the query string for options
-   * @return {string} The parsed String which is readable by the TeamSpeak Query
+   * @return the parsed String which is readable by the TeamSpeak Querytt
    */
   private buildOptions() {
     const options = this.buildOption(this.options)
@@ -192,7 +190,7 @@ export class Command {
    * escapes a key value pair
    * @param {string} key the key used
    * @param {string|string[]} value the value or an array of values
-   * @return {string} The parsed String which is readable by the TeamSpeak Query
+   * @return the parsed String which is readable by the TeamSpeak Query
    */
   static escapeKeyValue(key: string, value: string|string[]): string {
     if (Array.isArray(value)) {

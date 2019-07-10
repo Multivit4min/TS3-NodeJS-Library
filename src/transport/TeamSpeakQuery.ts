@@ -61,7 +61,6 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /**
    * sends a command to the TeamSpeak Server
-   * @returns {Promise<RawQueryResponse[]>} Promise object which returns the Information about the Query executed
    */
   execute(command: string, ...args: any[]): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
@@ -110,8 +109,6 @@ export class TeamSpeakQuery extends EventEmitter {
       this.handleQueryEvent(line)
     } else if (this.active && this.active.cmd) {
       this.active.cmd.setResponse(line)
-    } else {
-      /** @todo */
     }
   }
 
@@ -122,9 +119,8 @@ export class TeamSpeakQuery extends EventEmitter {
     this.lastLine = ""
     if (!this.active) return
     this.active.cmd.setError(line)
-    /** @todo if (this.active.cmd.hasError()) { */
-    const error = this.active.cmd.getError()
-    if (error !== null && error.id > 0) {
+    if (this.active.cmd.hasError()) {
+      const error = this.active.cmd.getError()!
       if (error.id === 524) {
         this.emit("flooding", this.active.cmd.getError())
         const match = error.message.match(/(\d*) second/i)
