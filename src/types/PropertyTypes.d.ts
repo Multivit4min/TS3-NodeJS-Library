@@ -1,13 +1,13 @@
-export interface ClientUpdateProps {
+export interface ClientUpdate {
   client_nickname: string
 }
 
-export interface ClientDBEditProps {
-  cldbid: number 
+export interface ClientDBEdit {
+  //cldbid: number
   client_description: string 
 }
 
-export interface ServerEditProps {
+export interface ServerEdit {
   virtualserver_name?: string 
   virtualserver_welcomemessage?: string 
   virtualserver_maxclients?: number 
@@ -58,7 +58,7 @@ export interface ServerEditProps {
   virtualserver_codec_encryption_mode?: number 
 }
 
-export interface ChannelEditProps {
+export interface ChannelEdit {
   cid?: number 
   channel_name?: string 
   channel_topic?: string 
@@ -80,7 +80,7 @@ export interface ChannelEditProps {
   channel_cpid?: number 
 }
 
-export interface InstanceEditProps {
+export interface InstanceEdit {
   serverinstance_template_serveradmin_group?: number 
   serverinstance_filetransfer_port?: number 
   serverinstance_max_download_total_bandwidth?: number 
@@ -93,7 +93,7 @@ export interface InstanceEditProps {
   serverinstance_serverquery_flood_ban_time?: number 
 }
 
-export interface ServerTempPasswordAddProps {
+export interface ServerTempPasswordAdd {
   /** the temporary password */
   pw: string
   /** description of the password */
@@ -106,7 +106,7 @@ export interface ServerTempPasswordAddProps {
   tcpw?: string
 }
 
-export interface BanAddProps {
+export interface BanAdd {
   /** ip regular expression */
   ip?: string
   /** name regular expression */
@@ -121,7 +121,7 @@ export interface BanAddProps {
   banreason: string
 }
 
-export interface TransferUploadProps {
+export interface TransferUpload {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */
@@ -137,7 +137,7 @@ export interface TransferUploadProps {
   resume?: number
 }
 
-export interface TransferDownloadProps {
+export interface TransferDownload {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */

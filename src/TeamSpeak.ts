@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import { TeamSpeakQuery } from "./transport/TeamSpeakQuery"
 import { FileTransfer } from "./transport/FileTransfer"
-import { QueryResponse } from "./types/QueryResponseType"
+import { QueryResponse, QueryResponseTypes } from "./types/QueryResponseType"
 import { ResponseError } from "./exception/ResponseError"
 import { TeamSpeakClient } from "./node/Client"
 import { TeamSpeakServer } from "./node/Server"
@@ -10,17 +10,7 @@ import { TeamSpeakServerGroup } from "./node/ServerGroup"
 import { TeamSpeakChannelGroup } from "./node/ChannelGroup"
 import * as Response from "./types/ResponseTypes"
 import * as Event from "./types/Events"
-import {
-  ServerTempPasswordAddProps,
-  ChannelEditProps,
-  BanAddProps,
-  ClientDBEditProps,
-  TransferUploadProps,
-  TransferDownloadProps,
-  ClientUpdateProps,
-  InstanceEditProps,
-  ServerEditProps
-} from "./types/PropertyTypes"
+import * as Props from "./types/PropertyTypes"
 
 
 declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
@@ -71,7 +61,7 @@ interface TeamSpeakEvents {
   on(event: "channeldelete", listener: (event: Event.ChannelDelete) => void): this
 }
 
-export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
+export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
 
   readonly config: ConnectionParams
   private clients: Record<string, TeamSpeakClient> = {}
@@ -255,7 +245,10 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   private evserveredited(event: QueryResponse) {
     this.getClientByID(event.invokerid!)
       .then(invoker => {
-        const modified = Object.keys(event).filter(k => k.startsWith("virtualserver_"))
+        const modified: QueryResponse = {}
+        Object.keys(event)
+          .filter(k => k.startsWith("virtualserver_"))
+          .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
 
         /**
          * Server Edit Event
@@ -263,7 +256,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
          * @memberof TeamSpeak3
          * @type {ServerEditEvent}
          */
-        this.emit("serveredit", { invoker,  modified, reasonid: event.reasonid })
+        this.emit("serveredit", { invoker, modified, reasonid: event.reasonid })
       }).catch(e => this.emit("error", e))
   }
 
@@ -276,7 +269,10 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       this.getClientByID(event.invokerid!),
       this.getChannelByID(event.cid!)
     ]).then(([invoker, channel]) => {
-      const modified = Object.keys(event).filter(k => k.startsWith("channel_"))
+      const modified: QueryResponse = {}
+      Object.keys(event)
+        .filter(k => k.startsWith("channel_"))
+        .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
 
       /**
        * Channel Edit Event
@@ -302,7 +298,10 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       this.getClientByID(event.invokerid!),
       this.getChannelByID(event.cid!)
     ]).then(([invoker, channel]) => {
-      const modified = Object.keys(event).filter(k => k.startsWith("channel_"))
+      const modified: QueryResponse = {}
+      Object.keys(event)
+        .filter(k => k.startsWith("channel_"))
+        .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
 
       /**
        * Channel Create Event
@@ -409,7 +408,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Change your ServerQuery clients settings using given properties.
    * @param properties the properties which should be changed
    */
-  clientUpdate(properties: ClientUpdateProps) {
+  clientUpdate(properties: Props.ClientUpdate) {
     return this.execute("clientupdate", properties)
   }
 
@@ -476,7 +475,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Changes the server instance configuration using given properties.
    * @param properties the props you want to change
    */
-  instanceEdit(properties: InstanceEditProps) {
+  instanceEdit(properties: Props.InstanceEdit) {
     return this.execute("instanceedit", properties)
   }
 
@@ -535,7 +534,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Changes the selected virtual servers configuration using given properties.
    * Note that this command accepts multiple properties which means that you're able to change all settings of the selected virtual server at once.
    */
-  serverEdit(properties: ServerEditProps) {
+  serverEdit(properties: Props.ServerEdit) {
     return this.execute("serveredit", properties)
   }
 
@@ -562,7 +561,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * If virtualserver_port is not specified, the server will test for the first unused UDP port
    * @param properties the server properties
    */
-  serverCreate(properties: ServerEditProps): Promise<Response.ServerCreate> {
+  serverCreate(properties: Props.ServerEdit): Promise<Response.ServerCreate> {
     let servertoken = ""
     return this.execute("servercreate", properties)
       .then(TeamSpeak.singleResponse)
@@ -689,7 +688,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param type the type of the servergroup (0 = Query Group | 1 = Normal Group)
    * @param name name of the group
    */
-  serverGroupCopy(ssgid: number, tsgid: number = 0, type: number = 1, name: string): Promise<Response.ServerGroupCopy> {
+  serverGroupCopy(ssgid: number, tsgid: number = 0, type: number = 1, name: string = "foo"): Promise<Response.ServerGroupCopy> {
     return this.execute("servergroupcopy",  { ssgid, tsgid, type, name }).then(TeamSpeak.singleResponse)
   }
 
@@ -748,7 +747,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * specified with tcid. If tcid is set to 0, the client will join the default
    * channel.
    */
-  serverTempPasswordAdd(props: ServerTempPasswordAddProps) {
+  serverTempPasswordAdd(props: Props.ServerTempPasswordAdd) {
     return this.execute("servertemppasswordadd", { tcid: 0, tcpw: "", desc: "", ...props })
   }
 
@@ -776,7 +775,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param name the name of the channel
    * @param properties properties of the channel
    */
-  channelCreate(name: string, properties: ChannelEditProps = {}) {
+  channelCreate(name: string, properties: Props.ChannelEdit = {}) {
     properties.channel_name = name
     return this.execute("channelcreate", properties)
       .then(TeamSpeak.singleResponse)
@@ -857,7 +856,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param cid the channel id
    * @param properties the properties of the channel which should get changed
    */
-  channelEdit(cid: number, properties: ChannelEditProps = {}) {
+  channelEdit(cid: number, properties: Props.ChannelEdit = {}) {
     properties.cid = cid
     return this.execute("channeledit", properties)
   }
@@ -1021,7 +1020,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param permsid if the permsid option is set to true the output will contain the permission names
    */
   clientPermList(cldbid: number, permsid: boolean = false): Promise<Response.PermList[]> {
-    return this.execute("clientpermlist", { cldbid }, [(permsid) ? "-permsid" : null]).then(TeamSpeak.toArray)
+    return this.execute("clientpermlist", { cldbid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak.toArray)
   }
 
 
@@ -1207,7 +1206,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param permsid if the permsid option is set to true the output will contain the permission names.
    */
   channelGroupPermList(cgid: number, permsid: boolean = false): Promise<Response.PermList[]> {
-    return this.execute("channelgrouppermlist", { cgid }, [(permsid) ? "-permsid" : null]).then(TeamSpeak.toArray)
+    return this.execute("channelgrouppermlist", { cgid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak.toArray)
   }
 
 
@@ -1280,9 +1279,18 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
 
   /**
    * Retrieves the database ID of one or more permissions specified by permsid.
-   * @param permsid one or more permission names
+   * @param permsid one name
    */
-  permIdGetByName(permsid: string[]): Promise<Response.PermIdGetByName[]> {
+  permIdGetByName(permsid: string): Promise<Response.PermIdGetByName> {
+    return this.execute("permidgetbyname", { permsid }).then(TeamSpeak.singleResponse)
+  }
+
+
+  /**
+   * Retrieves the database ID of one or more permissions specified by permsid.
+   * @param permsid multiple permission names
+   */
+  permIdsGetByName(permsid: string[]): Promise<Response.PermIdGetByName[]> {
     return this.execute("permidgetbyname", { permsid }).then(TeamSpeak.toArray)
   }
 
@@ -1290,10 +1298,10 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   /**
    * Retrieves the current value of the permission for your own connection.
    * This can be useful when you need to check your own privileges.
-   * @param key perm id or name which should be checked
+   * @param perm perm id or name which should be checked
    */
-  permGet(key: number|string): Promise<Response.PermGet> {
-    return this.execute("permget", (typeof key === "string") ? { permsid: key } : { permid: key }).then(TeamSpeak.singleResponse)
+  permGet(perm: number|string): Promise<Response.PermGet> {
+    return this.execute("permget", typeof perm === "string" ? { permsid: perm } : { permid: perm }).then(TeamSpeak.singleResponse)
   }
 
 
@@ -1456,12 +1464,12 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
 
 
   /**
-   * Deletes the complaint about the client with ID tdbid submitted by the client with ID fdbid from the server.
-   * If dbid will be left empty all complaints for the tdbid will be deleted
+   * Deletes the complaint about the client with ID tcldbid submitted by the client with ID fdbid from the server.
+   * If fcldbid will be left empty all complaints for the tcldbid will be deleted
    * @param tcldbid the target client database id
    * @param fcldbid the client database id which filed the report
    */
-  complainDel(tcldbid: number, fcldbid: number) {
+  complainDel(tcldbid: number, fcldbid: number = 0) {
     const cmd = fcldbid > 0 ? "complaindel" : "complaindelall"
     const properties: Record<string, any> = { tcldbid }
     if (fcldbid > 0) properties.fcldbid = fcldbid
@@ -1483,7 +1491,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Adds a new ban rule on the selected virtual server.
    * All parameters are optional but at least one of the following must be set: ip, name, uid or mytsid.
    */
-  ban({ ip, name, uid, mytsid, time, banreason }: BanAddProps): Promise<Response.BanAdd> {
+  ban({ ip, name, uid, mytsid, time, banreason }: Props.BanAdd): Promise<Response.BanAdd> {
     return this.execute("banadd", { ip, name, uid, mytsid, time, banreason }).then(TeamSpeak.singleResponse)
   }
 
@@ -1551,9 +1559,8 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param cldbid the client database id which should be edited
    * @param properties the properties which should be modified
    */
-  clientDBEdit(cldbid: number, properties: ClientDBEditProps) {
-    properties.cldbid = cldbid
-    return this.execute("clientdbedit", properties)
+  clientDBEdit(cldbid: number, properties: Props.ClientDBEdit) {
+    return this.execute("clientdbedit", { cldbid, ...properties})
   }
 
 
@@ -1561,7 +1568,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Deletes a clients properties from the database.
    * @param cldbid the client database id which should be deleted
    */
-  clientDBDelete(cldbid: string) {
+  clientDBDelete(cldbid: number) {
     return this.execute("clientdbdelete", { cldbid })
   }
 
@@ -1644,7 +1651,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param name the filepath to receive
    * @param cpw the channel password
    */
-  ftGetFileInfo(cid: number, name: string, cpw: string): Promise<Response.FTGetFileInfo> {
+  ftGetFileInfo(cid: number, name: string, cpw: string = ""): Promise<Response.FTGetFileInfo> {
     return this.execute("ftgetfileinfo", { cid, name, cpw }).then(TeamSpeak.singleResponse)
   }
 
@@ -1691,7 +1698,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param cpw the channel password from where the file gets renamed
    * @param tcpw the channel password from where the file will get transferred to
    */
-  ftRenameFile(cid: number, oldname: string, newname: string, tcid?: string, cpw?: string, tcpw?: string) {
+  ftRenameFile(cid: number, oldname: string, newname: string, tcid?: number, cpw?: string, tcpw?: string) {
     return this.execute("ftrenamefile", { cid, oldname, newname, tcid, cpw, tcpw })
   }
 
@@ -1700,7 +1707,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Initializes a file transfer upload. clientftfid is an arbitrary ID to identify the file transfer on client-side.
    * On success, the server generates a new ftkey which is required to start uploading the file through TeamSpeak 3's file transfer interface.
    */
-  ftInitUpload(transfer: TransferUploadProps): Promise<Response.FTInitUpload> {
+  ftInitUpload(transfer: Props.TransferUpload): Promise<Response.FTInitUpload> {
     return this.execute("ftinitupload", {
       clientftfid: Math.floor(Math.random() * 10000),
       cid: 0,
@@ -1716,7 +1723,7 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Initializes a file transfer download. clientftfid is an arbitrary ID to identify the file transfer on client-side.
    * On success, the server generates a new ftkey which is required to start downloading the file through TeamSpeak 3's file transfer interface.
    */
-  ftInitDownload(transfer: TransferDownloadProps): Promise<Response.FTInitDownload> {
+  ftInitDownload(transfer: Props.TransferDownload): Promise<Response.FTInitDownload> {
     return this.execute("ftinitdownload", {
       clientftfid: Math.floor(Math.random() * 10000),
       seekpos: 0,
@@ -1837,12 +1844,16 @@ export default class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
           //@ts-ignore
           return filter[key].includes(entry[key])
         }
-      }
-      switch (typeof entry[key]) {
+      } else if (Array.isArray(entry[key])) {
         //@ts-ignore
-        case "number": return entry[key] === parseFloat(filter[key])
-        case "string": return entry[key] === filter[key]
-        default: return false
+        return entry[key].includes(filter[key])
+      } else {
+        switch (typeof entry[key]) {
+          //@ts-ignore
+          case "number": return entry[key] === parseFloat(filter[key])
+          case "string": return entry[key] === filter[key]
+          default: return false
+        }
       }
     }))
   }

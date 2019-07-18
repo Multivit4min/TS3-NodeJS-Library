@@ -3,7 +3,7 @@ import { Command } from "./Command"
 import { ProtocolRAW } from "./protocols/raw"
 import { ProtocolSSH } from "./protocols/ssh"
 
-import { ConnectionParams } from "../TeamSpeak"
+import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
 import { QueryResponseTypes } from "../types/QueryResponseType"
 
 interface QueueItem {
@@ -12,7 +12,7 @@ interface QueueItem {
   cmd: Command
 }
 
-export interface QueryProtocol {
+export interface QueryProtocolInterface {
   on: (event: string, callback: (...args: any[]) => void) => void
   sendKeepAlive: () => void
   send: (data: string) => void
@@ -30,7 +30,7 @@ export class TeamSpeakQuery extends EventEmitter {
   private connected: boolean = false
   private keepAliveTimeout: any
   private floodTimeout: ReturnType<typeof setTimeout>
-  private socket: QueryProtocol
+  private socket: QueryProtocolInterface
   readonly doubleEvents: Array<string>
 
   constructor(config: ConnectionParams) {
@@ -42,20 +42,26 @@ export class TeamSpeakQuery extends EventEmitter {
       "notifyclientmoved",
       "notifycliententerview"
     ]
-
-    if (this.config.protocol === "raw") {
-      this.socket = new ProtocolRAW(this.config)
-    } else if (this.config.protocol === "ssh") {
-      this.socket = new ProtocolSSH(this.config)
-    } else {
-      throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
-    }
-
+    
+    this.socket = TeamSpeakQuery.getSocket(this.config)
     this.socket.on("debug", data => this.emit("debug", data))
     this.socket.on("connect", this.handleConnect.bind(this))
     this.socket.on("line", this.handleLine.bind(this))
     this.socket.on("error", this.handleError.bind(this))
     this.socket.on("close", this.handleClose.bind(this))
+  }
+
+  /**
+   * returns a constructed Socket
+   */
+  static getSocket(config: ConnectionParams): QueryProtocolInterface {
+    if (config.protocol === QueryProtocol.RAW) {
+      return new ProtocolRAW(config)
+    } else if (config.protocol === QueryProtocol.SSH) {
+      return new ProtocolSSH(config)
+    } else {
+      throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
+    }
   }
 
 

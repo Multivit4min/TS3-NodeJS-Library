@@ -269,10 +269,12 @@ export interface ServerGroupClientList {
 }
 
 export interface ServerGroupCopy {
+  /** only available when a new group gets created */
   sgid?: number
 }
 
 export interface ChannelGroupCopy {
+  /** only available when a new group gets created */
   cgid?: number
 }
 
@@ -456,9 +458,9 @@ export interface PermOverview {
 }
 
 export interface PermissionList {
-  permid: number 
-  permname: string 
-  permdesc: string 
+  permid: number
+  permname: string
+  permdesc: string
 }
 
 export interface PermIdGetByName {

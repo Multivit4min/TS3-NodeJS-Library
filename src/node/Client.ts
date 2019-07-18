@@ -1,7 +1,7 @@
 import { Abstract } from "./Abstract"
-import TeamSpeak from "../TeamSpeak"
+import { TeamSpeak } from "../TeamSpeak"
 import { ClientList } from "../types/ResponseTypes"
-import { ClientDBEditProps } from "../types/PropertyTypes";
+import { ClientDBEdit } from "../types/PropertyTypes";
 
 const FileTransfer = require("../transport/FileTransfer")
 
@@ -226,7 +226,7 @@ export class TeamSpeakClient extends Abstract {
    * Changes a clients settings using given properties.
    * @param properties the properties which should be modified
    */
-  dbEdit(properties: ClientDBEditProps) {
+  dbEdit(properties: ClientDBEdit) {
     return this.getParent().clientDBEdit(this.databaseId, properties)
   }
 

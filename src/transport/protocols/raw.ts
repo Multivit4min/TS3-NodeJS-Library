@@ -1,10 +1,10 @@
 import { connect, Socket } from "net"
 import { EventEmitter } from "events"
 import { ConnectionParams } from "../../TeamSpeak"
-import { QueryProtocol } from "../TeamSpeakQuery"
+import { QueryProtocolInterface } from "../TeamSpeakQuery"
 
 
-export class ProtocolRAW extends EventEmitter implements QueryProtocol {
+export class ProtocolRAW extends EventEmitter implements QueryProtocolInterface {
 
   private socket: Socket
   private chunk: string = ""

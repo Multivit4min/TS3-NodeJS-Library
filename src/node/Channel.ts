@@ -1,7 +1,7 @@
 import { Abstract } from "./Abstract"
-import TeamSpeak from "../TeamSpeak"
+import { TeamSpeak } from "../TeamSpeak"
 import { ChannelList, ClientList } from "../types/ResponseTypes"
-import { ChannelEditProps } from "types/PropertyTypes";
+import { ChannelEdit } from "types/PropertyTypes";
 
 export class TeamSpeakChannel extends Abstract {
 
@@ -115,7 +115,7 @@ export class TeamSpeakChannel extends Abstract {
    * Changes a channels configuration using given properties. Note that this command accepts multiple properties which means that you're able to change all settings of the channel specified with cid at once.
    * @param properties the properties of the channel which should get changed
    */
-  edit(properties: ChannelEditProps) {
+  edit(properties: ChannelEdit) {
     return super.getParent().channelEdit(this.cid, properties)
   }
 

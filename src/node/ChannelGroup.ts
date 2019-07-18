@@ -1,5 +1,5 @@
 import { Abstract } from "./Abstract"
-import TeamSpeak from "../TeamSpeak"
+import { TeamSpeak } from "../TeamSpeak"
 import { ChannelGroupList } from "../types/ResponseTypes"
 
 export class TeamSpeakChannelGroup extends Abstract {

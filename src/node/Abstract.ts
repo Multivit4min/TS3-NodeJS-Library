@@ -1,4 +1,4 @@
-import TeamSpeak from "../TeamSpeak"
+import { TeamSpeak } from "../TeamSpeak"
 import { QueryResponse } from "../types/QueryResponseType"
 
 export abstract class Abstract {

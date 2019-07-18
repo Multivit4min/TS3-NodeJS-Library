@@ -1,5 +1,5 @@
 import { Abstract } from "./Abstract"
-import TeamSpeak from "../TeamSpeak"
+import { TeamSpeak } from "../TeamSpeak"
 import { ServerList } from "../types/ResponseTypes"
 
 export class TeamSpeakServer extends Abstract {

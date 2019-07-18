@@ -1,10 +1,10 @@
 import { Client, ClientChannel } from "ssh2"
 import { EventEmitter } from "events"
 import { ConnectionParams } from "../../TeamSpeak"
-import { QueryProtocol } from "../TeamSpeakQuery"
+import { QueryProtocolInterface } from "../TeamSpeakQuery"
 
 
-export class ProtocolSSH extends EventEmitter implements  QueryProtocol {
+export class ProtocolSSH extends EventEmitter implements QueryProtocolInterface {
 
   private chunk: string = ""
   private client: Client
