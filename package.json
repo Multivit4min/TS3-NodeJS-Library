@@ -6,6 +6,7 @@
   "scripts": {
     "eslint": "eslint ./src/**/*.ts",
     "test": "jest",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "generate-docs": "typedoc --out docs ./src"
   },
   "author": "Multivitamin",

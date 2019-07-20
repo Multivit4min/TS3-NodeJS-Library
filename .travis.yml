@@ -10,7 +10,8 @@ install:
   - npm install
 script:
   #- npm run eslint
-  - npm test | coveralls
+  - npm test
+  - npm run coveralls
   #- nyc report --reporter=text-lcov | coveralls
   - npm run generate-docs
 after_script:
