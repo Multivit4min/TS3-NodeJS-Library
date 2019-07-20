@@ -3,12 +3,14 @@ import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
 import { QueryResponseTypes, QueryResponse } from "../types/QueryResponseType";
 
+declare type multiOpts = Partial<Record<keyof QueryResponse, QueryResponse[keyof QueryResponse]>>[]
+
 export class Command {
   private cmd: string = ""
-  private options: Record<string, string>
-  private multiOpts: Record<string, string[]>[]
-  private flags: Array<string> = []
-  private response: Array<any>
+  private options: Partial<QueryResponse> = {}
+  private multiOpts: multiOpts = [] //Record<string, string[]>[]
+  private flags: string[] = []
+  private response: QueryResponse[]
   private error: QueryErrorMessage|null = null
 
   /**
@@ -33,7 +35,7 @@ export class Command {
    * Sets the TeamSpeak Key Value Pairs
    * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setOptions(options: Record<string, string>): Command {
+  setOptions(options: Partial<QueryResponse>): Command {
     this.options = options
     return this
   }
@@ -43,7 +45,7 @@ export class Command {
    * Sets the TeamSpeak Key Value Pairs
    * @param {object[]} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setMultiOptions(options: Record<string, string[]>[]): Command {
+  setMultiOptions (options: multiOpts): Command {
     this.multiOpts = options
     return this
   }
@@ -98,9 +100,7 @@ export class Command {
    * @param error the error line which has been received from the TeamSpeak Query
    */
   setError(error: string): Command {
-    const { id, msg, ...rest } = Command.parse(error)[0]
-    if (typeof id !== "number" || typeof msg !== "string") return this
-    this.error = { id, msg, ...rest }
+    this.error = <QueryErrorMessage>Command.parse(error)[0]
     return this
   }
 
@@ -135,14 +135,17 @@ export class Command {
    * @param data the query response received
    */
   static parse(data: string = "") {
-    return data.split("|").map(entry => {
+    return <Partial<QueryResponse>[]>data.split("|").map(entry => {
       const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
       entry.split(" ").forEach(str => {
         const { key, value } = Command.unescapeKeyValue(str)
         if (value === undefined) {
           res[key] = undefined
         } else {
-          res[key] = Command.parseValue(key, value)
+          res[key] = Command.parseValue(
+            <keyof typeof QueryResponseIdentifier>key,
+            value
+          )
         }
       })
       return res
@@ -224,19 +227,17 @@ export class Command {
    * @param k the key which should get looked up
    * @param v the value which should get parsed
    */
-  static parseValue(k: string, v: string) {
-    //@ts-ignore
+  static parseValue(k: keyof typeof QueryResponseIdentifier, v: string) {
     switch (QueryResponseIdentifier[k]) {
-      case ResponseType.ARRAY_OF_NUMBER: 
+      case ResponseType.ARRAY_OF_NUMBER:
         return v.split(",").map(i => parseFloat(i))
-      case ResponseType.ARRAY_OF_STRING:
-          return v.split(",").map(i => String(i))
+      //case ResponseType.ARRAY_OF_STRING:
+      //    return v.split(",").map(i => Command.unescape(String(i)))
       case ResponseType.NUMBER:
         return parseFloat(v)
       case ResponseType.STRING:
-        return String(v)
       default:
-        return String(v)
+        return Command.unescape(String(v))
     }
   }
 

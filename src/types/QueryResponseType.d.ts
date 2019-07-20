@@ -1,3 +1,5 @@
+import * as ENUM from "./enum"
+
 export type QueryResponse = Partial<QueryResponseTypes>
 
 export interface QueryResponseTypes {
@@ -15,9 +17,9 @@ export interface QueryResponseTypes {
   virtualserver_channelsonline: number,
   virtualserver_created: number,
   virtualserver_uptime: number,
-  virtualserver_codec_encryption_mode: number,
+  virtualserver_codec_encryption_mode: ENUM.CodecEncryptionMode,
   virtualserver_hostmessage: string,
-  virtualserver_hostmessage_mode: number,
+  virtualserver_hostmessage_mode: ENUM.HostMessageMode,
   virtualserver_filebase: string,
   virtualserver_default_server_group: number,
   virtualserver_default_channel_group: number,
@@ -72,7 +74,7 @@ export interface QueryResponseTypes {
   virtualserver_ip: string[],
   virtualserver_weblist_enabled: number,
   virtualserver_ask_for_privilegekey: number,
-  virtualserver_hostbanner_mode: number,
+  virtualserver_hostbanner_mode: ENUM.HostBannerMode,
   virtualserver_channel_temp_delete_delay_default: number,
   virtualserver_min_android_version: number,
   virtualserver_min_ios_version: number,
@@ -110,7 +112,7 @@ export interface QueryResponseTypes {
   client_channel_id: number,
   client_origin_server_id: number,
   client_nickname: string,
-  client_type: number,
+  client_type: ENUM.ClientType,
   client_away: number,
   client_away_message: string,
   client_flag_talking: number,
@@ -177,7 +179,7 @@ export interface QueryResponseTypes {
   channel_flag_permanent: number,
   channel_flag_semi_permanent: number,
   channel_flag_temporary: number,
-  channel_codec: number,
+  channel_codec: ENUM.Codec,
   channel_codec_quality: number,
   channel_needed_talk_power: number,
   channel_icon_id: number,
@@ -218,7 +220,7 @@ export interface QueryResponseTypes {
   reasonmsg: string,
   ctid: number,
   cfid: number,
-  targetmode: number,
+  targetmode: ENUM.TextMessageTargetMode,
   target: number,
   invokerid: number,
   invokername: string,
@@ -283,7 +285,7 @@ export interface QueryResponseTypes {
   tcid: number
   permname: string
   permdesc: string
-  token_type: number
+  token_type: ENUM.TokenType
   token_id1: number
   token_id2: number
   token_created: number

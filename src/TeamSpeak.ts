@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import { TeamSpeakQuery } from "./transport/TeamSpeakQuery"
 import { FileTransfer } from "./transport/FileTransfer"
-import { QueryResponse, QueryResponseTypes } from "./types/QueryResponseType"
+import { QueryResponse } from "./types/QueryResponseType"
 import { ResponseError } from "./exception/ResponseError"
 import { TeamSpeakClient } from "./node/Client"
 import { TeamSpeakServer } from "./node/Server"
@@ -11,16 +11,13 @@ import { TeamSpeakChannelGroup } from "./node/ChannelGroup"
 import * as Response from "./types/ResponseTypes"
 import * as Event from "./types/Events"
 import * as Props from "./types/PropertyTypes"
+import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
 
+export * from "./types/enum"
 
 declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
 declare interface NodeConstructable<T> {
   new(parent: TeamSpeak, props: QueryResponse): T
-}
-
-export enum QueryProtocol {
-  RAW = "raw",
-  SSH = "ssh"
 }
 
 export interface ConnectionParams {
@@ -95,42 +92,9 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
     this.query.on("clientmoved", this.evclientmoved.bind(this))
     this.query.on("textmessage", this.evtextmessage.bind(this))
     this.query.on("connect", this.handleConnect.bind(this))
-
-
-    /**
-     * Query Close Event
-     * Gets fired when the Query disconnects from the TeamSpeak Server
-     * @event TeamSpeak3#close
-     * @memberof TeamSpeak3
-     * @type {Error}
-     */
     this.query.on("close", (e?: string) => super.emit("close", e))
-
-    /**
-     * Query Error Event
-     * Gets fired when the TeamSpeak Query had an error while trying to connect
-     * and also gets fired when there was an error after receiving an event
-     * @event TeamSpeak3#error
-     * @memberof  TeamSpeak3
-     * @type {Error} may not be present
-     */
     this.query.on("error", (e: Error) => super.emit("error", e))
-
-    /**
-     * Query Flooding Error
-     * Gets fired when the TeamSpeak Query gets flooding errors
-     * @event TeamSpeak3#flooding
-     * @memberof  TeamSpeak3
-     * @type {ResponseError} - return the error object
-     */
     this.query.on("flooding", (e: ResponseError) => super.emit("flooding", e))
-
-    /**
-     * Forwards any debug messages
-     * @event TeamSpeak3#debug
-     * @memberof  TeamSpeak3
-     * @type {DebugEvent}
-     */
     this.query.on("debug", (data: Event.Debug) => super.emit("debug", data))
   }
 
@@ -145,13 +109,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
     if (this.config.serverport)
       exec.push(this.useByPort(this.config.serverport, this.config.nickname))
     Promise.all(exec)
-
-      /**
-       * Query Ready Event
-       * Gets fired when the TeamSpeak Query has successfully connected and selected the virtual server
-       * @event TeamSpeak3#ready
-       * @memberof TeamSpeak3
-       */
       .then(() => super.emit("ready"))
       .catch(e => super.emit("error", e))
   }
@@ -165,13 +122,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
     this.clientList()
       .then(clients => {
         const client = clients.find(client => client.clid === event.clid)
-
-        /**
-         * Client Join Event
-         * @event TeamSpeak3#clientconnect
-         * @memberof TeamSpeak3
-         * @type {ClientConnectEvent}
-         */
         super.emit("clientconnect", { client, cid: event.ctid })
       })
       .catch(error => this.emit("error", error))
@@ -184,14 +134,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    */
   private evclientleftview(event: QueryResponse) {
     const { clid } = event
-
-    /**
-     * Client Disconnect Event
-     * Events Object contains all available Informations returned by the query
-     * @event TeamSpeak3#clientdisconnect
-     * @memberof TeamSpeak3
-     * @type {ClientDisconnectEvent}
-     */
     super.emit("clientdisconnect", {
       client: (String(clid) in this.clients) ? this.clients[clid!].toJSON() : { clid },
       event
@@ -207,13 +149,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   private evtextmessage(event: QueryResponse) {
     this.getClientByID(event.invokerid!)
       .then(invoker => {
-
-        /**
-         * Textmessage event
-         * @event TeamSpeak3#textmessage
-         * @memberof TeamSpeak3
-         * @type {TextMessageEvent}
-         */
         super.emit("textmessage", { invoker, msg: event.msg, targetmode: event.targetmode })
       }).catch(e => super.emit("error", e))
   }
@@ -227,13 +162,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       this.getClientByID(event.clid!),
       this.getChannelByID(event.ctid!)
     ]).then(([client, channel]) => {
-
-      /**
-       * Client Move Event
-       * @event TeamSpeak3#clientmoved
-       * @memberof TeamSpeak3
-       * @type {ClientMovedEvent}
-       */
       this.emit("clientmoved", { client, channel, reasonid: event.reasonid })
     }).catch(e => this.emit("error", e))
   }
@@ -249,13 +177,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
         Object.keys(event)
           .filter(k => k.startsWith("virtualserver_"))
           .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
-
-        /**
-         * Server Edit Event
-         * @event TeamSpeak3#serveredit
-         * @memberof TeamSpeak3
-         * @type {ServerEditEvent}
-         */
         this.emit("serveredit", { invoker, modified, reasonid: event.reasonid })
       }).catch(e => this.emit("error", e))
   }
@@ -273,13 +194,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       Object.keys(event)
         .filter(k => k.startsWith("channel_"))
         .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
-
-      /**
-       * Channel Edit Event
-       * @event TeamSpeak3#channeledit
-       * @memberof TeamSpeak3
-       * @type {ChannelEditEvent}
-       */
       this.emit("channeledit", {
         invoker,
         channel,
@@ -302,13 +216,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       Object.keys(event)
         .filter(k => k.startsWith("channel_"))
         .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
-
-      /**
-       * Channel Create Event
-       * @event TeamSpeak3#channelcreate
-       * @memberof TeamSpeak3
-       * @type {ChannelCreateEvent}
-       */
       this.emit("channelcreate", {
         invoker,
         channel,
@@ -328,13 +235,6 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       this.getChannelByID(event.cid!),
       this.getChannelByID(event.cpid!)
     ]).then(([invoker, channel, parent]) => {
-
-      /**
-       * Channel Move Event
-       * @event TeamSpeak3#channelmoved
-       * @memberof TeamSpeak3
-       * @type {ChannelMoveEvent}
-       */
       this.emit("channelmoved", { invoker, channel, parent, order: event.order })
     }).catch(e => this.emit("error", e))
   }
@@ -345,16 +245,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    */
   private evchanneldeleted(event: QueryResponse) {
     this.getClientByID(event.invokerid!)
-      .then(invoker => {
-
-        /**
-         * Channel Delete Event
-         * @event TeamSpeak3#channeldelete
-         * @memberof TeamSpeak3
-         * @type {ChannelDeleteEvent}
-         */
-        this.emit("channeldelete", { invoker, cid: event.cid })
-      })
+      .then(invoker => this.emit("channeldelete", { invoker, cid: event.cid }))
       .catch(e => this.emit("error", e))
   }
 
@@ -988,7 +879,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param reasonid the reasonid
    * @param reasonmsg the message the client should receive when getting kicked
    */
-  clientKick(clid: number, reasonid: number, reasonmsg: string) {
+  clientKick(clid: number, reasonid: ReasonIdentifier, reasonmsg: string) {
     return this.execute("clientkick", { clid, reasonid, reasonmsg })
   }
 
@@ -1110,7 +1001,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param targetmode targetmode (1: client, 2: channel, 3: server)
    * @param msg the message the client should receive
    */
-  sendTextMessage(target: number, targetmode: number, msg: string) {
+  sendTextMessage(target: number, targetmode: TextMessageTargetMode, msg: string) {
     return this.execute("sendtextmessage", { target, targetmode, msg})
   }
 
@@ -1342,7 +1233,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param description token description
    * @param customset token custom set
    */
-  privilegeKeyAdd(tokentype: number, group: number, cid: number = 0, description: string = "", customset: string = ""): Promise<Response.Token> {
+  privilegeKeyAdd(tokentype: TokenType, group: number, cid: number = 0, description: string = "", customset: string = ""): Promise<Response.Token> {
     return this.execute("privilegekeyadd", {
       tokentype,
       tokenid1: group,
@@ -1529,7 +1420,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param loglevel level 1 to 4
    * @param logmsg message to log
    */
-  logAdd(loglevel: number, logmsg: string) {
+  logAdd(loglevel: LogLevel, logmsg: string) {
     return this.execute("logadd", { loglevel, logmsg })
   }
 

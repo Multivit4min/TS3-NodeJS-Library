@@ -1,3 +1,5 @@
+import * as ENUM from "./enum"
+
 export interface ClientUpdate {
   client_nickname: string
 }
@@ -13,7 +15,7 @@ export interface ServerEdit {
   virtualserver_maxclients?: number 
   virtualserver_password?: string 
   virtualserver_hostmessage?: string 
-  virtualserver_hostmessage_mode?: number 
+  virtualserver_hostmessage_mode?: ENUM.HostMessageMode 
   virtualserver_default_server_group?: number 
   virtualserver_default_channel_group?: number 
   virtualserver_default_channel_admin_group?: number 
@@ -31,7 +33,7 @@ export interface ServerEdit {
   virtualserver_antiflood_points_needed_command_block?: number 
   virtualserver_antiflood_points_needed_plugin_block?: number 
   virtualserver_antiflood_points_needed_ip_block?: number 
-  virtualserver_hostbanner_mode?: number 
+  virtualserver_hostbanner_mode?: ENUM.HostBannerMode 
   virtualserver_hostbutton_tooltip?: string 
   virtualserver_hostbutton_gfx_url?: string 
   virtualserver_hostbutton_url?: string 
@@ -55,7 +57,7 @@ export interface ServerEdit {
   virtualserver_icon_id?: number 
   virtualserver_reserved_slots?: number 
   virtualserver_weblist_enabled?: number 
-  virtualserver_codec_encryption_mode?: number 
+  virtualserver_codec_encryption_mode?: ENUM.CodecEncryptionMode 
 }
 
 export interface ChannelEdit {
@@ -63,7 +65,7 @@ export interface ChannelEdit {
   channel_name?: string 
   channel_topic?: string 
   channel_description?: string 
-  channel_codec?: number 
+  channel_codec?: ENUM.Codec
   channel_codec_quality?: number 
   channel_maxclients?: number 
   channel_maxfamilyclients?: number 

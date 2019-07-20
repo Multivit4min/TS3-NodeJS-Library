@@ -5,7 +5,7 @@ export class ResponseError extends Error implements QueryErrorMessage {
   readonly id: number
   readonly msg: string
   readonly extra_msg?: string
-  readonly failed_permid?: string
+  readonly failed_permid?: number
 
   constructor(error: QueryErrorMessage) {
     super(error.msg)

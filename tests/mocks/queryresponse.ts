@@ -29,3 +29,10 @@ export function channelgrouplist(count: number) {
     name: `Group ${i+1}`
   }))
 }
+
+export function serverlist(count: number) {
+  return Array(count).fill(null).map((_, i) => mocks.serverlist({
+    virtualserver_id: i+1,
+    virtualserver_name: `Server ${i+1}`
+  }))
+}

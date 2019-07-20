@@ -12,14 +12,14 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
   return { TeamSpeakQuery }
 })
 
-import { TeamSpeak, QueryProtocol } from "../src/TeamSpeak"
+import { TeamSpeak, QueryProtocol, TextMessageTargetMode, LogLevel, ReasonIdentifier } from "../src/TeamSpeak"
 import { TeamSpeakServerGroup } from "../src/node/ServerGroup"
 import { TeamSpeakServer } from "../src/node/Server"
 import { TeamSpeakChannel } from "../src/node/Channel"
 import { TeamSpeakChannelGroup } from "../src/node/ChannelGroup"
+import { TeamSpeakClient } from "../src/node/Client"
 
 import * as mocks from "./mocks/queryresponse"
-import { TeamSpeakClient } from "../src/node/Client";
 
 describe("TeamSpeak", () => {
   let teamspeak: TeamSpeak = new TeamSpeak({})
@@ -603,7 +603,7 @@ describe("TeamSpeak", () => {
 
   it("should verify parameters of #clientKick()", async () => {
     mockExecute.mockResolvedValue(null)
-    await teamspeak.clientKick(10, 4, "Kicked from Channel")
+    await teamspeak.clientKick(10, ReasonIdentifier.KICK_CHANNEL, "Kicked from Channel")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientkick", {
       clid: 10,
@@ -710,11 +710,11 @@ describe("TeamSpeak", () => {
 
   it("should verify parameters of #sendTextMessage()", async () => {
     mockExecute.mockResolvedValue(null)
-    await teamspeak.sendTextMessage(10, 2, "message to channel chat")
+    await teamspeak.sendTextMessage(10, TextMessageTargetMode.CLIENT, "message to channel chat")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("sendtextmessage", {
       target: 10,
-      targetmode: 2,
+      targetmode: 1,
       msg: "message to channel chat"
     })
   })
@@ -1096,9 +1096,9 @@ describe("TeamSpeak", () => {
 
   it("should verify parameters of #logAdd()", async () => {
     mockExecute.mockResolvedValue(null)
-    await teamspeak.logAdd(0, "custom message")
+    await teamspeak.logAdd(LogLevel.DEBUG, "custom message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("logadd", { loglevel: 0, logmsg: "custom message" })
+    expect(mockExecute).toHaveBeenCalledWith("logadd", { loglevel: 3, logmsg: "custom message" })
   })
 
   it("should verify parameters of #gm()", async () => {

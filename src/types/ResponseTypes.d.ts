@@ -4,7 +4,7 @@ export interface QueryErrorMessage {
   id: number
   msg: string
   extra_msg?: string
-  failed_permid?: string
+  failed_permid?: number
 }
 
 

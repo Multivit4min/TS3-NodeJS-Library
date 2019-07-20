@@ -1,7 +1,8 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ChannelList, ClientList } from "../types/ResponseTypes"
-import { ChannelEdit } from "types/PropertyTypes";
+import { ChannelEdit } from "types/PropertyTypes"
+import { TeamSpeakClient } from "./Client"
 
 export class TeamSpeakChannel extends Abstract {
 
@@ -152,20 +153,20 @@ export class TeamSpeakChannel extends Abstract {
    * Gets a List of Clients in the current Channel
    * @param filter the filter object
    */
-  getClients(filter: Partial<ClientList> = {}) {
+  getClients(filter: Partial<ClientList> = {}): Promise<TeamSpeakClient[]> {
     filter.cid = this.cid
     return super.getParent().clientList(filter)
   }
 
 
   /** returns a buffer with the icon of the channel */
-  getIcon() {
+  getIcon(): Promise<Buffer> {
     return this.getIconName().then(name => super.getParent().downloadIcon(name))
   }
 
 
   /** returns the icon name of the channel */
-  getIconName() {
+  getIconName(): Promise<string> {
     return super.getParent().getIconName(this.permList(true))
   }
 

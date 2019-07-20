@@ -1,9 +1,9 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ClientList } from "../types/ResponseTypes"
-import { ClientDBEdit } from "../types/PropertyTypes";
-
-const FileTransfer = require("../transport/FileTransfer")
+import { ClientDBEdit } from "../types/PropertyTypes"
+import { ClientType } from "../types/enum"
+import { FileTransfer } from "../transport/FileTransfer"
 
 export class TeamSpeakClient extends Abstract {
 
@@ -129,13 +129,13 @@ export class TeamSpeakClient extends Abstract {
 
   /** evaluates if the client is a query client or a normal client */
   isQuery() {
-    return this.type === 1
+    return this.type === ClientType.ServerQuery
   }
 
   /**
    * Retrieves a displayable Client Link for the TeamSpeak Chat
    */
-  getURL() {
+  getUrl() {
     return `[URL=client://${this.clid}/${this.uniqueIdentifier}~${encodeURIComponent(this.nickname)}]${this.nickname}[/URL]`
   }
 
@@ -281,7 +281,7 @@ export class TeamSpeakClient extends Abstract {
   getAvatar() {
     return this.getAvatarName()
       .then(name => super.getParent().ftInitDownload({name: `/${name}`}))
-      .then(res => new FileTransfer(super.getParent().config.host, res.port).download(res.ftkey, res.size))
+      .then(res => new FileTransfer(super.getParent().config.host, res.port).download(res.ftkey!, res.size))
   }
 
   /** returns a Buffer with the icon of the client */

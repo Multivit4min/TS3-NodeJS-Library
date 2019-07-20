@@ -2,6 +2,7 @@ import { TeamSpeakClient } from "../node/Client"
 import { TeamSpeakChannel } from "../node/Channel"
 import { QueryResponseTypes } from "./QueryResponseType"
 import { ClientList } from "./ResponseTypes"
+import * as ENUM from "./enum"
 
 export interface Debug {
   type: string,
@@ -20,13 +21,13 @@ export interface ClientDisconnect {
 export interface TextMessage {
   invoker: TeamSpeakClient
   msg: string
-  targetmode: number
+  targetmode: ENUM.TextMessageTargetMode
 }
 
 export interface ClientMoved {
   client: TeamSpeakClient
   channel: TeamSpeakChannel
-  reasonid: number
+  reasonid: ENUM.ReasonIdentifier
 }
 
 export interface ServerEdit {
