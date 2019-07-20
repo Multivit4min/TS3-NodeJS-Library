@@ -27,6 +27,7 @@ describe("TeamSpeak", () => {
   beforeEach(() => {
     teamspeak = new TeamSpeak({})
     mockExecute.mockReset()
+    
   })
 
   describe("#new()", () => {

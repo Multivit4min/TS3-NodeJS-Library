@@ -4,16 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "eslint": "eslint ./src/**/*.ts",
+    "test": "jest",
+    "generate-docs": "typedoc --out docs ./src"
   },
   "author": "Multivitamin",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/node": "^12.6.3",
+    "@types/node": "^12.6.8",
     "@types/ssh2": "^0.5.38",
+    "@typescript-eslint/eslint-plugin": "^1.12.0",
+    "@typescript-eslint/parser": "^1.12.0",
+    "eslint": "^6.0.1",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
+    "typedoc": "^0.14.2",
     "typescript": "^3.5.3"
   },
   "dependencies": {

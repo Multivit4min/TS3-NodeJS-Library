@@ -13,4 +13,11 @@
     "baseUrl": "./src"
   },
   "include": ["./src"],
+  "typedocOptions": {
+      "mode": "file",
+      "out": "docs",
+      "name": "TS3-NodeJS-Library",
+      "exclude": "**/*+.spec.ts",
+      "excludeExternals": true
+  }
 }

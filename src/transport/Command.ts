@@ -8,23 +8,19 @@ declare type multiOpts = Partial<Record<keyof QueryResponse, QueryResponse[keyof
 export class Command {
   private cmd: string = ""
   private options: Partial<QueryResponse> = {}
-  private multiOpts: multiOpts = [] //Record<string, string[]>[]
+  private multiOpts: multiOpts = []
   private flags: string[] = []
   private response: QueryResponse[]
   private error: QueryErrorMessage|null = null
 
-  /**
-   * Initializes the Respone with default values
-   */
+  /** Initializes the Respone with default values */
   reset(): Command {
     this.response = []
     this.error = null
     return this
   }
 
-  /**
-   * Sets the main command to send
-   */
+  /** Sets the main command to send */
   setCommand(cmd: string): Command {
     this.cmd = cmd.trim()
     return this
@@ -51,17 +47,13 @@ export class Command {
   }
 
 
-  /**
-   * checks wether there are options used with this command
-   */
+  /** checks wether there are options used with this command */
   hasOptions(): boolean {
     return Object.values(this.options).length > 0 || this.hasMultiOptions()
   }
 
 
-  /**
-   * Checks wether there are options used with this command
-   */
+  /** checks wether there are options used with this command */
   hasMultiOptions() {
     return this.multiOpts.length > 0
   }
@@ -77,9 +69,7 @@ export class Command {
   }
 
 
-  /**
-   * checks wether there are flags used with this command
-   */
+  /** checks wether there are flags used with this command */
   hasFlags(): boolean {
     return this.flags.length > 0
   }
@@ -105,26 +95,20 @@ export class Command {
   }
 
 
-  /**
-   * get the parsed error object which has been received from the TeamSpeak Query
-   */
+  /** get the parsed error object which has been received from the TeamSpeak Query */
   getError() {
     if (!this.error) return null
     return new ResponseError(this.error)
   }
 
 
-  /**
-   * checks if a error has been received
-   */
+  /** checks if a error has been received */
   hasError() {
     return this.error !== null && this.error.id > 0
   }
 
 
-  /**
-   * get the parsed response object which has been received from the TeamSpeak Query
-   */
+  /** get the parsed response object which has been received from the TeamSpeak Query */
   getResponse() {
     return this.response || []
   }
@@ -176,9 +160,7 @@ export class Command {
   }
 
 
-  /**
-   * builds the query string for options
-   */
+  /** builds the query string for options */
   buildOption(options: Record<string, any>): string {
     return Object
       .keys(options)
@@ -214,9 +196,7 @@ export class Command {
   }
 
 
-  /**
-   * Builds the query string for flags
-   */
+  /** builds the query string for flags */
   private buildFlags(): string {
     return this.flags.map(f => Command.escape(f)).join(" ")
   }
@@ -241,9 +221,7 @@ export class Command {
     }
   }
 
-  /**
-   * unescapes a string
-   */
+  /** unescapes a string */
   static unescape(str: string): string {
     return String(str)
       .replace(/\\s/g, " ")
@@ -257,9 +235,7 @@ export class Command {
       .replace(/\\\\/g, "\\")
   }
 
-  /**
-   * escapes a string
-   */
+  /** escapes a string */
   static escape(str: string): string {
     return String(str)
       .replace(/\\/g, "\\\\")

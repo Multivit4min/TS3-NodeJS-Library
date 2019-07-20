@@ -504,7 +504,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
     return this.execute("servergroupadd", { name, type })
       .then(TeamSpeak.singleResponse)
       .then(({sgid}) => this.serverGroupList({ sgid }))
-      .then(group => new Promise(fulfill => fulfill(group[0])))
+      .then(group => group[0])
   }
 
 
