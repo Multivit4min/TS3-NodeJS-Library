@@ -12,19 +12,20 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
   return { TeamSpeakQuery }
 })
 
+
 jest.mock("../src/transport/FileTransfer", () => {
 
-  return { 
-    FileTransfer: class FileTransfer {
-      constructor() {}
-      download() {
-        return Promise.resolve(Buffer.from([]))
-      }
-      upload() {
-        return Promise.resolve(Buffer.from([]))
-      }
+  class FileTransfer {
+    constructor() {}
+    download() {
+      return Promise.resolve(Buffer.from([]))
     }
- }
+    upload() {
+      return Promise.resolve(Buffer.from([]))
+    }
+  }
+
+  return { FileTransfer }
 })
 
 import { TeamSpeak } from "../src/TeamSpeak"

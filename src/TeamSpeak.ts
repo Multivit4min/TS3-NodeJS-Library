@@ -860,7 +860,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param count retrieve the count of entries
    */
   clientDBList(start: number = 0, duration: number = 1000, count: boolean = true): Promise<Response.ClientDBList[]> {
-    return this.execute("clientdblist", { start, duration }, [count ? "-count" : null]).then(TeamSpeak.toArray)
+    return this.execute("clientdblist", { start, duration }, count ? ["-count"] : null).then(TeamSpeak.toArray)
   }
 
 
@@ -1074,10 +1074,8 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param type the type of the group (0 = Template Group | 1 = Normal Group)
    * @param name name of the goup
    */
-  channelGroupCopy(scgid: number, tcgid: number = 0, type: number = 1, name: string): Promise<Response.ChannelGroupCopy> {
-    const properties: Record<string, any> = { scgid, tcgid, type }
-    if (typeof name === "string") properties.name = name
-    return this.execute("channelgroupcopy", properties).then(TeamSpeak.singleResponse)
+  channelGroupCopy(scgid: number, tcgid: number = 0, type: number = 1, name: string = "foo"): Promise<Response.ChannelGroupCopy> {
+    return this.execute("channelgroupcopy", { scgid, tcgid, type, name }).then(TeamSpeak.singleResponse)
   }
 
 
@@ -1152,10 +1150,10 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param permid one or more permission ids
    * @param permsid one or more permission names
    */
-  permOverview(cldbid: number, cid: number, permid?: number, permsid?: number): Promise<Response.PermOverview[]> {
+  permOverview(cldbid: number, cid: number, perms: number[]|string[] = []): Promise<Response.PermOverview[]> {
     const properties: Record<string, any> = { cldbid, cid }
-    if (permid !== null && permid !== undefined) properties.permid = permid
-    if (permsid !== null && permsid !== undefined) properties.permsid = permsid
+    if (typeof perms[0] === "string") properties.permsid = perms
+    if (typeof perms[0] === "number") properties.permid = perms
     return this.execute("permoverview", properties).then(TeamSpeak.toArray)
   }
 
@@ -1441,7 +1439,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * @param isUid true when instead of the Name it should be searched for an uid
    */
   clientDBFind(pattern: string, isUid: boolean = false): Promise<Response.ClientDBFind[]> {
-    return this.execute("clientdbfind", { pattern }, (isUid) ? ["-uid"] : []).then(TeamSpeak.toArray)
+    return this.execute("clientdbfind", { pattern }, isUid ? ["-uid"] : null).then(TeamSpeak.toArray)
   }
 
 
@@ -1647,8 +1645,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
   async downloadFile(path: string, cid: number = 0, cpw: string = "") {
     const res = await this.ftInitDownload({name: path, cid, cpw })
     if (res.size === 0) throw new Error(res.msg)
-    const file = await new FileTransfer(this.config.host, res.port).download(res.ftkey!, res.size)
-    return file
+    return await new FileTransfer(this.config.host, res.port).download(res.ftkey!, res.size)
   }
 
 

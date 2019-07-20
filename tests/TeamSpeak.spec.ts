@@ -1,15 +1,32 @@
 const mockExecute = jest.fn()
+const mockTransfer = jest.fn()
+const mockClose = jest.fn()
 
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
 
   TeamSpeakQuery.getSocket = function() {
-    return { on() {}, send() {}, sendKeepAlive() {}, close() {} }
+    return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() } }
   }
 
   TeamSpeakQuery.prototype.execute = mockExecute
 
   return { TeamSpeakQuery }
+})
+
+jest.mock("../src/transport/FileTransfer", () => {
+
+  class FileTransfer {
+    constructor() {}
+    download() {
+      return mockTransfer(...arguments)
+    }
+    upload() {
+      return mockTransfer(...arguments)
+    }
+  }
+
+  return { FileTransfer }
 })
 
 import { TeamSpeak, QueryProtocol, TextMessageTargetMode, LogLevel, ReasonIdentifier } from "../src/TeamSpeak"
@@ -26,8 +43,10 @@ describe("TeamSpeak", () => {
 
   beforeEach(() => {
     teamspeak = new TeamSpeak({})
+    mockTransfer.mockReset()
+    mockClose.mockReset()
     mockExecute.mockReset()
-    
+    mockExecute.mockResolvedValue(null)
   })
 
   describe("#new()", () => {
@@ -81,15 +100,40 @@ describe("TeamSpeak", () => {
   })
 
 
+  describe("#handleConnect()", () => {
+    it("check an empty connection config", async () => {
+      const teamspeak = new TeamSpeak({})
+      teamspeak["query"].emit("connect")
+      expect(mockExecute).toHaveBeenCalledTimes(0)
+    })
+    it("check a connection config with username and password", async () => {
+      const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
+      teamspeak["query"].emit("connect")
+      expect(mockExecute).toBeCalledWith("login", ["foo", "bar"])
+      expect(mockExecute).toHaveBeenCalledTimes(1)
+    })
+    it("check a connection config with a serverport", async () => {
+      const teamspeak = new TeamSpeak({ serverport: 9987 })
+      teamspeak["query"].emit("connect")
+      expect(mockExecute).toBeCalledWith("use", { port: 9987 })
+      expect(mockExecute).toHaveBeenCalledTimes(1)
+    })
+    it("check a connection config with a serverport and nickname", async () => {
+      const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
+      teamspeak["query"].emit("connect")
+      expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" })
+      expect(mockExecute).toHaveBeenCalledTimes(1)
+    })
+  })
+
+
   it("should verify parameters of #version()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.version()
     expect(mockExecute).toHaveBeenCalledWith("version")
     expect(mockExecute).toHaveBeenCalledTimes(1)
   })
 
   it("should verify parameters of #clientUpdate()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientUpdate({ client_nickname: "Test" })
     expect(mockExecute).toHaveBeenCalledWith("clientupdate", { client_nickname: "Test"})
     expect(mockExecute).toHaveBeenCalledTimes(1)
@@ -97,13 +141,11 @@ describe("TeamSpeak", () => {
 
   describe("#registerEvent()", () => {
     it("should verify 2 parameters", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.registerEvent("channel", 0)
       expect(mockExecute).toHaveBeenCalledWith("servernotifyregister", { event: "channel", id: 0 })
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
     it("should verify 1 parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.registerEvent("channel")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("servernotifyregister", { event: "channel", id: undefined })
@@ -111,63 +153,60 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #queryloginadd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.queryLoginAdd("name", 3)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("queryloginadd", {client_login_name: "name", cldbid: 3})
   })
 
   it("should verify parameters of #querylogindel()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.queryLoginDel(3)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("querylogindel", { cldbid: 3 })
   })
 
   it("should verify parameters of #queryloginlist()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.queryLoginList("search", 0, 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("queryloginlist", { pattern: "search", start: 0, duration: 10 }, ["-count"])
   })
 
+  it("should verify parameters of #unregisterEvent()", async () => {
+    await teamspeak.unregisterEvent()
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("servernotifyunregister")
+  })
+
   it("should verify parameters of #login()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.login("serveradmin", "password")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("login", ["serveradmin", "password"])
   })
 
   it("should verify parameters of #logout()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.logout()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("logout")
   })
 
   it("should verify parameters of #hostInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.hostInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("hostinfo")
   })
 
   it("should verify parameters of #instanceInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.instanceInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("instanceinfo")
   })
 
   it("should verify parameters of #instanceEdit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.instanceEdit({ "serverinstance_filetransfer_port": 30033 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("instanceedit", { "serverinstance_filetransfer_port": 30033 })
   })
 
   it("should verify parameters of #bindingList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.bindingList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("bindinglist")
@@ -175,13 +214,11 @@ describe("TeamSpeak", () => {
 
   describe("#useByPort()", () => {
     it("should verify 2 parameters", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.useByPort(9987, "Test")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: "Test" })
     })
     it("should verify 1 parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.useByPort(9987)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: undefined })
@@ -190,13 +227,11 @@ describe("TeamSpeak", () => {
 
   describe("#useBySid()", () => {
     it("should verify 2 parameters", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.useBySid(1, "Test")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("use", [1], { client_nickname: "Test" })
     })
     it("should verify 1 parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.useBySid(1)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("use", [1], { client_nickname: undefined })
@@ -204,42 +239,36 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #whoami()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.whoami()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("whoami")
   })
 
   it("should verify parameters of #serverInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverinfo")
   })
 
   it("should verify parameters of #serverIdGetByPort()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverIdGetByPort(9987)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serveridgetbyport", { virtualserver_port: 9987 })
   })
 
   it("should verify parameters of #serverEdit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverEdit({ virtualserver_name: "Foo" })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serveredit", { virtualserver_name: "Foo" })
   })
 
   it("should verify parameters of #serverProcessStop()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverProcessStop("Shutdown")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverprocessstop", { reasonmsg: "Shutdown" })
   })
 
   it("should verify parameters of #connectionInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.connectionInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverrequestconnectioninfo")
@@ -256,14 +285,12 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverDelete(1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverdelete", { sid: 1 })
   })
 
   it("should verify parameters of #serverStart()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverStart(1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverstart", { sid: 1 })
@@ -271,13 +298,11 @@ describe("TeamSpeak", () => {
 
   describe("#serverStop()", () => {
     it("should verify 2 parameters", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.serverStop(1, "Shutdown")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("serverstop", { sid: 1, reasonmsg: "Shutdown" })
     })
     it("should verify 1 parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.serverStop(1)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("serverstop", { sid: 1, reasonmsg: undefined })
@@ -293,49 +318,42 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupClientList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupClientList(1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupclientlist", { sgid: 1 }, ["-names"])
   })
 
   it("should verify parameters of #serverGroupAddClient()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupAddClient([1, 3], 2)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddclient", { sgid: 2, cldbid: [1, 3] })
   })
 
   it("should verify parameters of #serverGroupDelClient()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupDelClient([1, 3], 2)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupdelclient", { sgid: 2, cldbid: [1, 3] })
   })
 
   it("should verify parameters of #clientAddServerGroup()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientAddServerGroup(1, [2, 5])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddservergroup", { sgid: [2, 5], cldbid: 1 })
   })
 
   it("should verify parameters of #clientDelServerGroup()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDelServerGroup(1, [2, 5])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdelservergroup", { sgid: [2, 5], cldbid: 1 })
   })
 
   it("should verify parameters of #serverGroupDel()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupDel(1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupdel", { sgid: 1, force: 0 })
   })
 
   it("should verify parameters of #serverGroupCopy()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupCopy(1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupcopy", {
@@ -347,7 +365,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupRename()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupRename(1, "New Name")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergrouprename", { sgid: 1, name: "New Name" })
@@ -355,13 +372,11 @@ describe("TeamSpeak", () => {
 
   describe("#serverGroupPermList()", () => {
     it("should verify 2 parameters", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.serverGroupPermList(2, true)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("servergrouppermlist", { sgid: 2 }, ["-permsid"])
     })
     it("should verify 1 parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.serverGroupPermList(2)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("servergrouppermlist", { sgid: 2 }, [null])
@@ -369,7 +384,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupAddPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupAddPerm(2, "i_channel_subscribe_power", 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddperm", {
@@ -382,7 +396,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupAddPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupAddPerm(2, 11, 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddperm", {
@@ -395,7 +408,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupDelPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupDelPerm(2, "i_channel_subscribe_power")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupdelperm", { sgid: 2, permsid: "i_channel_subscribe_power" })
@@ -408,21 +420,18 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverTempPasswordAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverTempPasswordAdd({ duration: 60, pw: "pass", desc: "description", tcid: 0, tcpw: "" })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servertemppasswordadd", { duration: 60, pw: "pass", desc: "description", tcid: 0, tcpw: "" })
   })
 
   it("should verify parameters of #serverTempPasswordDel()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverTempPasswordDel("test")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servertemppassworddel", { pw: "test" })
   })
 
   it("should verify parameters of #serverTempPasswordList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverTempPasswordList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servertemppasswordlist")
@@ -461,49 +470,42 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelInfo(2)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelinfo", { cid: 2 })
   })
 
   it("should verify parameters of #channelMove()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelMove(10, 5)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelmove", { cid: 10, cpid: 5, order: 0 })
   })
 
   it("should verify parameters of #channelDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelDelete(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeldelete", { cid: 10, force: 0 })
   })
 
   it("should verify parameters of #channelEdit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelEdit(1, { channel_name: "new name" })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeledit", { cid: 1, channel_name: "new name" })
   })
 
   it("should verify parameters of #channelPermList() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelPermList(10, true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelpermlist", { cid: 10 }, ["-permsid"])
   })
 
   it("should verify parameters of #channelPermList() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelpermlist", { cid: 10 }, null)
   })
 
   it("should verify parameters of #channelSetPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelSetPerm(10, "i_channel_subscribe_power", 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
@@ -514,7 +516,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelSetPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelSetPerm(10, 11, 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
@@ -525,7 +526,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelSetPerms()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelSetPerms(5, [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
@@ -536,14 +536,12 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelDelPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelDelPerm(10, "i_channel_subscribe_power")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeldelperm", { cid: 10, permsid: "i_channel_subscribe_power" })
   })
 
   it("should verify parameters of #channelDelPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelDelPerm(10, 11)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeldelperm", { cid: 10, permid: 11 })
@@ -582,28 +580,30 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientInfo(20)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientinfo", { clid: 20 })
   })
 
   it("should verify parameters of #clientDBList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdblist", { start: 0, duration: 1000 }, ["-count"])
   })
 
+  it("should verify parameters of #clientDBList() without count", async () => {
+    await teamspeak.clientDBList(0, 1000, false)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientdblist", { start: 0, duration: 1000 }, null)
+  })
+
   it("should verify parameters of #clientDBInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBInfo(25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbinfo", { cldbid: 25 })
   })
 
   it("should verify parameters of #clientKick()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientKick(10, ReasonIdentifier.KICK_CHANNEL, "Kicked from Channel")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientkick", {
@@ -614,35 +614,30 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientMove()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientMove(25, 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientmove", { clid: 25, cid: 10, cpw: undefined })
   })
 
   it("should verify parameters of #clientPoke()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientPoke(10, "you have been poked")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientpoke", { clid: 10, msg: "you have been poked" })
   })
 
   it("should verify parameters of #clientPermList() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientPermList(10, true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientpermlist", { cldbid: 10 }, ["-permsid"])
   })
 
   it("should verify parameters of #clientPermList() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientpermlist", { cldbid: 10 }, null)
   })
 
   it("should verify parameters of #clientAddPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientAddPerm(10, "i_channel_subscribe_power", 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddperm", {
@@ -655,7 +650,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientAddPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientAddPerm(10, 11, 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddperm", {
@@ -668,49 +662,42 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientDelPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDelPerm(10, "i_channel_subscribe_power")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdelperm", { cldbid: 10, permsid: "i_channel_subscribe_power" })
   })
 
   it("should verify parameters of #clientDelPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDelPerm(10, 11)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdelperm", { cldbid: 10, permid: 11 })
   })
 
   it("should verify parameters of #customSearch()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.customSearch("key", "fdsa")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("customsearch", { ident: "key", pattern: "fdsa" })
   })
 
   it("should verify parameters of #customInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.customInfo(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("custominfo", { cldbid: 10 })
   })
 
   it("should verify parameters of #customDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.customDelete(10, "key")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("customdelete", { cldbid: 10, ident: "key" })
   })
 
   it("should verify parameters of #customSet()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.customSet(10, "key", "value")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("customset", { cldbid: 10, ident: "key", value: "value" })
   })
 
   it("should verify parameters of #sendTextMessage()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.sendTextMessage(10, TextMessageTargetMode.CLIENT, "message to channel chat")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("sendtextmessage", {
@@ -753,21 +740,29 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #setClientChannelGroup()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.setClientChannelGroup(10, 5, 3)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("setclientchannelgroup", { cgid: 10, cid: 5, cldbid: 3 })
   })
 
   it("should verify parameters of #deleteChannelGroup()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.deleteChannelGroup(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupdel", { cgid: 10, force: 0 })
   })
 
   it("should verify parameters of #channelGroupCopy()", async () => {
-    mockExecute.mockResolvedValue(null)
+    await teamspeak.channelGroupCopy(10, 0, 1, "New Channel Group")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupcopy", {
+      scgid: 10,
+      tcgid: 0,
+      type: 1,
+      name: "New Channel Group"
+    })
+  })
+
+  it("should verify parameters of #channelGroupCopy() with name", async () => {
     await teamspeak.channelGroupCopy(10, 0, 1, "New Channel Group")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupcopy", {
@@ -779,28 +774,24 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupRename()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupRename(10, "New Name")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgrouprename", { cgid: 10, name: "New Name" })
   })
 
   it("should verify parameters of #channelGroupPermList() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupPermList(10, true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: 10 }, ["-permsid"])
   })
 
   it("should verify parameters of #channelGroupPermList() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: 10 }, null)
   })
 
   it("should verify parameters of #channelGroupAddPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupAddPerm(10, "i_channel_subscribe_power", 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
@@ -813,7 +804,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupAddPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupAddPerm(10, 11, 25)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
@@ -826,7 +816,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupDelPerm() with permsid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupDelPerm(10, "i_channel_subscribe_power")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupdelperm", {
@@ -836,7 +825,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupDelPerm() with permid", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupDelPerm(10, 11)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupdelperm", {
@@ -846,35 +834,48 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupClientList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupClientList(10, 5)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10, cid: 5 })
   })
 
-  it("should verify parameters of #permOverview()", async () => {
-    mockExecute.mockResolvedValue(null)
-    await teamspeak.permOverview(10, 5, 4)
+  it("should verify parameters of #channelGroupClientList() without cid", async () => {
+    await teamspeak.channelGroupClientList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("permoverview", { cldbid: 10, cid: 5, permid: 4 })
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10 })
+  })
+
+  it("should verify parameters of #permOverview()", async () => {
+    await teamspeak.permOverview(10, 5)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("permoverview", { cldbid: 10, cid: 5 })
+  })
+
+  it("should verify parameters of #permOverview() with permsid", async () => {
+    await teamspeak.permOverview(10, 5, ["a", "b", "c"])
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("permoverview", { cldbid: 10, cid: 5, permsid: ["a", "b", "c"] })
+  })
+
+  it("should verify parameters of #permOverview() with permids", async () => {
+    await teamspeak.permOverview(10, 5, [1, 2, 3])
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("permoverview", { cldbid: 10, cid: 5, permid: [1, 2, 3] })
   })
 
   it("should verify parameters of #permissionList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.permissionList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("permissionlist")
   })
 
   it("should verify parameters of #permIdGetByName()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.permIdGetByName("b_foo")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("permidgetbyname", { permsid: "b_foo" })
   })
 
   it("should verify parameters of #permIdsGetByName()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.permIdsGetByName(["b_foo", "b_bar"])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("permidgetbyname", { permsid: ["b_foo", "b_bar"] })
@@ -882,13 +883,11 @@ describe("TeamSpeak", () => {
 
   describe("#permGet()", () => {
     it("should verify with string parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.permGet("i_channel_subscribe_power")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("permget", { permsid: "i_channel_subscribe_power" })
     })
     it("should verify with numeric parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.permGet(10)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("permget", { permid: 10 })
@@ -897,13 +896,11 @@ describe("TeamSpeak", () => {
 
   describe("#permFind()", () => {
     it("should verify with string parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.permFind("i_channel_subscribe_power")
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("permfind", { permsid: "i_channel_subscribe_power" })
     })
     it("should verify with numeric parameter", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.permFind(10)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("permfind", { permid: 10 })
@@ -911,21 +908,18 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #permReset()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.permReset()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("permreset")
   })
 
   it("should verify parameters of #privilegeKeyList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.privilegeKeyList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeylist")
   })
 
   it("should verify parameters of #privilegeKeyAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.privilegeKeyAdd(0, 10, 0, "Server Group Token")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeyadd", {
@@ -938,7 +932,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify some parameters of #privilegeKeyAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.privilegeKeyAdd(0, 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeyadd", {
@@ -951,7 +944,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupPrivilegeKeyAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupPrivilegeKeyAdd(10, "Server Group Token")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeyadd", {
@@ -964,7 +956,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupPrivilegeKeyAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupPrivilegeKeyAdd(10, 5, "Channel Group Token")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeyadd", {
@@ -977,28 +968,24 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #privilegeKeyDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.privilegeKeyDelete("asdf")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeydelete", { token: "asdf" })
   })
 
   it("should verify parameters of #privilegeKeyUse()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.privilegeKeyUse("asdf")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("privilegekeyuse", { token: "asdf" })
   })
 
   it("should verify parameters of #messageList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.messageList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("messagelist")
   })
 
   it("should verify parameters of #messageAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.messageAdd("uniqueidentifier=", "title", "content")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("messageadd", {
@@ -1009,35 +996,30 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #messageDel()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.messageDel(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("messagedel", { msgid: 10 })
   })
 
   it("should verify parameters of #messageGet()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.messageGet(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("messageget", { msgid: 10 })
   })
 
   it("should verify parameters of #messageUpdate()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.messageUpdate(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("messageupdateflag", { msgid: 10, flag: 1 })
   })
 
   it("should verify parameters of #complainList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.complainList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("complainlist", { cldbid: 10 })
   })
 
   it("should verify parameters of #complainAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.complainAdd(10, "message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("complainadd", { cldbid: 10, message: "message" })
@@ -1045,13 +1027,11 @@ describe("TeamSpeak", () => {
 
   describe("#complainDel()", () => {
     it("should deletes all complaints for the given dbid", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.complainDel(10)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("complaindelall", { tcldbid: 10 })
     })
     it("should delete only a single complaint", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.complainDel(10, 15)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("complaindel", { tcldbid: 10, fcldbid: 15 })
@@ -1059,14 +1039,12 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #banList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.banList(5, 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("banlist", { start: 5, duration: 10 })
   })
 
   it("should verify parameters of #ban()", async () => {
-    mockExecute.mockResolvedValue(null)
     const rule = { ip: "127.0.0.1", uid: "something=", name: "FooBar", mytsid: "empty", banreason: "spam", time: 60 }
     await teamspeak.ban({ ...rule })
     expect(mockExecute).toHaveBeenCalledTimes(1)
@@ -1075,13 +1053,11 @@ describe("TeamSpeak", () => {
 
   describe("#banDel()", () => {
     it("should remove a single ban", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.banDel(10)
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("bandel", { banid: 10 })
     })
     it("should remove all bans", async () => {
-      mockExecute.mockResolvedValue(null)
       await teamspeak.banDel()
       expect(mockExecute).toHaveBeenCalledTimes(1)
       expect(mockExecute).toHaveBeenCalledWith("bandelall")
@@ -1089,77 +1065,72 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #logView()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.logView()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("logview", { lines: 1000, reverse: 0, instance: 0, begin_pos: 0 })
   })
 
   it("should verify parameters of #logAdd()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.logAdd(LogLevel.DEBUG, "custom message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("logadd", { loglevel: 3, logmsg: "custom message" })
   })
 
   it("should verify parameters of #gm()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.gm("Global Message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("gm", { msg: "Global Message" })
   })
 
   it("should verify parameters of #clientDBInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBInfo(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbinfo", { cldbid: 10 })
   })
 
   it("should verify parameters of #clientDBFind()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBFind("John Doe")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("clientdbfind", { pattern: "John Doe" }, [])
+    expect(mockExecute).toHaveBeenCalledWith("clientdbfind", { pattern: "John Doe" }, null)
+  })
+
+  it("should verify parameters of #clientDBFind() with an uid", async () => {
+    await teamspeak.clientDBFind("foobar=", true)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientdbfind", { pattern: "foobar=" }, ["-uid"])
   })
 
   it("should verify parameters of #clientDBEdit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBEdit(10, { client_description: "foo" })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbedit", { cldbid: 10, client_description: "foo" })
   })
 
   it("should verify parameters of #clientDBDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientDBDelete(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbdelete", { cldbid: 10 })
   })
 
   it("should verify parameters of #serverList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverlist", ["-uid", "-all"])
   })
 
   it("should verify parameters of #channelGroupList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelGroupList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgrouplist")
   })
 
   it("should verify parameters of #serverGroupList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.serverGroupList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergrouplist")
   })
 
   it("should verify parameters of #channelList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.channelList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
@@ -1169,7 +1140,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.clientList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
@@ -1179,42 +1149,36 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #ftGetFileList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftGetFileList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftgetfilelist", { cid: 10, path: "/", cpw: undefined })
   })
 
   it("should verify parameters of #ftGetFileInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftGetFileInfo(10, "/file.txt")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftgetfileinfo", { cid: 10, name: "/file.txt", cpw: "" })
   })
 
   it("should verify parameters of #ftStop()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftStop(109100)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftstop", { serverftfid: 109100, delete: 1 })
   })
 
   it("should verify parameters of #ftDeleteFile()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftDeleteFile(10, "/file.txt")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftdeletefile", { cid: 10, name: "/file.txt", cpw: undefined })
   })
 
   it("should verify parameters of #ftCreateDir()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftCreateDir(10, "/folder")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftcreatedir", { cid: 10, dirname: "/folder", "cpw": undefined })
   })
 
   it("should verify parameters of #ftRenameFile()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftRenameFile(10, "/file.txt", "/file2.txt", 11)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftrenamefile", {
@@ -1228,7 +1192,6 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #ftInitUpload()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftInitUpload({ name: "/somefile.iso", clientftfid: 123, size: 1 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftinitupload", {
@@ -1243,20 +1206,52 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #ftInitDownload()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.ftInitDownload({ name: "/somefile.iso", clientftfid: 123 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("ftinitdownload", {
-      name: "/somefile.iso",
-      clientftfid: 123,
-      cid: 0,
-      seekpos: 0,
-      cpw: ""
+      name: "/somefile.iso", clientftfid: 123, cid: 0, seekpos: 0, cpw: ""
     })
   })
 
+  
+  it("should verify parameters of #uploadFile() with a string", async () => {
+    mockExecute.mockResolvedValue({ size: 10, ftkey: "fookey", port: 30033 })
+    mockTransfer.mockResolvedValue(null)
+    await teamspeak.uploadFile("/mock.txt", "test")
+    expect(mockExecute).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledWith("fookey", Buffer.from("test"))
+  })
+
+  
+  it("should verify parameters of #uploadFile() with a buffer", async () => {
+    const data = Buffer.from("test")
+    mockExecute.mockResolvedValue({ size: 10, ftkey: "fookey", port: 30033 })
+    mockTransfer.mockResolvedValue(null)
+    await teamspeak.uploadFile("/mock.txt", data)
+    expect(mockExecute).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledWith("fookey", data)
+  })
+
+  
+  it("should verify parameters of #downloadFile()", async () => {
+    mockExecute.mockResolvedValue({ size: 10, ftkey: "fookey", port: 30033 })
+    mockTransfer.mockResolvedValue(Buffer.from("foodata"))
+    await teamspeak.downloadFile("/mock.txt")
+    expect(mockExecute).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledTimes(1)
+    expect(mockTransfer).toBeCalledWith("fookey", 10)
+  })
+
+
+  it("should verify parameters of #forceQuit()", async () => {
+    await teamspeak.forceQuit()
+    expect(mockClose).toHaveBeenCalledTimes(1)
+  })
+
+
   it("should verify parameters of #quit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await teamspeak.quit()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("quit")
