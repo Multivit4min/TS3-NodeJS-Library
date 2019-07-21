@@ -1,15 +1,15 @@
 import * as ENUM from "./enum"
 
-export interface ClientUpdate {
+export declare interface ClientUpdate {
   client_nickname: string
 }
 
-export interface ClientDBEdit {
+export declare interface ClientDBEdit {
   //cldbid: number
   client_description: string 
 }
 
-export interface ServerEdit {
+export declare interface ServerEdit {
   virtualserver_name?: string 
   virtualserver_welcomemessage?: string 
   virtualserver_maxclients?: number 
@@ -60,7 +60,7 @@ export interface ServerEdit {
   virtualserver_codec_encryption_mode?: ENUM.CodecEncryptionMode 
 }
 
-export interface ChannelEdit {
+export declare interface ChannelEdit {
   cid?: number 
   channel_name?: string 
   channel_topic?: string 
@@ -82,7 +82,7 @@ export interface ChannelEdit {
   channel_cpid?: number 
 }
 
-export interface InstanceEdit {
+export declare interface InstanceEdit {
   serverinstance_template_serveradmin_group?: number 
   serverinstance_filetransfer_port?: number 
   serverinstance_max_download_total_bandwidth?: number 
@@ -95,7 +95,7 @@ export interface InstanceEdit {
   serverinstance_serverquery_flood_ban_time?: number 
 }
 
-export interface ServerTempPasswordAdd {
+export declare interface ServerTempPasswordAdd {
   /** the temporary password */
   pw: string
   /** description of the password */
@@ -108,7 +108,7 @@ export interface ServerTempPasswordAdd {
   tcpw?: string
 }
 
-export interface BanAdd {
+export declare interface BanAdd {
   /** ip regular expression */
   ip?: string
   /** name regular expression */
@@ -123,7 +123,7 @@ export interface BanAdd {
   banreason: string
 }
 
-export interface TransferUpload {
+export declare interface TransferUpload {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */
@@ -139,7 +139,7 @@ export interface TransferUpload {
   resume?: number
 }
 
-export interface TransferDownload {
+export declare interface TransferDownload {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */

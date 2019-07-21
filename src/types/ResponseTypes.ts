@@ -1,6 +1,6 @@
 import { TeamSpeakServer } from "../node/Server"
 
-export interface QueryErrorMessage {
+export declare interface QueryErrorMessage {
   id: number
   msg: string
   extra_msg?: string
@@ -8,7 +8,7 @@ export interface QueryErrorMessage {
 }
 
 
-export interface ClientList {
+export declare interface ClientList {
   clid: number
   cid: number
   client_database_id: number
@@ -41,7 +41,7 @@ export interface ClientList {
 }
 
 
-export interface ChannelList {
+export declare interface ChannelList {
   cid: number
   pid: number
   channel_order: number
@@ -64,7 +64,7 @@ export interface ChannelList {
 }
 
 
-export interface ServerGroupList {
+export declare interface ServerGroupList {
   sgid: number
   name: string
   type: number
@@ -78,7 +78,7 @@ export interface ServerGroupList {
 }
 
 
-export interface ChannelGroupList {
+export declare interface ChannelGroupList {
   cgid: number
   name: string
   type: number
@@ -92,7 +92,7 @@ export interface ChannelGroupList {
 }
 
 
-export interface ServerList {
+export declare interface ServerList {
   virtualserver_id: number
   virtualserver_port: number
   virtualserver_status: string
@@ -106,31 +106,31 @@ export interface ServerList {
   virtualserver_unique_identifier: string
 }
 
-export interface ServerCreate {
+export declare interface ServerCreate {
   token: string,
   server: TeamSpeakServer
 }
 
-export interface QueryLoginAdd {
+export declare interface QueryLoginAdd {
   cldbid: number
   sid: number
   client_login_name: string
   client_login_password: string
 }
 
-export interface QueryLoginList {
+export declare interface QueryLoginList {
   cldbid: number
   sid: number
   client_login_name: string
 }
 
-export interface Version {
+export declare interface Version {
   version: string
   build: number
   platform: string
 }
 
-export interface HostInfo {
+export declare interface HostInfo {
   instance_uptime: number
   host_timestamp_utc: number
   virtualservers_running_total: number
@@ -151,7 +151,7 @@ export interface HostInfo {
   connection_bandwidth_received_last_minute_total: number
 }
 
-export interface InstanceInfo {
+export declare interface InstanceInfo {
   serverinstance_database_version: number
   serverinstance_filetransfer_port: number
   serverinstance_max_download_total_bandwidth: number
@@ -168,11 +168,11 @@ export interface InstanceInfo {
   serverinstance_serverquery_max_connections_per_ip: number
 }
 
-export interface BindingList {
+export declare interface BindingList {
   ip: string
 }
 
-export interface Whoami {
+export declare interface Whoami {
   virtualserver_status: string
   virtualserver_unique_identifier: string
   virtualserver_port: number
@@ -186,7 +186,7 @@ export interface Whoami {
   client_origin_server_id: number
 }
 
-export interface ServerInfo {
+export declare interface ServerInfo {
   virtualserver_unique_identifier: string
   virtualserver_name: string
   virtualserver_welcomemessage: string
@@ -240,11 +240,11 @@ export interface ServerInfo {
   virtualserver_status: string
 }
 
-export interface ServerIdGetByPort {
+export declare interface ServerIdGetByPort {
   server_id: number
 }
 
-export interface ServerRequestConnectionInfo {
+export declare interface ServerRequestConnectionInfo {
   connection_filetransfer_bandwidth_sent: number
   connection_filetransfer_bandwidth_received: number
   connection_filetransfer_bytes_sent_total: number
@@ -262,23 +262,23 @@ export interface ServerRequestConnectionInfo {
   connection_ping: number
 }
 
-export interface ServerGroupClientList {
+export declare interface ServerGroupClientList {
   cldbid: number
   client_nickname: string
   client_unique_identifier: string
 }
 
-export interface ServerGroupCopy {
+export declare interface ServerGroupCopy {
   /** only available when a new group gets created */
   sgid?: number
 }
 
-export interface ChannelGroupCopy {
+export declare interface ChannelGroupCopy {
   /** only available when a new group gets created */
   cgid?: number
 }
 
-export interface ServerTempPasswordList {
+export declare interface ServerTempPasswordList {
   nickname: string
   uid: string
   desc: string
@@ -288,13 +288,13 @@ export interface ServerTempPasswordList {
   tcid: number
 }
 
-export interface ChannelGroupClientList {
+export declare interface ChannelGroupClientList {
   cid?: number
   cldbid?: number
   cgid?: number
 }
 
-export interface PermList {
+export declare interface PermList {
   permid?: number
   permsid?: string
   permvalue: number
@@ -302,7 +302,7 @@ export interface PermList {
   permskip: number
 }
 
-export interface ChannelInfo {
+export declare interface ChannelInfo {
   pid: number
   channel_name: string
   channel_topic: string
@@ -334,7 +334,7 @@ export interface ChannelInfo {
   seconds_empty: number
 }
 
-export interface ClientInfo {
+export declare interface ClientInfo {
   cid: number
   client_idle_time: number
   client_unique_identifier: string
@@ -399,7 +399,7 @@ export interface ClientInfo {
   connection_client_ip: string
 }
 
-export interface ClientDBList {
+export declare interface ClientDBList {
   /** available in the first element and only if count flag has been set */
   count?: number
   cldbid: number
@@ -413,7 +413,7 @@ export interface ClientDBList {
   client_login_name: string
 }
 
-export interface ClientDBInfo {
+export declare interface ClientDBInfo {
   client_unique_identifier: string
   client_nickname: string
   client_database_id: number
@@ -430,20 +430,20 @@ export interface ClientDBInfo {
   client_lastip: string
 }
 
-export interface CustomSearch {
+export declare interface CustomSearch {
   cldbid: number
   ident: string
   value: string
 }
 
-export interface CustomInfo {
+export declare interface CustomInfo {
   /** only available in the first element of the response array */
   cldbid?: number
   ident: string
   value: string
 }
 
-export interface PermOverview {
+export declare interface PermOverview {
   t: number 
   id: number 
   id2: number 
@@ -457,35 +457,35 @@ export interface PermOverview {
   s: number
 }
 
-export interface PermissionList {
+export declare interface PermissionList {
   permid: number
   permname: string
   permdesc: string
 }
 
-export interface PermIdGetByName {
+export declare interface PermIdGetByName {
   permsid: string 
   permid: number 
 }
 
-export interface PermGet {
+export declare interface PermGet {
   permsid: string 
   permid: number 
   permvalue: number 
 }
 
-export interface PermFind {
+export declare interface PermFind {
   t: number 
   id1: number 
   id2: number 
   p: number 
 }
 
-export interface Token {
+export declare interface Token {
   token: string
 }
 
-export interface PrivilegeKeyList {
+export declare interface PrivilegeKeyList {
   token: string 
   token_type: number 
   token_id1: number 
@@ -494,7 +494,7 @@ export interface PrivilegeKeyList {
   token_description: string 
 }
 
-export interface MessageList {
+export declare interface MessageList {
   msgid: number 
   cluid: string 
   subject: string 
@@ -502,7 +502,7 @@ export interface MessageList {
   flag_read: number 
 }
 
-export interface MessageGet {
+export declare interface MessageGet {
   msgid: number 
   cluid: string 
   subject: string 
@@ -510,7 +510,7 @@ export interface MessageGet {
   timestamp: number 
 }
 
-export interface ComplainList {
+export declare interface ComplainList {
   tcldbid: number 
   tname: string 
   fcldbid: number 
@@ -519,11 +519,11 @@ export interface ComplainList {
   timestamp: number 
 }
 
-export interface BanAdd {
+export declare interface BanAdd {
   banid: number
 }
 
-export interface BanList {
+export declare interface BanList {
   banid: number 
   ip: string 
   name: string 
@@ -539,7 +539,7 @@ export interface BanList {
   enforcements: number 
 }
 
-export interface LogView {
+export declare interface LogView {
   /** only available in the first element of the response array */
   last_pos?: number
   /** only available in the first element of the response array */
@@ -547,11 +547,11 @@ export interface LogView {
   l: string 
 }
 
-export interface ClientDBFind {
+export declare interface ClientDBFind {
   cldbid: number
 }
 
-export interface FTGetFileList {
+export declare interface FTGetFileList {
   cid: number 
   path: string 
   name: string 
@@ -561,14 +561,14 @@ export interface FTGetFileList {
   type: number 
 }
 
-export interface FTGetFileInfo {
+export declare interface FTGetFileInfo {
   cid: number 
   name: string 
   size: number 
   datetime: number 
 }
 
-export interface FTInitUpload {
+export declare interface FTInitUpload {
   clientftfid: number 
   /** exists when an error occured */
   status?: number
@@ -588,7 +588,7 @@ export interface FTInitUpload {
   proto?: number
 }
 
-export interface FTInitDownload {
+export declare interface FTInitDownload {
   clientftfid: number 
   size: number 
   /** exists when an error occured */

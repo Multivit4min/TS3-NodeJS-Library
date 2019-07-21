@@ -4,7 +4,7 @@ import { ProtocolRAW } from "./protocols/raw"
 import { ProtocolSSH } from "./protocols/ssh"
 
 import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
-import { QueryResponseTypes } from "../types/QueryResponseType"
+import { QueryResponseTypes } from "../types/QueryResponse"
 
 interface QueueItem {
   fulfill: Function

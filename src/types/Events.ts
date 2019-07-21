@@ -1,63 +1,63 @@
 import { TeamSpeakClient } from "../node/Client"
 import { TeamSpeakChannel } from "../node/Channel"
-import { QueryResponseTypes } from "./QueryResponseType"
+import { QueryResponseTypes } from "./QueryResponse"
 import { ClientList } from "./ResponseTypes"
 import * as ENUM from "./enum"
 
-export interface Debug {
+export declare interface Debug {
   type: string,
   data: string
 }
 
-export interface ClientConnect {
+export declare interface ClientConnect {
  client: TeamSpeakClient
 }
 
-export interface ClientDisconnect {
+export declare interface ClientDisconnect {
   client: ClientList
   event: any
 }
 
-export interface TextMessage {
+export declare interface TextMessage {
   invoker: TeamSpeakClient
   msg: string
   targetmode: ENUM.TextMessageTargetMode
 }
 
-export interface ClientMoved {
+export declare interface ClientMoved {
   client: TeamSpeakClient
   channel: TeamSpeakChannel
   reasonid: ENUM.ReasonIdentifier
 }
 
-export interface ServerEdit {
+export declare interface ServerEdit {
   invoker: TeamSpeakClient
   modified: Partial<QueryResponseTypes>
   reasonid: number
 }
 
-export interface ChannelEdit {
+export declare interface ChannelEdit {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   modified: Partial<QueryResponseTypes>
   reasonid: number
 }
 
-export interface ChannelCreate {
+export declare interface ChannelCreate {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   modified: Partial<QueryResponseTypes>
   cpid: number
 }
 
-export interface ChannelMove {
+export declare interface ChannelMove {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   parent: TeamSpeakChannel
   order: number
 }
 
-export interface ChannelDelete {
+export declare interface ChannelDelete {
   invoker: TeamSpeakClient
   cid: number
 }

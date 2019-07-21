@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "lib": ["es2018"],
     "module": "commonjs",
-    "target": "es6",
+    "target": "es2018",
     "moduleResolution": "node",
     "strictNullChecks": true,
     "noImplicitAny": true,

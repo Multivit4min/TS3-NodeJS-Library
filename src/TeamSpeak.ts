@@ -1,7 +1,7 @@
 import { EventEmitter } from "events"
 import { TeamSpeakQuery } from "./transport/TeamSpeakQuery"
 import { FileTransfer } from "./transport/FileTransfer"
-import { QueryResponse } from "./types/QueryResponseType"
+import { QueryResponse } from "./types/QueryResponse"
 import { ResponseError } from "./exception/ResponseError"
 import { TeamSpeakClient } from "./node/Client"
 import { TeamSpeakServer } from "./node/Server"
@@ -41,7 +41,7 @@ export interface ConnectionParams {
   keepAlive: boolean
 }
 
-interface TeamSpeakEvents {
+export interface TeamSpeak {
   on(event: "error", listener: (error: Error) => void): this
   on(event: "ready", listener: () => void): this
   on(event: "close", listener: (error?: Error) => void): this
@@ -58,7 +58,7 @@ interface TeamSpeakEvents {
   on(event: "channeldelete", listener: (event: Event.ChannelDelete) => void): this
 }
 
-export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
+export class TeamSpeak extends EventEmitter {
 
   readonly config: ConnectionParams
   private clients: Record<string, TeamSpeakClient> = {}

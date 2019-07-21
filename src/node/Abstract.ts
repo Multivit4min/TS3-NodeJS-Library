@@ -1,5 +1,5 @@
 import { TeamSpeak } from "../TeamSpeak"
-import { QueryResponse } from "../types/QueryResponseType"
+import { QueryResponse } from "../types/QueryResponse"
 
 export abstract class Abstract {
 

@@ -1,7 +1,6 @@
-import { QueryResponseIdentifier, ResponseType } from "../types/QueryResponse"
+import { QueryResponseIdentifier, ResponseType, QueryResponseTypes, QueryResponse } from "../types/QueryResponse"
 import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
-import { QueryResponseTypes, QueryResponse } from "../types/QueryResponseType";
 
 declare type multiOpts = Partial<Record<keyof QueryResponse, QueryResponse[keyof QueryResponse]>>[]
 
