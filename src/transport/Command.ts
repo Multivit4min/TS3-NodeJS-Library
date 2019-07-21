@@ -104,7 +104,12 @@ export class Command {
 
   /** checks if a error has been received */
   hasError() {
-    return this.error !== null && this.error.id && this.error.id > 0
+    return (
+      this.error !== null &&
+      typeof this.error === "object" &&
+      typeof this.error.id === "number" &&
+      this.error.id > 0
+    )
   }
 
 
