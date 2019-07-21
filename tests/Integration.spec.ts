@@ -28,8 +28,9 @@ describe("Integration Test", () => {
       expect(whoami.client_nickname).toBe("JEST RAW")
       teamspeak.forceQuit()
     } catch (e) {
-      teamspeak.forceQuit()
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
+    }
   })
 
   it("should connect to a TeamSpeak Server via SSH Query", async () => {
@@ -48,7 +49,7 @@ describe("Integration Test", () => {
       expect(whoami.client_nickname).toBe("JEST SSH")
       teamspeak.forceQuit()
     } catch (e) {
-      teamspeak.forceQuit()
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
   })
@@ -67,10 +68,10 @@ describe("Integration Test", () => {
       await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, 0)
       const download = await teamspeak.downloadIcon(`icon_${crc >>> 0}`)
       expect(crc).toEqual(crc32.buf(download))
+      teamspeak.forceQuit()
     } catch (e) {
-      throw e
-    } finally {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+      throw e
     }
   })
 
