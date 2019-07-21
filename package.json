@@ -3,14 +3,18 @@
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
+  "types": "lib/TeamSpeak.d.ts",
   "scripts": {
     "eslint": "eslint ./src/**/*.ts",
     "test": "jest --runInBand",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "generate-docs": "typedoc --out docs ./src"
+    "generate-docs": "typedoc --out docs ./src",
+    "build": "tsc",
+    "prepare": "npm run build"
   },
+  "files": ["lib/**/*", "src/**/*"],
   "author": "Multivitamin",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/node": "^12.6.8",

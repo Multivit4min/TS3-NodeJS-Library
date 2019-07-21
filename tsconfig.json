@@ -9,9 +9,9 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "outDir": "dist",
+    "outDir": "lib",
     "declaration": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
   },
   "include": ["./src"],
   "typedocOptions": {
