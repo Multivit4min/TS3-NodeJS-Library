@@ -12,7 +12,7 @@ const config = {
 
 describe("Integration Test", () => {
 
-  /*it("should connect to a TeamSpeak Server via RAW Query", async () => {
+  it("should connect to a TeamSpeak Server via RAW Query", async () => {
     let teamspeak: TeamSpeak|null = null
     try {
       teamspeak = await TeamSpeak.connect({
@@ -26,11 +26,10 @@ describe("Integration Test", () => {
       expect(typeof serverinfo.virtualserver_name).toBe("string")
       expect(typeof whoami).toBe("object")
       expect(whoami.client_nickname).toBe("JEST RAW")
+      teamspeak.forceQuit()
     } catch (e) {
+      teamspeak.forceQuit()
       throw e
-    } finally {
-      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
-    }
   })
 
   it("should connect to a TeamSpeak Server via SSH Query", async () => {
@@ -47,12 +46,12 @@ describe("Integration Test", () => {
       expect(typeof serverinfo.virtualserver_name).toBe("string")
       expect(typeof whoami).toBe("object")
       expect(whoami.client_nickname).toBe("JEST SSH")
+      teamspeak.forceQuit()
     } catch (e) {
+      teamspeak.forceQuit()
       throw e
-    } finally {
-      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
     }
-  })*/
+  })
 
   it("should test upload and download of a file", async () => {
     let teamspeak: TeamSpeak|null = null
