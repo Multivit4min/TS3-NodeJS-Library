@@ -6,9 +6,9 @@ import { QueryProtocolInterface } from "../TeamSpeakQuery"
 
 export class ProtocolSSH extends EventEmitter implements QueryProtocolInterface {
 
-  private chunk: string = ""
   private client: Client
   private stream: ClientChannel|null
+  chunk: string = ""
 
   constructor(config: ConnectionParams) {
     super()
