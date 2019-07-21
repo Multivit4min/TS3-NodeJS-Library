@@ -12,7 +12,7 @@ const config = {
 
 describe("Integration Test", () => {
 
-  it("should connect to a TeamSpeak Server via RAW Query", async () => {
+  /*it("should connect to a TeamSpeak Server via RAW Query", async () => {
     let teamspeak: TeamSpeak|null = null
     try {
       teamspeak = await TeamSpeak.connect({
@@ -52,7 +52,7 @@ describe("Integration Test", () => {
     } finally {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
     }
-  })
+  })*/
 
   it("should test upload and download of a file", async () => {
     let teamspeak: TeamSpeak|null = null
