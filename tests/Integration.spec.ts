@@ -1,4 +1,6 @@
 import { TeamSpeak, QueryProtocol } from "../src/TeamSpeak"
+import * as fs from "fs"
+import * as crc32 from "crc-32"
 
 const config = {
   host: process.env.TS3_HOST || "127.0.0.1",
@@ -9,96 +11,72 @@ const config = {
 
 
 describe("Integration Test", () => {
-  let teamspeak: TeamSpeak
 
-  afterEach(() => {
-    if (teamspeak instanceof TeamSpeak) {
-      teamspeak.removeAllListeners()
-      teamspeak.forceQuit()
+  it("should connect to a TeamSpeak Server via RAW Query", async () => {
+    let teamspeak: TeamSpeak|null = null
+    try {
+      teamspeak = await TeamSpeak.connect({
+        ...config,
+        protocol: QueryProtocol.RAW,
+        queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
+        nickname: "JEST RAW"
+      })
+      const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
+      expect(typeof serverinfo).toBe("object")
+      expect(typeof serverinfo.virtualserver_name).toBe("string")
+      expect(typeof whoami).toBe("object")
+      expect(whoami.client_nickname).toBe("JEST RAW")
+    } catch (e) {
+      throw e
+    } finally {
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
     }
   })
 
-  it("should connect to a TeamSpeak Server via SSH Query", () => {
-    return new Promise((fulfill, reject) => {
-      let error: Error|null = null
-      teamspeak = new TeamSpeak({
+  it("should connect to a TeamSpeak Server via SSH Query", async () => {
+    let teamspeak: TeamSpeak|null = null
+    try {
+      teamspeak = await TeamSpeak.connect({
         ...config,
         protocol: QueryProtocol.SSH,
         queryport: parseInt(process.env.TS3_QUERYPORT_SSH!, 10) || 10022,
         nickname: "JEST SSH"
       })
-  
-      teamspeak.on("error", e => error = e)
-      teamspeak.on("close", () => {
-        if (error instanceof Error) return reject(error)
-        fulfill()
-      })
-  
-      teamspeak.on("ready", async () => {
-        try {
-          const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
-          expect(typeof serverinfo).toBe("object")
-          expect(typeof serverinfo.virtualserver_name).toBe("string")
-          expect(typeof whoami).toBe("object")
-          expect(whoami.client_nickname).toBe("JEST SSH")
-          teamspeak.quit()
-        } catch (e) {
-          error = e
-          teamspeak.quit()
-        }
-      })
-    })
+      const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
+      expect(typeof serverinfo).toBe("object")
+      expect(typeof serverinfo.virtualserver_name).toBe("string")
+      expect(typeof whoami).toBe("object")
+      expect(whoami.client_nickname).toBe("JEST SSH")
+    } catch (e) {
+      throw e
+    } finally {
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+    }
   })
 
-
-  it("should connect to a TeamSpeak Server via RAW Query", () => {
-    return new Promise((fulfill, reject) => {
-      let error: Error|null = null
-      teamspeak = new TeamSpeak({
+  it("should test upload and download of a file", async () => {
+    let teamspeak: TeamSpeak|null = null
+    try {
+      teamspeak = await TeamSpeak.connect({
         ...config,
         protocol: QueryProtocol.RAW,
-        queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10022,
+        queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
         nickname: "JEST RAW"
       })
-  
-      teamspeak.on("error", e => error = e)
-      teamspeak.on("close", () => {
-        if (error instanceof Error) return reject(error)
-        fulfill()
-      })
-  
-      teamspeak.on("ready", async () => {
-        try {
-          const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
-          expect(typeof serverinfo).toBe("object")
-          expect(typeof serverinfo.virtualserver_name).toBe("string")
-          expect(typeof whoami).toBe("object")
-          expect(whoami.client_nickname).toBe("JEST RAW")
-          teamspeak.quit()
-        } catch (e) {
-          error = e
-          teamspeak.quit()
-        }
-      })
-    })
+      const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
+      const crc = crc32.buf(data)
+      await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, 0)
+      const download = await teamspeak.downloadIcon(`icon_${crc >>> 0}`)
+      expect(crc).toEqual(crc32.buf(download))
+    } catch (e) {
+      throw e
+    } finally {
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+    }
   })
 
   /*
-  it("should test upload and download of a file", async () => {
-    if (!(teamspeak instanceof TeamSpeak))
-      throw new Error("can not run test, due to no valid connection")
-
-    const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
-    const crc = crc32.buf(data)
-    await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, 0)
-    const download = await teamspeak.downloadIcon(`icon_${crc >>> 0}`)
-    assert.equal(crc, crc32.buf(download))
-
-  }).timeout(5000)
-
-  // eslint-disable-next-line arrow-body-style
   it("should test receiving of an event", () => {
-    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (fulfill, reject) => {
       if (!(teamspeak instanceof TeamSpeak))
         return reject(new Error("can not run test, due to no valid connection"))

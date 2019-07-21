@@ -79,9 +79,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       keepAlive: true,
       ...config
     }
-
     this.query = new TeamSpeakQuery(this.config)
-
     this.query.on("cliententerview", this.evcliententerview.bind(this))
     this.query.on("clientleftview", this.evclientleftview.bind(this))
     this.query.on("serveredited", this.evserveredited.bind(this))
@@ -91,18 +89,38 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
     this.query.on("channelcreated", this.evchannelcreated.bind(this))
     this.query.on("clientmoved", this.evclientmoved.bind(this))
     this.query.on("textmessage", this.evtextmessage.bind(this))
-    this.query.on("connect", this.handleConnect.bind(this))
+    this.query.on("ready", this.handleReady.bind(this))
     this.query.on("close", (e?: string) => super.emit("close", e))
     this.query.on("error", (e: Error) => super.emit("error", e))
     this.query.on("flooding", (e: ResponseError) => super.emit("flooding", e))
     this.query.on("debug", (data: Event.Debug) => super.emit("debug", data))
   }
 
-
   /**
-   * Handle after successfully connecting to a TeamSpeak Server
+   * connects via a Promise wrapper
+   * @param config config options to connect
    */
-  private handleConnect() {
+  static connect(config: Partial<ConnectionParams>): Promise<TeamSpeak> {
+    return new Promise((fulfill, reject) => {
+      const teamspeak = new TeamSpeak(config)
+      teamspeak.once("ready", () => {
+        teamspeak.removeAllListeners()
+        fulfill(teamspeak)
+      })
+      teamspeak.once("error", error => {
+        teamspeak.removeAllListeners()
+        reject(error)
+      })
+      teamspeak.once("close", error => {
+        teamspeak.removeAllListeners()
+        if (error instanceof Error) return reject(error)
+        reject(new Error("TeamSpeak Server prematurely closed the connection"))        
+      })
+    })
+  }
+
+  /** handle after successfully connecting to a TeamSpeak Server */
+  private handleReady() {
     const exec = []
     if (this.config.username && this.config.password && this.config.protocol === "raw")
       exec.push(this.login(this.config.username, this.config.password))
@@ -110,7 +128,10 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       exec.push(this.useByPort(this.config.serverport, this.config.nickname))
     Promise.all(exec)
       .then(() => super.emit("ready"))
-      .catch(e => super.emit("error", e))
+      .catch(e => {
+        super.emit("error", e)
+        this.forceQuit()
+      })
   }
 
 

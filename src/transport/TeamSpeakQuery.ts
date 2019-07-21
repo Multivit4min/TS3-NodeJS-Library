@@ -93,11 +93,12 @@ export class TeamSpeakQuery extends EventEmitter {
     return this.socket.close()
   }
 
-
+  /**
+   * gets called when the underlying transport layer connects to a server
+   */
   private handleConnect() {
     this.connected = true
     this.emit("connect")
-    this.queueWorker()
   }
 
   /**
@@ -107,9 +108,12 @@ export class TeamSpeakQuery extends EventEmitter {
     this.lastLine = line
     line = line.trim()
     this.emit("debug", { type: "receive", data: line })
-    if (this.ignoreLines > 0 && line.indexOf("error") !== 0)
-      return (this.ignoreLines -= 1, undefined)
-    if (line.indexOf("error") === 0) {
+    if (this.ignoreLines > 0 && !line.startsWith("error")) {
+      this.ignoreLines -= 1
+      if (this.ignoreLines > 0) return
+      this.emit("ready")
+      this.queueWorker()
+    } else if (line.indexOf("error") === 0) {
       this.handleQueryError(line)
     } else if (line.indexOf("notify") === 0) {
       this.handleQueryEvent(line)

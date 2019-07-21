@@ -108,19 +108,19 @@ describe("TeamSpeak", () => {
     })
     it("check a connection config with username and password", async () => {
       const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
-      teamspeak["query"].emit("connect")
+      teamspeak["query"].emit("ready")
       expect(mockExecute).toBeCalledWith("login", ["foo", "bar"])
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport", async () => {
       const teamspeak = new TeamSpeak({ serverport: 9987 })
-      teamspeak["query"].emit("connect")
+      teamspeak["query"].emit("ready")
       expect(mockExecute).toBeCalledWith("use", { port: 9987 })
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport and nickname", async () => {
       const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
-      teamspeak["query"].emit("connect")
+      teamspeak["query"].emit("ready")
       expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" })
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
