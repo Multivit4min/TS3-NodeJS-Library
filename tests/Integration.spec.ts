@@ -9,6 +9,7 @@ const config = {
   password: process.env.TS3_PASSWORD || "abc123"
 }
 
+const wait = (time: number) => new Promise(fulfill => setTimeout(fulfill, time))
 
 describe("Integration Test", () => {
 
@@ -31,6 +32,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
+    await wait(1000)
   })
 
   it("should connect to a TeamSpeak Server via SSH Query", async () => {
@@ -52,6 +54,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
+    await wait(1000)
   })
 
   it("should test upload and download of a file", async () => {
@@ -73,6 +76,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
+    await wait(1000)
   })
 
   it("should test receiving of an event", () => {
