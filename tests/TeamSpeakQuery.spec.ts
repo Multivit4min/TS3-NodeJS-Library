@@ -17,8 +17,14 @@ jest.mock("../src/transport/protocols/raw", () => {
 
 import { TeamSpeakQuery, QueryProtocolInterface } from "../src/transport/TeamSpeakQuery"
 import { QueryProtocol } from "../src/TeamSpeak"
+import { ResponseError } from "../src/exception/ResponseError"
 
 describe("TeamSpeakQuery", () => {
+
+  beforeEach(() => {
+    sendMock.mockReset()
+  })
+
   it("should throw an error when the wrong protocol gets required", () => {
     //@ts-ignore
     expect(() => new TeamSpeakQuery({ protocol: "something false" })).toThrowError()
@@ -46,6 +52,29 @@ describe("TeamSpeakQuery", () => {
     await wait(1200)
     expect(sendMock).toBeCalledTimes(2)
     expect(sendMock.mock.calls[1][0]).toBe("whoami")
+    emit("close")
+  })
+
+  it("should receive a response error", async () => {
+    const query = new TeamSpeakQuery({
+      queryport: 10011,
+      host: "127.0.0.1",
+      protocol: QueryProtocol.RAW,
+      keepAlive: true,
+      readyTimeout: 10000
+    })
+
+    //@ts-ignore
+    const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
+
+    emit("connect")
+    emit("line", "TS3")
+    emit("line", "Welcome ... command.")
+    const command = query.execute("whoami")
+    emit("line", "error id=1 msg=error")
+    expect(sendMock).toBeCalledTimes(1)
+    expect(sendMock.mock.calls[0][0]).toBe("whoami")
+    expect(command).rejects.toBeInstanceOf(ResponseError)
     emit("close")
   })
 })
