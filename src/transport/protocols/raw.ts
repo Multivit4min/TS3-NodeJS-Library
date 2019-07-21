@@ -56,6 +56,7 @@ export class ProtocolRAW extends EventEmitter implements QueryProtocolInterface 
    * Splits the data with every newline
    */
   private handleData(chunk: string) {
+    console.log("<<<", chunk)
     this.chunk += chunk
     const lines = this.chunk.split("\n")
     this.chunk = lines.pop() || ""
@@ -68,6 +69,7 @@ export class ProtocolRAW extends EventEmitter implements QueryProtocolInterface 
    * @param {string} str the data which should be sent
    */
   send(str: string) {
+    console.log(">>>", str)
     this.socket.write(`${str}\n`)
   }
 

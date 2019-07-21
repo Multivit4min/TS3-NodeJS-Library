@@ -76,7 +76,7 @@ describe("Integration Test", () => {
   })
 
   it("should test receiving of an event", () => {
-    return new Promise(async (fulfill, reject) => {
+    return new Promise(async fulfill => {
       let teamspeak: TeamSpeak|null = null
       const servername = `event ${Math.floor(Math.random() * 10000)}`
       try {
@@ -95,6 +95,10 @@ describe("Integration Test", () => {
         await teamspeak.registerEvent("server")
         await teamspeak.serverEdit({ virtualserver_name: servername })
       } catch (e) {
+        if (teamspeak instanceof TeamSpeak) {
+          teamspeak.removeAllListeners()
+          teamspeak.forceQuit()
+        }
         throw e
       }
     })
