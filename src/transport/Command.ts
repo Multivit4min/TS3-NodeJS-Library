@@ -97,14 +97,14 @@ export class Command {
 
   /** get the parsed error object which has been received from the TeamSpeak Query */
   getError() {
-    if (!this.error) return null
-    return new ResponseError(this.error)
+    if (!this.hasError()) return null
+    return new ResponseError(this.error!)
   }
 
 
   /** checks if a error has been received */
   hasError() {
-    return this.error !== null && this.error.id > 0
+    return this.error !== null && this.error.id && this.error.id > 0
   }
 
 
