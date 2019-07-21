@@ -109,6 +109,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       })
       teamspeak.once("error", error => {
         teamspeak.removeAllListeners()
+        teamspeak.forceQuit()
         reject(error)
       })
       teamspeak.once("close", error => {
@@ -128,10 +129,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
       exec.push(this.useByPort(this.config.serverport, this.config.nickname))
     Promise.all(exec)
       .then(() => super.emit("ready"))
-      .catch(e => {
-        super.emit("error", e)
-        this.forceQuit()
-      })
+      .catch(e => super.emit("error", e))
   }
 
 
