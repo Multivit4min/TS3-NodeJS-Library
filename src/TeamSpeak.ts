@@ -191,7 +191,7 @@ export class TeamSpeak extends EventEmitter implements TeamSpeakEvents {
    * Gets called when the server has been edited
    * @param event the raw teamspeak event
    */
-  private evserveredited(event: QueryResponse) {
+  private async evserveredited(event: QueryResponse) {
     this.getClientByID(event.invokerid!)
       .then(invoker => {
         const modified: QueryResponse = {}

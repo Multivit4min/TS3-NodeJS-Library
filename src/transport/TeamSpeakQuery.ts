@@ -113,9 +113,9 @@ export class TeamSpeakQuery extends EventEmitter {
       if (this.ignoreLines > 0) return
       this.emit("ready")
       this.queueWorker()
-    } else if (line.indexOf("error") === 0) {
+    } else if (line.startsWith("error")) {
       this.handleQueryError(line)
-    } else if (line.indexOf("notify") === 0) {
+    } else if (line.startsWith("notify")) {
       this.handleQueryEvent(line)
     } else if (this.active && this.active.cmd) {
       this.active.cmd.setResponse(line)

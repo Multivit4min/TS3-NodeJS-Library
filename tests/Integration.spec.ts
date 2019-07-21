@@ -75,27 +75,29 @@ describe("Integration Test", () => {
     }
   })
 
-  /*
   it("should test receiving of an event", () => {
     return new Promise(async (fulfill, reject) => {
-      if (!(teamspeak instanceof TeamSpeak))
-        return reject(new Error("can not run test, due to no valid connection"))
-
+      let teamspeak: TeamSpeak|null = null
       const servername = `event ${Math.floor(Math.random() * 10000)}`
-
-      teamspeak.once("serveredit", ev => {
-        assert.deepEqual(ev.modified, { virtualserver_name: servername })
-        fulfill()
-      })
-
       try {
+        teamspeak = await TeamSpeak.connect({
+          ...config,
+          protocol: QueryProtocol.RAW,
+          queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
+          nickname: "JEST RAW"
+        })
+        teamspeak.on("error", e => console.log("error", e))
+        teamspeak.once("serveredit", ev => {
+          expect(ev.modified).toEqual({ virtualserver_name: servername })
+          if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+          fulfill()
+        })
         await teamspeak.registerEvent("server")
         await teamspeak.serverEdit({ virtualserver_name: servername })
       } catch (e) {
-        reject(e)
+        throw e
       }
     })
+  })
 
-  }).timeout(5000)
-  */
 })
