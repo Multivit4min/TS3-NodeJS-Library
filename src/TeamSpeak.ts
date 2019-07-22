@@ -402,7 +402,7 @@ export class TeamSpeak extends EventEmitter {
    * @param client_nickname set nickname when selecting a server
    */
   useByPort(port: number, client_nickname?: string) {
-    return this.execute("use", { port, client_nickname })
+    return this.execute("use", { port, client_nickname }, ["-virtual"])
   }
 
 
@@ -412,7 +412,7 @@ export class TeamSpeak extends EventEmitter {
    * @param client_nickname set nickname when selecting a server
    */
   useBySid(sid: number, client_nickname?: string) {
-    return this.execute("use", [sid], { client_nickname })
+    return this.execute("use", [sid, "-virtual"], { client_nickname })
   }
 
 

@@ -115,13 +115,13 @@ describe("TeamSpeak", () => {
     it("check a connection config with a serverport", async () => {
       const teamspeak = new TeamSpeak({ serverport: 9987 })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987 })
+      expect(mockExecute).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport and nickname", async () => {
       const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" })
+      expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" }, ["-virtual"])
       expect(mockExecute).toHaveBeenCalledTimes(1)
     })
   })
@@ -216,12 +216,12 @@ describe("TeamSpeak", () => {
     it("should verify 2 parameters", async () => {
       await teamspeak.useByPort(9987, "Test")
       expect(mockExecute).toHaveBeenCalledTimes(1)
-      expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: "Test" })
+      expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: "Test" }, ["-virtual"])
     })
     it("should verify 1 parameter", async () => {
       await teamspeak.useByPort(9987)
       expect(mockExecute).toHaveBeenCalledTimes(1)
-      expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: undefined })
+      expect(mockExecute).toHaveBeenCalledWith("use", { port: 9987, client_nickname: undefined }, ["-virtual"])
     })
   })
 
@@ -229,12 +229,12 @@ describe("TeamSpeak", () => {
     it("should verify 2 parameters", async () => {
       await teamspeak.useBySid(1, "Test")
       expect(mockExecute).toHaveBeenCalledTimes(1)
-      expect(mockExecute).toHaveBeenCalledWith("use", [1], { client_nickname: "Test" })
+      expect(mockExecute).toHaveBeenCalledWith("use", [1, "-virtual"], { client_nickname: "Test" })
     })
     it("should verify 1 parameter", async () => {
       await teamspeak.useBySid(1)
       expect(mockExecute).toHaveBeenCalledTimes(1)
-      expect(mockExecute).toHaveBeenCalledWith("use", [1], { client_nickname: undefined })
+      expect(mockExecute).toHaveBeenCalledWith("use", [1, "-virtual"], { client_nickname: undefined })
     })
   })
 

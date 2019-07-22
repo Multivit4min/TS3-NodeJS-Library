@@ -80,7 +80,7 @@ describe("TeamSpeakServer", () => {
   it("should verify execute parameters of #use()", async () => {
     await server.use("Nickname")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("use", [raw.virtualserver_id], { client_nickname: "Nickname" })
+    expect(mockExecute).toHaveBeenCalledWith("use", [raw.virtualserver_id, "-virtual"], { client_nickname: "Nickname" })
   })
 
   it("should verify execute parameters of #del()", async () => {
