@@ -38,7 +38,9 @@ export interface ConnectionParams {
   /** time to wait until a timeout gets fired (default: 10000) */
   readyTimeout: number,
   /** wether a keepalive should get sent (default: true) */
-  keepAlive: boolean
+  keepAlive: boolean,
+  /** local address the socket should connect from */
+  localAddress?: string
 }
 
 export interface TeamSpeak {

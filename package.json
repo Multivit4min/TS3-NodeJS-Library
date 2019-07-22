@@ -12,7 +12,10 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
-  "files": ["lib/**/*", "src/**/*"],
+  "files": [
+    "lib/**/*",
+    "src/**/*"
+  ],
   "author": "Multivitamin",
   "license": "MIT",
   "devDependencies": {

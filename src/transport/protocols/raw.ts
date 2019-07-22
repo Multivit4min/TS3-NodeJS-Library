@@ -11,7 +11,11 @@ export class ProtocolRAW extends EventEmitter implements QueryProtocolInterface 
 
   constructor(config: ConnectionParams) {
     super()
-    this.socket = connect(config.queryport, config.host)
+    this.socket = connect({
+      port: config.queryport,
+      host: config.host,
+      localAddress: config.localAddress
+    })
     this.socket.setEncoding("utf8")
     this.socket.setTimeout(config.readyTimeout)
     this.socket.on("timeout", this.handleTimeout.bind(this))

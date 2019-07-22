@@ -25,7 +25,9 @@ export class ProtocolSSH extends EventEmitter implements QueryProtocolInterface 
             port: config.queryport,
             username: config.username,
             password: config.password,
-            readyTimeout: config.readyTimeout
+            readyTimeout: config.readyTimeout,
+            //@ts-ignore not implemented by @types repo
+            localAddress: config.localAddress
           })
       } catch (e) {
         this.handleError(e)
