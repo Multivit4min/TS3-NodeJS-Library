@@ -1,7 +1,7 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ChannelList, ClientList } from "../types/ResponseTypes"
-import { ChannelEdit } from "types/PropertyTypes"
+import { ChannelEdit } from "../types/PropertyTypes"
 import { TeamSpeakClient } from "./Client"
 
 export class TeamSpeakChannel extends Abstract {

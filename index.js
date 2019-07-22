@@ -1,1 +1,1 @@
-module.exports = require("lib/TeamSpeak.js")
+module.exports = require("./lib/TeamSpeak.js")
