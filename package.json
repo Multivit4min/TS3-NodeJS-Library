@@ -1,9 +1,14 @@
 {
   "name": "ts3-nodejs-library",
   "version": "2.0.0",
-  "description": "",
+  "description": "TeamSpeak Server Query API",
   "main": "index.js",
   "types": "./lib/TeamSpeak.d.ts",
+  "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Multivit4min/TS3-NodeJS-Library.git"
+  },
   "scripts": {
     "eslint": "eslint ./src/**/*.ts",
     "test": "jest --runInBand",
@@ -12,11 +17,19 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
+  "keywords": [
+    "teamspeak",
+    "teamspeak3",
+    "ts",
+    "ts3",
+    "query",
+    "serverquery"
+  ],
   "files": [
     "lib/**/*",
     "src/**/*"
   ],
-  "author": "Multivitamin",
+  "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.15",

@@ -15,11 +15,10 @@
   },
   "include": ["./src"],
   "typedocOptions": {
-      "mode": "modules",
+      "mode": "file",
       "out": "docs",
       "name": "TS3-NodeJS-Library",
       "exclude": "**/*+.spec.ts",
-      "excludeExternals": true,
-      "entryPoint": "src/TeamSpeak"
+      "excludeExternals": true
   }
 }
