@@ -203,6 +203,15 @@ When the Query gets accused of Flooding then it will return error with id 524 an
 This will be parsed automatically and the Query will wait for the given time (normally its 1 second) + 100 additional milliseconds (sometimes it happens the query gets banned when still sending too early)
 
 
+# Update Notes from 1.x to 2.x
+
+With version 2.x support for Client Events has been dropped instead use the events from the main class TeamSpeak.
+Additionally it comes with `TeamSpeak.connect()` in order to use a promise to connect to a teamspeak server.
+Multiple node methods have been replaced with a getter for ex: `client.getDBID()` -> `client.databaseId`, `client.getUID()` -> `client.uniqueIdentifier`, `channel.getID()` -> `channel.cid`
+The testing environment now runs via jest which makes mocking and testing easier. Since this project now is written in TypeScript vscode should now be completely capable to autocomplete, so there is no need to update docs on @types.
+Documentation software has been switched from `documentation` to `typedoc`
+
+
 # Authors
 
 * **David Kartnaller** ([Multivit4min](https://github.com/Multivit4min)) - *Initial work*

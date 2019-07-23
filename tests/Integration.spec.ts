@@ -90,7 +90,6 @@ describe("Integration Test", () => {
           queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
           nickname: "JEST RAW"
         })
-        teamspeak.on("error", e => console.log("error", e))
         teamspeak.once("serveredit", ev => {
           expect(ev.modified).toEqual({ virtualserver_name: servername })
           if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
