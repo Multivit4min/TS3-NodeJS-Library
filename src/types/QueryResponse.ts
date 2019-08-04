@@ -1,3 +1,17 @@
+/**
+ * ===============================================================================
+ * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
+ * 
+ * CHANGES IN THIS FILES NEED TO BE ALWAYS DONE TWICE
+ * 
+ * ONCE IN QueryResponseTypes and QueryResponseIdentifier
+ * QueryResponseIdentifier is for the actual transformation from a string
+ * QueryResponseTypes is for the TypeScript typings
+ * 
+ * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
+ * ===============================================================================
+ */
+
 import * as ENUM from "./enum"
 
 export enum ResponseType {
@@ -460,7 +474,7 @@ export const QueryResponseIdentifier: Record<keyof QueryResponseTypes, ResponseT
   client_login_name: ResponseType.STRING,
   client_login_password: ResponseType.STRING,
   client_totalconnections: ResponseType.NUMBER,
-  client_flag_avatar: ResponseType.NUMBER,
+  client_flag_avatar: ResponseType.STRING,
   client_talk_request: ResponseType.NUMBER,
   client_talk_request_msg: ResponseType.STRING,
   client_month_bytes_uploaded: ResponseType.NUMBER,

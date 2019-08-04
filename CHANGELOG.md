@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.0.2 - 04.08.2019
+* changed property `client_flag_avatar` to get now really parsed as a string thanks to KhaledSoliman
+
 ### 2.0.1 - 04.08.2019
 * fixed a bug in getAvatar() which did not resolve on error
 * changed property `client_flag_avatar` to get parsed as a string instead of a number
