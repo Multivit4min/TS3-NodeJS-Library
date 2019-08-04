@@ -361,7 +361,7 @@ export declare interface ClientInfo {
   client_away: number
   client_away_message: string
   client_type: number
-  client_flag_avatar: number
+  client_flag_avatar: string
   client_talk_power: number
   client_talk_request: number
   client_talk_request_msg: string
@@ -420,7 +420,7 @@ export declare interface ClientDBInfo {
   client_created: number
   client_lastconnected: number
   client_totalconnections: number
-  client_flag_avatar: number
+  client_flag_avatar: string
   client_description: string
   client_month_bytes_uploaded: number
   client_month_bytes_downloaded: number

@@ -1,6 +1,10 @@
 # Changelog
 
-### 2.0.0 - ??.??.????
+### 2.0.1 - 04.08.2019
+* fixed a bug in getAvatar() which did not resolve on error
+* changed property `client_flag_avatar` to get parsed as a string instead of a number
+
+### 2.0.0 - 22.07.2019
 + added method `TeamSpeak.connect()` in order to be able to connect via a Promise wrapper to a Server
 + added `listenAddress` to connection parameters
 * rewrote code in `typescript`

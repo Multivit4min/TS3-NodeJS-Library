@@ -148,7 +148,7 @@ export declare interface QueryResponseTypes {
   client_login_name: string,
   client_login_password: string,
   client_totalconnections: number,
-  client_flag_avatar: number,
+  client_flag_avatar: string,
   client_talk_request: number,
   client_talk_request_msg: string,
   client_month_bytes_uploaded: number,

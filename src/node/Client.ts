@@ -279,9 +279,7 @@ export class TeamSpeakClient extends Abstract {
 
   /** returns a Buffer with the avatar of the user */
   getAvatar() {
-    return this.getAvatarName()
-      .then(name => super.getParent().ftInitDownload({name: `/${name}`}))
-      .then(res => new FileTransfer(super.getParent().config.host, res.port).download(res.ftkey!, res.size))
+    return this.getAvatarName().then(name => super.getParent().downloadFile(`/${name}`))
   }
 
   /** returns a Buffer with the icon of the client */
