@@ -1,6 +1,7 @@
 import { EventEmitter } from "events"
 
 const sendMock = jest.fn()
+const keepAliveMock = jest.fn()
 const wait = (time: number) => new Promise(fulfill => setTimeout(fulfill, time))
 
 jest.mock("../src/transport/protocols/raw", () => {
@@ -9,7 +10,7 @@ jest.mock("../src/transport/protocols/raw", () => {
     chunk: string = ""
     send(data: string) { sendMock(data) }
     close() {}
-    sendKeepAlive() {}
+    sendKeepAlive() { keepAliveMock() }
   }
 
   return { ProtocolRAW: FakeProtocol }
@@ -23,6 +24,7 @@ describe("TeamSpeakQuery", () => {
 
   beforeEach(() => {
     sendMock.mockReset()
+    keepAliveMock.mockReset()
   })
 
   it("should throw an error when the wrong protocol gets required", () => {
@@ -38,7 +40,6 @@ describe("TeamSpeakQuery", () => {
       keepAlive: true,
       readyTimeout: 10000
     })
-
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
@@ -63,7 +64,6 @@ describe("TeamSpeakQuery", () => {
       keepAlive: true,
       readyTimeout: 10000
     })
-
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
@@ -76,5 +76,24 @@ describe("TeamSpeakQuery", () => {
     expect(sendMock.mock.calls[0][0]).toBe("whoami")
     expect(command).rejects.toBeInstanceOf(ResponseError)
     emit("close")
+  })
+
+  it("should test a keepalive", async () => {
+    const query = new TeamSpeakQuery({
+      queryport: 10011,
+      host: "127.0.0.1",
+      protocol: QueryProtocol.RAW,
+      keepAlive: true,
+      readyTimeout: 10000
+    })
+    //@ts-ignore
+    const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
+
+    emit("connect")
+    emit("line", "TS3")
+    emit("line", "Welcome ... command.")
+    query["sendKeepAlive"]()
+    emit("close")
+    expect(keepAliveMock).toBeCalledTimes(1)
   })
 })

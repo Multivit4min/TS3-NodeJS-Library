@@ -188,16 +188,19 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
 
-  /** sends keepalive to the TeamSpeak Server so the connection will not be closed */
+  /** handles the timer for the keepalive request */
   private keepAlive() {
     if (!this.config.keepAlive) return
     clearTimeout(this.keepAliveTimeout)
-    this.keepAliveTimeout = setTimeout(() => {
-      this.emit("debug", { type: "keepalive" })
-      this.lastcmd = Date.now()
-      this.socket.sendKeepAlive()
-      this.keepAlive()
-    }, 250 * 1000 - (Date.now() - this.lastcmd))
+    this.keepAliveTimeout = setTimeout(() => this.sendKeepAlive(), 250 * 1000 - (Date.now() - this.lastcmd))
+  }
+
+  /** dispatches the keepalive */
+  private sendKeepAlive() {
+    this.emit("debug", { type: "keepalive" })
+    this.lastcmd = Date.now()
+    this.socket.sendKeepAlive()
+    this.keepAlive()
   }
 
   /** executes the next command */
