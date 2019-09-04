@@ -37,8 +37,8 @@ import { TeamSpeak, QueryProtocol } from "ts3-nodejs-library"
 //create a new connection
 TeamSpeak.connect({
   host: "localhost",
-  protocol: QueryProtocol.RAW,
-  queryport: 10011,
+  protocol: QueryProtocol.RAW, //optional
+  queryport: 10011, //optional
   serverport: 9987,
   username: "serveradmin",
   password: "",
