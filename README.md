@@ -68,7 +68,7 @@ using the wrapper `TeamSpeak.connect()` or by instanciating the `TeamSpeak` clas
 > to connect with TeamSpeak.connect():
 
 ```javascript
-const { TeamSpeak } = require("ts3-nodejs-library")
+import { TeamSpeak } from "ts3-nodejs-library"
 
 TeamSpeak.connect({
   host: "127.0.0.1",
@@ -84,7 +84,7 @@ TeamSpeak.connect({
 > when instanciating it by yourself:
 
 ```javascript
-const { TeamSpeak } = require("ts3-nodejs-library")
+import { TeamSpeak } from "ts3-nodejs-library"
 
 const teamspeak = new TeamSpeak({
   host: "127.0.0.1",
