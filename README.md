@@ -30,14 +30,15 @@ You can find all necessary documentation [here](https://multivit4min.github.io/T
 Send a message to all non Query Clients connected:
 ```typescript
 //import with typescript
-import { TeamSpeak } from "ts3-nodejs-library"
+import { TeamSpeak, QueryProtocol } from "ts3-nodejs-library"
 //import with javascript
 //const { TeamSpeak } = require("ts3-node-js-library")
 
 //create a new connection
 TeamSpeak.connect({
   host: "localhost",
-  queryport: 10011,
+  protocol: QueryProtocol.RAW, //optional
+  queryport: 10011, //optional
   serverport: 9987,
   username: "serveradmin",
   password: "",
@@ -67,7 +68,7 @@ using the wrapper `TeamSpeak.connect()` or by instanciating the `TeamSpeak` clas
 > to connect with TeamSpeak.connect():
 
 ```javascript
-const { TeamSpeak } = require("ts3-nodejs-library")
+import { TeamSpeak } from "ts3-nodejs-library"
 
 TeamSpeak.connect({
   host: "127.0.0.1",
@@ -83,7 +84,7 @@ TeamSpeak.connect({
 > when instanciating it by yourself:
 
 ```javascript
-const { TeamSpeak } = require("ts3-nodejs-library")
+import { TeamSpeak } from "ts3-nodejs-library"
 
 const teamspeak = new TeamSpeak({
   host: "127.0.0.1",
@@ -134,7 +135,7 @@ When using NodeJS then Promises are essential for further progress
 
 
 > Using Promises
-> 
+>
 ```javascript
 teamspeak.whoami().then(whoami => {
   console.log(whoami)
@@ -142,7 +143,7 @@ teamspeak.whoami().then(whoami => {
 ```
 
 > Using Async/Await
-> 
+>
 ```javascript
 (async () => {
   const whoami = await teamspeak.whoami()
@@ -153,7 +154,7 @@ teamspeak.whoami().then(whoami => {
 `whoami` will then give you an object like
 
 ```javascript
-{ 
+{
   virtualserver_status: "online",
   virtualserver_unique_identifier: "t1lytXTeyvmHXvNJ4ZcBBd15ugs=",
   virtualserver_port: 9987,
