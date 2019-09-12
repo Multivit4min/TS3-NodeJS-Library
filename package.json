@@ -1,6 +1,6 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "TeamSpeak Server Query API",
   "main": "index.js",
   "types": "./lib/TeamSpeak.d.ts",
@@ -25,24 +25,21 @@
     "query",
     "serverquery"
   ],
-  "files": [
-    "lib/**/*"
-  ],
   "author": "Multivitamin <david.kartnaller@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.16",
-    "@types/node": "^12.6.9",
-    "@types/ssh2": "^0.5.38",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.5",
+    "@types/ssh2": "^0.5.39",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
-    "coveralls": "^3.0.5",
+    "coveralls": "^3.0.6",
     "crc-32": "^1.2.0",
-    "eslint": "^6.1.0",
-    "jest": "^24.8.0",
+    "eslint": "^6.3.0",
+    "jest": "^24.9.0",
     "ts-jest": "^24.0.2",
-    "typedoc": "^0.14.2",
-    "typescript": "^3.5.3"
+    "typedoc": "^0.15.0",
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "ssh2": "^0.8.5"
