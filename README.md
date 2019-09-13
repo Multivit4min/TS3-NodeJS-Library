@@ -72,7 +72,6 @@ import { TeamSpeak } from "ts3-nodejs-library"
 
 TeamSpeak.connect({
   host: "127.0.0.1",
-  protocol: "raw",
   queryport: 10011
 }).then(teamspeak => {
   //you are now connected
@@ -88,7 +87,6 @@ import { TeamSpeak } from "ts3-nodejs-library"
 
 const teamspeak = new TeamSpeak({
   host: "127.0.0.1",
-  protocol: QueryProtocol.RAW,
   queryport: 10011
 })
 
