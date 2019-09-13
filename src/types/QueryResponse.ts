@@ -384,7 +384,7 @@ export const QueryResponseIdentifier: Record<keyof QueryResponseTypes, ResponseT
   virtualserver_total_bytes_uploaded: ResponseType.NUMBER,
   virtualserver_port: ResponseType.NUMBER,
   virtualserver_autostart: ResponseType.NUMBER,
-  virtualserver_machine_id: ResponseType.STRING,
+  virtualserver_machine_id: ResponseType.NUMBER,
   virtualserver_needed_identity_security_level: ResponseType.NUMBER,
   virtualserver_log_client: ResponseType.NUMBER,
   virtualserver_log_query: ResponseType.NUMBER,
