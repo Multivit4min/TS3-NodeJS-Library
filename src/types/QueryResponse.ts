@@ -72,7 +72,7 @@ export declare interface QueryResponseTypes {
   virtualserver_total_bytes_uploaded: number,
   virtualserver_port: number,
   virtualserver_autostart: number,
-  virtualserver_machine_id: string,
+  virtualserver_machine_id: number,
   virtualserver_needed_identity_security_level: number,
   virtualserver_log_client: number,
   virtualserver_log_query: number,
