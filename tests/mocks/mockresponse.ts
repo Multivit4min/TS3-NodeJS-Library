@@ -63,7 +63,7 @@ export function serverlist(props: Partial<Response.ServerList> = {}): Response.S
     virtualserver_uptime: 0,
     virtualserver_name: "TeamSpeak Server",
     virtualserver_autostart: 1,
-    virtualserver_machine_id: "asdf",
+    virtualserver_machine_id: 1337,
     virtualserver_unique_identifier: "foobar=",
     ...props
   }
