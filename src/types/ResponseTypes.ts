@@ -102,7 +102,7 @@ export declare interface ServerList {
   virtualserver_uptime: number
   virtualserver_name: string
   virtualserver_autostart: number
-  virtualserver_machine_id: string
+  virtualserver_machine_id: number
   virtualserver_unique_identifier: string
 }
 
