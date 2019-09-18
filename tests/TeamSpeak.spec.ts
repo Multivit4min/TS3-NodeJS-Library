@@ -1299,6 +1299,31 @@ describe("TeamSpeak", () => {
     }
   })
 
+  it("should receive and handle the event tokenused", done => {
+    mockExecute.mockResolvedValue(mocks.clientlist(1))
+    try {
+      teamspeak.once("tokenused", ev => {
+        expect(ev.client).toBeInstanceOf(TeamSpeakClient)
+        expect(ev.client.clid).toBe(1)
+        expect(ev.token).toBe('fXy69G3Td5eYeYiLCarBXMf3SEDTi3dPbfyJtrJK')
+        expect(ev.token1).toBe('7')
+        expect(ev.token2).toBe('0')
+        expect(mockExecute).toHaveBeenCalledTimes(1)
+        done()
+      })
+      teamspeak["query"].emit("tokenused", {
+          clid: 1,
+          cldbid: 1,
+          cluid: '596ScG3nXtcR++4aYEmiDqTnCdi=',
+          token: 'fXy69G3Td5eYeYiLCarBXMf3SEDTi3dPbfyJtrJK',
+          token1: '7',
+          token2: '0'
+      })
+    } catch (e) {
+      done(e)
+    }
+  })
+
   it("should receive and handle the event textmessage", done => {
     mockExecute.mockResolvedValue(mocks.clientlist(1))
     try {

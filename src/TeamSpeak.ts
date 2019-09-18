@@ -51,6 +51,7 @@ export interface TeamSpeak {
   on(event: "debug", listener: (event: Event.Debug) => void): this
   on(event: "clientconnect", listener: (event: Event.ClientConnect) => void): this
   on(event: "clientdisconnect", listener: (event: Event.ClientDisconnect) => void): this
+  on(event: "tokenused", listener: (event: Event.TokenUsed) => void): this
   on(event: "textmessage", listener: (event: Event.TextMessage) => void): this
   on(event: "clientmoved", listener: (event: Event.ClientMoved) => void): this
   on(event: "serveredit", listener: (event: Event.ServerEdit) => void): this
@@ -84,6 +85,7 @@ export class TeamSpeak extends EventEmitter {
     this.query = new TeamSpeakQuery(this.config)
     this.query.on("cliententerview", this.evcliententerview.bind(this))
     this.query.on("clientleftview", this.evclientleftview.bind(this))
+    this.query.on("tokenused", this.evtokenused.bind(this))
     this.query.on("serveredited", this.evserveredited.bind(this))
     this.query.on("channeledited", this.evchanneledited.bind(this))
     this.query.on("channelmoved", this.evchannelmoved.bind(this))
@@ -160,6 +162,17 @@ export class TeamSpeak extends EventEmitter {
       event
     })
     Reflect.deleteProperty(this.clients, String(clid))
+  }
+
+  /**
+   * Gets called when a client uses a privilige key
+   * @param event the raw teamspeak event
+   */
+  private evtokenused(event: QueryResponse) {
+    this.getClientByID(event.clid!)
+      .then(client => {
+        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2 })
+      }).catch(e => super.emit("error", e))
   }
 
 

@@ -18,6 +18,13 @@ export declare interface ClientDisconnect {
   event: any
 }
 
+export declare interface TokenUsed {
+  client: ClientList
+  token: string
+  token1: string
+  token2: string
+}
+
 export declare interface TextMessage {
   invoker: TeamSpeakClient
   msg: string

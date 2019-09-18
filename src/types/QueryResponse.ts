@@ -304,6 +304,8 @@ export declare interface QueryResponseTypes {
   permname: string
   permdesc: string
   token_type: ENUM.TokenType
+  token1: string
+  token2: string
   token_id1: number
   token_id2: number
   token_created: number
@@ -616,6 +618,8 @@ export const QueryResponseIdentifier: Record<keyof QueryResponseTypes, ResponseT
   permname: ResponseType.STRING,
   permdesc: ResponseType.STRING,
   token_type: ResponseType.NUMBER,
+  token1: ResponseType.STRING,
+  token2: ResponseType.STRING,
   token_id1: ResponseType.NUMBER,
   token_id2: ResponseType.NUMBER,
   token_created: ResponseType.NUMBER,
