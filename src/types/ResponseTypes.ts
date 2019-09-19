@@ -443,6 +443,11 @@ export declare interface CustomInfo {
   value: string
 }
 
+export declare interface CustomSet {
+  ident: string
+  value: string
+}
+
 export declare interface PermOverview {
   t: number 
   id: number 

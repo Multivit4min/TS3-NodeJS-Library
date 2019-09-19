@@ -171,7 +171,20 @@ export class TeamSpeak extends EventEmitter {
   private evtokenused(event: QueryResponse) {
     this.getClientByID(event.clid!)
       .then(client => {
-        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2 })
+        const customData = new Array<Response.CustomSet>();
+
+        if (event.tokencustomset) {
+          const customsets = event.tokencustomset.split('|')
+
+          customsets.forEach(customset => {
+            const ident = customset.trim().split('ident=')[1].split(' ')[0]
+            const value = customset.trim().split('value=')[1].trim()
+
+            customData.push({ ident, value })
+          })
+        }
+
+        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2, tokencustomset: customData })
       }).catch(e => super.emit("error", e))
   }
 
