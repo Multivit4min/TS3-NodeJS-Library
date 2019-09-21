@@ -1305,10 +1305,6 @@ describe("TeamSpeak", () => {
       teamspeak.once("tokenused", ev => {
         expect(ev.client).toBeInstanceOf(TeamSpeakClient)
         expect(ev.client.clid).toBe(1)
-        expect(ev.tokencustomset[0].ident).toBe('forum_user')
-        expect(ev.tokencustomset[0].value).toBe('Sven')
-        expect(ev.tokencustomset[1].ident).toBe('uniqueId')
-        expect(ev.tokencustomset[1].value).toBe('95')
         expect(ev.token).toBe('fXy69G3Td5eYeYiLCarBXMf3SEDTi3dPbfyJtrJK')
         expect(ev.token1).toBe('7')
         expect(ev.token2).toBe('0')
@@ -1319,7 +1315,6 @@ describe("TeamSpeak", () => {
           clid: 1,
           cldbid: 1,
           cluid: '596ScG3nXtcR++4aYEmiDqTnCdi=',
-          tokencustomset: 'ident=forum_user value=Sven|ident=uniqueId value=95',
           token: 'fXy69G3Td5eYeYiLCarBXMf3SEDTi3dPbfyJtrJK',
           token1: '7',
           token2: '0'

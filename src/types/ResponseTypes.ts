@@ -400,8 +400,7 @@ export declare interface ClientInfo {
 }
 
 export declare interface ClientDBList {
-  /** available in the first element and only if count flag has been set */
-  count?: number
+  count: number
   cldbid: number
   client_unique_identifier: string
   client_nickname: string
@@ -437,13 +436,12 @@ export declare interface CustomSearch {
 }
 
 export declare interface CustomInfo {
-  /** only available in the first element of the response array */
-  cldbid?: number
+  cldbid: number
   ident: string
   value: string
 }
 
-export declare interface CustomSet {
+export declare interface TokenCustomSet {
   ident: string
   value: string
 }
@@ -545,10 +543,8 @@ export declare interface BanList {
 }
 
 export declare interface LogView {
-  /** only available in the first element of the response array */
-  last_pos?: number
-  /** only available in the first element of the response array */
-  file_size?: number
+  last_pos: number
+  file_size: number
   l: string 
 }
 

@@ -1,7 +1,7 @@
 import { TeamSpeakClient } from "../node/Client"
 import { TeamSpeakChannel } from "../node/Channel"
 import { QueryResponseTypes } from "./QueryResponse"
-import { ClientList, CustomSet } from "./ResponseTypes"
+import { ClientList } from "./ResponseTypes"
 import * as ENUM from "./enum"
 
 export declare interface Debug {
@@ -23,7 +23,6 @@ export declare interface TokenUsed {
   token: string
   token1: string
   token2: string
-  tokencustomset: Array<CustomSet>
 }
 
 export declare interface TextMessage {

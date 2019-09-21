@@ -48,6 +48,33 @@ describe("Command", () => {
     })
   })
 
+  describe("#parse()", () => {
+    it("should validate an array response", () => {
+      const cmd = new Command()
+      cmd.setResponse("bar=baz ident=foo value=bar|ident=foo value=bar|ident value=baz")
+      expect(cmd.getResponse()).toEqual([{
+        bar: "baz",
+        ident: "foo",
+        value: "bar"
+      }, {
+        bar: "baz",
+        ident: "foo",
+        value: "bar"
+      }, {
+        bar: "baz",
+        ident: undefined,
+        value: "baz"
+      }])
+    })
+    it("should be able to parse recursive", () => {
+      const cmd = new Command()
+      cmd.setResponse("tokencustomset=ident=foo1\\svalue=bar\\pident=foo2\\svalue=baz")
+      expect(cmd.getResponse()).toEqual([{
+        tokencustomset: [{ ident: "foo1", value: "bar" }, { ident: "foo2", value: "baz" }]
+      }])
+    })
+  })
+
   describe("#setResponse()", () => {
     it("should set and parse the response data", () => {
       const cmd = new Command()
