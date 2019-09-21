@@ -30,6 +30,7 @@ export class TeamSpeakQuery extends EventEmitter {
   private lastcmd: number = Date.now()
   private connected: boolean = false
   private keepAliveTimeout: any
+  //@ts-ignore does not matter node will accept it anyway
   private floodTimeout: ReturnType<typeof setTimeout>
   private socket: QueryProtocolInterface
   readonly doubleEvents: Array<string>

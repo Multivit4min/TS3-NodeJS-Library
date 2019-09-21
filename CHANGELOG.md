@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.1.0 - tba
++ added event `tokenused` thanks to xIAlexanderIx for the pull request
+
 ### 2.0.2 - 04.08.2019
 * changed property `client_flag_avatar` to get now really parsed as a string thanks to KhaledSoliman
 

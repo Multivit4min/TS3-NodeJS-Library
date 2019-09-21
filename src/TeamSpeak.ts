@@ -126,7 +126,7 @@ export class TeamSpeak extends EventEmitter {
 
   /** handle after successfully connecting to a TeamSpeak Server */
   private handleReady() {
-    const exec = []
+    const exec: Promise<any>[] = []
     if (this.config.username && this.config.password && this.config.protocol === "raw")
       exec.push(this.login(this.config.username, this.config.password))
     if (this.config.serverport)
@@ -158,7 +158,7 @@ export class TeamSpeak extends EventEmitter {
   private evclientleftview(event: QueryResponse) {
     const { clid } = event
     super.emit("clientdisconnect", {
-      client: (String(clid) in this.clients) ? this.clients[clid!].toJSON() : { clid },
+      client: (String(clid) in this.clients) ? this.clients[String(clid)!].toJSON() : { clid },
       event
     })
     Reflect.deleteProperty(this.clients, String(clid))
@@ -224,7 +224,7 @@ export class TeamSpeak extends EventEmitter {
       this.getClientByID(event.invokerid!),
       this.getChannelByID(event.cid!)
     ]).then(([invoker, channel]) => {
-      const modified: QueryResponse = {}
+      const modified: Partial<QueryResponse> = {}
       Object.keys(event)
         .filter(k => k.startsWith("channel_"))
         .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
