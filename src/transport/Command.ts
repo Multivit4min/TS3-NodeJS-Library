@@ -111,7 +111,6 @@ export class Command {
    * @param data the query response received
    */
   static parse(data: string = "") {
-    console.log({data} )
     const parsed = <Partial<QueryResponse>[]>data.split("|").map(entry => {
       const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
       entry.split(" ").forEach(str => {

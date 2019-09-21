@@ -165,13 +165,13 @@ export class TeamSpeak extends EventEmitter {
   }
 
   /**
-   * Gets called when a client uses a privilige key
+   * Gets called when a client uses a privilege key
    * @param event the raw teamspeak event
    */
   private evtokenused(event: QueryResponse) {
     this.getClientByID(event.clid!)
       .then(client => {
-        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2 })
+        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2, tokencustomset: event.tokencustomset })
       }).catch(e => super.emit("error", e))
   }
 
