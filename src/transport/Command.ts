@@ -111,6 +111,7 @@ export class Command {
    * @param data the query response received
    */
   static parse(data: string = "") {
+    console.log({data} )
     const parsed = <Partial<QueryResponse>[]>data.split("|").map(entry => {
       const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
       entry.split(" ").forEach(str => {
@@ -216,7 +217,11 @@ export class Command {
    * @param value string to parse
    */
   static parseString(value: string) {
-    return Command.unescape(String(value))
+    return Command.unescape(value)
+  }
+
+  static parseRecursive(value: string) {
+    return Command.parse(Command.unescape(value))
   }
 
   /**
@@ -540,7 +545,7 @@ export namespace Command {
     platform: Command.parseString,
     name: Command.parseString,
     token: Command.parseString,
-    tokencustomset: Command.parse,
+    tokencustomset: Command.parseRecursive,
     value: Command.parseString,
     banid: Command.parseNumber,
     id: Command.parseNumber,

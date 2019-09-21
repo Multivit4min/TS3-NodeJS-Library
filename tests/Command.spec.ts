@@ -66,6 +66,13 @@ describe("Command", () => {
         value: "baz"
       }])
     })
+    it("should be able to parse recursive", () => {
+      const cmd = new Command()
+      cmd.setResponse("tokencustomset=ident=foo1\\svalue=bar\\pident=foo2\\svalue=baz")
+      expect(cmd.getResponse()).toEqual([{
+        tokencustomset: [{ ident: "foo1", value: "bar" }, { ident: "foo2", value: "baz" }]
+      }])
+    })
   })
 
   describe("#setResponse()", () => {

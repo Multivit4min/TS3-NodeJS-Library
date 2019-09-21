@@ -13,7 +13,7 @@
  */
 
 import * as ENUM from "./enum"
-import { CustomSet } from "./ResponseTypes"
+import { TokenCustomSet } from "./ResponseTypes"
 
 export type QueryResponse = Partial<QueryResponseTypes>
 
@@ -283,7 +283,7 @@ export declare interface QueryResponseTypes {
   platform: string,
   name: string,
   token: string,
-  tokencustomset: CustomSet,
+  tokencustomset: TokenCustomSet[],
   value: string,
   banid: number,
   id: number,

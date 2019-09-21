@@ -441,7 +441,7 @@ export declare interface CustomInfo {
   value: string
 }
 
-export declare interface CustomSet {
+export declare interface TokenCustomSet {
   ident: string
   value: string
 }
