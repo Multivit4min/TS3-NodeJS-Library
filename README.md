@@ -215,6 +215,7 @@ Documentation software has been switched from `documentation` to `typedoc`
 
 * **David Kartnaller** ([Multivit4min](https://github.com/Multivit4min)) - *Initial work*
 * **Pascal Sthamer** ([P4sca1](https://github.com/P4sca1)) and **Mattis Krämer** ([Mattzi](https://github.com/Mattzi)) - *TypeScript typings*
+* **Alexander** ([xIAlexanderIx](https://github.com/xIAlexanderIx))
 
 
 
