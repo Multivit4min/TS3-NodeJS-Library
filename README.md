@@ -32,7 +32,7 @@ Send a message to all non Query Clients connected:
 //import with typescript
 import { TeamSpeak, QueryProtocol } from "ts3-nodejs-library"
 //import with javascript
-//const { TeamSpeak } = require("ts3-node-js-library")
+//const { TeamSpeak } = require("ts3-nodejs-library")
 
 //create a new connection
 TeamSpeak.connect({
