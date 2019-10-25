@@ -12,7 +12,7 @@ import * as Response from "./types/ResponseTypes"
 import * as Event from "./types/Events"
 import * as Props from "./types/PropertyTypes"
 import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
-import { Command } from "transport/Command"
+import { Command } from "./transport/Command"
 
 export * from "./types/enum"
 
@@ -292,7 +292,7 @@ export class TeamSpeak extends EventEmitter {
    * ts3.execute("clientlist", ["-ip"])
    * ts3.execute("use", [9987], { client_nickname: "test" })
    */
-  execute(cmd: string, ...args: any[]) {
+  execute(cmd: string, ...args: TeamSpeakQuery.executeArgs[]) {
     return this.query.execute(cmd, ...args)
   }
 
@@ -794,7 +794,7 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid whether the permsid should be displayed aswell
    */
   channelPermList(cid: number, permsid: boolean = false): Promise<Response.PermList[]> {
-    return this.execute("channelpermlist", { cid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak.toArray)
+    return this.execute("channelpermlist", { cid }, [permsid ? "-permsid" : null]).then(TeamSpeak.toArray)
   }
 
 
@@ -895,7 +895,7 @@ export class TeamSpeak extends EventEmitter {
    * @param count retrieve the count of entries
    */
   clientDBList(start: number = 0, duration: number = 1000, count: boolean = true): Promise<Response.ClientDBList[]> {
-    return this.execute("clientdblist", { start, duration }, count ? ["-count"] : null).then(TeamSpeak.toArray)
+    return this.execute("clientdblist", { start, duration },  [count ? "-count" : null]).then(TeamSpeak.toArray)
   }
 
 
@@ -946,7 +946,7 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid if the permsid option is set to true the output will contain the permission names
    */
   clientPermList(cldbid: number, permsid: boolean = false): Promise<Response.PermList[]> {
-    return this.execute("clientpermlist", { cldbid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak.toArray)
+    return this.execute("clientpermlist", { cldbid }, [permsid ? "-permsid" : null]).then(TeamSpeak.toArray)
   }
 
 
@@ -1130,7 +1130,7 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid if the permsid option is set to true the output will contain the permission names.
    */
   channelGroupPermList(cgid: number, permsid: boolean = false): Promise<Response.PermList[]> {
-    return this.execute("channelgrouppermlist", { cgid }, (permsid) ? ["-permsid"] : null).then(TeamSpeak.toArray)
+    return this.execute("channelgrouppermlist", { cgid }, [permsid ?  "-permsid" : null]).then(TeamSpeak.toArray)
   }
 
 
@@ -1474,7 +1474,7 @@ export class TeamSpeak extends EventEmitter {
    * @param isUid true when instead of the Name it should be searched for an uid
    */
   clientDBFind(pattern: string, isUid: boolean = false): Promise<Response.ClientDBFind[]> {
-    return this.execute("clientdbfind", { pattern }, isUid ? ["-uid"] : null).then(TeamSpeak.toArray)
+    return this.execute("clientdbfind", { pattern },[ isUid ? "-uid" : null]).then(TeamSpeak.toArray)
   }
 
 
@@ -1714,21 +1714,48 @@ export class TeamSpeak extends EventEmitter {
 
 
   /**
-   * creates a new snapshot of the teamspeak server
-   * supports version 2 (from server 3.10.0)
+   * displays a snapshot of the selected virtual server containing all settings,
+   * groups and known client identities. The data from a server snapshot can be
+   * used to restore a virtual servers configuration, channels and permissions
+   * using the serversnapshotdeploy command.
+   * only supports version 2 (from server 3.10.0)
    * @param password the optional password to encrypt the snapshot
    */
   createSnapshot(password?: string): Promise<Response.SnapshotCreate> {
-    return this.query.execute(
+    return this.execute(
       "serversnapshotcreate", 
       { password },
-      ({ raw, cmd }) => cmd.parseSnapshotCreate({ raw })
+      parsers => {
+        parsers.response = ({ raw, cmd }) => cmd.parseSnapshotCreate({ raw })
+        return parsers
+      }
     ).then(([res]) => ({
-      res,
       version: parseInt(res.version, 10),
       salt: res.salt,
       snapshot: res.snapshot
     }))
+  }
+
+  /**
+   * displays a snapshot of the selected virtual server containing all settings,
+   * groups and known client identities. The data from a server snapshot can be
+   * used to restore a virtual servers configuration, channels and permissions
+   * using the serversnapshotdeploy command.
+   * only supports version 2 (from server 3.10.0)
+   * @param salt if a password has been set provide the salt from the response
+   * @param password the password which has been set while saving
+   * @param keepfiles wether it should keep the file mapping
+   */
+  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true, ) {
+    return this.execute(
+      "serversnapshotdeploy",
+      [keepfiles ? "-keepfiles" : null, "-mapping"],
+      { password, salt, version: 2 },
+      parsers => {
+        parsers.request = cmd => Command.buildSnapshotDeploy(data, cmd)
+        return parsers
+      }
+    )
   }
 
 

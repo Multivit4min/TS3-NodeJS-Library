@@ -3,7 +3,8 @@ import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
 
 export class Command {
-  private parser: Command.parser = Command.parse
+  private requestParser: Command.RequestParser = Command.getParsers().request
+  private responseParser: Command.ResponseParser = Command.getParsers().response
   private cmd: string = ""
   private options: Command.options = {}
   private multiOpts: Command.multiOpts = []
@@ -44,10 +45,12 @@ export class Command {
 
   /**
    * adds a customparser
-   * @param parser
+   * @param parsers
    */
-  setParser(parser: Command.parser) {
-    this.parser = parser
+  setParser(parsers: Command.ParserCallback) {
+    const { response, request } = parsers(Command.getParsers())
+    this.requestParser = request
+    this.responseParser = response
     return this
   }
 
@@ -65,8 +68,10 @@ export class Command {
    * set TeamSpeak flags
    * @param flags sets the flags which should get sent to the teamspeak query
    */
-  setFlags(flags: Array<string>): Command {
-    this.flags = flags
+  setFlags(flags: Command.flags): Command {
+    this.flags = <string[]>flags
+      .filter(flag => ["string", "number"].includes(typeof flag))
+      .map(flag => String(flag))
     return this
   }
 
@@ -116,15 +121,43 @@ export class Command {
 
   /** runs the parser of this instance */
   parse(raw: string) {
-    return this.parser({ raw, cmd: Command })
+    return this.responseParser({ raw, cmd: Command })
   }
 
+  /** runs the parser of this instance */
+  build() {
+    return this.requestParser(this)
+  }
+
+  /**
+   * retrieves the default parsers
+   */
+  static getParsers(): Command.Parsers {
+    return {
+      response: Command.parse,
+      request: Command.build
+    }
+  }
+
+  /**
+   * 
+   * @param param0 the custom snapshot response parser
+   */
   static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
     const [data, snapshot] = raw.split("|")
     return <Partial<QueryResponse>[]>[{
       ...Command.parse({ raw: data })[0],
       snapshot
     }]
+  }
+
+  /**
+   * the custom snapshot request parser
+   * @param data snapshot string
+   * @param cmd command object
+   */
+  static buildSnapshotDeploy(data: string, cmd: Command) {
+    return [Command.build(cmd), data].join("|")
   }
 
   /**
@@ -164,10 +197,10 @@ export class Command {
    * Checks if a error has been received
    * @return The parsed String which is readable by the TeamSpeak Query
    */
-  build() {
-    let cmd = Command.escape(this.cmd)
-    if (this.hasFlags()) cmd += ` ${this.buildFlags()}`
-    if (this.hasOptions()) cmd += ` ${this.buildOptions()}`
+  static build(command: Command) {
+    let cmd = Command.escape(command.cmd)
+    if (command.hasFlags()) cmd += ` ${command.buildFlags()}`
+    if (command.hasOptions()) cmd += ` ${command.buildOptions()}`
     return cmd
   }
 
@@ -175,7 +208,7 @@ export class Command {
    * builds the query string for options
    * @return the parsed String which is readable by the TeamSpeak Querytt
    */
-  private buildOptions() {
+  buildOptions() {
     const options = this.buildOption(this.options)
     if (!this.hasMultiOptions()) return options
     return `${options} ${this.multiOpts.map(this.buildOption.bind(this)).join("|")}`
@@ -189,6 +222,11 @@ export class Command {
       .filter(key => typeof options[key] !== "number" || !isNaN(options[key]))
       .map(key => Command.escapeKeyValue(key, options[key]))
       .join(" ")
+  }
+
+  /** builds the query string for flags */
+  buildFlags(): string {
+    return this.flags.map(f => Command.escape(f)).join(" ")
   }
 
   /**
@@ -213,11 +251,6 @@ export class Command {
     const [key, ...rest] = str.split("=")
     const value = rest.join("=")
     return { key, value: value === "" ? undefined : value }
-  }
-
-  /** builds the query string for flags */
-  private buildFlags(): string {
-    return this.flags.map(f => Command.escape(f)).join(" ")
   }
 
   /**
@@ -305,10 +338,17 @@ export namespace Command {
     cmd: typeof Command
     raw: string
   }
-  export type parser = (data: ParserArgument) => QueryResponse[]
-  export type options = Record<string, string|number|undefined|null>
+  export interface Parsers {
+    response: ResponseParser
+    request: RequestParser
+  }
+  export type ParserCallback = (parser: Parsers) => Parsers
+  export type ResponseParser = (data: ParserArgument) => QueryResponse[]
+  export type RequestParser = (cmd: Command) => string
+  export type options = Record<string, string|string[]|number|number[]|undefined|null>
   export type multiOpts = Command.options[]
-  export type flags = string[]
+  export type flags = (number|string|null)[]
+
 
   export const Identifier: Record<keyof QueryResponseTypes, (value: string) => any> = {
     sid: Command.parseNumber,

@@ -608,7 +608,7 @@ export declare interface FTInitDownload {
 
 export declare interface SnapshotCreate {
   version: number,
-  /** only exists when a password has been set */
+  /** only exists when a password has been set otherwise it will be undefined */
   salt?: string,
   snapshot: string
 }

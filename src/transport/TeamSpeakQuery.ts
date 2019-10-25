@@ -6,33 +6,17 @@ import { ProtocolSSH } from "./protocols/ssh"
 import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
 import { QueryResponseTypes } from "../types/QueryResponse"
 
-declare type executeArgs = Command.parser|Command.multiOpts|Command.options|Command.flags
-
-interface QueueItem {
-  fulfill: Function
-  reject: Function
-  cmd: Command
-}
-
-export interface QueryProtocolInterface {
-  readonly chunk: string,
-  on: (event: string, callback: (...args: any[]) => void) => void
-  sendKeepAlive: () => void
-  send: (data: string) => void
-  close: () => void
-}
-
 export class TeamSpeakQuery extends EventEmitter {
   private config: ConnectionParams
-  private queue: Array<QueueItem> = []
-  private active: QueueItem|undefined
+  private queue: Array<TeamSpeakQuery.QueueItem> = []
+  private active: TeamSpeakQuery.QueueItem|undefined
   private ignoreLines: number
   private lastEvent: string = ""
   private lastcmd: number = Date.now()
   private connected: boolean = false
   private keepAliveTimeout: any
   private floodTimeout: NodeJS.Timeout
-  private socket: QueryProtocolInterface
+  private socket: TeamSpeakQuery.QueryProtocolInterface
   readonly doubleEvents: Array<string>
 
   constructor(config: ConnectionParams) {
@@ -54,7 +38,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** returns a constructed Socket */
-  static getSocket(config: ConnectionParams): QueryProtocolInterface {
+  static getSocket(config: ConnectionParams): TeamSpeakQuery.QueryProtocolInterface {
     if (config.protocol === QueryProtocol.RAW) {
       return new ProtocolRAW(config)
     } else if (config.protocol === QueryProtocol.SSH) {
@@ -66,7 +50,7 @@ export class TeamSpeakQuery extends EventEmitter {
 
 
   /** sends a command to the TeamSpeak Server */
-  execute(command: string, ...args: executeArgs[]): Promise<QueryResponseTypes[]> {
+  execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
@@ -203,7 +187,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** executes the next command */
-  private queueWorker(cmd?: QueueItem) {
+  private queueWorker(cmd?: TeamSpeakQuery.QueueItem) {
     if (cmd) this.queue.push(cmd)
     if (!this.connected || this.active) return
     this.active = this.queue.shift()
@@ -217,5 +201,24 @@ export class TeamSpeakQuery extends EventEmitter {
     this.emit("debug", { type: "send", data })
     this.socket.send(data)
     this.keepAlive()
+  }
+}
+
+export namespace TeamSpeakQuery {
+  
+  export type executeArgs = Command.ParserCallback|Command.multiOpts|Command.options|Command.flags
+
+  export interface QueueItem {
+    fulfill: Function
+    reject: Function
+    cmd: Command
+  }
+
+  export interface QueryProtocolInterface {
+    readonly chunk: string,
+    on: (event: string, callback: (...args: any[]) => void) => void
+    sendKeepAlive: () => void
+    send: (data: string) => void
+    close: () => void
   }
 }

@@ -26,9 +26,6 @@ describe("Command", () => {
       cmd.setFlags(["1"])
       expect(cmd.build()).toBe("use 1 client_nickname=TeamSpeak\\sQuery client_away_message=")
     })
-  })
-
-  describe("#build()", () => {
     it("should build a valid command with multiple options", () => {
       const cmd = new Command()
       cmd.setCommand("channeladdperm")
@@ -38,6 +35,28 @@ describe("Command", () => {
         { permsid: 11, permvalue: 80 }
       ])
       expect(cmd.build()).toBe("channeladdperm cid=10 permsid=10 permvalue=75|permsid=11 permvalue=80")
+    })
+  })
+
+  describe("#buildSnapshotDeploy()", () => {
+    it("should validate a parsed request", () => {
+      const cmd = new Command()
+      cmd.setCommand("serversnapshotdeploy")
+      cmd.setFlags(["-keepfiles", "-mapping"])
+      cmd.setOptions({ password: "_PASSWORD_", salt: "_SALT_", version: 2})
+      const str = Command.buildSnapshotDeploy("_SNAPSHOTDATA_", cmd)
+      expect(str).toBe("serversnapshotdeploy -keepfiles -mapping password=_PASSWORD_ salt=_SALT_ version=2|_SNAPSHOTDATA_")
+    })
+  })
+
+  describe("#buildSnapshot()", () => {
+    it("should validate an parsed response", () => {
+      const response = Command.parseSnapshotCreate({ raw: "version=2 salt=_SALT_|_SNAPSHOTDATA_" })
+      expect(response).toEqual([{
+        version: "2",
+        salt: "_SALT_",
+        snapshot: "_SNAPSHOTDATA_"
+      }])
     })
   })
 
@@ -72,6 +91,27 @@ describe("Command", () => {
       expect(cmd.getResponse()).toEqual([{
         tokencustomset: [{ ident: "foo1", value: "bar" }, { ident: "foo2", value: "baz" }]
       }])
+    })
+  })
+
+  describe("#setParser", () => {
+    it("should validate that the response parser is getting set correctly", () => {
+      const cmd = new Command()
+      const cb = () => ([{}])
+      cmd.setParser(parsers => {
+        parsers.response = cb
+        return parsers
+      })
+      expect(cmd["responseParser"]).toBe(cb)
+    })
+    it("should validate that the request parser is getting set correctly", () => {
+      const cmd = new Command()
+      const cb = () => "foo"
+      cmd.setParser(parsers => {
+        parsers.request = cb
+        return parsers
+      })
+      expect(cmd["requestParser"]).toBe(cb)
     })
   })
 

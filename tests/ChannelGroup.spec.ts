@@ -111,7 +111,7 @@ describe("TeamSpeakChannelGroup", () => {
   it("should verify execute parameters of #permList()", async () => {
     await channelGroup.permList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: raw.cgid }, null)
+    expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: raw.cgid }, [null])
   })
 
   it("should verify execute parameters of #addPerm()", async () => {

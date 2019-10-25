@@ -4,13 +4,10 @@ const mockClose = jest.fn()
 
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
-
   TeamSpeakQuery.getSocket = function() {
     return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() } }
   }
-
   TeamSpeakQuery.prototype.execute = mockExecute
-
   return { TeamSpeakQuery }
 })
 
@@ -502,7 +499,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #channelPermList() with permid", async () => {
     await teamspeak.channelPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelpermlist", { cid: 10 }, null)
+    expect(mockExecute).toHaveBeenCalledWith("channelpermlist", { cid: 10 }, [null])
   })
 
   it("should verify parameters of #channelSetPerm() with permsid", async () => {
@@ -594,7 +591,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #clientDBList() without count", async () => {
     await teamspeak.clientDBList(0, 1000, false)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("clientdblist", { start: 0, duration: 1000 }, null)
+    expect(mockExecute).toHaveBeenCalledWith("clientdblist", { start: 0, duration: 1000 }, [null])
   })
 
   it("should verify parameters of #clientDBInfo()", async () => {
@@ -634,7 +631,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #clientPermList() with permid", async () => {
     await teamspeak.clientPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("clientpermlist", { cldbid: 10 }, null)
+    expect(mockExecute).toHaveBeenCalledWith("clientpermlist", { cldbid: 10 }, [null])
   })
 
   it("should verify parameters of #clientAddPerm() with permsid", async () => {
@@ -788,7 +785,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #channelGroupPermList() with permid", async () => {
     await teamspeak.channelGroupPermList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: 10 }, null)
+    expect(mockExecute).toHaveBeenCalledWith("channelgrouppermlist", { cgid: 10 }, [null])
   })
 
   it("should verify parameters of #channelGroupAddPerm() with permsid", async () => {
@@ -1091,7 +1088,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #clientDBFind()", async () => {
     await teamspeak.clientDBFind("John Doe")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("clientdbfind", { pattern: "John Doe" }, null)
+    expect(mockExecute).toHaveBeenCalledWith("clientdbfind", { pattern: "John Doe" }, [null])
   })
 
   it("should verify parameters of #clientDBFind() with an uid", async () => {
@@ -1262,6 +1259,35 @@ describe("TeamSpeak", () => {
     const name = await teamspeak.getIconName(teamspeak.serverGroupPermList(8))
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(name).toBe("icon_9999")
+  })
+
+  it("should verify parameters of #createSnapshot()", async () => {
+    mockExecute.mockResolvedValue([{ version: "2", salt: "_SALT_", snapshot: "_SNAPSHOT_" }])
+    const response = await teamspeak.createSnapshot("_PASSWORD_")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute.mock.calls[0].length).toBe(3)
+    expect(mockExecute.mock.calls[0][0]).toBe("serversnapshotcreate")
+    expect(mockExecute.mock.calls[0][1]).toEqual({ password: "_PASSWORD_" })
+    expect(typeof mockExecute.mock.calls[0][2]).toBe("function")
+    expect(response).toEqual({
+      version: 2,
+      salt: "_SALT_",
+      snapshot: "_SNAPSHOT_"
+    })
+  })
+
+  it("should verify parameters of #deploySnapshot()", async () => {
+    await teamspeak.deploySnapshot("foo=", "_SALT_", "_PASSWORD_")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute.mock.calls[0].length).toBe(4)
+    expect(mockExecute.mock.calls[0][0]).toBe("serversnapshotdeploy")
+    expect(mockExecute.mock.calls[0][1]).toEqual(["-keepfiles", "-mapping"])
+    expect(mockExecute.mock.calls[0][2]).toEqual({
+      password: "_PASSWORD_",
+      salt: "_SALT_",
+      version: 2
+    })
+    expect(typeof mockExecute.mock.calls[0][3]).toBe("function")
   })
 
   it("should receive and handle the event clientconnect", done => {
