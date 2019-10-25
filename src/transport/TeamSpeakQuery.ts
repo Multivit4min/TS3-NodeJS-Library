@@ -6,6 +6,8 @@ import { ProtocolSSH } from "./protocols/ssh"
 import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
 import { QueryResponseTypes } from "../types/QueryResponse"
 
+declare type executeArgs = Command.parser|Command.multiOpts|Command.options|Command.flags
+
 interface QueueItem {
   fulfill: Function
   reject: Function
@@ -25,13 +27,11 @@ export class TeamSpeakQuery extends EventEmitter {
   private queue: Array<QueueItem> = []
   private active: QueueItem|undefined
   private ignoreLines: number
-  private lastLine: string = ""
   private lastEvent: string = ""
   private lastcmd: number = Date.now()
   private connected: boolean = false
   private keepAliveTimeout: any
-  //@ts-ignore does not matter node will accept it anyway
-  private floodTimeout: ReturnType<typeof setTimeout>
+  private floodTimeout: NodeJS.Timeout
   private socket: QueryProtocolInterface
   readonly doubleEvents: Array<string>
 
@@ -66,19 +66,21 @@ export class TeamSpeakQuery extends EventEmitter {
 
 
   /** sends a command to the TeamSpeak Server */
-  execute(command: string, ...args: any[]): Promise<QueryResponseTypes[]> {
+  execute(command: string, ...args: executeArgs[]): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
-        if (typeof args !== "object") return
         if (Array.isArray(v)) {
           if (v.some(value => typeof value === "object" && value !== null)) {
-            return cmd.setMultiOptions(v.filter(n => n !== null))
+            return cmd.setMultiOptions((<Command.multiOpts>v).filter(n => n !== null))
           } else {
-            return cmd.setFlags(v)
+            return cmd.setFlags(<Command.flags>v)
           }
+        } else if (typeof v === "function") {
+          return cmd.setParser(v)
+        } else {
+          return cmd.setOptions(v)
         }
-        return cmd.setOptions(v)
       })
       this.queueWorker({ cmd, fulfill, reject })
     })
@@ -97,7 +99,6 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /** handles a single line response from the teamspeak server */
   private handleLine(line: string): void {
-    this.lastLine = line
     line = line.trim()
     this.emit("debug", { type: "receive", data: line })
     if (this.ignoreLines > 0 && !line.startsWith("error")) {
@@ -116,7 +117,6 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /** handles the error line which finnishes a command */
   private handleQueryError(line: string): void {
-    this.lastLine = ""
     if (!this.active) return
     this.active.cmd.setError(line)
     if (this.active.cmd.hasError()) {
@@ -148,18 +148,16 @@ export class TeamSpeakQuery extends EventEmitter {
    */
   private handleQueryEvent(line: string): void {
     if (this.doubleEvents.some(s => line.includes(s)) && line === this.lastEvent) return
-    this.lastEvent = line
-
     /**
      * Query Event
      * Gets fired when the Query receives an Event
-     * @event TS3Query#<TeamSpeakEvent>
-     * @memberof  TS3Query
+     * @event TeamSpeakQuery#<TeamSpeakEvent>
+     * @memberof  TeamSpeakQuery
      * @type {object}
      */
     this.emit(
       line.substr(6, line.indexOf(" ") - 6),
-      Command.parse(line.substr(line.indexOf(" ") + 1))[0]
+      Command.parse({ raw: line.substr(line.indexOf(" ") + 1) })[0]
     )
   }
 
@@ -173,8 +171,8 @@ export class TeamSpeakQuery extends EventEmitter {
     /**
      * Query Event
      * Gets fired when the Socket had an Error
-     * @event TS3Query#error
-     * @memberof TS3Query
+     * @event TeamSpeakQuery#error
+     * @memberof TeamSpeakQuery
      */
     this.emit("error", error)
   }

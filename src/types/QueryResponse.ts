@@ -329,8 +329,6 @@ export declare interface QueryResponseTypes {
   n_member_removep: number
   sortid: number
   count: number
+  salt: string
+  snapshot: string
 }
-
-/**
- * This object declares what function to use to parse the actual response data
- */

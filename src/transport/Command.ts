@@ -2,12 +2,11 @@ import { QueryResponseTypes, QueryResponse } from "../types/QueryResponse"
 import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
 
-declare type multiOpts = Partial<Record<keyof QueryResponse, QueryResponse[keyof QueryResponse]>>[]
-
 export class Command {
+  private parser: Command.parser = Command.parse
   private cmd: string = ""
-  private options: Partial<QueryResponse> = {}
-  private multiOpts: multiOpts = []
+  private options: Command.options = {}
+  private multiOpts: Command.multiOpts = []
   private flags: string[] = []
   private response: QueryResponse[] = []
   private error: QueryErrorMessage|null = null
@@ -27,19 +26,28 @@ export class Command {
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setOptions(options: Partial<QueryResponse>): Command {
+  setOptions(options: Command.options): Command {
     this.options = options
     return this
   }
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @param {object[]} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setMultiOptions (options: multiOpts): Command {
+  setMultiOptions (options: Command.multiOpts): Command {
     this.multiOpts = options
+    return this
+  }
+
+  /**
+   * adds a customparser
+   * @param parser
+   */
+  setParser(parser: Command.parser) {
+    this.parser = parser
     return this
   }
 
@@ -72,7 +80,7 @@ export class Command {
    * @param line the line which has been received from the teamSpeak query
    */
   setResponse(line: string): Command {
-    this.response = Command.parse(line)
+    this.response = this.parse(line)
     return this
   }
 
@@ -81,7 +89,7 @@ export class Command {
    * @param error the error line which has been received from the TeamSpeak Query
    */
   setError(error: string): Command {
-    this.error = <QueryErrorMessage>Command.parse(error)[0]
+    this.error = <QueryErrorMessage>this.parse(error)[0]
     return this
   }
 
@@ -106,20 +114,35 @@ export class Command {
     return this.response
   }
 
+  /** runs the parser of this instance */
+  parse(raw: string) {
+    return this.parser({ raw, cmd: Command })
+  }
+
+  static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
+    const [data, snapshot] = raw.split("|")
+    return <Partial<QueryResponse>[]>[{
+      ...Command.parse({ raw: data })[0],
+      snapshot
+    }]
+  }
+
   /**
    * parses a query response
    * @param data the query response received
    */
-  static parse(data: string = "") {
-    const parsed = <Partial<QueryResponse>[]>data.split("|").map(entry => {
-      const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
-      entry.split(" ").forEach(str => {
-        const { key, value } = Command.unescapeKeyValue(str)
-        res[key] = Command.parseValue(key, value)
+  static parse({ raw }: Pick<Command.ParserArgument, "raw">) {
+    return <Partial<QueryResponse>[]> raw
+      .split("|")
+      .map(entry => {
+        const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
+        entry.split(" ").forEach(str => {
+          const { key, value } = Command.unescapeKeyValue(str)
+          res[key] = Command.parseValue(key, value)
+        })
+        return res
       })
-      return res
-    })
-    return parsed.map(entry => Command.mergeObjects(entry, parsed[0]))
+      .map((entry, _, original) => Command.mergeObjects(entry, original[0]))
   }
 
   /**
@@ -220,7 +243,7 @@ export class Command {
   }
 
   static parseRecursive(value: string) {
-    return Command.parse(Command.unescape(value))
+    return Command.parse({ raw: Command.unescape(value) })
   }
 
   /**
@@ -277,7 +300,16 @@ export class Command {
 }
 
 export namespace Command {
-  
+
+  export interface ParserArgument {
+    cmd: typeof Command
+    raw: string
+  }
+  export type parser = (data: ParserArgument) => QueryResponse[]
+  export type options = Record<string, string|number|undefined|null>
+  export type multiOpts = Command.options[]
+  export type flags = string[]
+
   export const Identifier: Record<keyof QueryResponseTypes, (value: string) => any> = {
     sid: Command.parseNumber,
     server_id: Command.parseNumber,
@@ -589,6 +621,8 @@ export namespace Command {
     n_member_addp: Command.parseNumber,
     n_member_removep: Command.parseNumber,
     sortid: Command.parseNumber,
-    count: Command.parseNumber
+    count: Command.parseNumber,
+    salt: Command.parseString,
+    snapshot: Command.parseString
   }
 }

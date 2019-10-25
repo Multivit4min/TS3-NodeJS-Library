@@ -12,6 +12,7 @@ import * as Response from "./types/ResponseTypes"
 import * as Event from "./types/Events"
 import * as Props from "./types/PropertyTypes"
 import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
+import { Command } from "transport/Command"
 
 export * from "./types/enum"
 
@@ -1712,20 +1713,39 @@ export class TeamSpeak extends EventEmitter {
   }
 
 
-  /** Closes the ServerQuery connection to the TeamSpeak 3 Server instance. */
+  /**
+   * creates a new snapshot of the teamspeak server
+   * supports version 2 (from server 3.10.0)
+   * @param password the optional password to encrypt the snapshot
+   */
+  createSnapshot(password?: string): Promise<Response.SnapshotCreate> {
+    return this.query.execute(
+      "serversnapshotcreate", 
+      { password },
+      ({ raw, cmd }) => cmd.parseSnapshotCreate({ raw })
+    ).then(([res]) => ({
+      res,
+      version: parseInt(res.version, 10),
+      salt: res.salt,
+      snapshot: res.snapshot
+    }))
+  }
+
+
+  /** closes the ServerQuery connection to the TeamSpeak server instance. */
   quit() {
     return this.execute("quit")
   }
 
 
-  /** Forcefully closes the socket connection */
+  /** forcefully closes the socket connection */
   forceQuit() {
     return this.query.forceQuit()
   }
 
 
   /**
-   * Parses the whole Cache by given Objects
+   * parses the whole cache by given objects
    * @param cache the cache object
    * @param list the list to check against the cache
    * @param key the key used to identify the object inside the cache

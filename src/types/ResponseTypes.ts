@@ -605,3 +605,10 @@ export declare interface FTInitDownload {
   /** exists when file is downloadable */
   proto?: number
 }
+
+export declare interface SnapshotCreate {
+  version: number,
+  /** only exists when a password has been set */
+  salt?: string,
+  snapshot: string
+}
