@@ -306,6 +306,12 @@ describe("TeamSpeak", () => {
     })
   })
 
+  it("should verify parameters of #serverGroupsByClientId()", async () => {
+    await teamspeak.serverGroupsByClientId(1)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("servergroupsbyclientid", { cldbid: 1 })
+  })
+
   it("should verify parameters of #serverGroupCreate()", async () => {
     mockExecute.mockResolvedValue([{ sgid: 2 }])
     const group = await teamspeak.serverGroupCreate("New Group", 1)
@@ -432,6 +438,19 @@ describe("TeamSpeak", () => {
     await teamspeak.serverTempPasswordList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servertemppasswordlist")
+  })
+
+  describe("channelClientPermList()", () => {
+    it("should verify parameters of #channelClientPermList() without permsid", async () => {
+      await teamspeak.channelClientPermList(10, 12)
+      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecute).toHaveBeenCalledWith("channelclientpermlist", { cid: 10, cldbid: 12 }, [null])
+    })
+    it("should verify parameters of #channelClientPermList() with permsid", async () => {
+      await teamspeak.channelClientPermList(10, 12, true)
+      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecute).toHaveBeenCalledWith("channelclientpermlist", { cid: 10, cldbid: 12 }, ["-permsid"])
+    })
   })
 
   it("should verify parameters of #channelCreate()", async () => {
@@ -574,6 +593,42 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(client).toBeInstanceOf(TeamSpeakClient)
     expect(client!.nickname).toBe("Client 3")
+  })
+
+  it("should verify parameters of #clientEdit()", async () => {
+    await teamspeak.clientEdit(10, { client_description: "foo", client_is_talker: 1 })
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientedit", { clid: 10, client_description: "foo", client_is_talker: 1 })
+  })
+
+  it("should verify parameters of #clientGetIds()", async () => {
+    await teamspeak.clientGetIds("foo=")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientgetids", { cluid: "foo=" })
+  })
+
+  it("should verify parameters of #clientGetDbidFromUid()", async () => {
+    await teamspeak.clientGetDbidFromUid("foo=")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientgetdbidfromuid", { cluid: "foo=" })
+  })
+
+  it("should verify parameters of #clientGetNameFromUid()", async () => {
+    await teamspeak.clientGetNameFromUid("foo=")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientgetnamefromuid", { cluid: "foo=" })
+  })
+
+  it("should verify parameters of #clientGetUidFromClid()", async () => {
+    await teamspeak.clientGetUidFromClid(20)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientgetuidfromclid", { clid: 20 })
+  })
+
+  it("should verify parameters of #clientGetNameFromDbid()", async () => {
+    await teamspeak.clientGetNameFromDbid(20)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientgetnamefromdbid", { cldbid: 20 })
   })
 
   it("should verify parameters of #clientInfo()", async () => {
@@ -1048,6 +1103,13 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledWith("banadd", { ...rule })
   })
 
+  it("should verify parameters of #banClient()", async () => {
+    const rule = { clid: 1337, mytsid: "empty", banreason: "spam", time: 60 }
+    await teamspeak.banClient({ ...rule })
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("banclient", { ...rule })
+  })
+
   describe("#banDel()", () => {
     it("should remove a single ban", async () => {
       await teamspeak.banDel(10)
@@ -1127,6 +1189,12 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledWith("servergrouplist")
   })
 
+  it("should verify parameters of #channelFind()", async () => {
+    await teamspeak.channelFind("foo")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toBeCalledWith("channelfind", { pattern: "foo" })
+  })
+
   it("should verify parameters of #channelList()", async () => {
     await teamspeak.channelList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
@@ -1143,6 +1211,12 @@ describe("TeamSpeak", () => {
       "clientlist",
       ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"]
     )
+  })
+
+  it("should verify parameters of #ftList()", async () => {
+    await teamspeak.ftList()
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("ftlist")
   })
 
   it("should verify parameters of #ftGetFileList()", async () => {

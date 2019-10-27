@@ -1,9 +1,8 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ClientList } from "../types/ResponseTypes"
-import { ClientDBEdit } from "../types/PropertyTypes"
+import { ClientDBEdit, ClientEdit } from "../types/PropertyTypes"
 import { ClientType } from "../types/enum"
-import { FileTransfer } from "../transport/FileTransfer"
 
 export class TeamSpeakClient extends Abstract {
 
@@ -220,6 +219,14 @@ export class TeamSpeakClient extends Abstract {
    */
   delGroups(sgid: number|number[]) {
     return super.getParent().clientDelServerGroup(this.databaseId, sgid)
+  }
+
+  /**
+   * edits the client
+   * @param properties the properties to change
+   */
+  edit(properties: ClientEdit) {
+    return this.getParent().clientEdit(this.clid, properties)
   }
 
   /**

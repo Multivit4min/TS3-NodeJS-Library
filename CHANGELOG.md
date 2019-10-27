@@ -1,6 +1,16 @@
 # Changelog
 
 ### 2.2.0 - 31.10.2019
++ add clientedit()
++ add clientGetIds()
++ add clientGetDbidFromUid()
++ add clientGetNameFromUid()
++ add clientGetUidFromClid()
++ add clientGetNameFromDbid()
++ add channelClientPermList()
++ add serverGroupsByClientId()
++ add channelFind()
++ add banClient()
 + add createSnapshot()
 + add deploySnapshot()
 * rewrote some internal function in order to be parse snapshot commands

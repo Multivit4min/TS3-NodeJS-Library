@@ -5,8 +5,12 @@ export declare type ClientUpdate = {
 }
 
 export declare type ClientDBEdit = {
-  //cldbid: number
-  client_description: string 
+  client_description: string
+}
+
+export declare type ClientEdit = {
+  client_description?: string
+  client_is_talker?: number
 }
 
 export declare type ServerEdit = {
@@ -115,6 +119,16 @@ export declare type BanAdd = {
   name?: string
   /** uid regular expression */
   uid?: string
+  /** myteamspeak id, use "empty" to ban all clients without connected myteamspeak */
+  mytsid?: string
+  /** bantime in seconds, if left empty it will result in a permaban */
+  time?: number
+  /** ban reason */
+  banreason: string
+}
+
+export declare type BanClient = {
+  clid: number
   /** myteamspeak id, use "empty" to ban all clients without connected myteamspeak */
   mytsid?: string
   /** bantime in seconds, if left empty it will result in a permaban */

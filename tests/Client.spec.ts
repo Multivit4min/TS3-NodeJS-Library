@@ -180,6 +180,13 @@ describe("TeamSpeakClient", () => {
     expect(mockExecute).toHaveBeenCalledWith("clientinfo", { clid: raw.clid })
   })
 
+  it("should verify execute parameters of #edit()", async () => {
+    mockExecute.mockResolvedValue(null)
+    await client.edit({ client_is_talker: 0 })
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientedit", { clid: raw.clid, client_is_talker: 0 })
+  })
+
   it("should verify execute parameters of #getDBInfo()", async () => {
     mockExecute.mockResolvedValue(null)
     await client.getDBInfo()

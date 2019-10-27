@@ -16,6 +16,22 @@ import { Command } from "./transport/Command"
 
 export * from "./types/enum"
 
+/**
+ * missing Query Commands 
+ * @todo
+ * channelclientaddperm
+ * channelclientdelperm
+ * servergroupautoaddperm
+ * servergroupautodelperm
+ * tokenadd
+ * tokendelete
+ * tokenlist
+ * tokenuse
+ * clientfind
+ * clientsetserverquerylogin
+ */
+
+
 declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
 declare interface NodeConstructable<T> {
   new(parent: TeamSpeak, props: QueryResponse): T
@@ -60,6 +76,9 @@ export interface TeamSpeak {
   on(event: "channelcreate", listener: (event: Event.ChannelCreate) => void): this
   on(event: "channelmoved", listener: (event: Event.ChannelMove) => void): this
   on(event: "channeldelete", listener: (event: Event.ChannelDelete) => void): this
+
+  channelClientPermList(cid: number, cldbid: number, permsid: false): Promise<Response.ChannelClientPermListId[]>
+  channelClientPermList(cid: number, cldbid: number, permsid: true): Promise<Response.ChannelClientPermListSid[]>
 }
 
 export class TeamSpeak extends EventEmitter {
@@ -574,6 +593,15 @@ export class TeamSpeak extends EventEmitter {
 
 
   /**
+   * displays all server groups the client specified with cldbid is currently residing in
+   * @param cldbid the client database id to check
+   */
+  serverGroupsByClientId(cldbid: number): Promise<Response.ServerGroupsByClientId[]> {
+    return this.execute("servergroupsbyclientid", { cldbid }).then(TeamSpeak.toArray)
+  }
+
+
+  /**
    * Adds one or more servergroups to a client.
    * Please note that a client cannot be added to default groups or template groups
    * @param cldbid one or more client database ids which should be added
@@ -739,6 +767,14 @@ export class TeamSpeak extends EventEmitter {
    */
   getChannelByName(channel_name: string): Promise<TeamSpeakChannel|undefined> {
     return this.channelList({ channel_name }).then(([channel]) => channel)
+  }
+
+  /**
+   * displays a list of channels matching a given name pattern
+   * @param pattern the channel name pattern to search for
+   */
+  channelFind(pattern: string): Promise<Response.ChannelFind[]> {
+    return this.execute("channelfind", { pattern })
   }
 
 
@@ -1415,8 +1451,17 @@ export class TeamSpeak extends EventEmitter {
    * Adds a new ban rule on the selected virtual server.
    * All parameters are optional but at least one of the following must be set: ip, name, uid or mytsid.
    */
-  ban({ ip, name, uid, mytsid, time, banreason }: Props.BanAdd): Promise<Response.BanAdd> {
-    return this.execute("banadd", { ip, name, uid, mytsid, time, banreason }).then(TeamSpeak.singleResponse)
+  ban(properties: Props.BanAdd): Promise<Response.BanAdd> {
+    return this.execute("banadd", properties).then(TeamSpeak.singleResponse)
+  }
+
+
+  /**
+   * Bans the client specified with ID clid from the server.
+   * Please note that this will create two separate ban rules for the targeted clients IP address and his unique identifier.
+   */
+  banClient(properties: Props.BanClient): Promise<Response.BanAdd> {
+    return this.execute("banclient", properties).then(TeamSpeak.singleResponse)
   }
 
 
@@ -1466,6 +1511,54 @@ export class TeamSpeak extends EventEmitter {
     return this.execute("gm", { msg })
   }
 
+  /**
+   * displays all client IDs matching the unique identifier specified by cluid
+   * @param cluid the unique id to search for
+   */
+  clientGetIds(cluid: string): Promise<Response.ClientGetIds[]> {
+    return this.execute("clientgetids", { cluid }).then(TeamSpeak.toArray)
+  }
+
+  /**
+   * displays the database ID matching the unique identifier specified by cluid
+   * @param cluid the unique id to search for
+   */
+  clientGetDbidFromUid(cluid: string): Promise<Response.ClientGetDbidFromUid> {
+    return this.execute("clientgetdbidfromuid", { cluid }).then(TeamSpeak.singleResponse)
+  }
+
+  /**
+   * displays the database ID and nickname matching the unique identifier specified by cluid
+   * @param cluid the unique id to search for
+   */
+  clientGetNameFromUid(cluid: string): Promise<Response.ClientGetNameFromUid> {
+    return this.execute("clientgetnamefromuid", { cluid }).then(TeamSpeak.singleResponse)
+  }
+
+  /**
+   * displays the database ID and nickname matching the unique identifier specified by cluid
+   * @param clid the client id to search from
+   */
+  clientGetUidFromClid(clid: number): Promise<Response.ClientGetUidFromClid> {
+    return this.execute("clientgetuidfromclid", { clid }).then(TeamSpeak.singleResponse)
+  }
+
+  /**
+   * displays the unique identifier and nickname matching the database ID specified by cldbid
+   * @param cldbid client database it to search from
+   */
+  clientGetNameFromDbid(cldbid: number): Promise<Response.ClientGetNameFromDbid> {
+    return this.execute("clientgetnamefromdbid", { cldbid }).then(TeamSpeak.singleResponse)
+  }
+
+  /**
+   * edits a specific client
+   * @param clid the client id to modify
+   * @param properties the properties to change
+   */
+  clientEdit(clid: number, properties: Props.ClientEdit) {
+    return this.execute("clientedit", { clid, ...properties })
+  }
 
   /**
    * Displays a list of client database IDs matching a given pattern.
@@ -1506,6 +1599,16 @@ export class TeamSpeak extends EventEmitter {
       .then(servers => this.handleCache(this.servers, servers, "virtualserver_id", TeamSpeakServer))
       .then(servers => TeamSpeak.filter(servers, filter))
       .then(servers => servers.map(s => this.servers[s.virtualserver_id!]))
+  }
+
+  /**
+   * displays a list of permissions defined for a client in a specific channel
+   * @param cid the channel to search from
+   * @param cldbid the client database id to get permissions from
+   * @param permsid wether to retrieve permission names instead of ids
+   */
+  channelClientPermList(cid: number, cldbid: number, permsid: boolean = false) {
+    return this.execute("channelclientpermlist", { cid, cldbid }, [permsid ? "-permsid" : null])
   }
 
 
@@ -1555,6 +1658,10 @@ export class TeamSpeak extends EventEmitter {
       .then(clients => this.handleCache(this.clients, clients, "clid", TeamSpeakClient))
       .then(clients => TeamSpeak.filter(clients, filter))
       .then(clients => clients.map(c => this.clients[String(c.clid)]))
+  }
+
+  ftList(): Promise<Response.FTList[]> {
+    return this.execute("ftlist")
   }
 
 
