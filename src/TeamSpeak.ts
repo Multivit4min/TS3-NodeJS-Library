@@ -28,7 +28,6 @@ export * from "./types/enum"
  * tokenlist
  * tokenuse
  * clientfind
- * clientsetserverquerylogin
  */
 
 
@@ -346,6 +345,16 @@ export class TeamSpeak extends EventEmitter {
    */
   queryLoginList(pattern?: string, start?: number, duration?: number): Promise<Response.QueryLoginList[]> {
     return this.execute("queryloginlist", { pattern, start, duration }, ["-count"]).then(TeamSpeak.toArray)
+  }
+
+
+  /**
+   * Updates your own ServerQuery login credentials using a specified username.
+   * The password will be auto-generated.
+   * @param name 
+   */
+  clientSetServerQueryLogin(name: string): Promise<Response.ClientSetServerQueryLogin> {
+    return this.execute("clientsetserverquerylogin", { client_login_name: name }).then(TeamSpeak.singleResponse)
   }
 
 
@@ -1509,6 +1518,14 @@ export class TeamSpeak extends EventEmitter {
    */
   gm(msg: string) {
     return this.execute("gm", { msg })
+  }
+
+  /**
+   * displays a list of clients matching a given name pattern
+   * @param pattern the pattern to search clients
+   */
+  clientFind(pattern: string): Promise<Response.ClientFind[]> {
+    return this.execute("clientfind", { pattern })
   }
 
   /**

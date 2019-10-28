@@ -1,5 +1,13 @@
 import { TeamSpeakServer } from "../node/Server"
-import { stringLiteral } from "@babel/types"
+
+export declare interface ClientSetServerQueryLogin {
+  client_login_password: string
+}
+
+export declare interface ClientFind {
+  clid: number
+  client_nickname: string
+}
 
 export declare interface QueryErrorMessage {
   id: number

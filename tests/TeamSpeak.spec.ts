@@ -130,6 +130,12 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledTimes(1)
   })
 
+  it("should verify parameters of #clientSetServerQueryLogin()", async () => {
+    await teamspeak.clientSetServerQueryLogin("foo")
+    expect(mockExecute).toHaveBeenCalledWith("clientsetserverquerylogin", { client_login_name: "foo"})
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+  })
+
   it("should verify parameters of #clientUpdate()", async () => {
     await teamspeak.clientUpdate({ client_nickname: "Test" })
     expect(mockExecute).toHaveBeenCalledWith("clientupdate", { client_nickname: "Test"})
@@ -599,6 +605,12 @@ describe("TeamSpeak", () => {
     await teamspeak.clientEdit(10, { client_description: "foo", client_is_talker: 1 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientedit", { clid: 10, client_description: "foo", client_is_talker: 1 })
+  })
+
+  it("should verify parameters of #clientFind()", async () => {
+    await teamspeak.clientFind("foo")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("clientfind", { pattern: "foo" })
   })
 
   it("should verify parameters of #clientGetIds()", async () => {
