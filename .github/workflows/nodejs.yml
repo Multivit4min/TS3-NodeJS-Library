@@ -37,6 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
+    - name: install dependencies
+      run: |
+        npm ci
     - name: Generate Docs
       run: |
         npm run generate-docs
