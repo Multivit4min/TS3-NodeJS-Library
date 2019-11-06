@@ -13,7 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: install teamspeak via docker
-      uses: docker://teamspeak
       run: |
         docker run -d --name=teamspeak\
           -p 10011:10011/tcp\
