@@ -1,0 +1,42 @@
+name: Node CI
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: install teamspeak via docker
+      uses: docker://teamspeak
+      run: |
+        docker run -d --name=teamspeak\
+          -p 10011:10011/tcp\
+          -p 10022:10022/tcp\
+          -p 30033:30033/tcp\
+          -e TS3SERVER_LICENSE=accept\
+          -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh\
+          teamspeak ts3server serveradmin_password=abc123
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: install
+      run: |
+        npm ci
+    - name: tests
+      run: |
+        npm test
+    - name: coveralls
+      run: |
+        npm run coveralls
+    - name: generate docs
+      run: |
+        npm run generate-docs
+    - name: stop docker
+      run: docker stop teamspeak
