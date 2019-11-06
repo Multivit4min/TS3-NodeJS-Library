@@ -15,11 +15,8 @@ jobs:
     - name: install teamspeak via docker
       run: |
         docker run -d --name=teamspeak\
-          -p 10011:10011/tcp\
-          -p 10022:10022/tcp\
-          -p 30033:30033/tcp\
-          -e TS3SERVER_LICENSE=accept\
-          -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh\
+          -p 10011:10011/tcp -p 10022:10022/tcp -p 30033:30033/tcp\
+          -e TS3SERVER_LICENSE=accept -e TS3SERVER_QUERY_PROTOCOLS=raw,ssh\
           teamspeak ts3server serveradmin_password=abc123
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -35,8 +32,13 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-    - name: generate docs
+    - name: Generate Docs
       run: |
         npm run generate-docs
-    - name: stop docker
-      run: docker stop teamspeak
+    - name: Deploy on Github Pages
+      uses: JamesIves/github-pages-deploy-action@master
+      env:
+        ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+        BASE_BRANCH: master
+        BRANCH: gh-pages
+        FOLDER: docs
