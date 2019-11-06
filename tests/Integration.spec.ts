@@ -32,7 +32,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(1000)
+    await wait(2000)
   })
 
   it("should connect to a TeamSpeak Server via SSH Query", async () => {
@@ -54,7 +54,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(1000)
+    await wait(2000)
   })
 
   it("should test upload and download of a file", async () => {
@@ -76,7 +76,7 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(1000)
+    await wait(2000)
   })
 
   it("should test receiving of an event", () => {
@@ -104,7 +104,18 @@ describe("Integration Test", () => {
         }
         throw e
       }
+      await wait(2000)
     })
+  })
+
+  it("should test a failed connection", () => {
+    expect.assertions(1)
+    return expect(TeamSpeak.connect({
+      ...config,
+      protocol: QueryProtocol.RAW,
+      queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
+      serverport: -1
+    })).rejects.toEqual(new Error("convert error"))
   })
 
 })

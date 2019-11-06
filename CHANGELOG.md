@@ -1,6 +1,23 @@
 # Changelog
 
-### 2.1.0 - tba
+### 2.2.0 - 31.10.2019
++ add clientedit()
++ add clientFind()
++ add clientGetIds()
++ add clientGetDbidFromUid()
++ add clientGetNameFromUid()
++ add clientGetUidFromClid()
++ add clientGetNameFromDbid()
++ add channelClientPermList()
++ add serverGroupsByClientId()
++ add channelFind()
++ add banClient()
++ add clientSetServerQueryLogin()
++ add createSnapshot()
++ add deploySnapshot()
+* rewrote some internal function in order to be parse snapshot commands
+
+### 2.1.0 - 21.09.2019
 + added event `tokenused` thanks to xIAlexanderIx for the pull request
 
 ### 2.0.2 - 04.08.2019

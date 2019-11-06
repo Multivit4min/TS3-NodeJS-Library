@@ -2,12 +2,12 @@ import { QueryResponseTypes, QueryResponse } from "../types/QueryResponse"
 import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
 
-declare type multiOpts = Partial<Record<keyof QueryResponse, QueryResponse[keyof QueryResponse]>>[]
-
 export class Command {
+  private requestParser: Command.RequestParser = Command.getParsers().request
+  private responseParser: Command.ResponseParser = Command.getParsers().response
   private cmd: string = ""
-  private options: Partial<QueryResponse> = {}
-  private multiOpts: multiOpts = []
+  private options: Command.options = {}
+  private multiOpts: Command.multiOpts = []
   private flags: string[] = []
   private response: QueryResponse[] = []
   private error: QueryErrorMessage|null = null
@@ -27,19 +27,30 @@ export class Command {
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @param {object} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setOptions(options: Partial<QueryResponse>): Command {
+  setOptions(options: Command.options): Command {
     this.options = options
     return this
   }
 
   /**
    * Sets the TeamSpeak Key Value Pairs
-   * @param {object[]} opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
+   * @param opts sets the Object with the key value pairs which should get sent to the TeamSpeak Query
    */
-  setMultiOptions (options: multiOpts): Command {
+  setMultiOptions (options: Command.multiOpts): Command {
     this.multiOpts = options
+    return this
+  }
+
+  /**
+   * adds a customparser
+   * @param parsers
+   */
+  setParser(parsers: Command.ParserCallback) {
+    const { response, request } = parsers(Command.getParsers())
+    this.requestParser = request
+    this.responseParser = response
     return this
   }
 
@@ -57,8 +68,10 @@ export class Command {
    * set TeamSpeak flags
    * @param flags sets the flags which should get sent to the teamspeak query
    */
-  setFlags(flags: Array<string>): Command {
-    this.flags = flags
+  setFlags(flags: Command.flags): Command {
+    this.flags = <string[]>flags
+      .filter(flag => ["string", "number"].includes(typeof flag))
+      .map(flag => String(flag))
     return this
   }
 
@@ -72,7 +85,7 @@ export class Command {
    * @param line the line which has been received from the teamSpeak query
    */
   setResponse(line: string): Command {
-    this.response = Command.parse(line)
+    this.response = this.parse(line)
     return this
   }
 
@@ -81,7 +94,7 @@ export class Command {
    * @param error the error line which has been received from the TeamSpeak Query
    */
   setError(error: string): Command {
-    this.error = <QueryErrorMessage>Command.parse(error)[0]
+    this.error = <QueryErrorMessage>this.parse(error)[0]
     return this
   }
 
@@ -106,20 +119,63 @@ export class Command {
     return this.response
   }
 
+  /** runs the parser of this instance */
+  parse(raw: string) {
+    return this.responseParser({ raw, cmd: Command })
+  }
+
+  /** runs the parser of this instance */
+  build() {
+    return this.requestParser(this)
+  }
+
+  /**
+   * retrieves the default parsers
+   */
+  static getParsers(): Command.Parsers {
+    return {
+      response: Command.parse,
+      request: Command.build
+    }
+  }
+
+  /**
+   * 
+   * @param param0 the custom snapshot response parser
+   */
+  static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
+    const [data, snapshot] = raw.split("|")
+    return <Partial<QueryResponse>[]>[{
+      ...Command.parse({ raw: data })[0],
+      snapshot
+    }]
+  }
+
+  /**
+   * the custom snapshot request parser
+   * @param data snapshot string
+   * @param cmd command object
+   */
+  static buildSnapshotDeploy(data: string, cmd: Command) {
+    return [Command.build(cmd), data].join("|")
+  }
+
   /**
    * parses a query response
    * @param data the query response received
    */
-  static parse(data: string = "") {
-    const parsed = <Partial<QueryResponse>[]>data.split("|").map(entry => {
-      const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
-      entry.split(" ").forEach(str => {
-        const { key, value } = Command.unescapeKeyValue(str)
-        res[key] = Command.parseValue(key, value)
+  static parse({ raw }: Pick<Command.ParserArgument, "raw">) {
+    return <Partial<QueryResponse>[]> raw
+      .split("|")
+      .map(entry => {
+        const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
+        entry.split(" ").forEach(str => {
+          const { key, value } = Command.unescapeKeyValue(str)
+          res[key] = Command.parseValue(key, value)
+        })
+        return res
       })
-      return res
-    })
-    return parsed.map(entry => Command.mergeObjects(entry, parsed[0]))
+      .map((entry, _, original) => Command.mergeObjects(entry, original[0]))
   }
 
   /**
@@ -141,10 +197,10 @@ export class Command {
    * Checks if a error has been received
    * @return The parsed String which is readable by the TeamSpeak Query
    */
-  build() {
-    let cmd = Command.escape(this.cmd)
-    if (this.hasFlags()) cmd += ` ${this.buildFlags()}`
-    if (this.hasOptions()) cmd += ` ${this.buildOptions()}`
+  static build(command: Command) {
+    let cmd = Command.escape(command.cmd)
+    if (command.hasFlags()) cmd += ` ${command.buildFlags()}`
+    if (command.hasOptions()) cmd += ` ${command.buildOptions()}`
     return cmd
   }
 
@@ -152,7 +208,7 @@ export class Command {
    * builds the query string for options
    * @return the parsed String which is readable by the TeamSpeak Querytt
    */
-  private buildOptions() {
+  buildOptions() {
     const options = this.buildOption(this.options)
     if (!this.hasMultiOptions()) return options
     return `${options} ${this.multiOpts.map(this.buildOption.bind(this)).join("|")}`
@@ -166,6 +222,11 @@ export class Command {
       .filter(key => typeof options[key] !== "number" || !isNaN(options[key]))
       .map(key => Command.escapeKeyValue(key, options[key]))
       .join(" ")
+  }
+
+  /** builds the query string for flags */
+  buildFlags(): string {
+    return this.flags.map(f => Command.escape(f)).join(" ")
   }
 
   /**
@@ -192,11 +253,6 @@ export class Command {
     return { key, value: value === "" ? undefined : value }
   }
 
-  /** builds the query string for flags */
-  private buildFlags(): string {
-    return this.flags.map(f => Command.escape(f)).join(" ")
-  }
-
   /**
    * Parses a value to the type which the key represents
    * @param k the key which should get looked up
@@ -220,7 +276,7 @@ export class Command {
   }
 
   static parseRecursive(value: string) {
-    return Command.parse(Command.unescape(value))
+    return Command.parse({ raw: Command.unescape(value) })
   }
 
   /**
@@ -277,7 +333,23 @@ export class Command {
 }
 
 export namespace Command {
-  
+
+  export interface ParserArgument {
+    cmd: typeof Command
+    raw: string
+  }
+  export interface Parsers {
+    response: ResponseParser
+    request: RequestParser
+  }
+  export type ParserCallback = (parser: Parsers) => Parsers
+  export type ResponseParser = (data: ParserArgument) => QueryResponse[]
+  export type RequestParser = (cmd: Command) => string
+  export type options = Record<string, string|string[]|number|number[]|undefined|null>
+  export type multiOpts = Command.options[]
+  export type flags = (number|string|null)[]
+
+
   export const Identifier: Record<keyof QueryResponseTypes, (value: string) => any> = {
     sid: Command.parseNumber,
     server_id: Command.parseNumber,
@@ -509,6 +581,12 @@ export namespace Command {
     size: Command.parseNumber,
     clientftfid: Command.parseNumber,
     serverftfid: Command.parseNumber,
+    current_speed: Command.parseNumber,
+    average_speed: Command.parseNumber,
+    runtime: Command.parseNumber,
+    sizedone: Command.parseNumber,
+    sender: Command.parseNumber,
+    status: Command.parseNumber,
     ftkey: Command.parseString,
     port: Command.parseNumber,
     proto: Command.parseNumber,
@@ -589,6 +667,8 @@ export namespace Command {
     n_member_addp: Command.parseNumber,
     n_member_removep: Command.parseNumber,
     sortid: Command.parseNumber,
-    count: Command.parseNumber
+    count: Command.parseNumber,
+    salt: Command.parseString,
+    snapshot: Command.parseString
   }
 }

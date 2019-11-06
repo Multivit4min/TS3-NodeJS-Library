@@ -6,7 +6,7 @@ const wait = (time: number) => new Promise(fulfill => setTimeout(fulfill, time))
 
 jest.mock("../src/transport/protocols/raw", () => {
   
-  class FakeProtocol extends EventEmitter implements QueryProtocolInterface {
+  class FakeProtocol extends EventEmitter implements TeamSpeakQuery.QueryProtocolInterface {
     chunk: string = ""
     send(data: string) { sendMock(data) }
     close() {}
@@ -16,7 +16,7 @@ jest.mock("../src/transport/protocols/raw", () => {
   return { ProtocolRAW: FakeProtocol }
 })
 
-import { TeamSpeakQuery, QueryProtocolInterface } from "../src/transport/TeamSpeakQuery"
+import { TeamSpeakQuery } from "../src/transport/TeamSpeakQuery"
 import { QueryProtocol } from "../src/TeamSpeak"
 import { ResponseError } from "../src/exception/ResponseError"
 

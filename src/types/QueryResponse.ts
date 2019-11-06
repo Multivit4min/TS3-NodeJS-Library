@@ -248,6 +248,12 @@ export declare interface QueryResponseTypes {
   size: number,
   clientftfid: number,
   serverftfid: number,
+  current_speed: number,
+  average_speed: number,
+  runtime: number,
+  sizedone: number,
+  sender: number,
+  status: number
   ftkey: string,
   port: number,
   proto: number,
@@ -329,8 +335,7 @@ export declare interface QueryResponseTypes {
   n_member_removep: number
   sortid: number
   count: number
-}
+  salt: string
+  snapshot: string
 
-/**
- * This object declares what function to use to parse the actual response data
- */
+}

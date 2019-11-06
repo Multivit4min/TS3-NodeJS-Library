@@ -6,33 +6,17 @@ import { ProtocolSSH } from "./protocols/ssh"
 import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
 import { QueryResponseTypes } from "../types/QueryResponse"
 
-interface QueueItem {
-  fulfill: Function
-  reject: Function
-  cmd: Command
-}
-
-export interface QueryProtocolInterface {
-  readonly chunk: string,
-  on: (event: string, callback: (...args: any[]) => void) => void
-  sendKeepAlive: () => void
-  send: (data: string) => void
-  close: () => void
-}
-
 export class TeamSpeakQuery extends EventEmitter {
   private config: ConnectionParams
-  private queue: Array<QueueItem> = []
-  private active: QueueItem|undefined
+  private queue: Array<TeamSpeakQuery.QueueItem> = []
+  private active: TeamSpeakQuery.QueueItem|undefined
   private ignoreLines: number
-  private lastLine: string = ""
   private lastEvent: string = ""
   private lastcmd: number = Date.now()
   private connected: boolean = false
   private keepAliveTimeout: any
-  //@ts-ignore does not matter node will accept it anyway
-  private floodTimeout: ReturnType<typeof setTimeout>
-  private socket: QueryProtocolInterface
+  private floodTimeout: NodeJS.Timeout
+  private socket: TeamSpeakQuery.QueryProtocolInterface
   readonly doubleEvents: Array<string>
 
   constructor(config: ConnectionParams) {
@@ -54,7 +38,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** returns a constructed Socket */
-  static getSocket(config: ConnectionParams): QueryProtocolInterface {
+  static getSocket(config: ConnectionParams): TeamSpeakQuery.QueryProtocolInterface {
     if (config.protocol === QueryProtocol.RAW) {
       return new ProtocolRAW(config)
     } else if (config.protocol === QueryProtocol.SSH) {
@@ -66,19 +50,21 @@ export class TeamSpeakQuery extends EventEmitter {
 
 
   /** sends a command to the TeamSpeak Server */
-  execute(command: string, ...args: any[]): Promise<QueryResponseTypes[]> {
+  execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
-        if (typeof args !== "object") return
         if (Array.isArray(v)) {
           if (v.some(value => typeof value === "object" && value !== null)) {
-            return cmd.setMultiOptions(v.filter(n => n !== null))
+            return cmd.setMultiOptions((<Command.multiOpts>v).filter(n => n !== null))
           } else {
-            return cmd.setFlags(v)
+            return cmd.setFlags(<Command.flags>v)
           }
+        } else if (typeof v === "function") {
+          return cmd.setParser(v)
+        } else {
+          return cmd.setOptions(v)
         }
-        return cmd.setOptions(v)
       })
       this.queueWorker({ cmd, fulfill, reject })
     })
@@ -97,7 +83,6 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /** handles a single line response from the teamspeak server */
   private handleLine(line: string): void {
-    this.lastLine = line
     line = line.trim()
     this.emit("debug", { type: "receive", data: line })
     if (this.ignoreLines > 0 && !line.startsWith("error")) {
@@ -116,7 +101,6 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /** handles the error line which finnishes a command */
   private handleQueryError(line: string): void {
-    this.lastLine = ""
     if (!this.active) return
     this.active.cmd.setError(line)
     if (this.active.cmd.hasError()) {
@@ -148,18 +132,16 @@ export class TeamSpeakQuery extends EventEmitter {
    */
   private handleQueryEvent(line: string): void {
     if (this.doubleEvents.some(s => line.includes(s)) && line === this.lastEvent) return
-    this.lastEvent = line
-
     /**
      * Query Event
      * Gets fired when the Query receives an Event
-     * @event TS3Query#<TeamSpeakEvent>
-     * @memberof  TS3Query
+     * @event TeamSpeakQuery#<TeamSpeakEvent>
+     * @memberof  TeamSpeakQuery
      * @type {object}
      */
     this.emit(
       line.substr(6, line.indexOf(" ") - 6),
-      Command.parse(line.substr(line.indexOf(" ") + 1))[0]
+      Command.parse({ raw: line.substr(line.indexOf(" ") + 1) })[0]
     )
   }
 
@@ -173,8 +155,8 @@ export class TeamSpeakQuery extends EventEmitter {
     /**
      * Query Event
      * Gets fired when the Socket had an Error
-     * @event TS3Query#error
-     * @memberof TS3Query
+     * @event TeamSpeakQuery#error
+     * @memberof TeamSpeakQuery
      */
     this.emit("error", error)
   }
@@ -205,7 +187,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** executes the next command */
-  private queueWorker(cmd?: QueueItem) {
+  private queueWorker(cmd?: TeamSpeakQuery.QueueItem) {
     if (cmd) this.queue.push(cmd)
     if (!this.connected || this.active) return
     this.active = this.queue.shift()
@@ -219,5 +201,24 @@ export class TeamSpeakQuery extends EventEmitter {
     this.emit("debug", { type: "send", data })
     this.socket.send(data)
     this.keepAlive()
+  }
+}
+
+export namespace TeamSpeakQuery {
+  
+  export type executeArgs = Command.ParserCallback|Command.multiOpts|Command.options|Command.flags
+
+  export interface QueueItem {
+    fulfill: Function
+    reject: Function
+    cmd: Command
+  }
+
+  export interface QueryProtocolInterface {
+    readonly chunk: string,
+    on: (event: string, callback: (...args: any[]) => void) => void
+    sendKeepAlive: () => void
+    send: (data: string) => void
+    close: () => void
   }
 }

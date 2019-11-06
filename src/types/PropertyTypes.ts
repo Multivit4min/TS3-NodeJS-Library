@@ -1,15 +1,19 @@
 import * as ENUM from "./enum"
 
-export declare interface ClientUpdate {
+export declare type ClientUpdate = {
   client_nickname: string
 }
 
-export declare interface ClientDBEdit {
-  //cldbid: number
-  client_description: string 
+export declare type ClientDBEdit = {
+  client_description: string
 }
 
-export declare interface ServerEdit {
+export declare type ClientEdit = {
+  client_description?: string
+  client_is_talker?: number
+}
+
+export declare type ServerEdit = {
   virtualserver_name?: string 
   virtualserver_welcomemessage?: string 
   virtualserver_maxclients?: number 
@@ -60,7 +64,7 @@ export declare interface ServerEdit {
   virtualserver_codec_encryption_mode?: ENUM.CodecEncryptionMode 
 }
 
-export declare interface ChannelEdit {
+export declare type ChannelEdit = {
   cid?: number 
   channel_name?: string 
   channel_topic?: string 
@@ -82,7 +86,7 @@ export declare interface ChannelEdit {
   channel_cpid?: number 
 }
 
-export declare interface InstanceEdit {
+export declare type InstanceEdit = {
   serverinstance_template_serveradmin_group?: number 
   serverinstance_filetransfer_port?: number 
   serverinstance_max_download_total_bandwidth?: number 
@@ -95,7 +99,7 @@ export declare interface InstanceEdit {
   serverinstance_serverquery_flood_ban_time?: number 
 }
 
-export declare interface ServerTempPasswordAdd {
+export declare type ServerTempPasswordAdd = {
   /** the temporary password */
   pw: string
   /** description of the password */
@@ -108,7 +112,7 @@ export declare interface ServerTempPasswordAdd {
   tcpw?: string
 }
 
-export declare interface BanAdd {
+export declare type BanAdd = {
   /** ip regular expression */
   ip?: string
   /** name regular expression */
@@ -123,7 +127,17 @@ export declare interface BanAdd {
   banreason: string
 }
 
-export declare interface TransferUpload {
+export declare type BanClient = {
+  clid: number
+  /** myteamspeak id, use "empty" to ban all clients without connected myteamspeak */
+  mytsid?: string
+  /** bantime in seconds, if left empty it will result in a permaban */
+  time?: number
+  /** ban reason */
+  banreason: string
+}
+
+export declare type TransferUpload = {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */
@@ -139,7 +153,7 @@ export declare interface TransferUpload {
   resume?: number
 }
 
-export declare interface TransferDownload {
+export declare type TransferDownload = {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */

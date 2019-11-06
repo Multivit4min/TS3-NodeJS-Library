@@ -1,10 +1,10 @@
 import { Client, ClientChannel } from "ssh2"
 import { EventEmitter } from "events"
 import { ConnectionParams } from "../../TeamSpeak"
-import { QueryProtocolInterface } from "../TeamSpeakQuery"
+import { TeamSpeakQuery } from "../TeamSpeakQuery"
 
 
-export class ProtocolSSH extends EventEmitter implements QueryProtocolInterface {
+export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryProtocolInterface {
 
   private client: Client
   private stream: ClientChannel|null

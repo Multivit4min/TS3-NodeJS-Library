@@ -1,5 +1,14 @@
 import { TeamSpeakServer } from "../node/Server"
 
+export declare interface ClientSetServerQueryLogin {
+  client_login_password: string
+}
+
+export declare interface ClientFind {
+  clid: number
+  client_nickname: string
+}
+
 export declare interface QueryErrorMessage {
   id: number
   msg: string
@@ -75,6 +84,32 @@ export declare interface ServerGroupList {
   n_modifyp: number
   n_member_addp: number
   n_member_removep: number
+}
+
+export declare interface ServerGroupsByClientId {
+  name: string
+  sgid: number
+  cldbid: number
+}
+
+
+export declare interface ChannelClientPermListId {
+  cid: number
+  cldbid: number
+  permid: number
+  permvalue: number
+  permnegated: number
+  permskip: number
+}
+
+
+export declare interface ChannelClientPermListSid {
+  cid: number
+  cldbid: number
+  permsid: string
+  permvalue: number
+  permnegated: number
+  permskip: number
 }
 
 
@@ -302,6 +337,11 @@ export declare interface PermList {
   permskip: number
 }
 
+export declare interface ChannelFind {
+  cid: number
+  channel_name: string
+}
+
 export declare interface ChannelInfo {
   pid: number
   channel_name: string
@@ -332,6 +372,35 @@ export declare interface ChannelInfo {
   channel_banner_gfx_url: string
   channel_banner_mode: number
   seconds_empty: number
+}
+
+export declare interface ClientGetIds {
+  cluid: string
+  clid: number
+  name: string
+}
+
+export declare interface ClientGetDbidFromUid {
+  cluid: string
+  cldbid: number
+}
+
+export declare interface ClientGetNameFromUid {
+  cluid: string
+  cldbid: number
+  name: string
+}
+
+export declare interface ClientGetUidFromClid {
+  clid: number
+  cluid: string
+  nickname: string
+}
+
+export declare interface ClientGetNameFromDbid {
+  cluid: string
+  cldbid: number
+  name: string
 }
 
 export declare interface ClientInfo {
@@ -552,6 +621,21 @@ export declare interface ClientDBFind {
   cldbid: number
 }
 
+export declare interface FTList {
+  clid: number
+  path: string
+  name: string
+  size: number
+  sizedone: number
+  clientftfid: number
+  serverftfid: number
+  sender: number
+  status: number
+  current_speed: number
+  average_speed: number
+  runtime: number
+}
+
 export declare interface FTGetFileList {
   cid: number 
   path: string 
@@ -604,4 +688,11 @@ export declare interface FTInitDownload {
   port?: number
   /** exists when file is downloadable */
   proto?: number
+}
+
+export declare interface SnapshotCreate {
+  version: number,
+  /** only exists when a password has been set otherwise it will be undefined */
+  salt?: string,
+  snapshot: string
 }
