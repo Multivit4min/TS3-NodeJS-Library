@@ -30,10 +30,11 @@ jobs:
         npm ci
     - name: tests
       run: |
-        npm test
-    - name: coveralls
-      run: |
-        npm run coveralls
+        npm test     
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
     - name: generate docs
       run: |
         npm run generate-docs
