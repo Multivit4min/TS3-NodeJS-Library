@@ -68,6 +68,7 @@ export declare type ChannelEdit = {
   cid?: number 
   channel_name?: string 
   channel_topic?: string 
+  channel_password?: string
   channel_description?: string 
   channel_codec?: ENUM.Codec
   channel_codec_quality?: number 
@@ -83,7 +84,7 @@ export declare type ChannelEdit = {
   channel_needed_talk_power?: number 
   channel_name_phonetic?: string 
   channel_codec_is_unencrypted?: number 
-  channel_cpid?: number 
+  channel_cpid?: number
 }
 
 export declare type InstanceEdit = {
