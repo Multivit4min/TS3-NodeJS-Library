@@ -5,7 +5,7 @@ const mockClose = jest.fn()
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
   TeamSpeakQuery.getSocket = function() {
-    return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() } }
+    return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() }, isConnected() {} }
   }
   TeamSpeakQuery.prototype.execute = mockExecute
   return { TeamSpeakQuery }
@@ -55,7 +55,8 @@ describe("TeamSpeak", () => {
           host: "127.0.0.1",
           queryport: 10011,
           readyTimeout: 10000,
-          keepAlive: true
+          keepAlive: true,
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with an username and password", () => {
@@ -68,7 +69,8 @@ describe("TeamSpeak", () => {
           readyTimeout: 10000,
           keepAlive: true,
           username: "foo",
-          password: "bar"
+          password: "bar",
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with protocol SSH", () => {
@@ -79,7 +81,8 @@ describe("TeamSpeak", () => {
           host: "127.0.0.1",
           queryport: 10022,
           readyTimeout: 10000,
-          keepAlive: true
+          keepAlive: true,
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with a serverport", () => {
@@ -91,7 +94,8 @@ describe("TeamSpeak", () => {
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
-          serverport: 5000
+          serverport: 5000,
+          autoConnect: true
         })
     })
   })

@@ -2,6 +2,11 @@ import { TeamSpeak, QueryProtocol } from "../src/TeamSpeak"
 import * as fs from "fs"
 import * as crc32 from "crc-32"
 
+/**
+ * for some reason teamspeak closes the connection when connecting directly after a disconnect
+ */
+const WAIT_TIME = 1500
+
 const config = {
   host: process.env.TS3_HOST || "127.0.0.1",
   serverport: parseInt(process.env.TS3_SERVERPORT!, 10) || 9987,
@@ -9,12 +14,18 @@ const config = {
   password: process.env.TS3_PASSWORD || "abc123"
 }
 
-const wait = (time: number) => new Promise(fulfill => setTimeout(fulfill, time))
-
 describe("Integration Test", () => {
 
+  let teamspeak: TeamSpeak|null = null
+
+  afterEach(async () => {
+    if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+    teamspeak = null
+    await TeamSpeak.wait(WAIT_TIME)
+  })
+
   it("should connect to a TeamSpeak Server via RAW Query", async () => {
-    let teamspeak: TeamSpeak|null = null
+    expect.assertions(4)
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
@@ -32,11 +43,10 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(2000)
   })
 
   it("should connect to a TeamSpeak Server via SSH Query", async () => {
-    let teamspeak: TeamSpeak|null = null
+    expect.assertions(4)
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
@@ -54,11 +64,10 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(2000)
   })
 
   it("should test upload and download of a file", async () => {
-    let teamspeak: TeamSpeak|null = null
+    expect.assertions(1)
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
@@ -76,12 +85,11 @@ describe("Integration Test", () => {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }
-    await wait(2000)
   })
 
   it("should test receiving of an event", () => {
+    expect.assertions(1)
     return new Promise(async fulfill => {
-      let teamspeak: TeamSpeak|null = null
       const servername = `event ${Math.floor(Math.random() * 10000)}`
       try {
         teamspeak = await TeamSpeak.connect({
@@ -104,9 +112,37 @@ describe("Integration Test", () => {
         }
         throw e
       }
-      await wait(2000)
     })
   })
+
+  it("should test reconnecting to a server", async () => {
+    expect.assertions(6)
+    try {
+      teamspeak = await TeamSpeak.connect({
+        ...config,
+        protocol: QueryProtocol.RAW,
+        queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
+        serverport: undefined
+      })
+      let whoami = await teamspeak.whoami()
+      expect(typeof whoami).toBe("object")
+      expect(whoami.client_nickname).toBe(undefined)
+      expect(whoami.virtualserver_port).toBe(0)
+      await teamspeak.useByPort(config.serverport, "JEST RAW 123")
+      await teamspeak.forceQuit()
+      await teamspeak.reconnect(1, WAIT_TIME)
+      whoami = await teamspeak.whoami()
+      expect(typeof whoami).toBe("object")
+      expect(whoami.client_nickname).toBe("JEST RAW 123")
+      expect(whoami.virtualserver_port).toBe(config.serverport)
+      teamspeak.forceQuit()
+    } catch (e) {
+      console.log(e)
+      if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
+      throw e
+    }
+  }, 10 * 1000)
+
 
   it("should test a failed connection", () => {
     expect.assertions(1)

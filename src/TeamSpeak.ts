@@ -14,6 +14,7 @@ import * as Props from "./types/PropertyTypes"
 import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
 import { Command } from "./transport/Command"
 
+import { Context, SelectType } from "./types/context"
 export * from "./types/enum"
 
 /**
@@ -56,7 +57,9 @@ export interface ConnectionParams {
   /** wether a keepalive should get sent (default: true) */
   keepAlive: boolean,
   /** local address the socket should connect from */
-  localAddress?: string
+  localAddress?: string,
+  /** wether it should automatically connect after instanciating (default: true) */
+  autoConnect?: boolean
 }
 
 export interface TeamSpeak {
@@ -89,6 +92,11 @@ export class TeamSpeak extends EventEmitter {
   private channels: Record<string, TeamSpeakChannel> = {}
   private channelgroups: Record<string, TeamSpeakChannelGroup> = {}
   private query: TeamSpeakQuery
+  private context: Context = {
+    selectType: SelectType.NONE,
+    selected: 0,
+    events: []
+  }
 
   constructor(config: Partial<ConnectionParams>) {
     super()
@@ -99,6 +107,7 @@ export class TeamSpeak extends EventEmitter {
       queryport: config.protocol === QueryProtocol.SSH ? 10022 : 10011,
       readyTimeout: 10000,
       keepAlive: true,
+      autoConnect: true,
       ...config
     }
     this.query = new TeamSpeakQuery(this.config)
@@ -117,6 +126,9 @@ export class TeamSpeak extends EventEmitter {
     this.query.on("error", (e: Error) => super.emit("error", e))
     this.query.on("flooding", (e: ResponseError) => super.emit("flooding", e))
     this.query.on("debug", (data: Event.Debug) => super.emit("debug", data))
+    if (this.config.autoConnect) 
+      /** can be dropped silently since errors are getting emitted via the error event */
+      this.connect().catch(() => null)
   }
 
   /**
@@ -124,32 +136,86 @@ export class TeamSpeak extends EventEmitter {
    * @param config config options to connect
    */
   static connect(config: Partial<ConnectionParams>): Promise<TeamSpeak> {
+    return new TeamSpeak({
+      ...config,
+      autoConnect: false
+    }).connect()
+  }
+
+  /**
+   * attempts a reconnect to the teamspeak server with full context features
+   * @param attempts the amount of times it should try to reconnect
+   * @param timeout time in ms to wait inbetween reconnect
+   */
+  async reconnect(attempts: number = 1, timeout: number = 2000) {
+    let error: Error|null = null
+    while (attempts-- > 0) {
+      try {
+        await TeamSpeak.wait(timeout)
+        if (this.query.isConnected()) throw new Error("already connected")
+        await this.connect()
+        return this
+      } catch (e) {
+        error = e
+      }
+    }
+    throw error ? error : new Error(`reconnecting failed after ${attempts} attempt(s)`)
+  }
+
+  /**
+   * waits a set time of ms
+   * @param time time in ms to wait
+   */
+  static wait(time: number) {
+    return new Promise(fulfill => setTimeout(fulfill, time))
+  }
+
+  /**
+   * connects to the TeamSpeak Server
+   */
+  connect(): Promise<TeamSpeak> {
     return new Promise((fulfill, reject) => {
-      const teamspeak = new TeamSpeak(config)
-      teamspeak.once("ready", () => {
-        teamspeak.removeAllListeners()
-        fulfill(teamspeak)
-      })
-      teamspeak.once("error", error => {
-        teamspeak.removeAllListeners()
-        teamspeak.forceQuit()
+      const removeListeners = () => {
+        this.removeListener("ready", readyCallback)
+        this.removeListener("error", errorCallback)
+        this.removeListener("close", closeCallback)
+      }
+      const readyCallback = () => {
+        removeListeners()
+        fulfill(this)
+      }
+      const errorCallback = (error: Error) => {
+        removeListeners()
+        this.forceQuit()
         reject(error)
-      })
-      teamspeak.once("close", error => {
-        teamspeak.removeAllListeners()
+      }
+      const closeCallback = (error?: Error) => {
+        removeListeners()
         if (error instanceof Error) return reject(error)
         reject(new Error("TeamSpeak Server prematurely closed the connection"))        
-      })
+      }
+      this.once("ready", readyCallback)
+      this.once("error", errorCallback)
+      this.once("close", closeCallback)
+      this.query.connect()
     })
   }
 
-  /** handle after successfully connecting to a TeamSpeak Server */
+  /** handles initial commands after successfully connecting to a TeamSpeak Server */
   private handleReady() {
     const exec: Promise<any>[] = []
     if (this.config.username && this.config.password && this.config.protocol === "raw")
       exec.push(this.login(this.config.username, this.config.password))
-    if (this.config.serverport)
-      exec.push(this.useByPort(this.config.serverport, this.config.nickname))
+    if (this.context.selectType !== SelectType.NONE) {
+      if (this.context.selectType === SelectType.PORT) {
+        exec.push(this.useByPort(this.context.selected, this.context.client_nickname || this.config.nickname))
+      } else if (this.context.selectType === SelectType.SID) {
+        exec.push(this.useBySid(this.context.selected, this.context.client_nickname || this.config.nickname))
+      }
+    } else {
+      if (this.config.serverport)
+        exec.push(this.useByPort(this.config.serverport, this.config.nickname))
+    }
     Promise.all(exec)
       .then(() => super.emit("ready"))
       .catch(e => super.emit("error", e))
@@ -302,7 +368,6 @@ export class TeamSpeak extends EventEmitter {
       .catch(e => this.emit("error", e))
   }
 
-
   /**
    * Sends a raw command to the TeamSpeak Server.
    * @param {...any} args the command which should get executed on the teamspeak server
@@ -360,10 +425,13 @@ export class TeamSpeak extends EventEmitter {
 
   /**
    * Change your ServerQuery clients settings using given properties.
-   * @param properties the properties which should be changed
+   * @param props the properties which should be changed
    */
-  clientUpdate(properties: Props.ClientUpdate) {
-    return this.execute("clientupdate", properties)
+  clientUpdate(props: Props.ClientUpdate) {
+    return this.execute("clientupdate", props)
+      .then(this.updateContextResolve({
+        client_nickname: props.client_nickname ? props.client_nickname : this.context.client_nickname
+      }))
   }
 
 
@@ -374,6 +442,9 @@ export class TeamSpeak extends EventEmitter {
    */
   registerEvent(event: string, id?: number) {
     return this.execute("servernotifyregister", { event, id })
+      .then(this.updateContextResolve({
+        events: [...this.context.events, { event, id }]
+      }))
   }
 
 
@@ -382,6 +453,7 @@ export class TeamSpeak extends EventEmitter {
    */
   unregisterEvent() {
     return this.execute("servernotifyunregister")
+      .then(this.updateContextResolve({ events: [] }))
   }
 
 
@@ -392,12 +464,20 @@ export class TeamSpeak extends EventEmitter {
    */
   login(username: string, password: string) {
     return this.execute("login", [username, password])
+      .then(this.updateContextResolve({ login: { username, password }}))
+      .catch(this.updateContextReject({ login: undefined }))
   }
 
 
   /** Deselects the active virtual server and logs out from the server instance. */
   logout() {
     return this.execute("logout")
+      .then(this.updateContextResolve({
+        selectType: SelectType.NONE,
+        client_nickname: this.config.nickname,
+        login: undefined,
+        events: []
+      }))
   }
 
 
@@ -447,6 +527,13 @@ export class TeamSpeak extends EventEmitter {
    */
   useByPort(port: number, client_nickname?: string) {
     return this.execute("use", { port, client_nickname }, ["-virtual"])
+      .then(this.updateContextResolve({
+        selectType: SelectType.PORT,
+        selected: port,
+        client_nickname,
+        events: []
+      }))
+      .catch(this.updateContextReject({ selectType: SelectType.NONE }))
   }
 
 
@@ -457,6 +544,12 @@ export class TeamSpeak extends EventEmitter {
    */
   useBySid(sid: number, client_nickname?: string) {
     return this.execute("use", [sid, "-virtual"], { client_nickname })
+    .then(this.updateContextResolve({
+      selectType: SelectType.SID,
+      selected: sid,
+      client_nickname,
+      events: []
+    }))
   }
 
 
@@ -1915,6 +2008,39 @@ export class TeamSpeak extends EventEmitter {
     })
     remainder.forEach(k => Reflect.deleteProperty(cache, String(k)))
     return list
+  }
+
+  /**
+   * updates the context when the inner callback gets called
+   * and returns the first parameter
+   * @param context context data to update
+   */
+  private updateContextResolve<T>(context: Partial<Context>) {
+    return (res: T) => {
+      this.updateContext(context)
+      return res
+    }
+  }
+
+  /**
+   * updates the context when the inner callback gets called
+   * and throws the first parameter which is an error
+   * @param context context data to update
+   */
+  private updateContextReject<T extends Error>(context: Partial<Context>) {
+    return (err: T) => {
+      this.updateContext(context)
+      throw err
+    }
+  }
+
+  /**
+   * updates the context with new data
+   * @param data the data to update the context with
+   */
+  private updateContext(data: Partial<Context>) {
+    this.context = { ...this.context, ...data }
+    return this
   }
 
   /**

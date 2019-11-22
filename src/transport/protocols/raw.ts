@@ -66,28 +66,20 @@ export class ProtocolRAW extends EventEmitter implements TeamSpeakQuery.QueryPro
     lines.forEach(line => this.emit("line", line))
   }
 
-
-  /**
-   * sends the data in the first argument, appends a newline
-   * @param {string} str the data which should be sent
-   */
   send(str: string) {
     this.socket.write(`${str}\n`)
   }
 
-
-  /**
-   * sends a keepalive to the TeamSpeak Server
-   */
   sendKeepAlive() {
     this.socket.write(" \n")
   }
 
-  /**
-   * Forcefully closes the socket
-   */
   close() {
     return this.socket.destroy()
+  }
+
+  isConnected() {
+    return (this.socket.writable && this.socket.readable) || this.socket.connecting 
   }
 
 }

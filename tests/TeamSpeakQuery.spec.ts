@@ -11,6 +11,7 @@ jest.mock("../src/transport/protocols/raw", () => {
     send(data: string) { sendMock(data) }
     close() {}
     sendKeepAlive() { keepAliveMock() }
+    isConnected() { return false }
   }
 
   return { ProtocolRAW: FakeProtocol }
@@ -29,7 +30,7 @@ describe("TeamSpeakQuery", () => {
 
   it("should throw an error when the wrong protocol gets required", () => {
     //@ts-ignore
-    expect(() => new TeamSpeakQuery({ protocol: "something false" })).toThrowError()
+    expect(() => TeamSpeakQuery.getSocket({ protocol: "something false" })).toThrowError()
   })
 
   it("should catch and handle a query flooding error", async () => {
@@ -40,13 +41,14 @@ describe("TeamSpeakQuery", () => {
       keepAlive: true,
       readyTimeout: 10000
     })
+    query.connect()
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
     emit("connect")
     emit("line", "TS3")
     emit("line", "Welcome ... command.")
-    const command = query.execute("whoami")
+    query.execute("whoami")
     emit("line", "error id=524 msg=client\\sis\\sflooding extra_msg=please\\swait\\s1\\sseconds")
     expect(sendMock).toBeCalledTimes(1)
     expect(sendMock.mock.calls[0][0]).toBe("whoami")
@@ -64,6 +66,7 @@ describe("TeamSpeakQuery", () => {
       keepAlive: true,
       readyTimeout: 10000
     })
+    query.connect()
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
@@ -86,6 +89,7 @@ describe("TeamSpeakQuery", () => {
       keepAlive: true,
       readyTimeout: 10000
     })
+    query.connect()
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
