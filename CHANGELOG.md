@@ -1,6 +1,6 @@
 # Changelog
 
-### 2.2.0 - 31.10.2019
+### 2.2.0 - 07.11.2019
 + add clientedit()
 + add clientFind()
 + add clientGetIds()
