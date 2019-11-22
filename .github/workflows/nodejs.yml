@@ -28,6 +28,7 @@ jobs:
       run: |
         npm test     
     - name: Coveralls
+      if: matrix.node == '12.x'
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
