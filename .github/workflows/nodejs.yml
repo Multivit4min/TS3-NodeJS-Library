@@ -28,7 +28,7 @@ jobs:
       run: |
         npm test     
     - name: Coveralls
-      if: matrix.node == 12
+      if: matrix.node-version == 12
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [12]
     needs: tests
     if: github.ref == 'refs/heads/master'
     steps:
