@@ -32,11 +32,25 @@ jobs:
       with:
         github-token: ${{ secrets.github_token }}
     - name: Generate Docs
-      if: github.ref == 'refs/heads/master'
+      run: |
+        npm run generate-docs
+
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    needs: tests
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - uses: actions/checkout@v1
+    - name: install dependencies
+      run: |
+        npm ci
+    - name: Generate Docs
       run: |
         npm run generate-docs
     - name: Deploy on Github Pages
-      if: github.ref == 'refs/heads/master'
       uses: JamesIves/github-pages-deploy-action@master
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

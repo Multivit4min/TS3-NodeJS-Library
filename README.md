@@ -1,7 +1,7 @@
 
 # TS3-NodeJS-Library
 
-[![Build Status](https://travis-ci.com/Multivit4min/TS3-NodeJS-Library.svg?branch=master)](https://travis-ci.com/Multivit4min/TS3-NodeJS-Library)
+[![Build Status](https://github.com/multivit4min/TS3-NodeJS-LIbrary/workflows/Node%20CI/badge.svg)](https://travis-ci.com/Multivit4min/TS3-NodeJS-Library)
 [![npm](https://img.shields.io/npm/v/ts3-nodejs-library.svg)](https://www.npmjs.com/package/ts3-nodejs-library)
 [![Coverage Status](https://coveralls.io/repos/github/Multivit4min/TS3-NodeJS-Library/badge.svg?branch=master)](https://coveralls.io/github/Multivit4min/TS3-NodeJS-Library?branch=master)
 
