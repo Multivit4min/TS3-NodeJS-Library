@@ -42,6 +42,7 @@ describe("TeamSpeakQuery", () => {
       readyTimeout: 10000
     })
     query.connect()
+    query.pause(false)
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
@@ -67,6 +68,7 @@ describe("TeamSpeakQuery", () => {
       readyTimeout: 10000
     })
     query.connect()
+    query.pause(false)
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 
@@ -90,6 +92,7 @@ describe("TeamSpeakQuery", () => {
       readyTimeout: 10000
     })
     query.connect()
+    query.pause(false)
     //@ts-ignore
     const emit: typeof EventEmitter.prototype.emit = query["socket"]["emit"].bind(query["socket"])
 

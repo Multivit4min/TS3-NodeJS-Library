@@ -137,7 +137,6 @@ describe("Integration Test", () => {
       expect(whoami.virtualserver_port).toBe(config.serverport)
       teamspeak.forceQuit()
     } catch (e) {
-      console.log(e)
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
       throw e
     }

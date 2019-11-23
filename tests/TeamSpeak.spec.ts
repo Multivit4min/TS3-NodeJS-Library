@@ -1,4 +1,5 @@
 const mockExecute = jest.fn()
+const mockExecutePrio = jest.fn()
 const mockTransfer = jest.fn()
 const mockClose = jest.fn()
 
@@ -8,6 +9,7 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
     return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() }, isConnected() {} }
   }
   TeamSpeakQuery.prototype.execute = mockExecute
+  TeamSpeakQuery.prototype.executePrio = mockExecutePrio
   return { TeamSpeakQuery }
 })
 
@@ -44,6 +46,8 @@ describe("TeamSpeak", () => {
     mockClose.mockReset()
     mockExecute.mockReset()
     mockExecute.mockResolvedValue(null)
+    mockExecutePrio.mockReset()
+    mockExecutePrio.mockResolvedValue(null)
   })
 
   describe("#new()", () => {
@@ -108,22 +112,25 @@ describe("TeamSpeak", () => {
       expect(mockExecute).toHaveBeenCalledTimes(0)
     })
     it("check a connection config with username and password", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("login", ["foo", "bar"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("login", ["foo", "bar"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ serverport: 9987 })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport and nickname", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" }, ["-virtual"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
   })
 

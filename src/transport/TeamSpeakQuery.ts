@@ -19,6 +19,7 @@ export class TeamSpeakQuery extends EventEmitter {
   private keepAliveTimeout: any
   private floodTimeout: NodeJS.Timeout
   private socket: TeamSpeakQuery.QueryProtocolInterface
+  private pauseQueue: boolean = true
   readonly doubleEvents: Array<string> = [
     "notifyclientleftview",
     "notifyclientmoved",
@@ -35,9 +36,17 @@ export class TeamSpeakQuery extends EventEmitter {
    */
   connect() {
     if (this.socket) {
-      if (this.socket.isConnected()) {
+      if (this.connected) {
         throw new Error("already connected")
       } else {
+        /**
+         * socket has already been connected and there was an active item
+         * push it back into the queue for possible priorized elements
+         */
+        if (this.active) {
+          this.queue.unshift(this.active)
+          this.active = undefined
+        }
         this.socket.removeAllListeners()
         this.ignoreLines = TeamSpeakQuery.IGNORE_LINES_INITIAL
       }
@@ -63,6 +72,20 @@ export class TeamSpeakQuery extends EventEmitter {
 
   /** sends a command to the TeamSpeak Server */
   execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+    return this.handleCommand(command, args)
+  }
+
+  /** sends a priorized command to the TeamSpeak Server */
+  executePrio(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+    return this.handleCommand(command, args, true)
+  }
+
+  /**
+   * @param command command to send
+   * @param args arguments which gets parsed
+   * @param prio wether this command should be handled as priority and be queued before others
+   */
+  private handleCommand(command: string, args: TeamSpeakQuery.executeArgs[], priority: boolean = false): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
@@ -78,13 +101,20 @@ export class TeamSpeakQuery extends EventEmitter {
           return cmd.setOptions(v)
         }
       })
-      this.queueWorker({ cmd, fulfill, reject })
+      this.queueWorker({ cmd, fulfill, reject, priority })
     })
   }
 
   /** forcefully closes the socket connection */
   forceQuit() {
+    this.pause(true)
     return this.socket.close()
+  }
+
+  pause(pause: boolean) {
+    this.pauseQueue = pause
+    if (!this.pauseQueue) this.queueWorker()
+    return this
   }
 
   /** gets called when the underlying transport layer connects to a server */
@@ -173,6 +203,7 @@ export class TeamSpeakQuery extends EventEmitter {
   /** handles socket closing */
   private handleClose() {
     this.connected = false
+    this.pause(true)
     clearTimeout(this.floodTimeout)
     clearTimeout(this.keepAliveTimeout)
     const cmd = new Command().setError(this.socket.chunk || "")
@@ -197,10 +228,23 @@ export class TeamSpeakQuery extends EventEmitter {
   /** executes the next command */
   private queueWorker(cmd?: TeamSpeakQuery.QueueItem) {
     if (cmd) this.queue.push(cmd)
-    if (!this.connected || this.active) return
-    this.active = this.queue.shift()
+    if (!this.connected || this.active || this.pauseQueue) return
+    this.active = this.getNextQueueItem()
     if (!this.active) return
     this.send(this.active.cmd.build())
+  }
+
+  /**
+   * retrieves the next available queue item
+   * respects priorized queue
+   */
+  private getNextQueueItem() {
+    let item = this.queue.find(i => i.priority)
+    if (item) {
+      this.queue = this.queue.filter(i => i !== item)
+      return item
+    }
+    return this.queue.shift()
   }
 
   /** sends data to the socket */
@@ -212,7 +256,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   isConnected() {
-    return this.socket.isConnected()
+    return this.connected
   }
 }
 
@@ -224,6 +268,7 @@ export namespace TeamSpeakQuery {
     fulfill: Function
     reject: Function
     cmd: Command
+    priority: boolean
   }
 
   export interface QueryProtocolInterface extends EventEmitter {
@@ -237,7 +282,5 @@ export namespace TeamSpeakQuery {
     send: (data: string) => void
     /** forcefully closes the socket */
     close: () => void
-    /** checks if the socket is connected or connecting */
-    isConnected: () => boolean
   }
 }

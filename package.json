@@ -1,6 +1,6 @@
 {
   "name": "ts3-nodejs-library",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "TeamSpeak Server Query API",
   "main": "index.js",
   "types": "./lib/TeamSpeak.d.ts",
@@ -38,9 +38,9 @@
     "@typescript-eslint/parser": "^1.13.0",
     "coveralls": "^3.0.8",
     "crc-32": "^1.2.0",
-    "eslint": "^6.6.0",
+    "eslint": "^6.7.0",
     "jest": "^24.9.0",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.2.0",
     "typedoc": "^0.15.2",
     "typescript": "^3.7.2"
   },

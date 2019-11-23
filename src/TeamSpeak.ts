@@ -91,6 +91,7 @@ export class TeamSpeak extends EventEmitter {
   private servergroups: Record<string, TeamSpeakServerGroup> = {}
   private channels: Record<string, TeamSpeakChannel> = {}
   private channelgroups: Record<string, TeamSpeakChannelGroup> = {}
+  private priorizeNextCommand: boolean = false
   private query: TeamSpeakQuery
   private context: Context = {
     selectType: SelectType.NONE,
@@ -204,18 +205,20 @@ export class TeamSpeak extends EventEmitter {
   /** handles initial commands after successfully connecting to a TeamSpeak Server */
   private handleReady() {
     const exec: Promise<any>[] = []
-    if (this.config.username && this.config.password && this.config.protocol === "raw")
-      exec.push(this.login(this.config.username, this.config.password))
+    if (this.config.username && this.config.password && this.config.protocol === "raw") {
+      exec.push(this.priorize().login(this.config.username, this.config.password))
+    }
     if (this.context.selectType !== SelectType.NONE) {
       if (this.context.selectType === SelectType.PORT) {
-        exec.push(this.useByPort(this.context.selected, this.context.client_nickname || this.config.nickname))
+        exec.push(this.priorize().useByPort(this.context.selected, this.context.client_nickname || this.config.nickname))
       } else if (this.context.selectType === SelectType.SID) {
-        exec.push(this.useBySid(this.context.selected, this.context.client_nickname || this.config.nickname))
+        exec.push(this.priorize().useBySid(this.context.selected, this.context.client_nickname || this.config.nickname))
       }
-    } else {
-      if (this.config.serverport)
-        exec.push(this.useByPort(this.config.serverport, this.config.nickname))
+    } else if (this.config.serverport) {
+      exec.push(this.priorize().useByPort(this.config.serverport, this.config.nickname))
     }
+    exec.push(...this.context.events.map(ev => this.priorize().registerEvent(ev.event, ev.id)))
+    this.query.pause(false)
     Promise.all(exec)
       .then(() => super.emit("ready"))
       .catch(e => super.emit("error", e))
@@ -368,6 +371,12 @@ export class TeamSpeak extends EventEmitter {
       .catch(e => this.emit("error", e))
   }
 
+  /** priorizes the next command, this commands will be first in execution */
+  priorize() {
+    this.priorizeNextCommand = true
+    return this
+  }
+
   /**
    * Sends a raw command to the TeamSpeak Server.
    * @param {...any} args the command which should get executed on the teamspeak server
@@ -376,7 +385,12 @@ export class TeamSpeak extends EventEmitter {
    * ts3.execute("use", [9987], { client_nickname: "test" })
    */
   execute(cmd: string, ...args: TeamSpeakQuery.executeArgs[]) {
-    return this.query.execute(cmd, ...args)
+    if (this.priorizeNextCommand) {
+      this.priorizeNextCommand = false
+      return this.query.executePrio(cmd, ...args)
+    } else {
+      return this.query.execute(cmd, ...args)
+    }
   }
 
 
