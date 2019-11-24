@@ -145,12 +145,12 @@ export class TeamSpeak extends EventEmitter {
 
   /**
    * attempts a reconnect to the teamspeak server with full context features
-   * @param attempts the amount of times it should try to reconnect
+   * @param attempts the amount of times it should try to reconnect (-1 = try forever)
    * @param timeout time in ms to wait inbetween reconnect
    */
   async reconnect(attempts: number = 1, timeout: number = 2000) {
     let error: Error|null = null
-    while (attempts-- > 0) {
+    while (attempts === -1 || attempts-- > 0) {
       try {
         await TeamSpeak.wait(timeout)
         if (this.query.isConnected()) throw new Error("already connected")
@@ -205,7 +205,9 @@ export class TeamSpeak extends EventEmitter {
   /** handles initial commands after successfully connecting to a TeamSpeak Server */
   private handleReady() {
     const exec: Promise<any>[] = []
-    if (this.config.username && this.config.password && this.config.protocol === "raw") {
+    if (this.context.login && this.config.protocol === QueryProtocol.RAW) {
+      exec.push(this.priorize().login(this.context.login.username, this.context.login.password))
+    } else if (this.config.username && this.config.password && this.config.protocol === QueryProtocol.RAW) {
       exec.push(this.priorize().login(this.config.username, this.config.password))
     }
     if (this.context.selectType !== SelectType.NONE) {

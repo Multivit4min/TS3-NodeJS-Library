@@ -56,7 +56,6 @@ export class TeamSpeakQuery extends EventEmitter {
     this.socket.on("connect", this.handleConnect.bind(this))
     this.socket.on("line", this.handleLine.bind(this))
     this.socket.on("error", this.handleError.bind(this))
-    this.socket.on("close", this.handleClose.bind(this))
   }
 
   /** returns a constructed Socket */
@@ -120,6 +119,7 @@ export class TeamSpeakQuery extends EventEmitter {
   /** gets called when the underlying transport layer connects to a server */
   private handleConnect() {
     this.connected = true
+    this.socket.on("close", this.handleClose.bind(this))
     this.emit("connect")
   }
 

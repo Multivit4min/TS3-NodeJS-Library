@@ -202,6 +202,44 @@ When the Query gets accused of Flooding then it will return error with id 524 an
 This will be parsed automatically and the Query will wait for the given time (normally its 1 second) + 100 additional milliseconds (sometimes it happens the query gets banned when still sending too early)
 
 
+# Reconnecting
+
+
+With version 2.3 this library is able to reconnect to its TeamSpeak Server when the connection has been lost.
+It restores its full context this includes:
+  * selecting the server
+  * logging in with the last credentials
+  * subscribing to all used events
+  * selecting the correct nickname
+
+all commands which have been added in meantime while the teamspeak server was not connected will be still executed after and all pending commands will be sent AFTER connecting and restoring the context
+
+an example on how this looks like:
+
+```typescript
+import { TeamSpeak, QueryProtocol } from "./src/TeamSpeak"
+
+TeamSpeak.connect({
+  host: "127.0.0.1",
+  queryport: 10011,
+  serverport: 9987,
+  protocol: QueryProtocol.RAW,
+  username: "serveradmin",
+  password: "xxx",
+  nickname: "test"
+}).then(async teamspeak => {
+
+  teamspeak.on("close", async () => {
+    console.log("disconnected, trying to reconnect...")
+    await teamspeak.reconnect(-1, 1000)
+    console.log("reconnected!")
+  })
+
+})
+```
+
+
+
 # Update Notes from 1.x to 2.x
 
 With version 2.x support for Client Events has been dropped instead use the events from the main class TeamSpeak.
@@ -209,6 +247,12 @@ Additionally it comes with `TeamSpeak.connect()` in order to use a promise to co
 Multiple node methods have been replaced with a getter for ex: `client.getDBID()` -> `client.databaseId`, `client.getUID()` -> `client.uniqueIdentifier`, `channel.getID()` -> `channel.cid`
 The testing environment now runs via jest which makes mocking and testing easier. Since this project now is written in TypeScript vscode should now be completely capable to autocomplete, so there is no need to update docs on @types.
 Documentation software has been switched from `documentation` to `typedoc`
+
+
+# Update Notes to 2.3
+
+The `close` event now only gets fired when a connection has been successfully established first!
+In order to get errors when connecting to a server use the `error` event instead. This was required in order to implement the reconnect logic.
 
 
 # Authors
