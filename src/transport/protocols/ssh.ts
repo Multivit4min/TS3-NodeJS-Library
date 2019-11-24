@@ -89,8 +89,4 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
   close() {
     return this.client.end()
   }
-
-  isConnected() {
-    return !!this.stream && this.stream.readable && this.stream.writable
-  }
 }

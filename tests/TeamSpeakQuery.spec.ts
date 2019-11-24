@@ -11,7 +11,6 @@ jest.mock("../src/transport/protocols/raw", () => {
     send(data: string) { sendMock(data) }
     close() {}
     sendKeepAlive() { keepAliveMock() }
-    isConnected() { return false }
   }
 
   return { ProtocolRAW: FakeProtocol }

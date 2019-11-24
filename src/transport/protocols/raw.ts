@@ -78,8 +78,4 @@ export class ProtocolRAW extends EventEmitter implements TeamSpeakQuery.QueryPro
     return this.socket.destroy()
   }
 
-  isConnected() {
-    return (this.socket.writable && this.socket.readable) || this.socket.connecting 
-  }
-
 }
