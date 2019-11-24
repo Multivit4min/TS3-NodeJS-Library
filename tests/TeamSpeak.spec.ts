@@ -2,6 +2,7 @@ const mockExecute = jest.fn()
 const mockExecutePrio = jest.fn()
 const mockTransfer = jest.fn()
 const mockClose = jest.fn()
+const mockIsConnected = jest.fn()
 
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
@@ -10,6 +11,7 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
   }
   TeamSpeakQuery.prototype.execute = mockExecute
   TeamSpeakQuery.prototype.executePrio = mockExecutePrio
+  TeamSpeakQuery.prototype.isConnected = mockIsConnected
   return { TeamSpeakQuery }
 })
 
@@ -134,6 +136,11 @@ describe("TeamSpeak", () => {
     })
   })
 
+  it("should test #reconnect()", async () => {
+    expect.assertions(1)
+    mockIsConnected.mockReturnValue(true)
+    await expect(teamspeak.reconnect(1)).rejects.toEqual(new Error("already connected"))
+  })
 
   it("should verify parameters of #version()", async () => {
     await teamspeak.version()
