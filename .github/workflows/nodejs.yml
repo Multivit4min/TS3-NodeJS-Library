@@ -54,7 +54,7 @@ jobs:
     - name: Deploy on Github Pages
       uses: JamesIves/github-pages-deploy-action@master
       env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
         BASE_BRANCH: master
         BRANCH: gh-pages
         FOLDER: docs
