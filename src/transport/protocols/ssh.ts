@@ -76,26 +76,17 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
     lines.forEach(line => this.emit("line", line))
   }
 
-
-  /**
-   * sends the data in the first argument, appends a newline
-   * @param str the data which should be sent
-   */
   send(str: string) {
     if (!this.stream) throw new Error("Tried to write data to a closed socket")
     this.stream.write(`${str}\n`)
   }
 
-
-  /** sends a keepalive to the TeamSpeak Server */
   sendKeepAlive() {
     if (!this.stream) throw new Error("Tried to write data to a closed socket")
     this.stream.write(" \n")
   }
 
-  /** forcefully closes the socket */
   close() {
     return this.client.end()
   }
-
 }

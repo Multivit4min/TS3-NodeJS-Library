@@ -1,13 +1,17 @@
 const mockExecute = jest.fn()
+const mockExecutePrio = jest.fn()
 const mockTransfer = jest.fn()
 const mockClose = jest.fn()
+const mockIsConnected = jest.fn()
 
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
   TeamSpeakQuery.getSocket = function() {
-    return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() } }
+    return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() }, isConnected() {} }
   }
   TeamSpeakQuery.prototype.execute = mockExecute
+  TeamSpeakQuery.prototype.executePrio = mockExecutePrio
+  TeamSpeakQuery.prototype.isConnected = mockIsConnected
   return { TeamSpeakQuery }
 })
 
@@ -44,6 +48,8 @@ describe("TeamSpeak", () => {
     mockClose.mockReset()
     mockExecute.mockReset()
     mockExecute.mockResolvedValue(null)
+    mockExecutePrio.mockReset()
+    mockExecutePrio.mockResolvedValue(null)
   })
 
   describe("#new()", () => {
@@ -55,7 +61,8 @@ describe("TeamSpeak", () => {
           host: "127.0.0.1",
           queryport: 10011,
           readyTimeout: 10000,
-          keepAlive: true
+          keepAlive: true,
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with an username and password", () => {
@@ -68,7 +75,8 @@ describe("TeamSpeak", () => {
           readyTimeout: 10000,
           keepAlive: true,
           username: "foo",
-          password: "bar"
+          password: "bar",
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with protocol SSH", () => {
@@ -79,7 +87,8 @@ describe("TeamSpeak", () => {
           host: "127.0.0.1",
           queryport: 10022,
           readyTimeout: 10000,
-          keepAlive: true
+          keepAlive: true,
+          autoConnect: true
         })
     })
     it("should test the construction of TeamSpeak with a serverport", () => {
@@ -91,7 +100,8 @@ describe("TeamSpeak", () => {
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
-          serverport: 5000
+          serverport: 5000,
+          autoConnect: true
         })
     })
   })
@@ -104,25 +114,33 @@ describe("TeamSpeak", () => {
       expect(mockExecute).toHaveBeenCalledTimes(0)
     })
     it("check a connection config with username and password", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("login", ["foo", "bar"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("login", ["foo", "bar"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ serverport: 9987 })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
     it("check a connection config with a serverport and nickname", async () => {
+      expect.assertions(2)
       const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecute).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" }, ["-virtual"])
-      expect(mockExecute).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987, client_nickname: "FooBar" }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
     })
   })
 
+  it("should test #reconnect()", async () => {
+    expect.assertions(1)
+    mockIsConnected.mockReturnValue(true)
+    await expect(teamspeak.reconnect(1)).rejects.toEqual(new Error("already connected"))
+  })
 
   it("should verify parameters of #version()", async () => {
     await teamspeak.version()

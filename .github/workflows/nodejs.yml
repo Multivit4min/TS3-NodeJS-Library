@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [10, 12, 13]
     steps:
     - uses: actions/checkout@v1
     - name: install teamspeak via docker
@@ -28,13 +28,20 @@ jobs:
       run: |
         npm test     
     - name: Coveralls
+      if: matrix.node-version == 12
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-
+    - name: Generate Docs
+      run: |
+        npm run generate-docs
 
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12]
+    needs: tests
     if: github.ref == 'refs/heads/master'
     steps:
     - uses: actions/checkout@v1
@@ -47,7 +54,7 @@ jobs:
     - name: Deploy on Github Pages
       uses: JamesIves/github-pages-deploy-action@master
       env:
-        ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         BASE_BRANCH: master
         BRANCH: gh-pages
         FOLDER: docs

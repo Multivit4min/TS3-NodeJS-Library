@@ -170,27 +170,12 @@ export class Command {
       .map(entry => {
         const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
         entry.split(" ").forEach(str => {
-          const { key, value } = Command.unescapeKeyValue(str)
+          const { key, value } = Command.getKeyValue(str)
           res[key] = Command.parseValue(key, value)
         })
         return res
       })
-      .map((entry, _, original) => Command.mergeObjects(entry, original[0]))
-  }
-
-  /**
-   * merges two objects into each other, if one key does not exist in target
-   * which exists in source then target gets this key added
-   * @param target object which gets keys from source
-   * @param source the additional keys which get added to target
-   */
-  static mergeObjects(target: Record<string, any>, source: Record<string, any>) {
-    const t = { ...target }
-    Object.keys(source).forEach(key => {
-      if (Object.keys(target).includes(key)) return
-      t[key] = source[key]
-    })
-    return t
+      .map((entry, _, original) => ({...original[0], ...entry }))
   }
 
   /**
@@ -244,13 +229,14 @@ export class Command {
   }
 
   /**
-   * unescapes a key value pair
+   * retrieves the key value pair from a string
    * @param str the key value pair to unescape eg foo=bar
    */
-  static unescapeKeyValue(str: string): { key: string, value: string|undefined } {
-    const [key, ...rest] = str.split("=")
-    const value = rest.join("=")
-    return { key, value: value === "" ? undefined : value }
+  static getKeyValue(str: string): { key: string, value: string|undefined } {
+    const index = str.indexOf("=")
+    if (index === -1) return { key: str, value: undefined }
+    const value = str.substring(index+1)
+    return { key: str.substring(0, index), value: value === "" ? undefined : value }
   }
 
   /**
@@ -259,7 +245,7 @@ export class Command {
    * @param v the value which should get parsed
    */
   static parseValue(k: string, v: string|undefined) {
-    if (typeof v === "undefined") return undefined
+    if (v === undefined) return undefined
     if (Object.keys(Command.Identifier).includes(k)) { 
       return Command.Identifier[<keyof typeof Command.Identifier>k](v)
     } else {

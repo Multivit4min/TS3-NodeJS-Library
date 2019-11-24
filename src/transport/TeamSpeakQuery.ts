@@ -7,34 +7,55 @@ import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
 import { QueryResponseTypes } from "../types/QueryResponse"
 
 export class TeamSpeakQuery extends EventEmitter {
+
+  static IGNORE_LINES_INITIAL = 2
   private config: ConnectionParams
   private queue: Array<TeamSpeakQuery.QueueItem> = []
   private active: TeamSpeakQuery.QueueItem|undefined
-  private ignoreLines: number
+  private ignoreLines: number = TeamSpeakQuery.IGNORE_LINES_INITIAL
   private lastEvent: string = ""
   private lastcmd: number = Date.now()
   private connected: boolean = false
   private keepAliveTimeout: any
   private floodTimeout: NodeJS.Timeout
   private socket: TeamSpeakQuery.QueryProtocolInterface
-  readonly doubleEvents: Array<string>
+  private pauseQueue: boolean = true
+  readonly doubleEvents: Array<string> = [
+    "notifyclientleftview",
+    "notifyclientmoved",
+    "notifycliententerview"
+  ]
 
   constructor(config: ConnectionParams) {
     super()
     this.config = config
-    this.ignoreLines = 2
-    this.doubleEvents = [
-      "notifyclientleftview",
-      "notifyclientmoved",
-      "notifycliententerview"
-    ]
-    
+  }
+
+  /**
+   * start connecting to the teamspeak server
+   */
+  connect() {
+    if (this.socket) {
+      if (this.connected) {
+        throw new Error("already connected")
+      } else {
+        /**
+         * socket has already been connected and there was an active item
+         * push it back into the queue for possible priorized elements
+         */
+        if (this.active) {
+          this.queue.unshift(this.active)
+          this.active = undefined
+        }
+        this.socket.removeAllListeners()
+        this.ignoreLines = TeamSpeakQuery.IGNORE_LINES_INITIAL
+      }
+    }
     this.socket = TeamSpeakQuery.getSocket(this.config)
     this.socket.on("debug", data => this.emit("debug", data))
     this.socket.on("connect", this.handleConnect.bind(this))
     this.socket.on("line", this.handleLine.bind(this))
     this.socket.on("error", this.handleError.bind(this))
-    this.socket.on("close", this.handleClose.bind(this))
   }
 
   /** returns a constructed Socket */
@@ -48,9 +69,22 @@ export class TeamSpeakQuery extends EventEmitter {
     }
   }
 
-
   /** sends a command to the TeamSpeak Server */
   execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+    return this.handleCommand(command, args)
+  }
+
+  /** sends a priorized command to the TeamSpeak Server */
+  executePrio(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+    return this.handleCommand(command, args, true)
+  }
+
+  /**
+   * @param command command to send
+   * @param args arguments which gets parsed
+   * @param prio wether this command should be handled as priority and be queued before others
+   */
+  private handleCommand(command: string, args: TeamSpeakQuery.executeArgs[], priority: boolean = false): Promise<QueryResponseTypes[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
@@ -66,18 +100,26 @@ export class TeamSpeakQuery extends EventEmitter {
           return cmd.setOptions(v)
         }
       })
-      this.queueWorker({ cmd, fulfill, reject })
+      this.queueWorker({ cmd, fulfill, reject, priority })
     })
   }
 
   /** forcefully closes the socket connection */
   forceQuit() {
+    this.pause(true)
     return this.socket.close()
+  }
+
+  pause(pause: boolean) {
+    this.pauseQueue = pause
+    if (!this.pauseQueue) this.queueWorker()
+    return this
   }
 
   /** gets called when the underlying transport layer connects to a server */
   private handleConnect() {
     this.connected = true
+    this.socket.on("close", this.handleClose.bind(this))
     this.emit("connect")
   }
 
@@ -125,7 +167,6 @@ export class TeamSpeakQuery extends EventEmitter {
     this.queueWorker()
   }
 
-
   /**
    * Handles an event which has been received from the TeamSpeak Server
    * @param line event response line from the teamspeak server
@@ -145,13 +186,11 @@ export class TeamSpeakQuery extends EventEmitter {
     )
   }
 
-
   /**
    * Emits an Error which the given arguments
    * @param {...any} args arguments which gets passed to the error event
    */
   private handleError(error: Error) {
-
     /**
      * Query Event
      * Gets fired when the Socket had an Error
@@ -164,12 +203,12 @@ export class TeamSpeakQuery extends EventEmitter {
   /** handles socket closing */
   private handleClose() {
     this.connected = false
+    this.pause(true)
     clearTimeout(this.floodTimeout)
     clearTimeout(this.keepAliveTimeout)
     const cmd = new Command().setError(this.socket.chunk || "")
     this.emit("close", cmd.getError())
   }
-
 
   /** handles the timer for the keepalive request */
   private keepAlive() {
@@ -189,10 +228,23 @@ export class TeamSpeakQuery extends EventEmitter {
   /** executes the next command */
   private queueWorker(cmd?: TeamSpeakQuery.QueueItem) {
     if (cmd) this.queue.push(cmd)
-    if (!this.connected || this.active) return
-    this.active = this.queue.shift()
+    if (!this.connected || this.active || this.pauseQueue) return
+    this.active = this.getNextQueueItem()
     if (!this.active) return
     this.send(this.active.cmd.build())
+  }
+
+  /**
+   * retrieves the next available queue item
+   * respects priorized queue
+   */
+  private getNextQueueItem() {
+    let item = this.queue.find(i => i.priority)
+    if (item) {
+      this.queue = this.queue.filter(i => i !== item)
+      return item
+    }
+    return this.queue.shift()
   }
 
   /** sends data to the socket */
@@ -201,6 +253,10 @@ export class TeamSpeakQuery extends EventEmitter {
     this.emit("debug", { type: "send", data })
     this.socket.send(data)
     this.keepAlive()
+  }
+
+  isConnected() {
+    return this.connected
   }
 }
 
@@ -212,13 +268,19 @@ export namespace TeamSpeakQuery {
     fulfill: Function
     reject: Function
     cmd: Command
+    priority: boolean
   }
 
-  export interface QueryProtocolInterface {
-    readonly chunk: string,
-    on: (event: string, callback: (...args: any[]) => void) => void
+  export interface QueryProtocolInterface extends EventEmitter {
+    readonly chunk: string
+    /** sends a keepalive to the TeamSpeak Server */
     sendKeepAlive: () => void
+    /**
+     * sends the data in the first argument, appends a newline
+     * @param {string} str the data which should be sent
+     */
     send: (data: string) => void
+    /** forcefully closes the socket */
     close: () => void
   }
 }

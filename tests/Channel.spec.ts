@@ -4,7 +4,7 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
 
   TeamSpeakQuery.getSocket = function() {
-    return { on() {}, send() {}, sendKeepAlive() {}, close() {} }
+    return { on() {}, send() {}, sendKeepAlive() {}, close() {}, isConnected() {} }
   }
 
   TeamSpeakQuery.prototype.execute = mockExecute

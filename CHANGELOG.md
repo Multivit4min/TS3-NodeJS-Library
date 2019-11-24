@@ -1,24 +1,31 @@
 # Changelog
 
+### 2.3.0 - tba
+* added context
+* added TeamSpeak3#reconnect() which is able to reconnect to a TeamSpeak Server with the previous context
+* command parser code improvements (should parse 30% faster now)
+* update dependencies
+
+
 ### 2.2.0 - 07.11.2019
-+ add clientedit()
-+ add clientFind()
-+ add clientGetIds()
-+ add clientGetDbidFromUid()
-+ add clientGetNameFromUid()
-+ add clientGetUidFromClid()
-+ add clientGetNameFromDbid()
-+ add channelClientPermList()
-+ add serverGroupsByClientId()
-+ add channelFind()
-+ add banClient()
-+ add clientSetServerQueryLogin()
-+ add createSnapshot()
-+ add deploySnapshot()
+* add clientedit()
+* add clientFind()
+* add clientGetIds()
+* add clientGetDbidFromUid()
+* add clientGetNameFromUid()
+* add clientGetUidFromClid()
+* add clientGetNameFromDbid()
+* add channelClientPermList()
+* add serverGroupsByClientId()
+* add channelFind()
+* add banClient()
+* add clientSetServerQueryLogin()
+* add createSnapshot()
+* add deploySnapshot()
 * rewrote some internal function in order to be parse snapshot commands
 
 ### 2.1.0 - 21.09.2019
-+ added event `tokenused` thanks to xIAlexanderIx for the pull request
+* added event `tokenused` thanks to xIAlexanderIx for the pull request
 
 ### 2.0.2 - 04.08.2019
 * changed property `client_flag_avatar` to get now really parsed as a string thanks to KhaledSoliman
@@ -28,8 +35,8 @@
 * changed property `client_flag_avatar` to get parsed as a string instead of a number
 
 ### 2.0.0 - 22.07.2019
-+ added method `TeamSpeak.connect()` in order to be able to connect via a Promise wrapper to a Server
-+ added `listenAddress` to connection parameters
+* added method `TeamSpeak.connect()` in order to be able to connect via a Promise wrapper to a Server
+* added `listenAddress` to connection parameters
 * rewrote code in `typescript`
 * switch testing framework to `jest`
 * switch documentation framework to `typedoc`
@@ -37,17 +44,17 @@
 - removed support for client events
 
 ### 1.16.1 - 22.07.2019
-+ add -virtual flag to use command
+* add -virtual flag to use command
 * updated dependencies
 
 ### 1.16.0 - 25.06.2019
-+ added TeamSpeak3#serverTempPasswordAdd()
-+ added TeamSpeak3#serverTempPasswordDel()
-+ added TeamSpeak3#serverTempPasswordDel()
-+ added TeamSpeak3#clientAddServerGroup() (available in server 3.9.0)
-+ added TeamSpeak3#clientDelServerGroup() (available in server 3.9.0)
-+ added TeamSpeakClient#addGroups() to add multiple groups
-+ added TeamSpeakClient#delGroups() to delete multiple groups
+* added TeamSpeak3#serverTempPasswordAdd()
+* added TeamSpeak3#serverTempPasswordDel()
+* added TeamSpeak3#serverTempPasswordDel()
+* added TeamSpeak3#clientAddServerGroup() (available in server 3.9.0)
+* added TeamSpeak3#clientDelServerGroup() (available in server 3.9.0)
+* added TeamSpeakClient#addGroups() to add multiple groups
+* added TeamSpeakClient#delGroups() to delete multiple groups
 * added deprecation warning for TeamSpeakClient#serverGroupAdd()
 * added deprecation warning for TeamSpeakClient#serverGroupDel()
 * changed output format of clientdbinfo and clientinfo to an array response in order to allow info for multiple clients
@@ -55,12 +62,12 @@
 - less strict type checking for teamspeak connection configuration
 
 ### 1.15.0 - 08.06.2019
-+ added pagination parameter to TeamSpeak3#banList for server version 3.8.0
-+ added deprecation warning to Abstract#getCache()
-+ added tokencustomset parameter to TeamSpeak3#privilegekeyadd()
-+ added TeamSpeak3#forceQuit() method
-+ library supports now intellisense autocomplete
-+ added detailed response documentation for each query command
+* added pagination parameter to TeamSpeak3#banList for server version 3.8.0
+* added deprecation warning to Abstract#getCache()
+* added tokencustomset parameter to TeamSpeak3#privilegekeyadd()
+* added TeamSpeak3#forceQuit() method
+* library supports now intellisense autocomplete
+* added detailed response documentation for each query command
 * removed some unnecessary Promises
 * fixed TeamSpeak3#messageAdd parameter
 * fixed a non catchable error when connecting with ssh to a server
@@ -70,8 +77,8 @@
 * changed behaviour of the return value from TeamSpeak3#execute to always return an array with the responses
 
 ### 1.14.0 - 24.5.2019
-+ added possibility to ban clients using the mytsid
-+ added TeamSpeak3#ban method
+* added possibility to ban clients using the mytsid
+* added TeamSpeak3#ban method
 - deprecated TeamSpeak3#banAdd method
 
 ### 1.13.1 - 19.4.2019
