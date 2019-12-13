@@ -1322,10 +1322,12 @@ export class TeamSpeak extends EventEmitter {
    * Displays the IDs of all clients currently residing in the channel group.
    * @param cgid the channelgroup id
    * @param cid the channel id
+   * @param cldbid the client database id to filter
    */
-  channelGroupClientList(cgid: number, cid?: number): Promise<Response.ChannelGroupClientList[]> {
+  channelGroupClientList(cgid: number, cid?: number, cldbid?: number): Promise<Response.ChannelGroupClientList[]> {
     const properties: Record<string, any> = { cgid }
     if (typeof cid === "number") properties.cid = cid
+    if (typeof cldbid === "number") properties.cldbid = cldbid
     return this.execute("channelgroupclientlist", properties).then(TeamSpeak.toArray)
   }
 
