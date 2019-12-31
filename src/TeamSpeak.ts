@@ -1767,7 +1767,7 @@ export class TeamSpeak extends EventEmitter {
    * Lists all Channels with a given Filter
    */
   channelList(filter: Partial<Response.ChannelList> = {}) {
-    return this.execute("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"])
+    return this.execute("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty", "-banner"])
       .then(TeamSpeak.toArray)
       .then(channels => this.handleCache(this.channels, channels, "cid", TeamSpeakChannel))
       .then(channels => TeamSpeak.filter(channels, filter))

@@ -627,6 +627,7 @@ export namespace Command {
     permname: Command.parseString,
     permdesc: Command.parseString,
     token_type: Command.parseNumber,
+    token_customset: Command.parseRecursive,
     token1: Command.parseString,
     token2: Command.parseString,
     token_id1: Command.parseNumber,

@@ -1,11 +1,15 @@
 # Changelog
 
-### 2.3.0 - tba
+### 2.3.1 - 15.01.2019
+* update dependencies
+* add token_customset to return parameter of privilegekeylist for server version 3.11
+* add -banners flag to channellist method and added getters to the TeamSpeakChannel class
+
+### 2.3.0 - 01.12.2019
 * added context
 * added TeamSpeak3#reconnect() which is able to reconnect to a TeamSpeak Server with the previous context
 * command parser code improvements (should parse 30% faster now)
 * update dependencies
-
 
 ### 2.2.0 - 07.11.2019
 * add clientedit()

@@ -1,4 +1,5 @@
 import { TeamSpeakServer } from "../node/Server"
+import { QueryResponse } from "./QueryResponse"
 
 export declare interface ClientSetServerQueryLogin {
   client_login_password: string
@@ -70,6 +71,10 @@ export declare interface ChannelList {
   channel_maxfamilyclients: number
   total_clients: number
   channel_needed_subscribe_power: number
+  /** only in server version >= 3.11.x */
+  channel_banner_gfx_url: string
+  /** only in server version >= 3.11.x */
+  channel_banner_mode: number
 }
 
 
@@ -563,7 +568,9 @@ export declare interface PrivilegeKeyList {
   token_id1: number 
   token_id2: number 
   token_created: number 
-  token_description: string 
+  token_description: string
+  /** only in server version >= 3.11.x */
+  token_customset: TokenCustomSet[]
 }
 
 export declare interface MessageList {

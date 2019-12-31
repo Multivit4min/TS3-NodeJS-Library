@@ -108,6 +108,14 @@ describe("TeamSpeakChannel", () => {
     expect(channel.neededSubscribePower).toBe(raw.channel_needed_subscribe_power)
   })
 
+  it("should verify the getter value of #totalClients()", () => {
+    expect(channel.bannerGfxUrl).toBe(raw.channel_banner_gfx_url)
+  })
+
+  it("should verify the getter value of #neededSubscribePower()", () => {
+    expect(channel.bannerMode).toBe(raw.channel_banner_mode)
+  })
+
   it("should verify the return value of #getNameSpace()", () => {
     expect(channel.getNameSpace()).toBe("channel")
   })

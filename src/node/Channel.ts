@@ -86,6 +86,14 @@ export class TeamSpeakChannel extends Abstract {
     return super.getPropertyByName("channel_needed_subscribe_power")!
   }
 
+  get bannerGfxUrl() {
+    return super.getPropertyByName("channel_banner_gfx_url")!
+  }
+
+  get bannerMode() {
+    return super.getPropertyByName("channel_banner_mode")!
+  }
+
   /** returns detailed configuration information about a channel including ID, topic, description, etc */
   getInfo() {
     return super.getParent().channelInfo(this.cid)

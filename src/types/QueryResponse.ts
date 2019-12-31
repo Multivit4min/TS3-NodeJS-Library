@@ -13,7 +13,7 @@
  */
 
 import * as ENUM from "./enum"
-import { TokenCustomSet } from "./ResponseTypes"
+import { TokenCustomSet, Token } from "./ResponseTypes"
 
 export type QueryResponse = Partial<QueryResponseTypes>
 
@@ -314,6 +314,7 @@ export declare interface QueryResponseTypes {
   token_id2: number
   token_created: number
   token_description: string
+  token_customset: TokenCustomSet[]
   flag_read: number
   tcldbid: number
   tname: string

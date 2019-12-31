@@ -1230,7 +1230,7 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
       "channellist",
-      ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty"]
+      ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty", "-banner"]
     )
   })
 

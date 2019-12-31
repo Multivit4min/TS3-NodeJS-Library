@@ -122,6 +122,8 @@ export function channellist(props: Partial<Response.ChannelList> = {}): Response
     channel_maxfamilyclients: 0,
     total_clients: 1,
     channel_needed_subscribe_power: 0,
+    channel_banner_gfx_url: "https://example.tld",
+    channel_banner_mode: 0,
     ...props
   }
 }
@@ -549,6 +551,7 @@ export function privilegekeylist(props: Partial<Response.PrivilegeKeyList> = {})
     token_id2: 0,
     token_created: 0,
     token_description: "",
+    token_customset: [{ ident: "foo", value: "bar" }],
     ...props
   }
 }
