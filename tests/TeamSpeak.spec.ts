@@ -30,12 +30,18 @@ jest.mock("../src/transport/FileTransfer", () => {
   return { FileTransfer }
 })
 
-import { TeamSpeak, QueryProtocol, TextMessageTargetMode, LogLevel, ReasonIdentifier } from "../src/TeamSpeak"
-import { TeamSpeakServerGroup } from "../src/node/ServerGroup"
-import { TeamSpeakServer } from "../src/node/Server"
-import { TeamSpeakChannel } from "../src/node/Channel"
-import { TeamSpeakChannelGroup } from "../src/node/ChannelGroup"
-import { TeamSpeakClient } from "../src/node/Client"
+import {
+  TeamSpeak,
+  QueryProtocol,
+  TextMessageTargetMode,
+  LogLevel,
+  ReasonIdentifier,
+  TeamSpeakChannel,
+  TeamSpeakServer,
+  TeamSpeakClient,
+  TeamSpeakServerGroup,
+  TeamSpeakChannelGroup
+} from "../src"
 
 import * as mocks from "./mocks/queryresponse"
 
@@ -916,12 +922,18 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupClientList()", async () => {
-    await teamspeak.channelGroupClientList(10, 5)
+    await teamspeak.channelGroupClientList(10, 5, 1)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10, cid: 5 })
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10, cid: 5, cldbid: 1 })
   })
 
-  it("should verify parameters of #channelGroupClientList() without cid", async () => {
+  it("should verify parameters of #channelGroupClientList() without cldbid", async () => {
+    await teamspeak.channelGroupClientList(10, 5)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10 , cid: 5 })
+  })
+
+  it("should verify parameters of #channelGroupClientList() without cid and cldbid", async () => {
     await teamspeak.channelGroupClientList(10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: 10 })
