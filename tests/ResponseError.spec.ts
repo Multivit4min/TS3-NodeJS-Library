@@ -3,13 +3,15 @@ import { ResponseError } from "../src/exception/ResponseError"
 
 describe("ResponseError", () => {
 
+  let command: any = {}
+
   it("should verify the message of ResponseError with msg, extra_msg and failed_permid", () => {
     const error = new ResponseError({
       id: 2568,
       msg: "missing permissions",
       extra_msg: "additional",
       failed_permid: 10
-    })
+    }, command)
     expect(error.message).toBe("missing permissions, additional, failed on permid 10")
   })
 
@@ -18,7 +20,7 @@ describe("ResponseError", () => {
       id: 3329,
       msg: "connection failed, you are banned",
       extra_msg: "you may retry in 600 seconds"
-    })
+    }, command)
     expect(error.message).toBe("connection failed, you are banned, you may retry in 600 seconds")
   })
 
@@ -27,7 +29,7 @@ describe("ResponseError", () => {
       id: 2568,
       msg: "missing permissions",
       failed_permid: 10
-    })
+    }, command)
     expect(error.message).toBe("missing permissions, failed on permid 10")
   })
 
@@ -37,7 +39,7 @@ describe("ResponseError", () => {
       msg: "missing permissions",
       extra_msg: "some extra message",
       failed_permid: 10
-    })
+    }, command)
     expect(error.toString()).toBe("missing permissions, some extra message, failed on permid 10")
   })
 
@@ -48,7 +50,7 @@ describe("ResponseError", () => {
       extra_msg: "some extra message",
       failed_permid: 10
     }
-    const error = new ResponseError(data)
+    const error = new ResponseError(data, command)
     expect(error.toJSON()).toEqual({ message: "missing permissions, some extra message, failed on permid 10", ...data })
   })
 
