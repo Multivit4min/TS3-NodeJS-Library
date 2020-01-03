@@ -1,4 +1,5 @@
 import { QueryErrorMessage } from "../types/ResponseTypes"
+import { Command } from "../transport/Command"
 
 export class ResponseError extends Error implements QueryErrorMessage {
 
@@ -6,9 +7,11 @@ export class ResponseError extends Error implements QueryErrorMessage {
   readonly msg: string
   readonly extra_msg?: string
   readonly failed_permid?: number
+  readonly source: Command
 
-  constructor(error: QueryErrorMessage) {
+  constructor(error: QueryErrorMessage, source: Command) {
     super(error.msg)
+    this.source = source
     this.id = error.id
     this.msg = error.msg
     this.extra_msg = error.extra_msg

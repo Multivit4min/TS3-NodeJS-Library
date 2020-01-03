@@ -101,7 +101,7 @@ export class Command {
   /** get the parsed error object which has been received from the TeamSpeak Query */
   getError() {
     if (!this.hasError()) return null
-    return new ResponseError(this.error!)
+    return new ResponseError(this.error!, this)
   }
 
   /** checks if a error has been received */
