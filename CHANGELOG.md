@@ -5,6 +5,7 @@
 * add token_customset to return parameter of privilegekeylist for server version 3.11
 * add -banners flag to channellist method and added getters to the TeamSpeakChannel class
 * ResponseError has now the property `source` which holds the Command instance which generated the error
+* internally change input of `clientAddServerGroup` and `serverGroupDelClient`
 
 ### 2.3.1 - 13.12.2019
 * added more exports for the index file

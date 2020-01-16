@@ -706,7 +706,7 @@ export class TeamSpeak extends EventEmitter {
    * @param sgid the servergroup id which the client(s) should be removed from
    */
   serverGroupDelClient(cldbid: number|number[], sgid: number) {
-    return this.execute("servergroupdelclient", { cldbid, sgid })
+    return this.execute("servergroupdelclient", { sgid, cldbid })
   }
 
 
@@ -726,7 +726,7 @@ export class TeamSpeak extends EventEmitter {
    * @param sgid one or more servergroup ids which the client should be added to
    */
   clientAddServerGroup(cldbid: number, sgid: number|number[]) {
-    return this.execute("clientaddservergroup", { sgid, cldbid })
+    return this.execute("clientaddservergroup", { cldbid, sgid })
   }
 
 
