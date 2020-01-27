@@ -1,6 +1,10 @@
 # Changelog
 
-### 2.3.2 - 15.01.2019
+### 2.3.3 - 27.01.2020
+* removed channel_cpid
+* added cpid to channeledit props
+
+### 2.3.2 - 15.01.2020
 * update dependencies
 * add token_customset to return parameter of privilegekeylist for server version 3.11
 * add -banners flag to channellist method and added getters to the TeamSpeakChannel class
