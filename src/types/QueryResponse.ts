@@ -183,7 +183,6 @@ export declare interface QueryResponseTypes {
   pid: number,
   cpid: number,
   order: number,
-  channel_cpid: number,
   channel_order: number,
   channel_name: string,
   channel_password: string,

@@ -66,6 +66,7 @@ export declare type ServerEdit = {
 
 export declare type ChannelEdit = {
   cid?: number 
+  cpid?: number
   channel_name?: string 
   channel_topic?: string 
   channel_password?: string
@@ -84,7 +85,6 @@ export declare type ChannelEdit = {
   channel_needed_talk_power?: number 
   channel_name_phonetic?: string 
   channel_codec_is_unencrypted?: number 
-  channel_cpid?: number
 }
 
 export declare type InstanceEdit = {

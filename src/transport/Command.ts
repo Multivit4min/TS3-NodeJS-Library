@@ -502,7 +502,6 @@ export namespace Command {
     pid: Command.parseNumber,
     cpid: Command.parseNumber,
     order: Command.parseNumber,
-    channel_cpid: Command.parseNumber,
     channel_order: Command.parseNumber,
     channel_name: Command.parseString,
     channel_password: Command.parseString,
