@@ -65,6 +65,7 @@ describe("TeamSpeak", () => {
         .toEqual({
           protocol: QueryProtocol.RAW,
           host: "127.0.0.1",
+          ignoreQueries: false,
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
@@ -77,6 +78,7 @@ describe("TeamSpeak", () => {
         .toEqual({
           protocol: QueryProtocol.RAW,
           host: "127.0.0.1",
+          ignoreQueries: false,
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
@@ -91,6 +93,7 @@ describe("TeamSpeak", () => {
         .toEqual({
           protocol: QueryProtocol.SSH,
           host: "127.0.0.1",
+          ignoreQueries: false,
           queryport: 10022,
           readyTimeout: 10000,
           keepAlive: true,
@@ -103,6 +106,7 @@ describe("TeamSpeak", () => {
         .toEqual({
           protocol: QueryProtocol.RAW,
           host: "127.0.0.1",
+          ignoreQueries: false,
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,

@@ -11,10 +11,11 @@ import { TeamSpeakChannelGroup } from "./node/ChannelGroup"
 import * as Response from "./types/ResponseTypes"
 import * as Event from "./types/Events"
 import * as Props from "./types/PropertyTypes"
-import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
+import { QueryProtocol, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel, ClientType } from "./types/enum"
 import { Command } from "./transport/Command"
 
 import { Context, SelectType } from "./types/context"
+import { EventError } from "./exception/EventError"
 export * from "./types/enum"
 
 /**
@@ -56,6 +57,8 @@ export interface ConnectionParams {
   readyTimeout: number,
   /** wether a keepalive should get sent (default: true) */
   keepAlive: boolean,
+  /** wether query clients should be ignored allover (clientList, events, etc) */
+  ignoreQueries: boolean,
   /** local address the socket should connect from */
   localAddress?: string,
   /** wether it should automatically connect after instanciating (default: true) */
@@ -107,6 +110,7 @@ export class TeamSpeak extends EventEmitter {
       host: "127.0.0.1",
       queryport: config.protocol === QueryProtocol.SSH ? 10022 : 10011,
       readyTimeout: 10000,
+      ignoreQueries: false,
       keepAlive: true,
       autoConnect: true,
       ...config
@@ -232,12 +236,13 @@ export class TeamSpeak extends EventEmitter {
    * @param event the raw teamspeak event
    */
   private evcliententerview(event: QueryResponse) {
-    this.clientList()
-      .then(clients => {
-        const client = clients.find(client => client.clid === event.clid)
-        super.emit("clientconnect", { client, cid: event.ctid })
-      })
-      .catch(error => this.emit("error", error))
+    this.clientList().then(clients => {
+      const client = clients.find(client => client.clid === event.clid)
+      if (!client) throw new EventError(`could not fetch client with id ${event.clid}`, "cliententerview")
+      if (this.ignoreQueryClient(client.type)) return
+      super.emit("clientconnect", { client, cid: event.ctid })
+    })
+    .catch(error => this.emit("error", error))
   }
 
 
@@ -247,8 +252,10 @@ export class TeamSpeak extends EventEmitter {
    */
   private evclientleftview(event: QueryResponse) {
     const { clid } = event
+    const client = this.clients[String(clid)]
+    if (client && this.ignoreQueryClient(client.type)) return
     super.emit("clientdisconnect", {
-      client: (String(clid) in this.clients) ? this.clients[String(clid)!].toJSON() : { clid },
+      client: client ? client : { clid },
       event
     })
     Reflect.deleteProperty(this.clients, String(clid))
@@ -259,10 +266,11 @@ export class TeamSpeak extends EventEmitter {
    * @param event the raw teamspeak event
    */
   private evtokenused(event: QueryResponse) {
-    this.getClientByID(event.clid!)
-      .then(client => {
-        super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2, tokencustomset: event.tokencustomset })
-      }).catch(e => super.emit("error", e))
+    this.getClientByID(event.clid!).then(client => {
+      if (!client) throw new EventError(`could not fetch client with id ${event.clid}`, "tokenused")
+      if (this.ignoreQueryClient(client.type)) return
+      super.emit("tokenused", {client, token: event.token, token1: event.token1, token2: event.token2, tokencustomset: event.tokencustomset })
+    }).catch(e => super.emit("error", e))
   }
 
 
@@ -271,10 +279,11 @@ export class TeamSpeak extends EventEmitter {
    * @param event the raw teamspeak event
    */
   private evtextmessage(event: QueryResponse) {
-    this.getClientByID(event.invokerid!)
-      .then(invoker => {
-        super.emit("textmessage", { invoker, msg: event.msg, targetmode: event.targetmode })
-      }).catch(e => super.emit("error", e))
+    this.getClientByID(event.invokerid!).then(invoker => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "textmessage")
+      if (this.ignoreQueryClient(invoker.type)) return
+      super.emit("textmessage", { invoker, msg: event.msg, targetmode: event.targetmode })
+    }).catch(e => super.emit("error", e))
   }
 
   /**
@@ -286,6 +295,9 @@ export class TeamSpeak extends EventEmitter {
       this.getClientByID(event.clid!),
       this.getChannelByID(event.ctid!)
     ]).then(([client, channel]) => {
+      if (!client) throw new EventError(`could not fetch client with id ${event.clid}`, "clientmoved")
+      if (!channel) throw new EventError(`could not fetch channel with id ${event.ctid}`, "clientmoved")
+      if (this.ignoreQueryClient(client.type)) return
       this.emit("clientmoved", { client, channel, reasonid: event.reasonid })
     }).catch(e => this.emit("error", e))
   }
@@ -295,14 +307,15 @@ export class TeamSpeak extends EventEmitter {
    * @param event the raw teamspeak event
    */
   private async evserveredited(event: QueryResponse) {
-    this.getClientByID(event.invokerid!)
-      .then(invoker => {
-        const modified: QueryResponse = {}
-        Object.keys(event)
-          .filter(k => k.startsWith("virtualserver_"))
-          .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
-        this.emit("serveredit", { invoker, modified, reasonid: event.reasonid })
-      }).catch(e => this.emit("error", e))
+    this.getClientByID(event.invokerid!).then(invoker => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "serveredited")
+      if (this.ignoreQueryClient(invoker.type)) return
+      const modified: QueryResponse = {}
+      Object.keys(event)
+        .filter(k => k.startsWith("virtualserver_"))
+        .forEach(<T extends keyof QueryResponse>(k: T) => modified[k] = event[k])
+      this.emit("serveredit", { invoker, modified, reasonid: event.reasonid })
+    }).catch(e => this.emit("error", e))
   }
 
   /**
@@ -314,6 +327,9 @@ export class TeamSpeak extends EventEmitter {
       this.getClientByID(event.invokerid!),
       this.getChannelByID(event.cid!)
     ]).then(([invoker, channel]) => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "channeledited")
+      if (this.ignoreQueryClient(invoker.type)) return
+      if (!channel) throw new EventError(`could not fetch channel with id ${event.cid}`, "channeledited")
       const modified: Partial<QueryResponse> = {}
       Object.keys(event)
         .filter(k => k.startsWith("channel_"))
@@ -336,6 +352,9 @@ export class TeamSpeak extends EventEmitter {
       this.getClientByID(event.invokerid!),
       this.getChannelByID(event.cid!)
     ]).then(([invoker, channel]) => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "channelcreated")
+      if (this.ignoreQueryClient(invoker.type)) return
+      if (!channel) throw new EventError(`could not fetch channel with id ${event.cid}`, "channelcreated")
       const modified: QueryResponse = {}
       Object.keys(event)
         .filter(k => k.startsWith("channel_"))
@@ -359,6 +378,9 @@ export class TeamSpeak extends EventEmitter {
       this.getChannelByID(event.cid!),
       this.getChannelByID(event.cpid!)
     ]).then(([invoker, channel, parent]) => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "channelmoved")
+      if (this.ignoreQueryClient(invoker.type)) return
+      if (!channel) throw new EventError(`could not fetch channel with id ${event.cid}`, "channelmoved")
       this.emit("channelmoved", { invoker, channel, parent, order: event.order })
     }).catch(e => this.emit("error", e))
   }
@@ -368,9 +390,12 @@ export class TeamSpeak extends EventEmitter {
    * @param event the raw teamspeak event
    */
   private evchanneldeleted(event: QueryResponse) {
-    this.getClientByID(event.invokerid!)
-      .then(invoker => this.emit("channeldelete", { invoker, cid: event.cid }))
-      .catch(e => this.emit("error", e))
+    this.getClientByID(event.invokerid!).then(invoker => {
+      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "channelmoved")
+      if (this.ignoreQueryClient(invoker.type)) return
+      this.emit("channeldelete", { invoker, cid: event.cid })
+    })
+    .catch(e => this.emit("error", e))
   }
 
   /** priorizes the next command, this commands will be first in execution */
@@ -1781,6 +1806,7 @@ export class TeamSpeak extends EventEmitter {
    * Lists all Clients with a given Filter
    */
   clientList(filter: Partial<Response.ClientList> = {}) {
+    if (this.config.ignoreQueries) filter.client_type = ClientType.Regular
     return this.execute("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"])
       .then(TeamSpeak.toArray)
       .then(clients => this.handleCache(this.clients, clients, "clid", TeamSpeakClient))
@@ -1788,6 +1814,10 @@ export class TeamSpeak extends EventEmitter {
       .then(clients => clients.map(c => this.clients[String(c.clid)]))
   }
 
+
+  /**
+   * Lists currently active file transfers
+   */
   ftList(): Promise<Response.FTList[]> {
     return this.execute("ftlist")
   }
@@ -2059,6 +2089,14 @@ export class TeamSpeak extends EventEmitter {
   private updateContext(data: Partial<Context>) {
     this.context = { ...this.context, ...data }
     return this
+  }
+
+  /**
+   * wether the query client should get handled or not
+   * @param type the client type
+   */
+  private ignoreQueryClient(type: number) {
+    return this.config.ignoreQueries && type === ClientType.ServerQuery
   }
 
   /**

@@ -39,3 +39,4 @@ export { TeamSpeakServer } from "./node/Server"
 export { TeamSpeakServerGroup } from "./node/ServerGroup"
 
 export { ResponseError } from "./exception/ResponseError"
+export { EventError } from "./exception/EventError"
