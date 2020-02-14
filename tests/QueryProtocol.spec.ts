@@ -45,6 +45,7 @@ import { ProtocolSSH } from "../src/transport/protocols/ssh"
 const config = {
   host: "0.0.0.0",
   protocol: QueryProtocol.RAW,
+  ignoreQueries: false,
   queryport: 10011,
   readyTimeout: 1000,
   keepAlive: false
