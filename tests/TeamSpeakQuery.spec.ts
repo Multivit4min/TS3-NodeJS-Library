@@ -36,6 +36,7 @@ describe("TeamSpeakQuery", () => {
     const query = new TeamSpeakQuery({
       queryport: 10011,
       host: "127.0.0.1",
+      ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
       readyTimeout: 10000
@@ -62,6 +63,7 @@ describe("TeamSpeakQuery", () => {
     const query = new TeamSpeakQuery({
       queryport: 10011,
       host: "127.0.0.1",
+      ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
       readyTimeout: 10000
@@ -86,6 +88,7 @@ describe("TeamSpeakQuery", () => {
     const query = new TeamSpeakQuery({
       queryport: 10011,
       host: "127.0.0.1",
+      ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
       readyTimeout: 10000
