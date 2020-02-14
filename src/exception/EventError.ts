@@ -7,13 +7,13 @@ export class EventError extends Error {
    * @param eventName source event of this error
    */
   constructor(message: string, eventName: string) {
-    super(message)
+    super(`${message} in event "${eventName}"`)
     this.eventName = eventName
   }
 
   /* returns a string representation for the error */
   toString() {
-    return `${this.message} in event "${this.eventName}"`
+    return this.message
   }
 
   /* returns a json representation for this error */
