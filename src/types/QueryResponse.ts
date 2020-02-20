@@ -13,7 +13,7 @@
  */
 
 import * as ENUM from "./enum"
-import { TokenCustomSet, Token } from "./ResponseTypes"
+import { TokenCustomSet } from "./ResponseTypes"
 
 export type QueryResponse = Partial<QueryResponseTypes>
 
@@ -337,5 +337,9 @@ export declare interface QueryResponseTypes {
   count: number
   salt: string
   snapshot: string
-
+  apikey: string
+  scope: ENUM.ApiKeyScope
+  time_left: number
+  created_at: number
+  expires_at: number
 }

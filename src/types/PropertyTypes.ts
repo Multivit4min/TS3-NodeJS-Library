@@ -1,5 +1,21 @@
 import * as ENUM from "./enum"
 
+export declare type ApiKeyList = {
+  /** database ids to list  */
+  cldbid?: number|"*"
+  /** offset from where the list should start */
+  start?: number
+  /** amount of entries to retrieve */
+  duration?: number
+}
+
+export declare type ApiKeyAdd = {
+  scope: ENUM.ApiKeyScope
+  /* validity of token in days */
+  lifetime?: number
+  cldbid?: number
+}
+
 export declare type ClientUpdate = {
   client_nickname: string
 }

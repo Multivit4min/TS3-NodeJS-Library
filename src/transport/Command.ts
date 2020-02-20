@@ -655,6 +655,11 @@ export namespace Command {
     sortid: Command.parseNumber,
     count: Command.parseNumber,
     salt: Command.parseString,
-    snapshot: Command.parseString
+    snapshot: Command.parseString,
+    apikey: Command.parseString,
+    scope: Command.parseString,
+    time_left: Command.parseNumber,
+    created_at: Command.parseNumber,
+    expires_at: Command.parseNumber
   }
 }

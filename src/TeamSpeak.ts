@@ -453,6 +453,26 @@ export class TeamSpeak extends EventEmitter {
     return this.execute("queryloginlist", { pattern, start, duration }, ["-count"]).then(TeamSpeak.toArray)
   }
 
+  apiKeyAdd(props: Props.ApiKeyAdd): Promise<Response.ApiKeyAdd> {
+    return this.execute("apikeyadd", props).then(TeamSpeak.singleResponse)
+  }
+
+  /**
+   * Lists all apikeys owned by the user, or of all users using cldbid=*.
+   * Usage of cldbid=... requires b_virtualserver_apikey_manage.
+   */
+  apiKeyList(props: Props.ApiKeyList = {}): Promise<Response.ApiKeyList> {
+    return this.execute("apikeylist", props, ["-count"]).then(TeamSpeak.toArray)
+  }
+
+  /**
+   * Deletes an apikey. Any apikey owned by the current user, can always be deleted
+   * Deleting apikeys from other requires b_virtualserver_apikey_manage
+   * @param id the key id to delete
+   */
+  apiKeyDel(id: number) {
+    return this.execute("apikeydel", { id })
+  }
 
   /**
    * Updates your own ServerQuery login credentials using a specified username.

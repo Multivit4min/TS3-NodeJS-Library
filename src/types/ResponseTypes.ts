@@ -1,5 +1,5 @@
 import { TeamSpeakServer } from "../node/Server"
-import { QueryResponse } from "./QueryResponse"
+import { ApiKeyScope } from "./enum"
 
 export declare interface ClientSetServerQueryLogin {
   client_login_password: string
@@ -8,6 +8,28 @@ export declare interface ClientSetServerQueryLogin {
 export declare interface ClientFind {
   clid: number
   client_nickname: string
+}
+
+export declare interface ApiKeyAdd {
+  apikey: string
+  id: number
+  sid: number
+  cldbid: number
+  scope: ApiKeyScope
+  time_left: number
+}
+
+export declare type ApiKeyList = ApiKeyEntry[]
+
+export declare interface ApiKeyEntry {
+  count: number
+  id: number
+  sid: number
+  cldbid: number
+  scope: ApiKeyScope
+  time_left: number
+  created_at: number
+  expires_at: number
 }
 
 export declare interface QueryErrorMessage {

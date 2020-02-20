@@ -111,3 +111,9 @@ export enum ClientType {
   Regular = 0,
   ServerQuery = 1
 }
+
+export enum ApiKeyScope {
+  manage = "manage",
+  read = "read",
+  write = "write"
+}
