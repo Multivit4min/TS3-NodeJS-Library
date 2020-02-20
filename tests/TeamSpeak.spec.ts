@@ -44,6 +44,7 @@ import {
 } from "../src"
 
 import * as mocks from "./mocks/queryresponse"
+import { ApiKeyScope } from "../src/TeamSpeak"
 
 describe("TeamSpeak", () => {
   let teamspeak: TeamSpeak = new TeamSpeak({})
@@ -199,6 +200,24 @@ describe("TeamSpeak", () => {
     await teamspeak.queryLoginList("search", 0, 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("queryloginlist", { pattern: "search", start: 0, duration: 10 }, ["-count"])
+  })
+
+  it("should verify parameters of #apiKeyAdd()", async () => {
+    await teamspeak.apiKeyAdd({ scope: ApiKeyScope.manage })
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("apikeyadd", { scope: "manage" })
+  })
+
+  it("should verify parameters of #apiKeyList()", async () => {
+    await teamspeak.apiKeyList({ start: 10 })
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("apikeylist", { start: 10 }, ["-count"])
+  })
+
+  it("should verify parameters of #apiKeyDel()", async () => {
+    await teamspeak.apiKeyDel(512)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("apikeydel", { id: 512 })
   })
 
   it("should verify parameters of #unregisterEvent()", async () => {
