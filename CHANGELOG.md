@@ -1,7 +1,8 @@
 # Changelog
 
-### 2.4.0 - 14.02.2020
+### 2.4.0 - 20.02.2020
 * added option to ignore query clients allover
+* added apikeyadd, apikeylist, apikeydel commands for teamspeak server beta 3.12.0
 * when query events are getting triggered it should now check if all required entities to fire the final event from the TeamSpeak Library otherwise it will throw an `EventError`
 
 ### 2.3.3 - 27.01.2020
