@@ -48,6 +48,7 @@ const config = {
   ignoreQueries: false,
   queryport: 10011,
   readyTimeout: 1000,
+  keepAliveTimeout: 250,
   keepAlive: false
 }
 
