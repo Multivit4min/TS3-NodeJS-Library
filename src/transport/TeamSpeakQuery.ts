@@ -214,7 +214,10 @@ export class TeamSpeakQuery extends EventEmitter {
   private keepAlive() {
     if (!this.config.keepAlive) return
     clearTimeout(this.keepAliveTimeout)
-    this.keepAliveTimeout = setTimeout(() => this.sendKeepAlive(), 250 * 1000 - (Date.now() - this.lastcmd))
+    this.keepAliveTimeout = setTimeout(
+      () => this.sendKeepAlive(),
+      this.config.keepAliveTimeout * 1000 - (Date.now() - this.lastcmd)
+    )
   }
 
   /** dispatches the keepalive */

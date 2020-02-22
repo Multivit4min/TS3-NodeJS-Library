@@ -57,6 +57,8 @@ export interface ConnectionParams {
   readyTimeout: number,
   /** wether a keepalive should get sent (default: true) */
   keepAlive: boolean,
+  /** sends the keepalive after x seconds of inactivity (default: 250s) */
+  keepAliveTimeout: number,
   /** wether query clients should be ignored allover (clientList, events, etc) */
   ignoreQueries: boolean,
   /** local address the socket should connect from */
@@ -112,6 +114,7 @@ export class TeamSpeak extends EventEmitter {
       readyTimeout: 10000,
       ignoreQueries: false,
       keepAlive: true,
+      keepAliveTimeout: 250,
       autoConnect: true,
       ...config
     }

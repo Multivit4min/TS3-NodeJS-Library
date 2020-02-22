@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.4.1 - 22.02.2020
+* made the duration till a keepalive is being sent configurable with `keepAliveTimeout`
+
 ### 2.4.0 - 20.02.2020
 * added option to ignore query clients allover
 * added apikeyadd, apikeylist, apikeydel commands for teamspeak server beta 3.12.0

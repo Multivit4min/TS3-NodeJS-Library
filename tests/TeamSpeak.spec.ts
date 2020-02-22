@@ -70,6 +70,7 @@ describe("TeamSpeak", () => {
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
+          keepAliveTimeout: 250,
           autoConnect: true
         })
     })
@@ -83,6 +84,7 @@ describe("TeamSpeak", () => {
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
+          keepAliveTimeout: 250,
           username: "foo",
           password: "bar",
           autoConnect: true
@@ -98,6 +100,7 @@ describe("TeamSpeak", () => {
           queryport: 10022,
           readyTimeout: 10000,
           keepAlive: true,
+          keepAliveTimeout: 250,
           autoConnect: true
         })
     })
@@ -111,6 +114,7 @@ describe("TeamSpeak", () => {
           queryport: 10011,
           readyTimeout: 10000,
           keepAlive: true,
+          keepAliveTimeout: 250,
           serverport: 5000,
           autoConnect: true
         })
