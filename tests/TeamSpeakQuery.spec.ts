@@ -39,6 +39,7 @@ describe("TeamSpeakQuery", () => {
       ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
+      keepAliveTimeout: 250,
       readyTimeout: 10000
     })
     query.connect()
@@ -66,6 +67,7 @@ describe("TeamSpeakQuery", () => {
       ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
+      keepAliveTimeout: 250,
       readyTimeout: 10000
     })
     query.connect()
@@ -91,6 +93,7 @@ describe("TeamSpeakQuery", () => {
       ignoreQueries: false,
       protocol: QueryProtocol.RAW,
       keepAlive: true,
+      keepAliveTimeout: 250,
       readyTimeout: 10000
     })
     query.connect()
