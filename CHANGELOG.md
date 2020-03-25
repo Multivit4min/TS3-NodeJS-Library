@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.4.2 - 25.03.2020
+* update dependencies
+
 ### 2.4.1 - 22.02.2020
 * made the duration till a keepalive is being sent configurable with `keepAliveTimeout`
 

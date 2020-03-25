@@ -42,6 +42,7 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
   private handleReady() {
     this.client.shell(false, (err, stream) => {
       if (err) return this.emit("error", err)
+      if (!stream) return this.emit("error", new Error(`could not create stream`))
       this.stream = stream
       this.stream.setEncoding("utf8")
       this.stream.on("data", (chunk: string) => this.handleData(chunk))
