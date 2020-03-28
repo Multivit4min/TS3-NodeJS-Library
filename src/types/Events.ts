@@ -14,8 +14,14 @@ export declare interface ClientConnect {
 }
 
 export declare interface ClientDisconnect {
-  client: ClientList
-  event: any
+  client?: TeamSpeakClient
+  event: {
+    cfid: number,
+    ctid: number,
+    reasonid: number,
+    reasonmsg: string,
+    clid: number
+  }
 }
 
 export declare interface TokenUsed {

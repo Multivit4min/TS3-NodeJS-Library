@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.4.3 - 28.03.2020
+* fix typings for clientdisconnect event
+
 ### 2.4.2 - 25.03.2020
 * update dependencies
 
