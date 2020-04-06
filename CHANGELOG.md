@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.4.4 - 06.04.2020
+* update type definitions for serverinfo response
+
 ### 2.4.3 - 28.03.2020
 * fix typings for clientdisconnect event
 
