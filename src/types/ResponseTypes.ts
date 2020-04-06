@@ -300,6 +300,30 @@ export declare interface ServerInfo {
   virtualserver_nickname: string
   virtualserver_antiflood_points_needed_plugin_block: number
   virtualserver_status: string
+  connection_filetransfer_bandwidth_sent: number
+  connection_filetransfer_bandwidth_received: number
+  connection_filetransfer_bytes_sent_total: number
+  connection_filetransfer_bytes_received_total: number
+  connection_packets_sent_speech: number
+  connection_bytes_sent_speech: number
+  connection_packets_received_speech: number
+  connection_bytes_received_speech: number
+  connection_packets_sent_keepalive: number
+  connection_bytes_sent_keepalive: number
+  connection_packets_received_keepalive: number
+  connection_bytes_received_keepalive: number
+  connection_packets_sent_control: number
+  connection_bytes_sent_control: number
+  connection_packets_received_control: number
+  connection_bytes_received_control: number
+  connection_packets_sent_total: number
+  connection_bytes_sent_total: number
+  connection_packets_received_total: number
+  connection_bytes_received_total: number
+  connection_bandwidth_sent_last_second_total: number
+  connection_bandwidth_sent_last_minute_total: number
+  connection_bandwidth_received_last_second_total: number
+  connection_bandwidth_received_last_minute_total: number
 }
 
 export declare interface ServerIdGetByPort {
