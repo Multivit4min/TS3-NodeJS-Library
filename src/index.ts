@@ -1,10 +1,8 @@
 export {
-  TeamSpeak,
-  ConnectionParams
+  TeamSpeak
 } from "./TeamSpeak"
 
 export {
-  QueryProtocol,
   HostMessageMode,
   HostBannerMode,
   Codec,

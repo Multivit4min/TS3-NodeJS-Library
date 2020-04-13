@@ -1,15 +1,17 @@
-import { QueryResponseTypes, QueryResponse } from "../types/QueryResponse"
 import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
+import { TeamSpeakQuery } from "./TeamSpeakQuery"
 
 export class Command {
+
+  static SNAKE_CASE_IDENTIFIER = "_"
   private requestParser: Command.RequestParser = Command.getParsers().request
   private responseParser: Command.ResponseParser = Command.getParsers().response
   private cmd: string = ""
   private options: Command.options = {}
   private multiOpts: Command.multiOpts = []
   private flags: string[] = []
-  private response: QueryResponse[] = []
+  private response: TeamSpeakQuery.Response = []
   private error: QueryErrorMessage|null = null
 
   /** Initializes the Respone with default values */
@@ -94,7 +96,7 @@ export class Command {
    * @param error the error line which has been received from the TeamSpeak Query
    */
   setError(error: string): Command {
-    this.error = <QueryErrorMessage>this.parse(error)[0]
+    this.error = <QueryErrorMessage><unknown>this.parse(error)[0]
     return this
   }
 
@@ -109,8 +111,8 @@ export class Command {
     return (
       this.error !== null &&
       typeof this.error === "object" &&
-      typeof this.error.id === "number" &&
-      this.error.id > 0
+      typeof this.error.id === "string" &&
+      this.error.id !== "0"
     )
   }
 
@@ -145,7 +147,7 @@ export class Command {
    */
   static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
     const [data, snapshot] = raw.split("|")
-    return <Partial<QueryResponse>[]>[{
+    return <TeamSpeakQuery.Response>[{
       ...Command.parse({ raw: data })[0],
       snapshot
     }]
@@ -164,11 +166,11 @@ export class Command {
    * parses a query response
    * @param data the query response received
    */
-  static parse({ raw }: Pick<Command.ParserArgument, "raw">) {
-    return <Partial<QueryResponse>[]> raw
+  static parse({ raw }: Pick<Command.ParserArgument, "raw">): TeamSpeakQuery.Response {
+    return raw
       .split("|")
       .map(entry => {
-        const res: Partial<Record<keyof QueryResponseTypes|string, QueryResponseTypes[keyof QueryResponseTypes]|string|undefined>> = {}
+        const res: TeamSpeakQuery.ResponseEntry = {}
         entry.split(" ").forEach(str => {
           const { key, value } = Command.getKeyValue(str)
           res[key] = Command.parseValue(key, value)
@@ -221,6 +223,7 @@ export class Command {
    * @return the parsed String which is readable by the TeamSpeak Query
    */
   static escapeKeyValue(key: string, value: string|string[]): string {
+    key = Command.toSnakeCase(key)
     if (Array.isArray(value)) {
       return value.map(v => `${Command.escape(key)}=${Command.escape(v)}`).join("|")
     } else {
@@ -236,7 +239,10 @@ export class Command {
     const index = str.indexOf("=")
     if (index === -1) return { key: str, value: undefined }
     const value = str.substring(index+1)
-    return { key: str.substring(0, index), value: value === "" ? undefined : value }
+    return { key:
+      Command.toCamelCase(str.substring(0, index)),
+      value: value === "" ? undefined : value
+    }
   }
 
   /**
@@ -247,10 +253,18 @@ export class Command {
   static parseValue(k: string, v: string|undefined) {
     if (v === undefined) return undefined
     if (Object.keys(Command.Identifier).includes(k)) { 
-      return Command.Identifier[<keyof typeof Command.Identifier>k](v)
+      return Command.Identifier[k](v)
     } else {
       return this.parseString(v)
     }
+  }
+
+  /**
+   * parses a number
+   * @param value string to parse
+   */
+  static parseBoolean(value: string) {
+    return Command.parseNumber(value) === 1
   }
 
   /**
@@ -316,6 +330,31 @@ export class Command {
       .replace(/\f/g, "\\f")
       .replace(/ /g, "\\s")
   }
+
+  /** converts a string to camel case */
+  static toCamelCase(str: string) {
+    let toUpper = false
+    return str.split("").map(char => {
+      if (char === Command.SNAKE_CASE_IDENTIFIER) {
+        toUpper = true
+        return ""
+      } else if (toUpper) {
+        toUpper = false
+        return char.toUpperCase()
+      } else {
+        return char
+      }
+    }).join("")
+  }
+
+  /** converts a string to snake case */
+  static toSnakeCase(str: string) {
+    return str.split("").map(char => {
+      const lower = char.toLowerCase()
+      if (char !== lower) return `${Command.SNAKE_CASE_IDENTIFIER}${lower}`
+      return char
+    }).join("")
+  }
 }
 
 export namespace Command {
@@ -329,245 +368,244 @@ export namespace Command {
     request: RequestParser
   }
   export type ParserCallback = (parser: Parsers) => Parsers
-  export type ResponseParser = (data: ParserArgument) => QueryResponse[]
+  export type ResponseParser = (data: ParserArgument) => TeamSpeakQuery.Response
   export type RequestParser = (cmd: Command) => string
-  export type options = Record<string, string|string[]|number|number[]|undefined|null>
+  export type options = Record<string, TeamSpeakQuery.ValueTypes>
   export type multiOpts = Command.options[]
   export type flags = (number|string|null)[]
 
-
-  export const Identifier: Record<keyof QueryResponseTypes, (value: string) => any> = {
-    sid: Command.parseNumber,
-    server_id: Command.parseNumber,
-    virtualserver_nickname: Command.parseString,
-    virtualserver_unique_identifier: Command.parseString,
-    virtualserver_name: Command.parseString,
-    virtualserver_welcomemessage: Command.parseString,
-    virtualserver_platform: Command.parseString,
-    virtualserver_version: Command.parseString,
-    virtualserver_maxclients: Command.parseNumber,
-    virtualserver_password: Command.parseString,
-    virtualserver_clientsonline: Command.parseNumber,
-    virtualserver_channelsonline: Command.parseNumber,
-    virtualserver_created: Command.parseNumber,
-    virtualserver_uptime: Command.parseNumber,
-    virtualserver_codec_encryption_mode: Command.parseNumber,
-    virtualserver_hostmessage: Command.parseString,
-    virtualserver_hostmessage_mode: Command.parseNumber,
-    virtualserver_filebase: Command.parseString,
-    virtualserver_default_server_group: Command.parseNumber,
-    virtualserver_default_channel_group: Command.parseNumber,
-    virtualserver_flag_password: Command.parseNumber,
-    virtualserver_default_channel_admin_group: Command.parseNumber,
-    virtualserver_max_download_total_bandwidth: Command.parseNumber,
-    virtualserver_max_upload_total_bandwidth: Command.parseNumber,
-    virtualserver_hostbanner_url: Command.parseString,
-    virtualserver_hostbanner_gfx_url: Command.parseString,
-    virtualserver_hostbanner_gfx_interval: Command.parseNumber,
-    virtualserver_complain_autoban_count: Command.parseNumber,
-    virtualserver_complain_autoban_time: Command.parseNumber,
-    virtualserver_complain_remove_time: Command.parseNumber,
-    virtualserver_min_clients_in_channel_before_forced_silence: Command.parseNumber,
-    virtualserver_priority_speaker_dimm_modificator: Command.parseNumber,
-    virtualserver_id: Command.parseNumber,
-    virtualserver_antiflood_points_needed_plugin_block: Command.parseNumber,
-    virtualserver_antiflood_points_tick_reduce: Command.parseNumber,
-    virtualserver_antiflood_points_needed_command_block: Command.parseNumber,
-    virtualserver_antiflood_points_needed_ip_block: Command.parseNumber,
-    virtualserver_client_connections: Command.parseNumber,
-    virtualserver_query_client_connections: Command.parseNumber,
-    virtualserver_hostbutton_tooltip: Command.parseString,
-    virtualserver_hostbutton_url: Command.parseString,
-    virtualserver_hostbutton_gfx_url: Command.parseString,
-    virtualserver_queryclientsonline: Command.parseNumber,
-    virtualserver_download_quota: Command.parseNumber,
-    virtualserver_upload_quota: Command.parseNumber,
-    virtualserver_month_bytes_downloaded: Command.parseNumber,
-    virtualserver_month_bytes_uploaded: Command.parseNumber,
-    virtualserver_total_bytes_downloaded: Command.parseNumber,
-    virtualserver_total_bytes_uploaded: Command.parseNumber,
-    virtualserver_port: Command.parseNumber,
-    virtualserver_autostart: Command.parseNumber,
-    virtualserver_machine_id: Command.parseString,
-    virtualserver_needed_identity_security_level: Command.parseNumber,
-    virtualserver_log_client: Command.parseNumber,
-    virtualserver_log_query: Command.parseNumber,
-    virtualserver_log_channel: Command.parseNumber,
-    virtualserver_log_permissions: Command.parseNumber,
-    virtualserver_log_server: Command.parseNumber,
-    virtualserver_log_filetransfer: Command.parseNumber,
-    virtualserver_min_client_version: Command.parseNumber,
-    virtualserver_name_phonetic: Command.parseString,
-    virtualserver_icon_id: Command.parseNumber,
-    virtualserver_reserved_slots: Command.parseNumber,
-    virtualserver_total_packetloss_speech: Command.parseNumber,
-    virtualserver_total_packetloss_keepalive: Command.parseNumber,
-    virtualserver_total_packetloss_control: Command.parseNumber,
-    virtualserver_total_packetloss_total: Command.parseNumber,
-    virtualserver_total_ping: Command.parseNumber,
-    virtualserver_ip: Command.parseStringArray,
-    virtualserver_weblist_enabled: Command.parseNumber,
-    virtualserver_ask_for_privilegekey: Command.parseNumber,
-    virtualserver_hostbanner_mode: Command.parseNumber,
-    virtualserver_channel_temp_delete_delay_default: Command.parseNumber,
-    virtualserver_min_android_version: Command.parseNumber,
-    virtualserver_min_ios_version: Command.parseNumber,
-    virtualserver_status: Command.parseString,
-    connection_filetransfer_bandwidth_sent: Command.parseNumber,
-    connection_filetransfer_bandwidth_received: Command.parseNumber,
-    connection_filetransfer_bytes_sent_total: Command.parseNumber,
-    connection_filetransfer_bytes_received_total: Command.parseNumber,
-    connection_packets_sent_speech: Command.parseNumber,
-    connection_bytes_sent_speech: Command.parseNumber,
-    connection_packets_received_speech: Command.parseNumber,
-    connection_bytes_received_speech: Command.parseNumber,
-    connection_packets_sent_keepalive: Command.parseNumber,
-    connection_bytes_sent_keepalive: Command.parseNumber,
-    connection_packets_received_keepalive: Command.parseNumber,
-    connection_bytes_received_keepalive: Command.parseNumber,
-    connection_packets_sent_control: Command.parseNumber,
-    connection_bytes_sent_control: Command.parseNumber,
-    connection_packets_received_control: Command.parseNumber,
-    connection_bytes_received_control: Command.parseNumber,
-    connection_packets_sent_total: Command.parseNumber,
-    connection_bytes_sent_total: Command.parseNumber,
-    connection_packets_received_total: Command.parseNumber,
-    connection_bytes_received_total: Command.parseNumber,
-    connection_bandwidth_sent_last_second_total: Command.parseNumber,
-    connection_bandwidth_sent_last_minute_total: Command.parseNumber,
-    connection_bandwidth_received_last_second_total: Command.parseNumber,
-    connection_bandwidth_received_last_minute_total: Command.parseNumber,
-    connection_packetloss_total: Command.parseNumber,
-    connection_ping: Command.parseNumber,
-    clid: Command.parseNumber,
-    client_id: Command.parseNumber,
-    cldbid: Command.parseNumber,
-    client_database_id: Command.parseNumber,
-    client_channel_id: Command.parseNumber,
-    client_origin_server_id: Command.parseNumber,
-    client_nickname: Command.parseString,
-    client_type: Command.parseNumber,
-    client_away: Command.parseNumber,
-    client_away_message: Command.parseString,
-    client_flag_talking: Command.parseNumber,
-    client_input_muted: Command.parseNumber,
-    client_output_muted: Command.parseNumber,
-    client_input_hardware: Command.parseNumber,
-    client_output_hardware: Command.parseNumber,
-    client_talk_power: Command.parseNumber,
-    client_is_talker: Command.parseNumber,
-    client_is_priority_speaker: Command.parseNumber,
-    client_is_recording: Command.parseNumber,
-    client_is_channel_commander: Command.parseNumber,
-    client_unique_identifier: Command.parseString,
-    client_servergroups: Command.parseNumberArray,
-    client_channel_group_id: Command.parseNumber,
-    client_channel_group_inherited_channel_id: Command.parseNumber,
-    client_version: Command.parseString,
-    client_platform: Command.parseString,
-    client_idle_time: Command.parseNumber,
-    client_created: Command.parseNumber,
-    client_lastconnected: Command.parseNumber,
-    client_icon_id: Command.parseNumber,
-    client_country: Command.parseString,
-    client_outputonly_muted: Command.parseNumber,
-    client_default_channel: Command.parseNumber,
-    client_meta_data: Command.parseString,
-    client_version_sign: Command.parseString,
-    client_security_hash: Command.parseString,
-    client_login_name: Command.parseString,
-    client_login_password: Command.parseString,
-    client_totalconnections: Command.parseNumber,
-    client_flag_avatar: Command.parseString,
-    client_talk_request: Command.parseNumber,
-    client_talk_request_msg: Command.parseString,
-    client_month_bytes_uploaded: Command.parseNumber,
-    client_month_bytes_downloaded: Command.parseNumber,
-    client_total_bytes_uploaded: Command.parseNumber,
-    client_total_bytes_downloaded: Command.parseNumber,
-    client_nickname_phonetic: Command.parseString,
-    client_default_token: Command.parseString,
-    client_badges: Command.parseString,
-    client_base64HashClientUID: Command.parseString,
-    connection_connected_time: Command.parseNumber,
-    connection_client_ip: Command.parseString,
-    client_myteamspeak_id: Command.parseString,
-    client_integrations: Command.parseString,
-    client_description: Command.parseString,
-    client_needed_serverquery_view_power: Command.parseNumber,
-    client_myteamspeak_avatar: Command.parseString,
-    client_signed_badges: Command.parseString,
-    client_lastip: Command.parseString,
-    cid: Command.parseNumber,
-    pid: Command.parseNumber,
-    cpid: Command.parseNumber,
+  export const Identifier = {
+    sid: Command.parseString,
+    serverId: Command.parseString,
+    virtualserverNickname: Command.parseString,
+    virtualserverUniqueIdentifier: Command.parseString,
+    virtualserverName: Command.parseString,
+    virtualserverWelcomemessage: Command.parseString,
+    virtualserverPlatform: Command.parseString,
+    virtualserverVersion: Command.parseString,
+    virtualserverMaxclients: Command.parseNumber,
+    virtualserverPassword: Command.parseString,
+    virtualserverClientsonline: Command.parseNumber,
+    virtualserverChannelsonline: Command.parseNumber,
+    virtualserverCreated: Command.parseNumber,
+    virtualserverUptime: Command.parseNumber,
+    virtualserverCodecEncryptionMode: Command.parseNumber,
+    virtualserverHostmessage: Command.parseString,
+    virtualserverHostmessageMode: Command.parseNumber,
+    virtualserverFilebase: Command.parseString,
+    virtualserverDefaultServerGroup: Command.parseString,
+    virtualserverDefaultChannelGroup: Command.parseString,
+    virtualserverFlagPassword: Command.parseBoolean,
+    virtualserverDefaultChannelAdminGroup: Command.parseString,
+    virtualserverMaxDownloadTotalBandwidth: Command.parseNumber,
+    virtualserverMaxUploadTotalBandwidth: Command.parseNumber,
+    virtualserverHostbannerUrl: Command.parseString,
+    virtualserverHostbannerGfxUrl: Command.parseString,
+    virtualserverHostbannerGfxInterval: Command.parseNumber,
+    virtualserverComplainAutobanCount: Command.parseNumber,
+    virtualserverComplainAutobanTime: Command.parseNumber,
+    virtualserverComplainRemoveTime: Command.parseNumber,
+    virtualserverMinClientsInChannelBeforeForcedSilence: Command.parseNumber,
+    virtualserverPrioritySpeakerDimmModificator: Command.parseNumber,
+    virtualserverId: Command.parseString,
+    virtualserverAntifloodPointsNeededPluginBlock: Command.parseNumber,
+    virtualserverAntifloodPointsTickReduce: Command.parseNumber,
+    virtualserverAntifloodPointsNeededCommandBlock: Command.parseNumber,
+    virtualserverAntifloodPointsNeededIpBlock: Command.parseNumber,
+    virtualserverClientConnections: Command.parseNumber,
+    virtualserverQueryClientConnections: Command.parseNumber,
+    virtualserverHostbuttonTooltip: Command.parseString,
+    virtualserverHostbuttonUrl: Command.parseString,
+    virtualserverHostbuttonGfxUrl: Command.parseString,
+    virtualserverQueryclientsonline: Command.parseNumber,
+    virtualserverDownloadQuota: Command.parseNumber,
+    virtualserverUploadQuota: Command.parseNumber,
+    virtualserverMonthBytesDownloaded: Command.parseNumber,
+    virtualserverMonthBytesUploaded: Command.parseNumber,
+    virtualserverTotalBytesDownloaded: Command.parseNumber,
+    virtualserverTotalBytesUploaded: Command.parseNumber,
+    virtualserverPort: Command.parseNumber,
+    virtualserverAutostart: Command.parseNumber,
+    virtualserverMachineId: Command.parseString,
+    virtualserverNeededIdentitySecurityLevel: Command.parseNumber,
+    virtualserverLogClient: Command.parseNumber,
+    virtualserverLogQuery: Command.parseNumber,
+    virtualserverLogChannel: Command.parseNumber,
+    virtualserverLogPermissions: Command.parseNumber,
+    virtualserverLogServer: Command.parseNumber,
+    virtualserverLogFiletransfer: Command.parseNumber,
+    virtualserverMinClientVersion: Command.parseNumber,
+    virtualserverNamePhonetic: Command.parseString,
+    virtualserverIconId: Command.parseString,
+    virtualserverReservedSlots: Command.parseNumber,
+    virtualserverTotalPacketlossSpeech: Command.parseNumber,
+    virtualserverTotalPacketlossKeepalive: Command.parseNumber,
+    virtualserverTotalPacketlossControl: Command.parseNumber,
+    virtualserverTotalPacketlossTotal: Command.parseNumber,
+    virtualserverTotalPing: Command.parseNumber,
+    virtualserverIp: Command.parseStringArray,
+    virtualserverWeblistEnabled: Command.parseNumber,
+    virtualserverAskForPrivilegekey: Command.parseNumber,
+    virtualserverHostbannerMode: Command.parseNumber,
+    virtualserverChannelTempDeleteDelayDefault: Command.parseNumber,
+    virtualserverMinAndroidVersion: Command.parseNumber,
+    virtualserverMinIosVersion: Command.parseNumber,
+    virtualserverStatus: Command.parseString,
+    connectionFiletransferBandwidthSent: Command.parseNumber,
+    connectionFiletransferBandwidthReceived: Command.parseNumber,
+    connectionFiletransferBytesSentTotal: Command.parseNumber,
+    connectionFiletransferBytesReceivedTotal: Command.parseNumber,
+    connectionPacketsSentSpeech: Command.parseNumber,
+    connectionBytesSentSpeech: Command.parseNumber,
+    connectionPacketsReceivedSpeech: Command.parseNumber,
+    connectionBytesReceivedSpeech: Command.parseNumber,
+    connectionPacketsSentKeepalive: Command.parseNumber,
+    connectionBytesSentKeepalive: Command.parseNumber,
+    connectionPacketsReceivedKeepalive: Command.parseNumber,
+    connectionBytesReceivedKeepalive: Command.parseNumber,
+    connectionPacketsSentControl: Command.parseNumber,
+    connectionBytesSentControl: Command.parseNumber,
+    connectionPacketsReceivedControl: Command.parseNumber,
+    connectionBytesReceivedControl: Command.parseNumber,
+    connectionPacketsSentTotal: Command.parseNumber,
+    connectionBytesSentTotal: Command.parseNumber,
+    connectionPacketsReceivedTotal: Command.parseNumber,
+    connectionBytesReceivedTotal: Command.parseNumber,
+    connectionBandwidthSentLastSecondTotal: Command.parseNumber,
+    connectionBandwidthSentLastMinuteTotal: Command.parseNumber,
+    connectionBandwidthReceivedLastSecondTotal: Command.parseNumber,
+    connectionBandwidthReceivedLastMinuteTotal: Command.parseNumber,
+    connectionPacketlossTotal: Command.parseNumber,
+    connectionPing: Command.parseNumber,
+    clid: Command.parseString,
+    clientId: Command.parseString,
+    cldbid: Command.parseString,
+    clientDatabaseId: Command.parseString,
+    clientChannelId: Command.parseString,
+    clientOriginServerId: Command.parseString,
+    clientNickname: Command.parseString,
+    clientType: Command.parseNumber,
+    clientAway: Command.parseBoolean,
+    clientAwayMessage: Command.parseString,
+    clientFlagTalking: Command.parseBoolean,
+    clientInputMuted: Command.parseBoolean,
+    clientOutputMuted: Command.parseBoolean,
+    clientInputHardware: Command.parseBoolean,
+    clientOutputHardware: Command.parseBoolean,
+    clientTalkPower: Command.parseNumber,
+    clientIsTalker: Command.parseBoolean,
+    clientIsPrioritySpeaker: Command.parseNumber,
+    clientIsRecording: Command.parseBoolean,
+    clientIsChannelCommander: Command.parseBoolean,
+    clientUniqueIdentifier: Command.parseString,
+    clientServergroups: Command.parseStringArray,
+    clientChannelGroupId: Command.parseString,
+    clientChannelGroupInheritedChannelId: Command.parseString,
+    clientVersion: Command.parseString,
+    clientPlatform: Command.parseString,
+    clientIdleTime: Command.parseNumber,
+    clientCreated: Command.parseNumber,
+    clientLastconnected: Command.parseNumber,
+    clientIconId: Command.parseString,
+    clientCountry: Command.parseString,
+    clientOutputonlyMuted: Command.parseNumber,
+    clientDefaultChannel: Command.parseString,
+    clientMetaData: Command.parseString,
+    clientVersionSign: Command.parseString,
+    clientSecurityHash: Command.parseString,
+    clientLoginName: Command.parseString,
+    clientLoginPassword: Command.parseString,
+    clientTotalconnections: Command.parseNumber,
+    clientFlagAvatar: Command.parseString,
+    clientTalkRequest: Command.parseBoolean,
+    clientTalkRequestMsg: Command.parseString,
+    clientMonthBytesUploaded: Command.parseNumber,
+    clientMonthBytesDownloaded: Command.parseNumber,
+    clientTotalBytesUploaded: Command.parseNumber,
+    clientTotalBytesDownloaded: Command.parseNumber,
+    clientNicknamePhonetic: Command.parseString,
+    clientDefaultToken: Command.parseString,
+    clientBadges: Command.parseString,
+    clientBase64HashClientUID: Command.parseString,
+    connectionConnectedTime: Command.parseNumber,
+    connectionClientIp: Command.parseString,
+    clientMyteamspeakId: Command.parseString,
+    clientIntegrations: Command.parseString,
+    clientDescription: Command.parseString,
+    clientNeededServerqueryViewPower: Command.parseNumber,
+    clientMyteamspeakAvatar: Command.parseString,
+    clientSignedBadges: Command.parseString,
+    clientLastip: Command.parseString,
+    cid: Command.parseString,
+    pid: Command.parseString,
+    cpid: Command.parseString,
     order: Command.parseNumber,
-    channel_order: Command.parseNumber,
-    channel_name: Command.parseString,
-    channel_password: Command.parseString,
-    channel_description: Command.parseString,
-    channel_topic: Command.parseString,
-    channel_flag_default: Command.parseNumber,
-    channel_flag_password: Command.parseNumber,
-    channel_flag_permanent: Command.parseNumber,
-    channel_flag_semi_permanent: Command.parseNumber,
-    channel_flag_temporary: Command.parseNumber,
-    channel_codec: Command.parseNumber,
-    channel_codec_quality: Command.parseNumber,
-    channel_needed_talk_power: Command.parseNumber,
-    channel_icon_id: Command.parseNumber,
-    total_clients_family: Command.parseNumber,
-    channel_maxclients: Command.parseNumber,
-    channel_maxfamilyclients: Command.parseNumber,
-    total_clients: Command.parseNumber,
-    channel_needed_subscribe_power: Command.parseNumber,
-    channel_codec_latency_factor: Command.parseNumber,
-    channel_codec_is_unencrypted: Command.parseNumber,
-    channel_security_salt: Command.parseString,
-    channel_delete_delay: Command.parseNumber,
-    channel_flag_maxclients_unlimited: Command.parseNumber,
-    channel_flag_maxfamilyclients_unlimited: Command.parseNumber,
-    channel_flag_maxfamilyclients_inherited: Command.parseNumber,
-    channel_filepath: Command.parseString,
-    channel_forced_silence: Command.parseNumber,
-    channel_name_phonetic: Command.parseString,
-    channel_flag_private: Command.parseNumber,
-    channel_banner_gfx_url: Command.parseString,
-    channel_banner_mode: Command.parseNumber,
-    seconds_empty: Command.parseNumber,
-    cgid: Command.parseNumber,
-    sgid: Command.parseNumber,
-    permid: Command.parseNumber,
-    permvalue: Command.parseNumber,
+    channelOrder: Command.parseNumber,
+    channelName: Command.parseString,
+    channelPassword: Command.parseString,
+    channelDescription: Command.parseString,
+    channelTopic: Command.parseString,
+    channelFlagDefault: Command.parseBoolean,
+    channelFlagPassword: Command.parseBoolean,
+    channelFlagPermanent: Command.parseBoolean,
+    channelFlagSemiPermanent: Command.parseBoolean,
+    channelFlagTemporary: Command.parseBoolean,
+    channelCodec: Command.parseNumber,
+    channelCodecQuality: Command.parseNumber,
+    channelNeededTalkPower: Command.parseNumber,
+    channelIconId: Command.parseString,
+    totalClientsFamily: Command.parseNumber,
+    channelMaxclients: Command.parseNumber,
+    channelMaxfamilyclients: Command.parseNumber,
+    totalClients: Command.parseNumber,
+    channelNeededSubscribePower: Command.parseNumber,
+    channelCodecLatencyFactor: Command.parseNumber,
+    channelCodecIsUnencrypted: Command.parseNumber,
+    channelSecuritySalt: Command.parseString,
+    channelDeleteDelay: Command.parseNumber,
+    channelFlagMaxclientsUnlimited: Command.parseBoolean,
+    channelFlagMaxfamilyclientsUnlimited: Command.parseBoolean,
+    channelFlagMaxfamilyclientsInherited: Command.parseBoolean,
+    channelFilepath: Command.parseString,
+    channelForcedSilence: Command.parseNumber,
+    channelNamePhonetic: Command.parseString,
+    channelFlagPrivate: Command.parseBoolean,
+    channelBannerGfxUrl: Command.parseString,
+    channelBannerMode: Command.parseNumber,
+    secondsEmpty: Command.parseNumber,
+    cgid: Command.parseString,
+    sgid: Command.parseString,
+    permid: Command.parseString,
+    permvalue: Command.parseString,
     permnegated: Command.parseNumber,
     permskip: Command.parseNumber,
     permsid: Command.parseString,
     t: Command.parseNumber,
-    id1: Command.parseNumber,
-    id2: Command.parseNumber,
+    id1: Command.parseString,
+    id2: Command.parseString,
     p: Command.parseNumber,
     v: Command.parseNumber,
     n: Command.parseNumber,
     s: Command.parseNumber,
-    reasonid: Command.parseNumber,
+    reasonid: Command.parseString,
     reasonmsg: Command.parseString,
-    ctid: Command.parseNumber,
-    cfid: Command.parseNumber,
+    ctid: Command.parseString,
+    cfid: Command.parseString,
     targetmode: Command.parseNumber,
     target: Command.parseNumber,
-    invokerid: Command.parseNumber,
+    invokerid: Command.parseString,
     invokername: Command.parseString,
     invokeruid: Command.parseString,
     hash: Command.parseString,
-    last_pos: Command.parseNumber,
-    file_size: Command.parseNumber,
+    lastPos: Command.parseNumber,
+    fileSize: Command.parseNumber,
     l: Command.parseString,
     path: Command.parseString,
     size: Command.parseNumber,
-    clientftfid: Command.parseNumber,
-    serverftfid: Command.parseNumber,
-    current_speed: Command.parseNumber,
-    average_speed: Command.parseNumber,
+    clientftfid: Command.parseString,
+    serverftfid: Command.parseString,
+    currentSpeed: Command.parseNumber,
+    averageSpeed: Command.parseNumber,
     runtime: Command.parseNumber,
     sizedone: Command.parseNumber,
     sender: Command.parseNumber,
@@ -576,28 +614,28 @@ export namespace Command {
     port: Command.parseNumber,
     proto: Command.parseNumber,
     datetime: Command.parseNumber,
-    host_timestamp_utc: Command.parseNumber,
-    instance_uptime: Command.parseNumber,
-    virtualservers_running_total: Command.parseNumber,
-    virtualservers_total_channels_online: Command.parseNumber,
-    virtualservers_total_clients_online: Command.parseNumber,
-    virtualservers_total_maxclients: Command.parseNumber,
-    serverinstance_database_version: Command.parseNumber,
-    serverinstance_filetransfer_port: Command.parseNumber,
-    serverinstance_serverquery_max_connections_per_ip: Command.parseNumber,
-    serverinstance_max_download_total_bandwidth: Command.parseNumber,
-    serverinstance_max_upload_total_bandwidth: Command.parseNumber,
-    serverinstance_guest_serverquery_group: Command.parseNumber,
-    serverinstance_pending_connections_per_ip: Command.parseNumber,
-    serverinstance_permissions_version: Command.parseNumber,
-    serverinstance_serverquery_flood_ban_time: Command.parseNumber,
-    serverinstance_serverquery_flood_commands: Command.parseNumber,
-    serverinstance_serverquery_flood_time: Command.parseNumber,
-    serverinstance_template_channeladmin_group: Command.parseNumber,
-    serverinstance_template_channeldefault_group: Command.parseNumber,
-    serverinstance_template_serveradmin_group: Command.parseNumber,
-    serverinstance_template_serverdefault_group: Command.parseNumber,
-    msgid: Command.parseNumber,
+    hostTimestampUtc: Command.parseNumber,
+    instanceUptime: Command.parseNumber,
+    virtualserversRunningTotal: Command.parseNumber,
+    virtualserversTotalChannelsOnline: Command.parseNumber,
+    virtualserversTotalClientsOnline: Command.parseNumber,
+    virtualserversTotalMaxclients: Command.parseNumber,
+    serverinstanceDatabaseVersion: Command.parseNumber,
+    serverinstanceFiletransferPort: Command.parseNumber,
+    serverinstanceServerqueryMaxConnectionsPerIp: Command.parseNumber,
+    serverinstanceMaxDownloadTotalBandwidth: Command.parseNumber,
+    serverinstanceMaxUploadTotalBandwidth: Command.parseNumber,
+    serverinstanceGuestServerqueryGroup: Command.parseNumber,
+    serverinstancePendingConnectionsPerIp: Command.parseNumber,
+    serverinstancePermissionsVersion: Command.parseNumber,
+    serverinstanceServerqueryFloodBanTime: Command.parseNumber,
+    serverinstanceServerqueryFloodCommands: Command.parseNumber,
+    serverinstanceServerqueryFloodTime: Command.parseNumber,
+    serverinstanceTemplateChanneladminGroup: Command.parseString,
+    serverinstanceTemplateChanneldefaultGroup: Command.parseString,
+    serverinstanceTemplateServeradminGroup: Command.parseNumber,
+    serverinstanceTemplateServerdefaultGroup: Command.parseString,
+    msgid: Command.parseString,
     timestamp: Command.parseNumber,
     cluid: Command.parseString,
     subject: Command.parseString,
@@ -609,57 +647,57 @@ export namespace Command {
     token: Command.parseString,
     tokencustomset: Command.parseRecursive,
     value: Command.parseString,
-    banid: Command.parseNumber,
-    id: Command.parseNumber,
+    banid: Command.parseString,
+    id: Command.parseString,
     msg: Command.parseString,
-    extra_msg: Command.parseString,
-    failed_permid: Command.parseNumber,
+    extraMsg: Command.parseString,
+    failedPermid: Command.parseString,
     ident: Command.parseString,
     ip: Command.parseString,
     nickname: Command.parseString,
     uid: Command.parseString,
     desc: Command.parseString,
-    pw_clear: Command.parseString,
+    pwClear: Command.parseString,
     start: Command.parseNumber,
     end: Command.parseNumber,
-    tcid: Command.parseNumber,
+    tcid: Command.parseString,
     permname: Command.parseString,
     permdesc: Command.parseString,
-    token_type: Command.parseNumber,
-    token_customset: Command.parseRecursive,
+    tokenType: Command.parseNumber,
+    tokenCustomset: Command.parseRecursive,
     token1: Command.parseString,
     token2: Command.parseString,
-    token_id1: Command.parseNumber,
-    token_id2: Command.parseNumber,
-    token_created: Command.parseNumber,
-    token_description: Command.parseString,
-    flag_read: Command.parseNumber,
-    tcldbid: Command.parseNumber,
+    tokenId1: Command.parseString,
+    tokenId2: Command.parseString,
+    tokenCreated: Command.parseNumber,
+    tokenDescription: Command.parseString,
+    flagRead: Command.parseBoolean,
+    tcldbid: Command.parseString,
     tname: Command.parseString,
-    fcldbid: Command.parseNumber,
+    fcldbid: Command.parseString,
     fname: Command.parseString,
     mytsid: Command.parseString,
     lastnickname: Command.parseString,
     created: Command.parseNumber,
     duration: Command.parseNumber,
-    invokercldbid: Command.parseNumber,
+    invokercldbid: Command.parseString,
     enforcements: Command.parseNumber,
     reason: Command.parseString,
     type: Command.parseNumber,
-    iconid: Command.parseNumber,
+    iconid: Command.parseString,
     savedb: Command.parseNumber,
     namemode: Command.parseNumber,
-    n_modifyp: Command.parseNumber,
-    n_member_addp: Command.parseNumber,
-    n_member_removep: Command.parseNumber,
-    sortid: Command.parseNumber,
+    nModifyp: Command.parseNumber,
+    nMemberAddp: Command.parseNumber,
+    nMemberRemovep: Command.parseNumber,
+    sortid: Command.parseString,
     count: Command.parseNumber,
     salt: Command.parseString,
     snapshot: Command.parseString,
     apikey: Command.parseString,
     scope: Command.parseString,
-    time_left: Command.parseNumber,
-    created_at: Command.parseNumber,
-    expires_at: Command.parseNumber
+    timeLeft: Command.parseNumber,
+    createdAt: Command.parseNumber,
+    expiresAt: Command.parseNumber
   }
 }

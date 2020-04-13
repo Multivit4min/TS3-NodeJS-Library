@@ -16,14 +16,14 @@ import { MockNode } from "./mocks/MockNode"
 import { TeamSpeak } from "../src/TeamSpeak"
 
 describe("Abstract", () => {
-  let node: MockNode
+  let node: MockNode<any>
   let teamspeak: TeamSpeak
 
   beforeEach(() => {
     teamspeak = new TeamSpeak({})
-    node = new MockNode(
+    node = new MockNode<any>(
       teamspeak,
-      { client_nickname: "TeamSpeakClient", clid: 10 },
+      { clientNickname: "TeamSpeakClient", clid: "10" },
       "mock"
     )
   })
@@ -31,15 +31,15 @@ describe("Abstract", () => {
   it("should check return value of #toJSON()", () => {
     expect(node.toJSON()).toEqual({
       _namespace: "mock",
-      client_nickname: "TeamSpeakClient",
-      clid: 10
+      clientNickname: "TeamSpeakClient",
+      clid: "10"
     })
   })
 
   it("should check return value of #toJSON(false)", () => {
     expect(node.toJSON(false)).toEqual({
-      client_nickname: "TeamSpeakClient",
-      clid: 10
+      clientNickname: "TeamSpeakClient",
+      clid: "10"
     })
   })
 
@@ -48,7 +48,7 @@ describe("Abstract", () => {
   })
 
   it("should check return value of #getPropertyByName()", () => {
-    expect(node.getPropertyByName("clid")).toBe(10)
+    expect(node.getPropertyByName("clid")).toBe("10")
   })
 
   it("should check return value of #getParent()", () => {
@@ -57,11 +57,11 @@ describe("Abstract", () => {
   })
 
   it("should check return value of #updateCache()", () => {
-    node.updateCache({ client_away: 0, clid: 55 })
+    node.updateCache({ clientAway: 0, clid: "55" })
     expect(node.toJSON(false)).toEqual({
-      client_nickname: "TeamSpeakClient",
-      clid: 55,
-      client_away: 0
+      clientNickname: "TeamSpeakClient",
+      clid: "55",
+      clientAway: 0
     })
   })
 

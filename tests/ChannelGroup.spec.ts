@@ -58,15 +58,15 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should verify the getter value of #nModifyp()", () => {
-    expect(channelGroup.nModifyp).toBe(raw.n_modifyp)
+    expect(channelGroup.nModifyp).toBe(raw.nModifyp)
   })
 
   it("should verify the getter value of #nMemberAddp()", () => {
-    expect(channelGroup.nMemberAddp).toBe(raw.n_member_addp)
+    expect(channelGroup.nMemberAddp).toBe(raw.nMemberAddp)
   })
 
   it("should verify the getter value of #nMemberRemovep()", () => {
-    expect(channelGroup.nMemberRemovep).toBe(raw.n_member_removep)
+    expect(channelGroup.nMemberRemovep).toBe(raw.nMemberRemovep)
   })
 
   it("should verify the return value of #getNameSpace()", () => {
@@ -74,23 +74,23 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should verify execute parameters of #del(1)", async () => {
-    await channelGroup.del(1)
+    await channelGroup.del(true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgroupdel", { cgid: raw.cgid, force: 1 })
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupdel", { cgid: raw.cgid, force: true })
   })
 
   it("should verify execute parameters of #del()", async () => {
     await channelGroup.del()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgroupdel", { cgid: raw.cgid, force: 0 })
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupdel", { cgid: raw.cgid, force: false })
   })
 
   it("should verify execute parameters of #copy()", async () => {
-    await channelGroup.copy(0, 1, "New ChannelGroup")
+    await channelGroup.copy("0", 1, "New ChannelGroup")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupcopy", {
       scgid: raw.cgid,
-      tcgid: 0,
+      tcgid: "0",
       type: 1,
       name: "New ChannelGroup"
     })
@@ -115,11 +115,11 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should verify execute parameters of #addPerm()", async () => {
-    await channelGroup.addPerm("i_channel_subscribe_power", 25)
+    await channelGroup.addPerm("i_channel_subscribe_power", "25")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
       permsid: "i_channel_subscribe_power",
-      permvalue: 25,
+      permvalue: "25",
       cgid: raw.cgid,
       permskip: 0,
       permnegated: 0
@@ -136,23 +136,23 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should verify execute parameters of #setClient()", async () => {
-    await channelGroup.setClient(4, 5)
+    await channelGroup.setClient("4", "5")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("setclientchannelgroup", {
-      cldbid: 5,
-      cid: 4,
+      cldbid: "5",
+      cid: "4",
       cgid: raw.cgid
     })
   })
 
   it("should verify execute parameters of #clientList()", async () => {
-    await channelGroup.clientList(10)
+    await channelGroup.clientList("10")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: raw.cgid, cid: 10 })
+    expect(mockExecute).toHaveBeenCalledWith("channelgroupclientlist", { cgid: raw.cgid, cid: "10" })
   })
 
   it("should validate the return value of #getIcon()", done => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
     mockExecute.mockResolvedValueOnce([{ size: 0, msg: "nok" }])
     channelGroup.getIcon()
       .then(() => done("Expected Promise to reject!"))
@@ -164,7 +164,7 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should validate the return value of #getIconName()", async () => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
     const name = await channelGroup.getIconName()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(name).toBe("icon_9999")

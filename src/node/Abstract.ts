@@ -1,13 +1,13 @@
 import { TeamSpeak } from "../TeamSpeak"
-import { QueryResponse } from "../types/QueryResponse"
+import { TeamSpeakQuery } from "transport/TeamSpeakQuery"
 
-export abstract class Abstract {
+export abstract class Abstract<T extends TeamSpeakQuery.ResponseEntry> {
 
   private namespace: string
-  private propcache: QueryResponse
+  private propcache: T
   private parent: TeamSpeak
 
-  constructor(parent: TeamSpeak, props: QueryResponse, namespace: string) {
+  constructor(parent: TeamSpeak, props: T, namespace: string) {
     this.namespace = namespace
     this.propcache = { ...props }
     this.parent = parent
@@ -29,12 +29,12 @@ export abstract class Abstract {
    * retrieves a single property value by the given name
    * @param name the name from where the value should be retrieved
    */
-  getPropertyByName<T extends keyof QueryResponse>(name: T): QueryResponse[T] {
+  getPropertyByName<Y extends keyof T>(name: Y): T[Y] {
     return this.propcache[name]
   }
 
   /** updates the cache with the given object */
-  updateCache(props: QueryResponse) {
+  updateCache(props: TeamSpeakQuery.ResponseEntry) {
     this.propcache = { ...this.propcache, ...props}
     return this
   }

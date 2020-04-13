@@ -1,4 +1,3 @@
-import { QueryProtocol } from "../src/types/enum"
 import { EventEmitter } from "events"
 
 const encodingMock = jest.fn()
@@ -9,14 +8,12 @@ const connectMock = jest.fn()
 const shellMock = jest.fn()
 
 jest.mock("net", () => {
-
   class Socket extends EventEmitter {
     setEncoding(encoding: string) { encodingMock(encoding) }
     setTimeout(encoding: string) { setTimeoutMock(encoding) }
     destroy() { destroyMock() }
     write(data: any) { writeMock(data) }
   }
-
   return { connect: () => new Socket() }
 })
 
@@ -38,13 +35,13 @@ jest.mock("ssh2", () => {
   return { Client }
 })
 
+import { TeamSpeak } from "../src/TeamSpeak"
 import { ProtocolRAW } from "../src/transport/protocols/raw"
 import { ProtocolSSH } from "../src/transport/protocols/ssh"
 
-
 const config = {
   host: "0.0.0.0",
-  protocol: QueryProtocol.RAW,
+  protocol: TeamSpeak.QueryProtocol.RAW,
   ignoreQueries: false,
   queryport: 10011,
   readyTimeout: 1000,

@@ -3,13 +3,12 @@ import { Command } from "./Command"
 import { ProtocolRAW } from "./protocols/raw"
 import { ProtocolSSH } from "./protocols/ssh"
 
-import { ConnectionParams, QueryProtocol } from "../TeamSpeak"
-import { QueryResponseTypes } from "../types/QueryResponse"
+import { TeamSpeak } from "../TeamSpeak"
 
 export class TeamSpeakQuery extends EventEmitter {
 
   static IGNORE_LINES_INITIAL = 2
-  private config: ConnectionParams
+  private config: TeamSpeak.ConnectionParams
   private queue: Array<TeamSpeakQuery.QueueItem> = []
   private active: TeamSpeakQuery.QueueItem|undefined
   private ignoreLines: number = TeamSpeakQuery.IGNORE_LINES_INITIAL
@@ -26,7 +25,7 @@ export class TeamSpeakQuery extends EventEmitter {
     "notifycliententerview"
   ]
 
-  constructor(config: ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams) {
     super()
     this.config = config
   }
@@ -59,10 +58,10 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** returns a constructed Socket */
-  static getSocket(config: ConnectionParams): TeamSpeakQuery.QueryProtocolInterface {
-    if (config.protocol === QueryProtocol.RAW) {
+  static getSocket(config: TeamSpeak.ConnectionParams): TeamSpeakQuery.QueryProtocolInterface {
+    if (config.protocol === TeamSpeak.QueryProtocol.RAW) {
       return new ProtocolRAW(config)
-    } else if (config.protocol === QueryProtocol.SSH) {
+    } else if (config.protocol === TeamSpeak.QueryProtocol.SSH) {
       return new ProtocolSSH(config)
     } else {
       throw new Error("Invalid Protocol given! Expected (\"raw\" or \"ssh\")")
@@ -70,12 +69,12 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** sends a command to the TeamSpeak Server */
-  execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+  execute(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<TeamSpeakQuery.Response[]> {
     return this.handleCommand(command, args)
   }
 
   /** sends a priorized command to the TeamSpeak Server */
-  executePrio(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<QueryResponseTypes[]> {
+  executePrio(command: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<TeamSpeakQuery.Response[]> {
     return this.handleCommand(command, args, true)
   }
 
@@ -84,7 +83,7 @@ export class TeamSpeakQuery extends EventEmitter {
    * @param args arguments which gets parsed
    * @param prio wether this command should be handled as priority and be queued before others
    */
-  private handleCommand(command: string, args: TeamSpeakQuery.executeArgs[], priority: boolean = false): Promise<QueryResponseTypes[]> {
+  private handleCommand(command: string, args: TeamSpeakQuery.executeArgs[], priority: boolean = false): Promise<TeamSpeakQuery.Response[]> {
     return new Promise((fulfill, reject) => {
       const cmd = new Command().setCommand(command)
       Object.values(args).forEach(v => {
@@ -147,7 +146,7 @@ export class TeamSpeakQuery extends EventEmitter {
     this.active.cmd.setError(line)
     if (this.active.cmd.hasError()) {
       const error = this.active.cmd.getError()!
-      if (error.id === 524) {
+      if (error.id === "524") {
         this.emit("flooding", this.active.cmd.getError())
         const match = error.message.match(/(\d*) second/i)
         const waitTimeout = match ? parseInt(match[1], 10) : 1000
@@ -265,7 +264,11 @@ export class TeamSpeakQuery extends EventEmitter {
 
 export namespace TeamSpeakQuery {
   
-  export type executeArgs = Command.ParserCallback|Command.multiOpts|Command.options|Command.flags
+  export type executeArgs =
+    Command.ParserCallback |
+    Command.multiOpts |
+    Command.options |
+    Command.flags
 
   export interface QueueItem {
     fulfill: Function
@@ -286,4 +289,21 @@ export namespace TeamSpeakQuery {
     /** forcefully closes the socket */
     close: () => void
   }
+}
+
+export namespace TeamSpeakQuery {
+
+  export type ValueTypes =
+    boolean    |
+    string     |
+    string[]   |
+    number     |
+    number[]   |
+    undefined  |
+    TeamSpeakQuery.Response
+  
+  export interface ResponseEntry {
+    [x: string]: ValueTypes
+  }
+  export type Response = ResponseEntry[]
 }

@@ -1,6 +1,6 @@
 import { Client, ClientChannel } from "ssh2"
 import { EventEmitter } from "events"
-import { ConnectionParams } from "../../TeamSpeak"
+import { TeamSpeak } from "../../TeamSpeak"
 import { TeamSpeakQuery } from "../TeamSpeakQuery"
 
 
@@ -10,7 +10,7 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
   private stream: ClientChannel|null
   chunk: string = ""
 
-  constructor(config: ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams) {
     super()
     this.client = new Client()
     process.nextTick(() => {

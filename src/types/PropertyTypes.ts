@@ -1,122 +1,123 @@
 import * as ENUM from "./enum"
+import { TeamSpeakQuery } from "transport/TeamSpeakQuery";
 
-export declare type ApiKeyList = {
+export interface ApiKeyList extends TeamSpeakQuery.ResponseEntry {
   /** database ids to list  */
-  cldbid?: number|"*"
+  cldbid?: string|"*"
   /** offset from where the list should start */
   start?: number
   /** amount of entries to retrieve */
   duration?: number
 }
 
-export declare type ApiKeyAdd = {
+export interface ApiKeyAdd extends TeamSpeakQuery.ResponseEntry {
   scope: ENUM.ApiKeyScope
   /* validity of token in days */
   lifetime?: number
-  cldbid?: number
+  cldbid?: string
 }
 
-export declare type ClientUpdate = {
-  client_nickname: string
+export interface ClientUpdate extends TeamSpeakQuery.ResponseEntry {
+  clientNickname: string
 }
 
-export declare type ClientDBEdit = {
-  client_description: string
+export interface ClientDBEdit extends TeamSpeakQuery.ResponseEntry {
+  clientDescription: string
 }
 
-export declare type ClientEdit = {
-  client_description?: string
-  client_is_talker?: number
+export interface ClientEdit extends TeamSpeakQuery.ResponseEntry {
+  clientDescription?: string
+  clientIsTalker?: boolean
 }
 
-export declare type ServerEdit = {
-  virtualserver_name?: string 
-  virtualserver_welcomemessage?: string 
-  virtualserver_maxclients?: number 
-  virtualserver_password?: string 
-  virtualserver_hostmessage?: string 
-  virtualserver_hostmessage_mode?: ENUM.HostMessageMode 
-  virtualserver_default_server_group?: number 
-  virtualserver_default_channel_group?: number 
-  virtualserver_default_channel_admin_group?: number 
-  virtualserver_max_download_total_bandwidth?: number 
-  virtualserver_max_upload_total_bandwidth?: number 
-  virtualserver_hostbanner_url?: string 
-  virtualserver_hostbanner_gfx_url?: string 
-  virtualserver_hostbanner_gfx_interval?: number 
-  virtualserver_complain_autoban_count?: number 
-  virtualserver_complain_autoban_time?: number 
-  virtualserver_complain_remove_time?: number 
-  virtualserver_min_clients_in_channel_before_forced_silence?: number 
-  virtualserver_priority_speaker_dimm_modificator?: number 
-  virtualserver_antiflood_points_tick_reduce?: number 
-  virtualserver_antiflood_points_needed_command_block?: number 
-  virtualserver_antiflood_points_needed_plugin_block?: number 
-  virtualserver_antiflood_points_needed_ip_block?: number 
-  virtualserver_hostbanner_mode?: ENUM.HostBannerMode 
-  virtualserver_hostbutton_tooltip?: string 
-  virtualserver_hostbutton_gfx_url?: string 
-  virtualserver_hostbutton_url?: string 
-  virtualserver_download_quota?: number 
-  virtualserver_upload_quota?: number 
-  virtualserver_machine_id?: string 
-  virtualserver_port?: number 
-  virtualserver_autostart?: number 
-  virtualserver_status?: string 
-  virtualserver_log_client?: number 
-  virtualserver_log_query?: number 
-  virtualserver_log_channel?: number 
-  virtualserver_log_permissions?: number 
-  virtualserver_log_server?: number 
-  virtualserver_log_filetransfer?: number 
-  virtualserver_min_client_version?: number 
-  virtualserver_min_android_version?: number 
-  virtualserver_min_ios_version?: number 
-  virtualserver_needed_identity_security_level?: number 
-  virtualserver_name_phonetic?: string 
-  virtualserver_icon_id?: number 
-  virtualserver_reserved_slots?: number 
-  virtualserver_weblist_enabled?: number 
-  virtualserver_codec_encryption_mode?: ENUM.CodecEncryptionMode 
+export interface ServerEdit extends TeamSpeakQuery.ResponseEntry {
+  virtualserverName?: string 
+  virtualserverWelcomemessage?: string 
+  virtualserverMaxclients?: number 
+  virtualserverPassword?: string 
+  virtualserverHostmessage?: string 
+  virtualserverHostmessageMode?: ENUM.HostMessageMode 
+  virtualserverDefaultServerGroup?: number 
+  virtualserverDefaultChannelGroup?: number 
+  virtualserverDefaultChannelAdminGroup?: number 
+  virtualserverMaxDownloadTotalBandwidth?: number 
+  virtualserverMaxUploadTotalBandwidth?: number 
+  virtualserverHostbannerUrl?: string 
+  virtualserverHostbannerGfxUrl?: string 
+  virtualserverHostbannerGfxInterval?: number 
+  virtualserverComplainAutobanCount?: number 
+  virtualserverComplainAutobanTime?: number 
+  virtualserverComplainRemoveTime?: number 
+  virtualserverMinClientsInChannelBeforeForcedSilence?: number 
+  virtualserverPrioritySpeakerDimmModificator?: number 
+  virtualserverAntifloodPointsTickReduce?: number 
+  virtualserverAntifloodPointsNeededCommandBlock?: number 
+  virtualserverAntifloodPointsNeededPluginBlock?: number 
+  virtualserverAntifloodPointsNeededIpBlock?: number 
+  virtualserverHostbannerMode?: ENUM.HostBannerMode 
+  virtualserverHostbuttonTooltip?: string 
+  virtualserverHostbuttonGfxUrl?: string 
+  virtualserverHostbuttonUrl?: string 
+  virtualserverDownloadQuota?: number 
+  virtualserverUploadQuota?: number 
+  virtualserverMachineId?: string 
+  virtualserverPort?: number 
+  virtualserverAutostart?: number 
+  virtualserverStatus?: string 
+  virtualserverLogClient?: number 
+  virtualserverLogQuery?: number 
+  virtualserverLogChannel?: number 
+  virtualserverLogPermissions?: number 
+  virtualserverLogServer?: number 
+  virtualserverLogFiletransfer?: number 
+  virtualserverMinClientVersion?: number 
+  virtualserverMinAndroidVersion?: number 
+  virtualserverMinIosVersion?: number 
+  virtualserverNeededIdentitySecurityLevel?: number 
+  virtualserverNamePhonetic?: string 
+  virtualserverIconId?: number 
+  virtualserverReservedSlots?: number 
+  virtualserverWeblistEnabled?: number 
+  virtualserverCodecEncryptionMode?: ENUM.CodecEncryptionMode 
 }
 
-export declare type ChannelEdit = {
-  cid?: number 
-  cpid?: number
-  channel_name?: string 
-  channel_topic?: string 
-  channel_password?: string
-  channel_description?: string 
-  channel_codec?: ENUM.Codec
-  channel_codec_quality?: number 
-  channel_maxclients?: number 
-  channel_maxfamilyclients?: number 
-  channel_order?: number 
-  channel_flag_permanent?: number 
-  channel_flag_semi_permanent?: number 
-  channel_flag_temporary?: number 
-  channel_flag_default?: number 
-  channel_flag_maxclients_unlimited?: number
-  channel_flag_maxfamilyclients_inherited?: number 
-  channel_needed_talk_power?: number 
-  channel_name_phonetic?: string 
-  channel_codec_is_unencrypted?: number 
+export interface ChannelEdit extends TeamSpeakQuery.ResponseEntry {
+  cid?: string 
+  cpid?: string
+  channelName?: string 
+  channelTopic?: string 
+  channelPassword?: string
+  channelDescription?: string 
+  channelCodec?: ENUM.Codec
+  channelCodecQuality?: number 
+  channelMaxclients?: number 
+  channelMaxfamilyclients?: number 
+  channelOrder?: number 
+  channelFlagPermanent?: boolean 
+  channelFlagSemiPermanent?: boolean 
+  channelFlagTemporary?: boolean 
+  channelFlagDefault?: boolean 
+  channelFlagMaxclientsUnlimited?: boolean
+  channelFlagMaxfamilyclientsInherited?: boolean 
+  channelNeededTalkPower?: number 
+  channelNamePhonetic?: string 
+  channelCodecIsUnencrypted?: boolean 
 }
 
-export declare type InstanceEdit = {
-  serverinstance_template_serveradmin_group?: number 
-  serverinstance_filetransfer_port?: number 
-  serverinstance_max_download_total_bandwidth?: number 
-  serverinstance_max_upload_total_bandwidth?: number 
-  serverinstance_template_serverdefault_group?: number 
-  serverinstance_template_channeldefault_group?: number 
-  serverinstance_template_channeladmin_group?: number 
-  serverinstance_serverquery_flood_commands?: number 
-  serverinstance_serverquery_flood_time?: number 
-  serverinstance_serverquery_flood_ban_time?: number 
+export interface InstanceEdit extends TeamSpeakQuery.ResponseEntry {
+  serverinstanceTemplateServeradminGroup?: string 
+  serverinstanceFiletransferPort?: number 
+  serverinstanceMaxDownloadTotalBandwidth?: number 
+  serverinstanceMaxUploadTotalBandwidth?: number 
+  serverinstanceTemplateServerdefaultGroup?: string 
+  serverinstanceTemplateChanneldefaultGroup?: string 
+  serverinstanceTemplateChanneladminGroup?: string 
+  serverinstanceServerqueryFloodCommands?: number 
+  serverinstanceServerqueryFloodTime?: number 
+  serverinstanceServerqueryFloodBanTime?: number 
 }
 
-export declare type ServerTempPasswordAdd = {
+export interface ServerTempPasswordAdd extends TeamSpeakQuery.ResponseEntry {
   /** the temporary password */
   pw: string
   /** description of the password */
@@ -124,12 +125,12 @@ export declare type ServerTempPasswordAdd = {
   /** the duration the password is valid in seconds */
   duration: number
   /** the channel to let the user join */
-  tcid?: number
+  tcid?: string
   /** the password to the channel */
   tcpw?: string
 }
 
-export declare type BanAdd = {
+export interface BanAdd extends TeamSpeakQuery.ResponseEntry {
   /** ip regular expression */
   ip?: string
   /** name regular expression */
@@ -144,8 +145,8 @@ export declare type BanAdd = {
   banreason: string
 }
 
-export declare type BanClient = {
-  clid: number
+export interface BanClient extends TeamSpeakQuery.ResponseEntry {
+  clid: string
   /** myteamspeak id, use "empty" to ban all clients without connected myteamspeak */
   mytsid?: string
   /** bantime in seconds, if left empty it will result in a permaban */
@@ -154,7 +155,7 @@ export declare type BanClient = {
   banreason: string
 }
 
-export declare type TransferUpload = {
+export interface TransferUpload extends TeamSpeakQuery.ResponseEntry {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */
@@ -162,7 +163,7 @@ export declare type TransferUpload = {
   /** size of the file */
   size: number
   /** channel id to upload to */
-  cid?: number
+  cid?: string
   /** channel password of the channel which will be uploaded to */
   cpw?: string
   /** overwrites an existing file */
@@ -170,13 +171,13 @@ export declare type TransferUpload = {
   resume?: number
 }
 
-export declare type TransferDownload = {
+export interface TransferDownload extends TeamSpeakQuery.ResponseEntry {
   /** arbitary id to identify the transfer */
   clientftfid?: number
   /** destination filename */
   name: string
   /** channel id to upload to */
-  cid?: number
+  cid?: string
   /** channel password of the channel which will be uploaded to */
   cpw?: string
   seekpos?: number

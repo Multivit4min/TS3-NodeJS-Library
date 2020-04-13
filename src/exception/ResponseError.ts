@@ -1,12 +1,12 @@
 import { QueryErrorMessage } from "../types/ResponseTypes"
 import { Command } from "../transport/Command"
 
-export class ResponseError extends Error implements QueryErrorMessage {
+export class ResponseError extends Error {
 
-  readonly id: number
+  readonly id: string
   readonly msg: string
-  readonly extra_msg?: string
-  readonly failed_permid?: number
+  readonly extraMsg?: string
+  readonly failedPermid?: number
   readonly source: Command
 
   constructor(error: QueryErrorMessage, source: Command) {
@@ -14,10 +14,10 @@ export class ResponseError extends Error implements QueryErrorMessage {
     this.source = source
     this.id = error.id
     this.msg = error.msg
-    this.extra_msg = error.extra_msg
-    this.failed_permid = error.failed_permid
-    if (this.extra_msg) this.message += `, ${this.extra_msg}`
-    if (this.failed_permid) this.message += `, failed on permid ${this.failed_permid}`
+    this.extraMsg = error.extraMsg
+    this.failedPermid = error.failedPermid
+    if (this.extraMsg) this.message += `, ${this.extraMsg}`
+    if (this.failedPermid) this.message += `, failed on permid ${this.failedPermid}`
   }
 
   /**
@@ -34,8 +34,8 @@ export class ResponseError extends Error implements QueryErrorMessage {
     return {
       id: this.id,
       msg: this.msg,
-      extra_msg: this.extra_msg,
-      failed_permid: this.failed_permid,
+      extraMsg: this.extraMsg,
+      failedPermid: this.failedPermid,
       message: this.message
     }
   }

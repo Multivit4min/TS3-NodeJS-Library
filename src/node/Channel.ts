@@ -1,12 +1,12 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
-import { ChannelList, ClientList } from "../types/ResponseTypes"
+import { ClientList, ChannelEntry, ClientEntry } from "../types/ResponseTypes"
 import { ChannelEdit } from "../types/PropertyTypes"
 import { TeamSpeakClient } from "./Client"
 
-export class TeamSpeakChannel extends Abstract {
+export class TeamSpeakChannel extends Abstract<ChannelEntry> {
 
-  constructor(parent: TeamSpeak, list: ChannelList) {
+  constructor(parent: TeamSpeak, list: ChannelEntry) {
     super(parent, list, "channel")
   }
 
@@ -19,95 +19,95 @@ export class TeamSpeakChannel extends Abstract {
   }
 
   get order() {
-    return super.getPropertyByName("channel_order")!
+    return super.getPropertyByName("channelOrder")!
   }
 
   get name() {
-    return super.getPropertyByName("channel_name")!
+    return super.getPropertyByName("channelName")!
   }
 
   get topic() {
-    return super.getPropertyByName("channel_topic")
+    return super.getPropertyByName("channelTopic")
   }
 
   get flagDefault() {
-    return super.getPropertyByName("channel_flag_default")
+    return super.getPropertyByName("channelFlagDefault")
   }
 
   get flagPassword() {
-    return super.getPropertyByName("channel_flag_password")
+    return super.getPropertyByName("channelFlagPassword")
   }
 
   get flagPermanent() {
-    return super.getPropertyByName("channel_flag_permanent")
+    return super.getPropertyByName("channelFlagPermanent")
   }
 
   get flagSemiPermanent() {
-    return super.getPropertyByName("channel_flag_semi_permanent")
+    return super.getPropertyByName("channelFlagSemiPermanent")
   }
 
   get codec() {
-    return super.getPropertyByName("channel_codec")
+    return super.getPropertyByName("channelCodec")
   }
 
   get codecQuality() {
-    return super.getPropertyByName("channel_codec_quality")
+    return super.getPropertyByName("channelCodecQuality")
   }
 
   get neededTalkPower() {
-    return super.getPropertyByName("channel_needed_talk_power")
+    return super.getPropertyByName("channelNeededTalkPower")
   }
 
   get iconId() {
-    return super.getPropertyByName("channel_icon_id")
+    return super.getPropertyByName("channelIconId")
   }
 
   get secondsEmpty() {
-    return super.getPropertyByName("seconds_empty")
+    return super.getPropertyByName("secondsEmpty")
   }
 
   get totalClientsFamily() {
-    return super.getPropertyByName("total_clients_family")
+    return super.getPropertyByName("totalClientsFamily")
   }
 
   get maxclients() {
-    return super.getPropertyByName("channel_maxclients")
+    return super.getPropertyByName("channelMaxclients")
   }
 
   get maxfamilyclients() {
-    return super.getPropertyByName("channel_maxfamilyclients")
+    return super.getPropertyByName("channelMaxfamilyclients")
   }
 
   get totalClients() {
-    return super.getPropertyByName("total_clients")!
+    return super.getPropertyByName("totalClients")!
   }
 
   get neededSubscribePower() {
-    return super.getPropertyByName("channel_needed_subscribe_power")!
+    return super.getPropertyByName("channelNeededSubscribePower")!
   }
 
   get bannerGfxUrl() {
-    return super.getPropertyByName("channel_banner_gfx_url")!
+    return super.getPropertyByName("channelBannerGfxUrl")!
   }
 
   get bannerMode() {
-    return super.getPropertyByName("channel_banner_mode")!
+    return super.getPropertyByName("channelBannerMode")!
   }
 
   /** returns detailed configuration information about a channel including ID, topic, description, etc */
   getInfo() {
-    return super.getParent().channelInfo(this.cid)
+    return super.getParent().channelInfo(this)
   }
 
   /**
    * Moves a channel to a new parent channel with the ID cpid.
    * If order is specified, the channel will be sorted right under the channel with the specified ID.
    * If order is set to 0, the channel will be sorted right below the new parent.
-   * @param cpid channel parent id
+   * @param parent channel parent id
    * @param order channel sort order
    */
-  move(cpid: number, order: number = 0) {
-    return super.getParent().channelMove(this.cid, cpid, order)
+  move(parent: string|TeamSpeakChannel, order: number = 0) {
+    return super.getParent().channelMove(this, parent, order)
   }
 
   /**
@@ -117,7 +117,7 @@ export class TeamSpeakChannel extends Abstract {
    * @param {number} force if set to 1 the channel will be deleted even when clients are in it
    */
   del(force: number = 0) {
-    return super.getParent().channelDelete(this.cid, force)
+    return super.getParent().channelDelete(this, force)
   }
 
   /**
@@ -125,7 +125,7 @@ export class TeamSpeakChannel extends Abstract {
    * @param properties the properties of the channel which should get changed
    */
   edit(properties: ChannelEdit) {
-    return super.getParent().channelEdit(this.cid, properties)
+    return super.getParent().channelEdit(this, properties)
   }
 
   /**
@@ -133,7 +133,7 @@ export class TeamSpeakChannel extends Abstract {
    * @param permsid whether the permsid should be displayed aswell
    */
   permList(permsid: boolean = false) {
-    return super.getParent().channelPermList(this.cid, permsid)
+    return super.getParent().channelPermList(this, permsid)
   }
 
   /**
@@ -143,8 +143,8 @@ export class TeamSpeakChannel extends Abstract {
    * @param perm the permid or permsid
    * @param value the value which should be set
    */
-  setPerm(perm: string|number, value: number) {
-    return super.getParent().channelSetPerm(this.cid, perm, value)
+  setPerm(perm: string|number, value: string) {
+    return super.getParent().channelSetPerm(this, perm, value)
   }
 
   /**
@@ -154,14 +154,14 @@ export class TeamSpeakChannel extends Abstract {
    * @param perm the permid or permsid
    */
   delPerm(perm: string|number) {
-    return super.getParent().channelDelPerm(this.cid, perm)
+    return super.getParent().channelDelPerm(this, perm)
   }
 
   /**
    * Gets a List of Clients in the current Channel
    * @param filter the filter object
    */
-  getClients(filter: Partial<ClientList> = {}): Promise<TeamSpeakClient[]> {
+  getClients(filter: Partial<ClientEntry> = {}): Promise<TeamSpeakClient[]> {
     filter.cid = this.cid
     return super.getParent().clientList(filter)
   }
@@ -178,4 +178,21 @@ export class TeamSpeakChannel extends Abstract {
     return super.getParent().getIconName(this.permList(true))
   }
 
+  /** retrieves the client id from a string or teamspeak client */
+  static getId<T extends TeamSpeakChannel.ChannelType>(channel?: T): T extends undefined ? undefined : string
+  static getId(channel?: TeamSpeakChannel.ChannelType): string|undefined {
+    return channel instanceof TeamSpeakChannel ? channel.cid : channel
+  }
+
+  /** retrieves the clients from an array */
+  static getMultipleIds(channels: TeamSpeakChannel.MultiChannelType) {
+    const list = Array.isArray(channels) ? channels : [channels]
+    return list.map(c => TeamSpeakChannel.getId(c)) as string[]
+  }
+
+}
+
+export namespace TeamSpeakChannel {
+  export type ChannelType = string|TeamSpeakChannel
+  export type MultiChannelType = string[]|TeamSpeakChannel[]|ChannelType
 }

@@ -30,47 +30,47 @@ describe("TeamSpeakServer", () => {
   })
 
   it("should verify the getter value of #id()", () => {
-    expect(server.id).toBe(raw.virtualserver_id)
+    expect(server.id).toBe(raw.virtualserverId)
   })
 
   it("should verify the getter value of #port()", () => {
-    expect(server.port).toBe(raw.virtualserver_port)
+    expect(server.port).toBe(raw.virtualserverPort)
   })
 
   it("should verify the getter value of #status()", () => {
-    expect(server.status).toBe(raw.virtualserver_status)
+    expect(server.status).toBe(raw.virtualserverStatus)
   })
 
   it("should verify the getter value of #clientsonline()", () => {
-    expect(server.clientsonline).toBe(raw.virtualserver_clientsonline)
+    expect(server.clientsonline).toBe(raw.virtualserverClientsonline)
   })
 
   it("should verify the getter value of #queryclientsonline()", () => {
-    expect(server.queryclientsonline).toBe(raw.virtualserver_queryclientsonline)
+    expect(server.queryclientsonline).toBe(raw.virtualserverQueryclientsonline)
   })
 
   it("should verify the getter value of #maxclients()", () => {
-    expect(server.maxclients).toBe(raw.virtualserver_maxclients)
+    expect(server.maxclients).toBe(raw.virtualserverMaxclients)
   })
 
   it("should verify the getter value of #uptime()", () => {
-    expect(server.uptime).toBe(raw.virtualserver_uptime)
+    expect(server.uptime).toBe(raw.virtualserverUptime)
   })
 
   it("should verify the getter value of #name()", () => {
-    expect(server.name).toBe(raw.virtualserver_name)
+    expect(server.name).toBe(raw.virtualserverName)
   })
 
   it("should verify the getter value of #autostart()", () => {
-    expect(server.autostart).toBe(raw.virtualserver_autostart)
+    expect(server.autostart).toBe(raw.virtualserverAutostart)
   })
 
   it("should verify the getter value of #machineId()", () => {
-    expect(server.machineId).toBe(raw.virtualserver_machine_id)
+    expect(server.machineId).toBe(raw.virtualserverMachineId)
   })
 
   it("should verify the getter value of #uniqueIdentifier()", () => {
-    expect(server.uniqueIdentifier).toBe(raw.virtualserver_unique_identifier)
+    expect(server.uniqueIdentifier).toBe(raw.virtualserverUniqueIdentifier)
   })
 
   it("should verify the return value of #getNameSpace()", () => {
@@ -80,26 +80,26 @@ describe("TeamSpeakServer", () => {
   it("should verify execute parameters of #use()", async () => {
     await server.use("Nickname")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("use", [raw.virtualserver_id, "-virtual"], { client_nickname: "Nickname" })
+    expect(mockExecute).toHaveBeenCalledWith("use", [raw.virtualserverId, "-virtual"], { clientNickname: "Nickname" })
   })
 
   it("should verify execute parameters of #del()", async () => {
     await server.del()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("serverdelete", { sid: raw.virtualserver_id })
+    expect(mockExecute).toHaveBeenCalledWith("serverdelete", { sid: raw.virtualserverId })
   })
 
   it("should verify execute parameters of #start()", async () => {
     await server.start()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("serverstart", { sid: raw.virtualserver_id })
+    expect(mockExecute).toHaveBeenCalledWith("serverstart", { sid: raw.virtualserverId })
   })
 
   it("should verify execute parameters of #stop()", async () => {
     await server.stop("Reason Message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("serverstop", {
-      sid: raw.virtualserver_id,
+      sid: raw.virtualserverId,
       reasonmsg: "Reason Message"
     })
   })

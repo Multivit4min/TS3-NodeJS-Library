@@ -41,79 +41,79 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify the getter value of #order()", () => {
-    expect(channel.order).toBe(raw.channel_order)
+    expect(channel.order).toBe(raw.channelOrder)
   })
 
   it("should verify the getter value of #name()", () => {
-    expect(channel.name).toBe(raw.channel_name)
+    expect(channel.name).toBe(raw.channelName)
   })
 
   it("should verify the getter value of #topic()", () => {
-    expect(channel.topic).toBe(raw.channel_topic)
+    expect(channel.topic).toBe(raw.channelTopic)
   })
 
   it("should verify the getter value of #flagDefault()", () => {
-    expect(channel.flagDefault).toBe(raw.channel_flag_default)
+    expect(channel.flagDefault).toBe(raw.channelFlagDefault)
   })
 
   it("should verify the getter value of #flagPassword()", () => {
-    expect(channel.flagPassword).toBe(raw.channel_flag_password)
+    expect(channel.flagPassword).toBe(raw.channelFlagPassword)
   })
 
   it("should verify the getter value of #flagPermanent()", () => {
-    expect(channel.flagPermanent).toBe(raw.channel_flag_permanent)
+    expect(channel.flagPermanent).toBe(raw.channelFlagPermanent)
   })
 
   it("should verify the getter value of #flagSemiPermanent()", () => {
-    expect(channel.flagSemiPermanent).toBe(raw.channel_flag_semi_permanent)
+    expect(channel.flagSemiPermanent).toBe(raw.channelFlagSemiPermanent)
   })
 
   it("should verify the getter value of #codec()", () => {
-    expect(channel.codec).toBe(raw.channel_codec)
+    expect(channel.codec).toBe(raw.channelCodec)
   })
 
   it("should verify the getter value of #codecQuality()", () => {
-    expect(channel.codecQuality).toBe(raw.channel_codec_quality)
+    expect(channel.codecQuality).toBe(raw.channelCodecQuality)
   })
 
   it("should verify the getter value of #neededTalkPower()", () => {
-    expect(channel.neededTalkPower).toBe(raw.channel_needed_talk_power)
+    expect(channel.neededTalkPower).toBe(raw.channelNeededTalkPower)
   })
 
   it("should verify the getter value of #iconId()", () => {
-    expect(channel.iconId).toBe(raw.channel_icon_id)
+    expect(channel.iconId).toBe(raw.channelIconId)
   })
 
   it("should verify the getter value of #secondsEmpty()", () => {
-    expect(channel.secondsEmpty).toBe(raw.seconds_empty)
+    expect(channel.secondsEmpty).toBe(raw.secondsEmpty)
   })
 
   it("should verify the getter value of #totalClientsFamily()", () => {
-    expect(channel.totalClientsFamily).toBe(raw.total_clients_family)
+    expect(channel.totalClientsFamily).toBe(raw.totalClientsFamily)
   })
 
   it("should verify the getter value of #maxclients()", () => {
-    expect(channel.maxclients).toBe(raw.channel_maxclients)
+    expect(channel.maxclients).toBe(raw.channelMaxclients)
   })
 
   it("should verify the getter value of #maxfamilyclients()", () => {
-    expect(channel.maxfamilyclients).toBe(raw.channel_maxfamilyclients)
+    expect(channel.maxfamilyclients).toBe(raw.channelMaxfamilyclients)
   })
 
   it("should verify the getter value of #totalClients()", () => {
-    expect(channel.totalClients).toBe(raw.total_clients)
+    expect(channel.totalClients).toBe(raw.totalClients)
   })
 
   it("should verify the getter value of #neededSubscribePower()", () => {
-    expect(channel.neededSubscribePower).toBe(raw.channel_needed_subscribe_power)
+    expect(channel.neededSubscribePower).toBe(raw.channelNeededSubscribePower)
   })
 
   it("should verify the getter value of #totalClients()", () => {
-    expect(channel.bannerGfxUrl).toBe(raw.channel_banner_gfx_url)
+    expect(channel.bannerGfxUrl).toBe(raw.channelBannerGfxUrl)
   })
 
   it("should verify the getter value of #neededSubscribePower()", () => {
-    expect(channel.bannerMode).toBe(raw.channel_banner_mode)
+    expect(channel.bannerMode).toBe(raw.channelBannerMode)
   })
 
   it("should verify the return value of #getNameSpace()", () => {
@@ -127,15 +127,15 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify execute parameters of #move()", async () => {
-    await channel.move(1, 10)
+    await channel.move("1", 10)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelmove", { cid: raw.cid, cpid: 1, order: 10 })
+    expect(mockExecute).toHaveBeenCalledWith("channelmove", { cid: raw.cid, cpid: "1", order: 10 })
   })
 
   it("should verify execute parameters of #move()", async () => {
-    await channel.move(1)
+    await channel.move("1")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channelmove", { cid: raw.cid, cpid: 1, order: 0 })
+    expect(mockExecute).toHaveBeenCalledWith("channelmove", { cid: raw.cid, cpid: "1", order: 0 })
   })
 
   it("should verify execute parameters of #del()", async () => {
@@ -151,9 +151,9 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify execute parameters of #edit()", async () => {
-    await channel.edit({ channel_codec_quality: 10, channel_name: "Test"})
+    await channel.edit({ channelCodecQuality: 10, channelName: "Test"})
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channeledit", { cid: raw.cid, channel_codec_quality: 10, channel_name: "Test"})
+    expect(mockExecute).toHaveBeenCalledWith("channeledit", { cid: raw.cid, channelCodecQuality: 10, channelName: "Test"})
   })
 
   it("should verify execute parameters of #permList()", async () => {
@@ -169,11 +169,11 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify execute parameters of #setPerm()", async () => {
-    await channel.setPerm("i_channel_subscribe_power", 25)
+    await channel.setPerm("i_channel_subscribe_power", "25")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
       permsid: "i_channel_subscribe_power",
-      permvalue: 25,
+      permvalue: "25",
       cid: raw.cid
     })
   })

@@ -120,17 +120,17 @@ describe("Command", () => {
       const cmd = new Command()
       cmd.setResponse("virtualserver_status=online virtualserver_id=1 virtualserver_unique_identifier=Ygn7V8+jiDXLDO5+zrxK/WptJBw= virtualserver_port=9987 client_id=1 client_channel_id=1 client_nickname=Unknown\\sfrom\\s[::1]:0000 client_database_id=0 client_login_name client_unique_identifier client_origin_server_id=0")
       expect(cmd.getResponse()).toEqual([{
-        virtualserver_status: "online",
-        virtualserver_id: 1,
-        virtualserver_unique_identifier: "Ygn7V8+jiDXLDO5+zrxK/WptJBw=",
-        virtualserver_port: 9987,
-        client_id: 1,
-        client_channel_id: 1,
-        client_nickname: "Unknown from [::1]:0000",
-        client_database_id: 0,
-        client_login_name: undefined,
-        client_unique_identifier: undefined,
-        client_origin_server_id: 0
+        virtualserverStatus: "online",
+        virtualserverId: "1",
+        virtualserverUniqueIdentifier: "Ygn7V8+jiDXLDO5+zrxK/WptJBw=",
+        virtualserverPort: 9987,
+        clientId: "1",
+        clientChannelId: "1",
+        clientNickname: "Unknown from [::1]:0000",
+        clientDatabaseId: "0",
+        clientLoginName: undefined,
+        clientUniqueIdentifier: undefined,
+        clientOriginServerId: "0"
       }])
     })
   })
@@ -168,8 +168,8 @@ describe("Command", () => {
   })
 
   describe("#parseValue()", () => {
-    it("should parse an Array of numbers", () => {
-      expect(Command.parseValue("client_servergroups", "1,2,3")).toEqual([1, 2, 3])
+    it("should parse an Array of strings", () => {
+      expect(Command.parseValue("clientServergroups", "a,b,c")).toEqual(["a", "b", "c"])
     })
   })
 

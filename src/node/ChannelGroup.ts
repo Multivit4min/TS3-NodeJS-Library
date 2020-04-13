@@ -1,10 +1,12 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
-import { ChannelGroupList } from "../types/ResponseTypes"
+import { ChannelGroupEntry } from "../types/ResponseTypes"
+import { TeamSpeakChannel } from "./Channel"
+import { TeamSpeakClient } from "./Client"
 
-export class TeamSpeakChannelGroup extends Abstract {
+export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 
-  constructor(parent: TeamSpeak, list: ChannelGroupList) {
+  constructor(parent: TeamSpeak, list: ChannelGroupEntry) {
     super(parent, list, "channelgroup")
   }
 
@@ -37,23 +39,23 @@ export class TeamSpeakChannelGroup extends Abstract {
   }
 
   get nModifyp() {
-    return super.getPropertyByName("n_modifyp")!
+    return super.getPropertyByName("nModifyp")!
   }
 
   get nMemberAddp() {
-    return super.getPropertyByName("n_member_addp")!
+    return super.getPropertyByName("nMemberAddp")!
   }
 
   get nMemberRemovep() {
-    return super.getPropertyByName("n_member_removep")!
+    return super.getPropertyByName("nMemberRemovep")!
   }
 
   /**
    * Deletes the channel group. If force is set to 1, the channel group will be deleted even if there are clients within.
    * @param force if set to 1 the channelgroup will be deleted even when clients are in it
    */
-  del(force?: number) {
-    return super.getParent().deleteChannelGroup(this.cgid, force)
+  del(force?: boolean) {
+    return super.getParent().deleteChannelGroup(this, force)
   }
 
   /**
@@ -64,8 +66,8 @@ export class TeamSpeakChannelGroup extends Abstract {
    * @param type the type of the group (0 = Template Group | 1 = Normal Group)
    * @param name name of the group
    */
-  copy(tcgid: number, type: number, name: string) {
-    return super.getParent().channelGroupCopy(this.cgid, tcgid, type, name)
+  copy(tcgid: string|TeamSpeakChannelGroup, type: number, name: string) {
+    return super.getParent().channelGroupCopy(this, tcgid, type, name)
   }
 
   /**
@@ -73,7 +75,7 @@ export class TeamSpeakChannelGroup extends Abstract {
    * @param name new name of the group
    */
   rename(name: string) {
-    return super.getParent().channelGroupRename(this.cgid, name)
+    return super.getParent().channelGroupRename(this, name)
   }
 
   /**
@@ -81,7 +83,7 @@ export class TeamSpeakChannelGroup extends Abstract {
    * @param permsid if the permsid option is set to true the output will contain the permission names
    */
   permList(permsid: boolean = false) {
-    return super.getParent().channelGroupPermList(this.cgid, permsid)
+    return super.getParent().channelGroupPermList(this, permsid)
   }
 
   /**
@@ -92,8 +94,8 @@ export class TeamSpeakChannelGroup extends Abstract {
    * @param skip whether the skip flag should be set
    * @param negate whether the negate flag should be set
    */
-  addPerm(perm: string|number, value: number, skip?: number, negate?: number) {
-    return super.getParent().channelGroupAddPerm(this.cgid, perm, value, skip, negate)
+  addPerm(perm: string|number, value: string, skip?: number, negate?: number) {
+    return super.getParent().channelGroupAddPerm(this, perm, value, skip, negate)
   }
 
   /**
@@ -102,24 +104,24 @@ export class TeamSpeakChannelGroup extends Abstract {
    * @param perm the permid or permsid
    */
   delPerm(perm: string|number) {
-    return super.getParent().channelGroupDelPerm(this.cgid, perm)
+    return super.getParent().channelGroupDelPerm(this, perm)
   }
 
   /**
    * sets the channel group of a client
-   * @param cid the channel in which the client should be assigned the Group
-   * @param cldbid the client database id which should be added to the Group
+   * @param channel the channel in which the client should be assigned the Group
+   * @param client the client database id which should be added to the Group
    */
-  setClient(cid: number, cldbid: number) {
-    return super.getParent().setClientChannelGroup(this.cgid, cid, cldbid)
+  setClient(channel: string|TeamSpeakChannel, client: string|TeamSpeakClient) {
+    return super.getParent().setClientChannelGroup(this, channel, client)
   }
 
   /**
    * returns the ids of all clients currently residing in the channelgroup
-   * @param cid the channel id
+   * @param channel the channel id
    */
-  clientList(cid: number) {
-    return super.getParent().channelGroupClientList(this.cgid, cid)
+  clientList(channel: string|TeamSpeakChannel) {
+    return super.getParent().channelGroupClientList(this, channel)
   }
 
   /** returns a buffer with the icon of the channelgroup */
@@ -132,4 +134,20 @@ export class TeamSpeakChannelGroup extends Abstract {
     return super.getParent().getIconName(this.permList(true))
   }
 
+  /** retrieves the client id from a string or teamspeak client */
+  static getId<T extends TeamSpeakChannelGroup.GroupType>(channel?: T): T extends undefined ? undefined : string
+  static getId(channel?: TeamSpeakChannelGroup.GroupType): string|undefined {
+    return channel instanceof TeamSpeakChannelGroup ? channel.cgid : channel
+  }
+
+  /** retrieves the clients from an array */
+  static getMultipleIds(client: TeamSpeakChannelGroup.MultiGroupType): string[] {
+    const list = Array.isArray(client) ? client : [client]
+    return list.map(c => TeamSpeakChannelGroup.getId(c)) as string[]
+  }
+
+}
+export namespace TeamSpeakChannelGroup {
+  export type GroupType = string|TeamSpeakChannelGroup
+  export type MultiGroupType = string[]|TeamSpeakChannelGroup[]|GroupType
 }

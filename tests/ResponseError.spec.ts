@@ -5,50 +5,50 @@ describe("ResponseError", () => {
 
   let command: any = {}
 
-  it("should verify the message of ResponseError with msg, extra_msg and failed_permid", () => {
+  it("should verify the message of ResponseError with msg, extraMsg and failedPermid", () => {
     const error = new ResponseError({
-      id: 2568,
+      id: "2568",
       msg: "missing permissions",
-      extra_msg: "additional",
-      failed_permid: 10
+      extraMsg: "additional",
+      failedPermid: 10
     }, command)
     expect(error.message).toBe("missing permissions, additional, failed on permid 10")
   })
 
-  it("should verify the message of ResponseError with msg and extra_msg", () => {
+  it("should verify the message of ResponseError with msg and extraMsg", () => {
     const error = new ResponseError({
-      id: 3329,
+      id: "3329",
       msg: "connection failed, you are banned",
-      extra_msg: "you may retry in 600 seconds"
+      extraMsg: "you may retry in 600 seconds"
     }, command)
     expect(error.message).toBe("connection failed, you are banned, you may retry in 600 seconds")
   })
 
-  it("should verify the message of ResponseError with msg and failed_permid", () => {
+  it("should verify the message of ResponseError with msg and failedPermid", () => {
     const error = new ResponseError({
-      id: 2568,
+      id: "2568",
       msg: "missing permissions",
-      failed_permid: 10
+      failedPermid: 10
     }, command)
     expect(error.message).toBe("missing permissions, failed on permid 10")
   })
 
   it("should test the return object from #toString()", () => {
     const error = new ResponseError({
-      id: 2568,
+      id: "2568",
       msg: "missing permissions",
-      extra_msg: "some extra message",
-      failed_permid: 10
+      extraMsg: "some extra message",
+      failedPermid: 10
     }, command)
     expect(error.toString()).toBe("missing permissions, some extra message, failed on permid 10")
   })
 
   it("should test the return object from #toJSON()", () => {
     const data = {
-      id: 1,
+      id: "1",
       msg: "missing permissions",
-      extra_msg: "some extra message",
-      failed_permid: 10
+      extraMsg: "some extra message",
+      failedPermid: 10
     }
     const error = new ResponseError(data, command)
     expect(error.toJSON()).toEqual({ message: "missing permissions, some extra message, failed on permid 10", ...data })

@@ -1,4 +1,4 @@
-import { TeamSpeak, QueryProtocol } from "../src/TeamSpeak"
+import { TeamSpeak } from "../src/TeamSpeak"
 import * as fs from "fs"
 import * as crc32 from "crc-32"
 
@@ -29,15 +29,15 @@ describe("Integration Test", () => {
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
-        protocol: QueryProtocol.RAW,
+        protocol: TeamSpeak.QueryProtocol.RAW,
         queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
         nickname: "JEST RAW"
       })
       const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
       expect(typeof serverinfo).toBe("object")
-      expect(typeof serverinfo.virtualserver_name).toBe("string")
+      expect(typeof serverinfo.virtualserverName).toBe("string")
       expect(typeof whoami).toBe("object")
-      expect(whoami.client_nickname).toBe("JEST RAW")
+      expect(whoami.clientNickname).toBe("JEST RAW")
       teamspeak.forceQuit()
     } catch (e) {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
@@ -50,15 +50,15 @@ describe("Integration Test", () => {
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
-        protocol: QueryProtocol.SSH,
+        protocol: TeamSpeak.QueryProtocol.SSH,
         queryport: parseInt(process.env.TS3_QUERYPORT_SSH!, 10) || 10022,
         nickname: "JEST SSH"
       })
       const [serverinfo, whoami] = await Promise.all([teamspeak.serverInfo(), teamspeak.whoami()])
       expect(typeof serverinfo).toBe("object")
-      expect(typeof serverinfo.virtualserver_name).toBe("string")
+      expect(typeof serverinfo.virtualserverName).toBe("string")
       expect(typeof whoami).toBe("object")
-      expect(whoami.client_nickname).toBe("JEST SSH")
+      expect(whoami.clientNickname).toBe("JEST SSH")
       teamspeak.forceQuit()
     } catch (e) {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
@@ -71,13 +71,13 @@ describe("Integration Test", () => {
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
-        protocol: QueryProtocol.RAW,
+        protocol: TeamSpeak.QueryProtocol.RAW,
         queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
         nickname: "JEST RAW"
       })
       const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
       const crc = crc32.buf(data)
-      await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, 0)
+      await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, "0")
       const download = await teamspeak.downloadIcon(`icon_${crc >>> 0}`)
       expect(crc).toEqual(crc32.buf(download))
       teamspeak.forceQuit()
@@ -94,17 +94,17 @@ describe("Integration Test", () => {
       try {
         teamspeak = await TeamSpeak.connect({
           ...config,
-          protocol: QueryProtocol.RAW,
+          protocol: TeamSpeak.QueryProtocol.RAW,
           queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
           nickname: "JEST RAW"
         })
         teamspeak.once("serveredit", ev => {
-          expect(ev.modified).toEqual({ virtualserver_name: servername })
+          expect(ev.modified).toEqual({ virtualserverName: servername })
           if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
           fulfill()
         })
         await teamspeak.registerEvent("server")
-        await teamspeak.serverEdit({ virtualserver_name: servername })
+        await teamspeak.serverEdit({ virtualserverName: servername })
       } catch (e) {
         if (teamspeak instanceof TeamSpeak) {
           teamspeak.removeAllListeners()
@@ -120,21 +120,21 @@ describe("Integration Test", () => {
     try {
       teamspeak = await TeamSpeak.connect({
         ...config,
-        protocol: QueryProtocol.RAW,
+        protocol: TeamSpeak.QueryProtocol.RAW,
         queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
         serverport: undefined
       })
       let whoami = await teamspeak.whoami()
       expect(typeof whoami).toBe("object")
-      expect(whoami.client_nickname).toBe(undefined)
-      expect(whoami.virtualserver_port).toBe(0)
+      expect(whoami.clientNickname).toBe(undefined)
+      expect(whoami.virtualserverPort).toBe(0)
       await teamspeak.useByPort(config.serverport, "JEST RAW 123")
       await teamspeak.forceQuit()
       await teamspeak.reconnect(1, WAIT_TIME)
       whoami = await teamspeak.whoami()
       expect(typeof whoami).toBe("object")
-      expect(whoami.client_nickname).toBe("JEST RAW 123")
-      expect(whoami.virtualserver_port).toBe(config.serverport)
+      expect(whoami.clientNickname).toBe("JEST RAW 123")
+      expect(whoami.virtualserverPort).toBe(config.serverport)
       teamspeak.forceQuit()
     } catch (e) {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
@@ -147,7 +147,7 @@ describe("Integration Test", () => {
     expect.assertions(1)
     return expect(TeamSpeak.connect({
       ...config,
-      protocol: QueryProtocol.RAW,
+      protocol: TeamSpeak.QueryProtocol.RAW,
       queryport: parseInt(process.env.TS3_QUERYPORT_RAW!, 10) || 10011,
       serverport: -1
     })).rejects.toEqual(new Error("convert error"))

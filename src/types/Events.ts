@@ -1,19 +1,21 @@
 import { TeamSpeakClient } from "../node/Client"
 import { TeamSpeakChannel } from "../node/Channel"
-import { QueryResponseTypes } from "./QueryResponse"
 import { ClientList } from "./ResponseTypes"
-import * as ENUM from "./enum"
+import {
+  TextMessageTargetMode,
+  ReasonIdentifier
+} from "./enum"
 
-export declare interface Debug {
+export interface Debug {
   type: string,
   data: string
 }
 
-export declare interface ClientConnect {
+export interface ClientConnect {
  client: TeamSpeakClient
 }
 
-export declare interface ClientDisconnect {
+export interface ClientDisconnect {
   client?: TeamSpeakClient
   event: {
     cfid: number,
@@ -24,53 +26,53 @@ export declare interface ClientDisconnect {
   }
 }
 
-export declare interface TokenUsed {
+export interface TokenUsed {
   client: ClientList
   token: string
   token1: string
   token2: string
 }
 
-export declare interface TextMessage {
+export interface TextMessage {
   invoker: TeamSpeakClient
   msg: string
-  targetmode: ENUM.TextMessageTargetMode
+  targetmode: TextMessageTargetMode
 }
 
-export declare interface ClientMoved {
+export interface ClientMoved {
   client: TeamSpeakClient
   channel: TeamSpeakChannel
-  reasonid: ENUM.ReasonIdentifier
+  reasonid: ReasonIdentifier
 }
 
-export declare interface ServerEdit {
+export interface ServerEdit {
   invoker: TeamSpeakClient
-  modified: Partial<QueryResponseTypes>
+  modified: Record<string, any>
   reasonid: number
 }
 
-export declare interface ChannelEdit {
+export interface ChannelEdit {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
-  modified: Partial<QueryResponseTypes>
+  modified: Record<string, any>
   reasonid: number
 }
 
-export declare interface ChannelCreate {
+export interface ChannelCreate {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
-  modified: Partial<QueryResponseTypes>
+  modified: Record<string, any>
   cpid: number
 }
 
-export declare interface ChannelMove {
+export interface ChannelMove {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   parent: TeamSpeakChannel
   order: number
 }
 
-export declare interface ChannelDelete {
+export interface ChannelDelete {
   invoker: TeamSpeakClient
   cid: number
 }

@@ -58,15 +58,15 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify the getter value of #nModifyp()", () => {
-    expect(serverGroup.nModifyp).toBe(raw.n_modifyp)
+    expect(serverGroup.nModifyp).toBe(raw.nModifyp)
   })
 
   it("should verify the getter value of #nMemberAddp()", () => {
-    expect(serverGroup.nMemberAddp).toBe(raw.n_member_addp)
+    expect(serverGroup.nMemberAddp).toBe(raw.nMemberAddp)
   })
 
   it("should verify the getter value of #nMemberRemovep()", () => {
-    expect(serverGroup.nMemberRemovep).toBe(raw.n_member_removep)
+    expect(serverGroup.nMemberRemovep).toBe(raw.nMemberRemovep)
   })
 
   it("should verify the return value of #getNameSpace()", () => {
@@ -74,17 +74,17 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify execute parameters of #del()", async () => {
-    await serverGroup.del(1)
+    await serverGroup.del(true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("servergroupdel", { sgid: raw.sgid, force: 1 })
+    expect(mockExecute).toHaveBeenCalledWith("servergroupdel", { sgid: raw.sgid, force: true })
   })
 
   it("should verify execute parameters of #copy()", async () => {
-    await serverGroup.copy(0, 1, "New ServerGroup")
+    await serverGroup.copy("0", 1, "New ServerGroup")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupcopy", {
       ssgid: raw.sgid,
-      tsgid: 0,
+      tsgid: "0",
       type: 1,
       name: "New ServerGroup"
     })
@@ -103,11 +103,11 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify execute parameters of #addPerm()", async () => {
-    await serverGroup.addPerm("i_channel_subscribe_power", 25)
+    await serverGroup.addPerm("i_channel_subscribe_power", "25")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddperm", {
       permsid: "i_channel_subscribe_power",
-      permvalue: 25,
+      permvalue: "25",
       sgid: raw.sgid,
       permskip: 0,
       permnegated: 0
@@ -124,19 +124,19 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should verify execute parameters of #addClient()", async () => {
-    await serverGroup.addClient(5)
+    await serverGroup.addClient("5")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddclient", {
-      cldbid: 5,
+      cldbid: ["5"],
       sgid: raw.sgid
     })
   })
 
   it("should verify execute parameters of #delClient()", async () => {
-    await serverGroup.delClient(5)
+    await serverGroup.delClient("5")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupdelclient", {
-      cldbid: 5,
+      cldbid: ["5"],
       sgid: raw.sgid
     })
   })
@@ -148,7 +148,7 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should validate the return value of #getIcon()", done => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
     mockExecute.mockResolvedValueOnce([{ size: 0, msg: "nok" }])
     serverGroup.getIcon()
       .then(() => done("Expected Promise to reject!"))
@@ -160,7 +160,7 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should validate the return value of #getIconName()", async () => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
     const name = await serverGroup.getIconName()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(name).toBe("icon_9999")

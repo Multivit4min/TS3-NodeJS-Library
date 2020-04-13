@@ -1,572 +1,586 @@
 import { TeamSpeakServer } from "../node/Server"
-import { ApiKeyScope } from "./enum"
+import { ApiKeyScope, ClientType, Codec } from "./enum"
+import { TeamSpeakQuery } from "transport/TeamSpeakQuery"
 
-export declare interface ClientSetServerQueryLogin {
-  client_login_password: string
+export interface ClientSetServerQueryLogin extends TeamSpeakQuery.ResponseEntry {
+  clientLoginPassword: string
 }
 
-export declare interface ClientFind {
-  clid: number
-  client_nickname: string
+export interface ClientFind extends TeamSpeakQuery.ResponseEntry {
+  clid: string
+  clientNickname: string
 }
 
-export declare interface ApiKeyAdd {
+export interface ApiKeyAdd extends TeamSpeakQuery.ResponseEntry {
   apikey: string
-  id: number
-  sid: number
-  cldbid: number
+  id: string
+  sid: string
+  cldbid: string
   scope: ApiKeyScope
-  time_left: number
+  timeLeft: number
 }
 
-export declare type ApiKeyList = ApiKeyEntry[]
+export type ApiKeyList = ApiKeyEntry[]
 
-export declare interface ApiKeyEntry {
+export interface ApiKeyEntry extends TeamSpeakQuery.ResponseEntry {
   count: number
-  id: number
+  id: string
   sid: number
   cldbid: number
   scope: ApiKeyScope
-  time_left: number
-  created_at: number
-  expires_at: number
+  timeLeft: number
+  createdAt: number
+  expiresAt: number
 }
 
-export declare interface QueryErrorMessage {
-  id: number
+export interface QueryErrorMessage extends TeamSpeakQuery.ResponseEntry {
+  id: string
   msg: string
-  extra_msg?: string
-  failed_permid?: number
+  extraMsg?: string
+  failedPermid?: number
 }
 
-
-export declare interface ClientList {
-  clid: number
-  cid: number
-  client_database_id: number
-  client_nickname: string
-  client_type: number
-  client_away: number
-  client_away_message: string
-  client_flag_talking: number
-  client_input_muted: number
-  client_output_muted: number
-  client_input_hardware: number
-  client_output_hardware: number
-  client_talk_power: number
-  client_is_talker: number
-  client_is_priority_speaker: number
-  client_is_recording: number
-  client_is_channel_commander: number
-  client_unique_identifier: string
-  client_servergroups: number[]
-  client_channel_group_id: number
-  client_channel_group_inherited_channel_id: number
-  client_version: string
-  client_platform: string
-  client_idle_time: number
-  client_created: number
-  client_lastconnected: number
-  client_country: string
-  connection_client_ip: string
-  client_badges: string
+export type ClientList = ClientEntry[]
+export interface ClientEntry extends TeamSpeakQuery.ResponseEntry {
+  clid: string
+  cid: string
+  clientDatabaseId: string
+  clientNickname: string
+  clientType: number
+  clientAway: number
+  clientAwayMessage: string
+  clientFlagTalking: boolean
+  clientInputMuted: boolean
+  clientOutputMuted: boolean
+  clientInputHardware: boolean
+  clientOutputHardware: boolean
+  clientTalkPower: number
+  clientIsTalker: boolean
+  clientIsPrioritySpeaker: boolean
+  clientIsRecording: boolean
+  clientIsChannelCommander: number
+  clientUniqueIdentifier: string
+  clientServergroups: string[]
+  clientChannelGroupId: string
+  clientChannelGroupInheritedChannelId: number
+  clientVersion: string
+  clientPlatform: string
+  clientIdleTime: number
+  clientCreated: number
+  clientLastconnected: number
+  clientCountry: string
+  connectionClientIp: string
+  clientBadges: string
 }
 
-
-export declare interface ChannelList {
-  cid: number
-  pid: number
-  channel_order: number
-  channel_name: string
-  channel_topic: string
-  channel_flag_default: number
-  channel_flag_password: number
-  channel_flag_permanent: number
-  channel_flag_semi_permanent: number
-  channel_codec: number
-  channel_codec_quality: number
-  channel_needed_talk_power: number
-  channel_icon_id: number
-  seconds_empty: number
-  total_clients_family: number
-  channel_maxclients: number
-  channel_maxfamilyclients: number
-  total_clients: number
-  channel_needed_subscribe_power: number
+export type ChannelList = ChannelEntry[]
+export interface ChannelEntry extends TeamSpeakQuery.ResponseEntry {
+  cid: string
+  pid: string
+  channelOrder: number
+  channelName: string
+  channelTopic: string
+  channelFlagDefault: boolean
+  channelFlagPassword: boolean
+  channelFlagPermanent: boolean
+  channelFlagSemiPermanent: boolean
+  channelCodec: Codec
+  channelCodecQuality: number
+  channelNeededTalkPower: number
+  channelIconId: string
+  secondsEmpty: number
+  totalClientsFamily: number
+  channelMaxclients: number
+  channelMaxfamilyclients: number
+  totalClients: number
+  channelNeededSubscribePower: number
   /** only in server version >= 3.11.x */
-  channel_banner_gfx_url: string
+  channelBannerGfxUrl: string
   /** only in server version >= 3.11.x */
-  channel_banner_mode: number
+  channelBannerMode: number
 }
 
 
-export declare interface ServerGroupList {
-  sgid: number
+export type ServerGroupList = ServerGroupEntry[]
+export interface ServerGroupEntry extends TeamSpeakQuery.ResponseEntry {
+  sgid: string
   name: string
   type: number
-  iconid: number
+  iconid: string
   savedb: number
   sortid: number
   namemode: number
-  n_modifyp: number
-  n_member_addp: number
-  n_member_removep: number
+  nModifyp: number
+  nMemberAddp: number
+  nMemberRemovep: number
 }
 
-export declare interface ServerGroupsByClientId {
+export interface ServerGroupsByClientId extends TeamSpeakQuery.ResponseEntry {
   name: string
-  sgid: number
-  cldbid: number
+  sgid: string
+  cldbid: string
 }
 
-
-export declare interface ChannelClientPermListId {
-  cid: number
-  cldbid: number
+export type ChannelClientPermIdList = ChannelClientPermIdEntry[]
+export interface ChannelClientPermIdEntry extends TeamSpeakQuery.ResponseEntry {
+  cid: string
+  cldbid: string
   permid: number
-  permvalue: number
+  permvalue: string
   permnegated: number
   permskip: number
 }
 
 
-export declare interface ChannelClientPermListSid {
-  cid: number
-  cldbid: number
+export type ChannelClientPermSidList = ChannelClientPermSidEntry[]
+export interface ChannelClientPermSidEntry extends TeamSpeakQuery.ResponseEntry {
+  cid: string
+  cldbid: string
   permsid: string
-  permvalue: number
+  permvalue: string
   permnegated: number
   permskip: number
 }
 
 
-export declare interface ChannelGroupList {
-  cgid: number
+export type ChannelGroupList = ChannelGroupEntry[]
+export interface ChannelGroupEntry extends TeamSpeakQuery.ResponseEntry {
+  cgid: string
   name: string
   type: number
-  iconid: number
+  iconid: string
   savedb: number
   sortid: number
   namemode: number
-  n_modifyp: number
-  n_member_addp: number
-  n_member_removep: number
+  nModifyp: number
+  nMemberAddp: number
+  nMemberRemovep: number
 }
 
 
-export declare interface ServerList {
-  virtualserver_id: number
-  virtualserver_port: number
-  virtualserver_status: string
-  virtualserver_clientsonline: number
-  virtualserver_queryclientsonline: number
-  virtualserver_maxclients: number
-  virtualserver_uptime: number
-  virtualserver_name: string
-  virtualserver_autostart: number
-  virtualserver_machine_id: string
-  virtualserver_unique_identifier: string
+export type ServerList = ServerEntry[]
+export interface ServerEntry extends TeamSpeakQuery.ResponseEntry {
+  virtualserverId: string
+  virtualserverPort: number
+  virtualserverStatus: string
+  virtualserverClientsonline: number
+  virtualserverQueryclientsonline: number
+  virtualserverMaxclients: number
+  virtualserverUptime: number
+  virtualserverName: string
+  virtualserverAutostart: number
+  virtualserverMachineId: string
+  virtualserverUniqueIdentifier: string
 }
 
-export declare interface ServerCreate {
+export interface ServerCreate {
   token: string,
   server: TeamSpeakServer
 }
 
-export declare interface QueryLoginAdd {
-  cldbid: number
-  sid: number
-  client_login_name: string
-  client_login_password: string
+export interface QueryLoginAdd extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
+  sid: string
+  clientLoginName: string
+  clientLoginPassword: string
 }
 
-export declare interface QueryLoginList {
-  cldbid: number
-  sid: number
-  client_login_name: string
+export type QueryLoginList = QueryLoginEntry[]
+export interface QueryLoginEntry extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
+  sid: string
+  clientLoginName: string
 }
 
-export declare interface Version {
+export interface Version extends TeamSpeakQuery.ResponseEntry {
   version: string
   build: number
   platform: string
 }
 
-export declare interface HostInfo {
-  instance_uptime: number
-  host_timestamp_utc: number
-  virtualservers_running_total: number
-  virtualservers_total_maxclients: number
-  virtualservers_total_clients_online: number
-  virtualservers_total_channels_online: number
-  connection_filetransfer_bandwidth_sent: number
-  connection_filetransfer_bandwidth_received: number
-  connection_filetransfer_bytes_sent_total: number
-  connection_filetransfer_bytes_received_total: number
-  connection_packets_sent_total: number
-  connection_bytes_sent_total: number
-  connection_packets_received_total: number
-  connection_bytes_received_total: number
-  connection_bandwidth_sent_last_second_total: number
-  connection_bandwidth_sent_last_minute_total: number
-  connection_bandwidth_received_last_second_total: number
-  connection_bandwidth_received_last_minute_total: number
+export interface HostInfo extends TeamSpeakQuery.ResponseEntry {
+  instanceUptime: number
+  hostTimestampUtc: number
+  virtualserversRunningTotal: number
+  virtualserversTotalMaxclients: number
+  virtualserversTotalClientsOnline: number
+  virtualserversTotalChannelsOnline: number
+  connectionFiletransferBandwidthSent: number
+  connectionFiletransferBandwidthReceived: number
+  connectionFiletransferBytesSentTotal: number
+  connectionFiletransferBytesReceivedTotal: number
+  connectionPacketsSentTotal: number
+  connectionBytesSentTotal: number
+  connectionPacketsReceivedTotal: number
+  connectionBytesReceivedTotal: number
+  connectionBandwidthSentLastSecondTotal: number
+  connectionBandwidthSentLastMinuteTotal: number
+  connectionBandwidthReceivedLastSecondTotal: number
+  connectionBandwidthReceivedLastMinuteTotal: number
 }
 
-export declare interface InstanceInfo {
-  serverinstance_database_version: number
-  serverinstance_filetransfer_port: number
-  serverinstance_max_download_total_bandwidth: number
-  serverinstance_max_upload_total_bandwidth: number
-  serverinstance_guest_serverquery_group: number
-  serverinstance_serverquery_flood_commands: number
-  serverinstance_serverquery_flood_ban_time: number
-  serverinstance_template_serveradmin_group: number
-  serverinstance_template_serverdefault_group: number
-  serverinstance_template_channeladmin_group: number
-  serverinstance_template_channeldefault_group: number
-  serverinstance_permissions_version: number
-  serverinstance_pending_connections_per_ip: number
-  serverinstance_serverquery_max_connections_per_ip: number
+export interface InstanceInfo extends TeamSpeakQuery.ResponseEntry {
+  serverinstanceDatabaseVersion: number
+  serverinstanceFiletransferPort: number
+  serverinstanceMaxDownloadTotalBandwidth: number
+  serverinstanceMaxUploadTotalBandwidth: number
+  serverinstanceGuestServerqueryGroup: number
+  serverinstanceServerqueryFloodCommands: number
+  serverinstanceServerqueryFloodBanTime: number
+  serverinstanceTemplateServeradminGroup: number
+  serverinstanceTemplateServerdefaultGroup: string
+  serverinstanceTemplateChanneladminGroup: string
+  serverinstanceTemplateChanneldefaultGroup: string
+  serverinstancePermissionsVersion: number
+  serverinstancePendingConnectionsPerIp: number
+  serverinstanceServerqueryMaxConnectionsPerIp: number
 }
 
-export declare interface BindingList {
+export type BindingList = BindingEntry[]
+export interface BindingEntry extends TeamSpeakQuery.ResponseEntry {
   ip: string
 }
 
-export declare interface Whoami {
-  virtualserver_status: string
-  virtualserver_unique_identifier: string
-  virtualserver_port: number
-  virtualserver_id: number
-  client_id: number
-  client_channel_id: number
-  client_nickname: string
-  client_database_id: number
-  client_login_name: string
-  client_unique_identifier: string
-  client_origin_server_id: number
+export interface Whoami extends TeamSpeakQuery.ResponseEntry {
+  virtualserverStatus: string
+  virtualserverUniqueIdentifier: string
+  virtualserverPort: number
+  virtualserverId: string
+  clientId: string
+  clientChannelId: string
+  clientNickname: string
+  clientDatabaseId: string
+  clientLoginName: string
+  clientUniqueIdentifier: string
+  clientOriginServerId: string
 }
 
-export declare interface ServerInfo {
-  virtualserver_unique_identifier: string
-  virtualserver_name: string
-  virtualserver_welcomemessage: string
-  virtualserver_maxclients: number
-  virtualserver_password: string
-  virtualserver_created: number
-  virtualserver_codec_encryption_mode: number
-  virtualserver_hostmessage: string
-  virtualserver_hostmessage_mode: number
-  virtualserver_filebase: string
-  virtualserver_default_server_group: number
-  virtualserver_default_channel_group: number
-  virtualserver_flag_password: number
-  virtualserver_default_channel_admin_group: number
-  virtualserver_max_download_total_bandwidth: number
-  virtualserver_max_upload_total_bandwidth: number
-  virtualserver_hostbanner_url: string
-  virtualserver_hostbanner_gfx_url: string
-  virtualserver_hostbanner_gfx_interval: number
-  virtualserver_complain_autoban_count: number
-  virtualserver_complain_autoban_time: number
-  virtualserver_complain_remove_time: number
-  virtualserver_min_clients_in_channel_before_forced_silence: number
-  virtualserver_priority_speaker_dimm_modificator: number
-  virtualserver_antiflood_points_tick_reduce: number
-  virtualserver_antiflood_points_needed_command_block: number
-  virtualserver_antiflood_points_needed_ip_block: number
-  virtualserver_hostbutton_tooltip: string
-  virtualserver_hostbutton_url: string
-  virtualserver_hostbutton_gfx_url: string
-  virtualserver_download_quota: number
-  virtualserver_upload_quota: number
-  virtualserver_needed_identity_security_level: number
-  virtualserver_log_client: number
-  virtualserver_log_query: number
-  virtualserver_log_channel: number
-  virtualserver_log_permissions: number
-  virtualserver_log_server: number
-  virtualserver_log_filetransfer: number
-  virtualserver_min_client_version: number
-  virtualserver_name_phonetic: string
-  virtualserver_icon_id: number
-  virtualserver_reserved_slots: number
-  virtualserver_weblist_enabled: number
-  virtualserver_hostbanner_mode: number
-  virtualserver_channel_temp_delete_delay_default: number
-  virtualserver_min_android_version: number
-  virtualserver_min_ios_version: number
-  virtualserver_nickname: string
-  virtualserver_antiflood_points_needed_plugin_block: number
-  virtualserver_status: string
-  connection_filetransfer_bandwidth_sent: number
-  connection_filetransfer_bandwidth_received: number
-  connection_filetransfer_bytes_sent_total: number
-  connection_filetransfer_bytes_received_total: number
-  connection_packets_sent_speech: number
-  connection_bytes_sent_speech: number
-  connection_packets_received_speech: number
-  connection_bytes_received_speech: number
-  connection_packets_sent_keepalive: number
-  connection_bytes_sent_keepalive: number
-  connection_packets_received_keepalive: number
-  connection_bytes_received_keepalive: number
-  connection_packets_sent_control: number
-  connection_bytes_sent_control: number
-  connection_packets_received_control: number
-  connection_bytes_received_control: number
-  connection_packets_sent_total: number
-  connection_bytes_sent_total: number
-  connection_packets_received_total: number
-  connection_bytes_received_total: number
-  connection_bandwidth_sent_last_second_total: number
-  connection_bandwidth_sent_last_minute_total: number
-  connection_bandwidth_received_last_second_total: number
-  connection_bandwidth_received_last_minute_total: number
+export interface ServerInfo extends TeamSpeakQuery.ResponseEntry {
+  virtualserverUniqueIdentifier: string
+  virtualserverName: string
+  virtualserverWelcomemessage: string
+  virtualserverMaxclients: number
+  virtualserverPassword: string
+  virtualserverCreated: number
+  virtualserverCodecEncryptionMode: number
+  virtualserverHostmessage: string
+  virtualserverHostmessageMode: number
+  virtualserverFilebase: string
+  virtualserverDefaultServerGroup: string
+  virtualserverDefaultChannelGroup: string
+  virtualserverFlagPassword: boolean
+  virtualserverDefaultChannelAdminGroup: string
+  virtualserverMaxDownloadTotalBandwidth: number
+  virtualserverMaxUploadTotalBandwidth: number
+  virtualserverHostbannerUrl: string
+  virtualserverHostbannerGfxUrl: string
+  virtualserverHostbannerGfxInterval: number
+  virtualserverComplainAutobanCount: number
+  virtualserverComplainAutobanTime: number
+  virtualserverComplainRemoveTime: number
+  virtualserverMinClientsInChannelBeforeForcedSilence: number
+  virtualserverPrioritySpeakerDimmModificator: number
+  virtualserverAntifloodPointsTickReduce: number
+  virtualserverAntifloodPointsNeededCommandBlock: number
+  virtualserverAntifloodPointsNeededIpBlock: number
+  virtualserverHostbuttonTooltip: string
+  virtualserverHostbuttonUrl: string
+  virtualserverHostbuttonGfxUrl: string
+  virtualserverDownloadQuota: number
+  virtualserverUploadQuota: number
+  virtualserverNeededIdentitySecurityLevel: number
+  virtualserverLogClient: number
+  virtualserverLogQuery: number
+  virtualserverLogChannel: number
+  virtualserverLogPermissions: number
+  virtualserverLogServer: number
+  virtualserverLogFiletransfer: number
+  virtualserverMinClientVersion: number
+  virtualserverNamePhonetic: string
+  virtualserverIconId: string
+  virtualserverReservedSlots: number
+  virtualserverWeblistEnabled: number
+  virtualserverHostbannerMode: number
+  virtualserverChannelTempDeleteDelayDefault: number
+  virtualserverMinAndroidVersion: number
+  virtualserverMinIosVersion: number
+  virtualserverNickname: string
+  virtualserverAntifloodPointsNeededPluginBlock: number
+  virtualserverStatus: string
+  connectionFiletransferBandwidthSent: number
+  connectionFiletransferBandwidthReceived: number
+  connectionFiletransferBytesSentTotal: number
+  connectionFiletransferBytesReceivedTotal: number
+  connectionPacketsSentSpeech: number
+  connectionBytesSentSpeech: number
+  connectionPacketsReceivedSpeech: number
+  connectionBytesReceivedSpeech: number
+  connectionPacketsSentKeepalive: number
+  connectionBytesSentKeepalive: number
+  connectionPacketsReceivedKeepalive: number
+  connectionBytesReceivedKeepalive: number
+  connectionPacketsSentControl: number
+  connectionBytesSentControl: number
+  connectionPacketsReceivedControl: number
+  connectionBytesReceivedControl: number
+  connectionPacketsSentTotal: number
+  connectionBytesSentTotal: number
+  connectionPacketsReceivedTotal: number
+  connectionBytesReceivedTotal: number
+  connectionBandwidthSentLastSecondTotal: number
+  connectionBandwidthSentLastMinuteTotal: number
+  connectionBandwidthReceivedLastSecondTotal: number
+  connectionBandwidthReceivedLastMinuteTotal: number
 }
 
-export declare interface ServerIdGetByPort {
-  server_id: number
+export interface ServerIdGetByPort extends TeamSpeakQuery.ResponseEntry {
+  serverId: string
 }
 
-export declare interface ServerRequestConnectionInfo {
-  connection_filetransfer_bandwidth_sent: number
-  connection_filetransfer_bandwidth_received: number
-  connection_filetransfer_bytes_sent_total: number
-  connection_filetransfer_bytes_received_total: number
-  connection_packets_sent_total: number
-  connection_bytes_sent_total: number
-  connection_packets_received_total: number
-  connection_bytes_received_total: number
-  connection_bandwidth_sent_last_second_total: number
-  connection_bandwidth_sent_last_minute_total: number
-  connection_bandwidth_received_last_second_total: number
-  connection_bandwidth_received_last_minute_total: number
-  connection_connected_time: number
-  connection_packetloss_total: number
-  connection_ping: number
+export interface ServerRequestConnectionInfo extends TeamSpeakQuery.ResponseEntry {
+  connectionFiletransferBandwidthSent: number
+  connectionFiletransferBandwidthReceived: number
+  connectionFiletransferBytesSentTotal: number
+  connectionFiletransferBytesReceivedTotal: number
+  connectionPacketsSentTotal: number
+  connectionBytesSentTotal: number
+  connectionPacketsReceivedTotal: number
+  connectionBytesReceivedTotal: number
+  connectionBandwidthSentLastSecondTotal: number
+  connectionBandwidthSentLastMinuteTotal: number
+  connectionBandwidthReceivedLastSecondTotal: number
+  connectionBandwidthReceivedLastMinuteTotal: number
+  connectionConnectedTime: number
+  connectionPacketlossTotal: number
+  connectionPing: number
 }
 
-export declare interface ServerGroupClientList {
-  cldbid: number
-  client_nickname: string
-  client_unique_identifier: string
+export type ServerGroupClientList = ServerGroupClientEntry[]
+export interface ServerGroupClientEntry extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
+  clientNickname: string
+  clientUniqueIdentifier: string
 }
 
-export declare interface ServerGroupCopy {
+export interface ServerGroupCopy extends TeamSpeakQuery.ResponseEntry {
   /** only available when a new group gets created */
-  sgid?: number
+  sgid?: string
 }
 
-export declare interface ChannelGroupCopy {
+export interface ChannelGroupCopy extends TeamSpeakQuery.ResponseEntry {
   /** only available when a new group gets created */
-  cgid?: number
+  cgid?: string
 }
 
-export declare interface ServerTempPasswordList {
+export type ServerTempPasswordList = ServerTempPasswordEntry[]
+export interface ServerTempPasswordEntry extends TeamSpeakQuery.ResponseEntry {
   nickname: string
   uid: string
   desc: string
-  pw_clear: string
+  pwClear: string
   start: number
   end: number
-  tcid: number
+  tcid: string
 }
 
-export declare interface ChannelGroupClientList {
-  cid?: number
-  cldbid?: number
-  cgid?: number
+export type ChannelGroupClientList = ChannelGroupClientEntry[]
+export interface ChannelGroupClientEntry extends TeamSpeakQuery.ResponseEntry {
+  cid?: string
+  cldbid?: string
+  cgid?: string
 }
 
-export declare interface PermList {
+export type PermList = PermEntry[]
+export interface PermEntry extends TeamSpeakQuery.ResponseEntry {
   permid?: number
   permsid?: string
-  permvalue: number
+  permvalue: string
   permnegated: number
   permskip: number
 }
 
-export declare interface ChannelFind {
-  cid: number
-  channel_name: string
+export interface ChannelFind extends TeamSpeakQuery.ResponseEntry {
+  cid: string
+  channelName: string
 }
 
-export declare interface ChannelInfo {
-  pid: number
-  channel_name: string
-  channel_topic: string
-  channel_description: string
-  channel_password: string
-  channel_codec: number
-  channel_codec_quality: number
-  channel_maxclients: number
-  channel_maxfamilyclients: number
-  channel_order: number
-  channel_flag_permanent: number
-  channel_flag_semi_permanent: number
-  channel_flag_default: number
-  channel_flag_password: number
-  channel_codec_latency_factor: number
-  channel_codec_is_unencrypted: number
-  channel_security_salt: string
-  channel_delete_delay: number
-  channel_flag_maxclients_unlimited: number
-  channel_flag_maxfamilyclients_unlimited: number
-  channel_flag_maxfamilyclients_inherited: number
-  channel_filepath: string
-  channel_needed_talk_power: number
-  channel_forced_silence: number
-  channel_name_phonetic: string
-  channel_icon_id: number
-  channel_banner_gfx_url: string
-  channel_banner_mode: number
-  seconds_empty: number
+export interface ChannelInfo extends TeamSpeakQuery.ResponseEntry {
+  pid: string
+  channelName: string
+  channelTopic: string
+  channelDescription: string
+  channelPassword: string
+  channelCodec: number
+  channelCodecQuality: number
+  channelMaxclients: number
+  channelMaxfamilyclients: number
+  channelOrder: number
+  channelFlagPermanent: boolean
+  channelFlagSemiPermanent: boolean
+  channelFlagDefault: boolean
+  channelFlagPassword: boolean
+  channelCodecLatencyFactor: number
+  channelCodecIsUnencrypted: number
+  channelSecuritySalt: string
+  channelDeleteDelay: number
+  channelFlagMaxclientsUnlimited: boolean
+  channelFlagMaxfamilyclientsUnlimited: boolean
+  channelFlagMaxfamilyclientsInherited: boolean
+  channelFilepath: string
+  channelNeededTalkPower: number
+  channelForcedSilence: number
+  channelNamePhonetic: string
+  channelIconId: string
+  channelBannerGfxUrl: string
+  channelBannerMode: number
+  secondsEmpty: number
 }
 
-export declare interface ClientGetIds {
+export type ClientGetIds = ClientGetIdEntry[]
+export interface ClientGetIdEntry extends TeamSpeakQuery.ResponseEntry {
   cluid: string
-  clid: number
+  clid: string
   name: string
 }
 
-export declare interface ClientGetDbidFromUid {
+export interface ClientGetDbidFromUid extends TeamSpeakQuery.ResponseEntry {
   cluid: string
-  cldbid: number
+  cldbid: string
 }
 
-export declare interface ClientGetNameFromUid {
+export interface ClientGetNameFromUid extends TeamSpeakQuery.ResponseEntry {
   cluid: string
-  cldbid: number
+  cldbid: string
   name: string
 }
 
-export declare interface ClientGetUidFromClid {
-  clid: number
+export interface ClientGetUidFromClid extends TeamSpeakQuery.ResponseEntry {
+  clid: string
   cluid: string
   nickname: string
 }
 
-export declare interface ClientGetNameFromDbid {
+export interface ClientGetNameFromDbid extends TeamSpeakQuery.ResponseEntry {
   cluid: string
-  cldbid: number
+  cldbid: string
   name: string
 }
 
-export declare interface ClientInfo {
-  cid: number
-  client_idle_time: number
-  client_unique_identifier: string
-  client_nickname: string
-  client_version: string
-  client_platform: string
-  client_input_muted: number
-  client_output_muted: number
-  client_outputonly_muted: number
-  client_input_hardware: number
-  client_output_hardware: number
-  client_default_channel: number
-  client_meta_data: string
-  client_is_recording: number
-  client_version_sign: string
-  client_security_hash: string
-  client_login_name: string
-  client_database_id: number
-  client_channel_group_id: number
-  client_servergroups: number[]
-  client_created: number
-  client_lastconnected: number
-  client_totalconnections: number
-  client_away: number
-  client_away_message: string
-  client_type: number
-  client_flag_avatar: string
-  client_talk_power: number
-  client_talk_request: number
-  client_talk_request_msg: string
-  client_description: string
-  client_is_talker: number
-  client_month_bytes_uploaded: number
-  client_month_bytes_downloaded: number
-  client_total_bytes_uploaded: number
-  client_total_bytes_downloaded: number
-  client_is_priority_speaker: number
-  client_nickname_phonetic: string
-  client_needed_serverquery_view_power: number
-  client_default_token: string
-  client_icon_id: number
-  client_is_channel_commander: number
-  client_country: string
-  client_channel_group_inherited_channel_id: number
-  client_badges: string
-  client_myteamspeak_id: string
-  client_integrations: string
-  client_myteamspeak_avatar: string
-  client_signed_badges: string
-  client_base64HashClientUID: string
-  connection_filetransfer_bandwidth_sent: number
-  connection_filetransfer_bandwidth_received: number
-  connection_packets_sent_total: number
-  connection_bytes_sent_total: number
-  connection_packets_received_total: number
-  connection_bytes_received_total: number
-  connection_bandwidth_sent_last_second_total: number
-  connection_bandwidth_sent_last_minute_total: number
-  connection_bandwidth_received_last_second_total: number
-  connection_bandwidth_received_last_minute_total: number
-  connection_connected_time: number
-  connection_client_ip: string
+export interface ClientInfo extends TeamSpeakQuery.ResponseEntry {
+  cid: string
+  clientIdleTime: number
+  clientUniqueIdentifier: string
+  clientNickname: string
+  clientVersion: string
+  clientPlatform: string
+  clientInputMuted: number
+  clientOutputMuted: number
+  clientOutputonlyMuted: number
+  clientInputHardware: number
+  clientOutputHardware: number
+  clientDefaultChannel: string
+  clientMetaData: string
+  clientIsRecording: boolean
+  clientVersionSign: string
+  clientSecurityHash: string
+  clientLoginName: string
+  clientDatabaseId: number
+  clientChannelGroupId: string
+  clientServergroups: string[]
+  clientCreated: number
+  clientLastconnected: number
+  clientTotalconnections: number
+  clientAway: boolean
+  clientAwayMessage: string
+  clientType: ClientType
+  clientFlagAvatar: string
+  clientTalkPower: number
+  clientTalkRequest: boolean
+  clientTalkRequestMsg: string
+  clientDescription: string
+  clientIsTalker: boolean
+  clientMonthBytesUploaded: number
+  clientMonthBytesDownloaded: number
+  clientTotalBytesUploaded: number
+  clientTotalBytesDownloaded: number
+  clientIsPrioritySpeaker: boolean
+  clientNicknamePhonetic: string
+  clientNeededServerqueryViewPower: number
+  clientDefaultToken: string
+  clientIconId: string
+  clientIsChannelCommander: boolean
+  clientCountry: string
+  clientChannelGroupInheritedChannelId: string
+  clientBadges: string
+  clientMyteamspeakId: string
+  clientIntegrations: string
+  clientMyteamspeakAvatar: string
+  clientSignedBadges: string
+  clientBase64HashClientUID: string
+  connectionFiletransferBandwidthSent: number
+  connectionFiletransferBandwidthReceived: number
+  connectionPacketsSentTotal: number
+  connectionBytesSentTotal: number
+  connectionPacketsReceivedTotal: number
+  connectionBytesReceivedTotal: number
+  connectionBandwidthSentLastSecondTotal: number
+  connectionBandwidthSentLastMinuteTotal: number
+  connectionBandwidthReceivedLastSecondTotal: number
+  connectionBandwidthReceivedLastMinuteTotal: number
+  connectionConnectedTime: number
+  connectionClientIp: string
 }
 
-export declare interface ClientDBList {
+export type ClientDBList = ClientDBEntry[]
+export interface ClientDBEntry extends TeamSpeakQuery.ResponseEntry {
   count: number
-  cldbid: number
-  client_unique_identifier: string
-  client_nickname: string
-  client_created: number
-  client_lastconnected: number
-  client_totalconnections: number
-  client_description: string
-  client_lastip: string
-  client_login_name: string
+  cldbid: string
+  clientUniqueIdentifier: string
+  clientNickname: string
+  clientCreated: number
+  clientLastconnected: number
+  clientTotalconnections: number
+  clientDescription: string
+  clientLastip: string
+  clientLoginName: string
 }
 
-export declare interface ClientDBInfo {
-  client_unique_identifier: string
-  client_nickname: string
-  client_database_id: number
-  client_created: number
-  client_lastconnected: number
-  client_totalconnections: number
-  client_flag_avatar: string
-  client_description: string
-  client_month_bytes_uploaded: number
-  client_month_bytes_downloaded: number
-  client_total_bytes_uploaded: number
-  client_total_bytes_downloaded: number
-  client_base64HashClientUID: string
-  client_lastip: string
+export interface ClientDBInfo extends TeamSpeakQuery.ResponseEntry {
+  clientUniqueIdentifier: string
+  clientNickname: string
+  clientDatabaseId: string
+  clientCreated: number
+  clientLastconnected: number
+  clientTotalconnections: number
+  clientFlagAvatar: string
+  clientDescription: string
+  clientMonthBytesUploaded: number
+  clientMonthBytesDownloaded: number
+  clientTotalBytesUploaded: number
+  clientTotalBytesDownloaded: number
+  clientBase64HashClientUID: string
+  clientLastip: string
 }
 
-export declare interface CustomSearch {
-  cldbid: number
+export interface CustomSearch extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
   ident: string
   value: string
 }
 
-export declare interface CustomInfo {
-  cldbid: number
+export interface CustomInfo extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
   ident: string
   value: string
 }
 
-export declare interface TokenCustomSet {
+export interface TokenCustomSet extends TeamSpeakQuery.ResponseEntry {
   ident: string
   value: string
 }
 
-export declare interface PermOverview {
+export type PermOverview = PermOverviewEntry[]
+export interface PermOverviewEntry extends TeamSpeakQuery.ResponseEntry {
   t: number 
   id: number 
   id2: number 
@@ -580,76 +594,81 @@ export declare interface PermOverview {
   s: number
 }
 
-export declare interface PermissionList {
+export type PermissionList = PermissionEntry[]
+export interface PermissionEntry extends TeamSpeakQuery.ResponseEntry {
   permid: number
   permname: string
   permdesc: string
 }
 
-export declare interface PermIdGetByName {
+export interface PermIdGetByName extends TeamSpeakQuery.ResponseEntry {
   permsid: string 
   permid: number 
 }
 
-export declare interface PermGet {
+export interface PermGet extends TeamSpeakQuery.ResponseEntry {
   permsid: string 
   permid: number 
-  permvalue: number 
+  permvalue: string 
 }
 
-export declare interface PermFind {
+export interface PermFind extends TeamSpeakQuery.ResponseEntry {
   t: number 
   id1: number 
   id2: number 
   p: number 
 }
 
-export declare interface Token {
+export interface Token extends TeamSpeakQuery.ResponseEntry {
   token: string
 }
 
-export declare interface PrivilegeKeyList {
+export type PrivilegeKeyList = PrivilegeKeyEntry[]
+export interface PrivilegeKeyEntry extends TeamSpeakQuery.ResponseEntry {
   token: string 
-  token_type: number 
-  token_id1: number 
-  token_id2: number 
-  token_created: number 
-  token_description: string
+  tokenType: number 
+  tokenId1: number 
+  tokenId2: number 
+  tokenCreated: number 
+  tokenDescription: string
   /** only in server version >= 3.11.x */
-  token_customset: TokenCustomSet[]
+  tokenCustomset: TokenCustomSet[]
 }
 
-export declare interface MessageList {
-  msgid: number 
+export type MessageList = MessageEntry[]
+export interface MessageEntry extends TeamSpeakQuery.ResponseEntry {
+  msgid: string 
   cluid: string 
   subject: string 
   timestamp: number 
-  flag_read: number 
+  flagRead: boolean 
 }
 
-export declare interface MessageGet {
-  msgid: number 
+export interface MessageGet extends TeamSpeakQuery.ResponseEntry {
+  msgid: string 
   cluid: string 
   subject: string 
   message: string 
   timestamp: number 
 }
 
-export declare interface ComplainList {
-  tcldbid: number 
+export type ComplainList = ComplainEntry[]
+export interface ComplainEntry extends TeamSpeakQuery.ResponseEntry {
+  tcldbid: string 
   tname: string 
-  fcldbid: number 
+  fcldbid: string 
   fname: string 
   message: string 
   timestamp: number 
 }
 
-export declare interface BanAdd {
-  banid: number
+export interface BanAdd extends TeamSpeakQuery.ResponseEntry {
+  banid: string
 }
 
-export declare interface BanList {
-  banid: number 
+export type BanList = BanEntry[]
+export interface BanEntry extends TeamSpeakQuery.ResponseEntry {
+  banid: string 
   ip: string 
   name: string 
   uid: string 
@@ -658,24 +677,25 @@ export declare interface BanList {
   created: number 
   duration: number 
   invokername: string 
-  invokercldbid: number 
+  invokercldbid: string 
   invokeruid: string 
   reason: string 
   enforcements: number 
 }
 
-export declare interface LogView {
-  last_pos: number
-  file_size: number
+export interface LogView extends TeamSpeakQuery.ResponseEntry {
+  lastPos: number
+  fileSize: number
   l: string 
 }
 
-export declare interface ClientDBFind {
-  cldbid: number
+export interface ClientDBFind extends TeamSpeakQuery.ResponseEntry {
+  cldbid: string
 }
 
-export declare interface FTList {
-  clid: number
+export type FTList = FileTransferEntry[]
+export interface FileTransferEntry extends TeamSpeakQuery.ResponseEntry {
+  clid: string
   path: string
   name: string
   size: number
@@ -684,13 +704,14 @@ export declare interface FTList {
   serverftfid: number
   sender: number
   status: number
-  current_speed: number
-  average_speed: number
+  currentSpeed: number
+  averageSpeed: number
   runtime: number
 }
 
-export declare interface FTGetFileList {
-  cid: number 
+export type FTGetFileList = FTGetFileEntry[]
+export interface FTGetFileEntry extends TeamSpeakQuery.ResponseEntry {
+  cid: string 
   path: string 
   name: string 
   size: number 
@@ -699,14 +720,14 @@ export declare interface FTGetFileList {
   type: number 
 }
 
-export declare interface FTGetFileInfo {
-  cid: number 
+export interface FTGetFileInfo extends TeamSpeakQuery.ResponseEntry {
+  cid: string 
   name: string 
   size: number 
   datetime: number 
 }
 
-export declare interface FTInitUpload {
+export interface FTInitUpload extends TeamSpeakQuery.ResponseEntry {
   clientftfid: number 
   /** exists when an error occured */
   status?: number
@@ -726,7 +747,7 @@ export declare interface FTInitUpload {
   proto?: number
 }
 
-export declare interface FTInitDownload {
+export interface FTInitDownload extends TeamSpeakQuery.ResponseEntry {
   clientftfid: number 
   size: number 
   /** exists when an error occured */
@@ -743,7 +764,7 @@ export declare interface FTInitDownload {
   proto?: number
 }
 
-export declare interface SnapshotCreate {
+export interface SnapshotCreate extends TeamSpeakQuery.ResponseEntry {
   version: number,
   /** only exists when a password has been set otherwise it will be undefined */
   salt?: string,

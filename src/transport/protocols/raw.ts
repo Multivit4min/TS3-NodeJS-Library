@@ -1,6 +1,6 @@
 import { connect, Socket } from "net"
 import { EventEmitter } from "events"
-import { ConnectionParams } from "../../TeamSpeak"
+import { TeamSpeak } from "../../TeamSpeak"
 import { TeamSpeakQuery } from "../TeamSpeakQuery"
 
 
@@ -9,7 +9,7 @@ export class ProtocolRAW extends EventEmitter implements TeamSpeakQuery.QueryPro
   private socket: Socket
   chunk: string = ""
 
-  constructor(config: ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams) {
     super()
     this.socket = connect({
       port: config.queryport,

@@ -17,7 +17,7 @@ jest.mock("../src/transport/protocols/raw", () => {
 })
 
 import { TeamSpeakQuery } from "../src/transport/TeamSpeakQuery"
-import { QueryProtocol } from "../src/TeamSpeak"
+import { TeamSpeak } from "../src/TeamSpeak"
 import { ResponseError } from "../src/exception/ResponseError"
 
 describe("TeamSpeakQuery", () => {
@@ -37,7 +37,7 @@ describe("TeamSpeakQuery", () => {
       queryport: 10011,
       host: "127.0.0.1",
       ignoreQueries: false,
-      protocol: QueryProtocol.RAW,
+      protocol: TeamSpeak.QueryProtocol.RAW,
       keepAlive: true,
       keepAliveTimeout: 250,
       readyTimeout: 10000
@@ -65,7 +65,7 @@ describe("TeamSpeakQuery", () => {
       queryport: 10011,
       host: "127.0.0.1",
       ignoreQueries: false,
-      protocol: QueryProtocol.RAW,
+      protocol: TeamSpeak.QueryProtocol.RAW,
       keepAlive: true,
       keepAliveTimeout: 250,
       readyTimeout: 10000
@@ -91,7 +91,7 @@ describe("TeamSpeakQuery", () => {
       queryport: 10011,
       host: "127.0.0.1",
       ignoreQueries: false,
-      protocol: QueryProtocol.RAW,
+      protocol: TeamSpeak.QueryProtocol.RAW,
       keepAlive: true,
       keepAliveTimeout: 250,
       readyTimeout: 10000
