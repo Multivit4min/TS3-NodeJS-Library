@@ -139,15 +139,15 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify execute parameters of #del()", async () => {
-    await channel.del(1)
+    await channel.del(true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channeldelete", { cid: raw.cid, force: 1 })
+    expect(mockExecute).toHaveBeenCalledWith("channeldelete", { cid: raw.cid, force: true })
   })
 
   it("should verify execute parameters of #del()", async () => {
     await channel.del()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channeldelete", { cid: raw.cid, force: 0 })
+    expect(mockExecute).toHaveBeenCalledWith("channeldelete", { cid: raw.cid, force: false })
   })
 
   it("should verify execute parameters of #edit()", async () => {
