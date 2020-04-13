@@ -1,5 +1,20 @@
 # Changelog
 
+### 3.0.0 - ???
+* renamed functions to conform JS camelcase standard
+  * `getChannelByID` -> `getChannelById`
+  * `getClientByID` -> `getClientById`
+  * `getClientByDBID` -> `getClientByDbid`
+  * `getClientByUID` -> `getClientByUid`
+  * `clientDBList` -> `clientDbList`
+  * `clientDBInfo` -> `clientDbInfo`
+  * `clientDBEdit` -> `clientDbEdit`
+  * `clientDBDelete` -> `clientDbDelete`
+* all command parameters and responses are now camelcase instead of snakecase
+* all ids are now strings instead of numbers (TeamSpeak5 Servers have ids >53bit which JavaScript will start to round)
+* all functions which require a channel id, client id etc can now be given the TeamSpeakClient class / TeamSpeakChannel class etc
+* created some overloads for some functions where necessary
+
 ### 2.4.4 - 06.04.2020
 * update type definitions for serverinfo response
 

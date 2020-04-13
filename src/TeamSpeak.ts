@@ -15,6 +15,9 @@ import { Context, SelectType } from "./types/context"
 import { EventError } from "./exception/EventError"
 import { ClientType, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
 
+export type QueryProtocol = TeamSpeak.QueryProtocol
+export type ConnectionParams = TeamSpeak.ConnectionParams
+
 /**
  * missing Query Commands 
  * @todo
