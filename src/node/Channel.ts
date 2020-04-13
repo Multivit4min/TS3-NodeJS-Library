@@ -116,7 +116,7 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
    * The clients will be kicked to the default channel with an appropriate reason message.
    * @param {number} force if set to 1 the channel will be deleted even when clients are in it
    */
-  del(force: number = 0) {
+  del(force: boolean = false) {
     return super.getParent().channelDelete(this, force)
   }
 
