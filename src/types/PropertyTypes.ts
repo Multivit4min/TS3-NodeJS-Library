@@ -1,5 +1,5 @@
 import * as ENUM from "./enum"
-import { TeamSpeakQuery } from "transport/TeamSpeakQuery";
+import { TeamSpeakQuery } from "../transport/TeamSpeakQuery";
 
 export interface ApiKeyList extends TeamSpeakQuery.ResponseEntry {
   /** database ids to list  */

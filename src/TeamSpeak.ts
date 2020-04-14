@@ -1271,7 +1271,7 @@ export class TeamSpeak extends EventEmitter {
    * @param targetmode targetmode (1: client, 2: channel, 3: server)
    * @param msg the message the client should receive
    */
-  sendTextMessage(target: TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode.SERVER, msg: string)
+  sendTextMessage(target: "0", targetmode: TextMessageTargetMode.SERVER, msg: string)
   sendTextMessage(target: TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode.CHANNEL, msg: string)
   sendTextMessage(target: TeamSpeakClient.ClientType, targetmode: TextMessageTargetMode.CLIENT, msg: string)
   sendTextMessage(target: TeamSpeakClient.ClientType&TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode, msg: string) {

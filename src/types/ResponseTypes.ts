@@ -1,6 +1,6 @@
 import { TeamSpeakServer } from "../node/Server"
 import { ApiKeyScope, ClientType, Codec } from "./enum"
-import { TeamSpeakQuery } from "transport/TeamSpeakQuery"
+import { TeamSpeakQuery } from "../transport/TeamSpeakQuery"
 
 export interface ClientSetServerQueryLogin extends TeamSpeakQuery.ResponseEntry {
   clientLoginPassword: string

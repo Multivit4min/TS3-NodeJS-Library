@@ -1,5 +1,5 @@
 import { TeamSpeak } from "../TeamSpeak"
-import { TeamSpeakQuery } from "transport/TeamSpeakQuery"
+import { TeamSpeakQuery } from "../transport/TeamSpeakQuery"
 
 export abstract class Abstract<T extends TeamSpeakQuery.ResponseEntry> {
 
