@@ -222,8 +222,9 @@ export class Command {
    * @param {string|string[]} value the value or an array of values
    * @return the parsed String which is readable by the TeamSpeak Query
    */
-  static escapeKeyValue(key: string, value: string|string[]): string {
+  static escapeKeyValue(key: string, value: string|string[]|boolean): string {
     key = Command.toSnakeCase(key)
+    if (typeof value === "boolean") value = value ? "1" : "0"
     if (Array.isArray(value)) {
       return value.map(v => `${Command.escape(key)}=${Command.escape(v)}`).join("|")
     } else {
