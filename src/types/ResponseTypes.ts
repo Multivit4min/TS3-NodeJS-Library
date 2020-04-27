@@ -126,9 +126,9 @@ export interface ChannelClientPermIdEntry extends TeamSpeakQuery.ResponseEntry {
   cid: string
   cldbid: string
   permid: number
-  permvalue: string
-  permnegated: number
-  permskip: number
+  permvalue: number
+  permnegated: boolean
+  permskip: boolean
 }
 
 
@@ -137,9 +137,9 @@ export interface ChannelClientPermSidEntry extends TeamSpeakQuery.ResponseEntry 
   cid: string
   cldbid: string
   permsid: string
-  permvalue: string
-  permnegated: number
-  permskip: number
+  permvalue: number
+  permnegated: boolean
+  permskip: boolean
 }
 
 
@@ -394,9 +394,9 @@ export type PermList = PermEntry[]
 export interface PermEntry extends TeamSpeakQuery.ResponseEntry {
   permid?: number
   permsid?: string
-  permvalue: string
-  permnegated: number
-  permskip: number
+  permvalue: number
+  permnegated: boolean
+  permskip: boolean
 }
 
 export interface ChannelFind extends TeamSpeakQuery.ResponseEntry {
@@ -609,7 +609,7 @@ export interface PermIdGetByName extends TeamSpeakQuery.ResponseEntry {
 export interface PermGet extends TeamSpeakQuery.ResponseEntry {
   permsid: string 
   permid: number 
-  permvalue: string 
+  permvalue: number 
 }
 
 export interface PermFind extends TeamSpeakQuery.ResponseEntry {

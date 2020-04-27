@@ -5,6 +5,7 @@ import { ClientDBEdit, ClientEdit } from "../types/PropertyTypes"
 import { ClientType } from "../types/enum"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakServerGroup } from "./ServerGroup"
+import { PermissionBuilder } from "util/PermissionBuilder"
 
 export class TeamSpeakClient extends Abstract<ClientEntry> {
 
@@ -267,13 +268,19 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
    * Adds a set of specified permissions to a client.
    * Multiple permissions can be added by providing the three parameters of each permission.
    * A permission can be specified by permid or permsid.
-   * @param perm the permid or permsid
-   * @param value value of the permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
+   * @param perm the permission object to set
    */
-  addPerm(perm: string|number, value: string, skip?: number, negate?: number) {
-    return super.getParent().clientAddPerm(this, perm, value, skip, negate)
+  addPerm(perm: PermissionBuilder.PermType) {
+    return super.getParent().clientAddPerm(this, perm)
+  }
+
+  /**
+   * Adds a set of specified permissions to a client.
+   * Multiple permissions can be added by providing the three parameters of each permission.
+   * A permission can be specified by permid or permsid.
+   */
+  createPerm() {
+    return super.getParent().clientAddPerm(this, undefined)
   }
 
   /**

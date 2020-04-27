@@ -3,6 +3,7 @@ import { TeamSpeak } from "../TeamSpeak"
 import { ChannelGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakClient } from "./Client"
+import { PermissionBuilder } from "util/PermissionBuilder"
 
 export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 
@@ -89,13 +90,18 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
   /**
    * Adds a specified permissions to the channel group.
    * A permission can be specified by permid or permsid.
-   * @param perm the permid or permsid
-   * @param value value of the Permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
+   * @param perm the permission object
    */
-  addPerm(perm: string|number, value: string, skip?: number, negate?: number) {
-    return super.getParent().channelGroupAddPerm(this, perm, value, skip, negate)
+  addPerm(perm: PermissionBuilder.PermType) {
+    return super.getParent().channelGroupAddPerm(this, perm)
+  }
+
+  /**
+   * Adds a specified permissions to the channel group.
+   * A permission can be specified by permid or permsid.
+   */
+  createPerm() {
+    return super.getParent().channelGroupAddPerm(this, undefined)
   }
 
   /**

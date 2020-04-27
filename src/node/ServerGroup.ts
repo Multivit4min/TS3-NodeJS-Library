@@ -2,6 +2,7 @@ import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ServerGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakClient } from "./Client"
+import { PermissionBuilder } from "util/PermissionBuilder"
 
 export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
 
@@ -89,13 +90,18 @@ export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
   /**
    * Adds a specified permissions to the server group.
    * A permission can be specified by permid or permsid.
-   * @param perm the permid or permsid
-   * @param value value of the permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
+   * @param perm the permission object to set
    */
-  addPerm(perm: string|number, value: string, skip?: number, negate?: number) {
-    return super.getParent().serverGroupAddPerm(this, perm, value, skip, negate)
+  addPerm(perm: PermissionBuilder.PermType) {
+    return super.getParent().serverGroupAddPerm(this, perm)
+  }
+
+  /**
+   * Adds a specified permissions to the server group.
+   * A permission can be specified by permid or permsid.
+   */
+  createPerm() {
+    return super.getParent().serverGroupAddPerm(this, undefined)
   }
 
   /**

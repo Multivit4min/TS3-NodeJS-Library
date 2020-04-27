@@ -1,8 +1,9 @@
 import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
-import { ClientList, ChannelEntry, ClientEntry } from "../types/ResponseTypes"
+import { ChannelEntry, ClientEntry } from "../types/ResponseTypes"
 import { ChannelEdit } from "../types/PropertyTypes"
 import { TeamSpeakClient } from "./Client"
+import { PermissionBuilder } from "../util/PermissionBuilder"
 
 export class TeamSpeakChannel extends Abstract<ChannelEntry> {
 
@@ -140,11 +141,20 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
    * Adds a set of specified permissions to a channel.
    * Multiple permissions can be added by providing the two parameters of each permission.
    * A permission can be specified by permid or permsid.
-   * @param perm the permid or permsid
-   * @param value the value which should be set
+   * @param perm permission object to set
    */
-  setPerm(perm: string|number, value: string) {
-    return super.getParent().channelSetPerm(this, perm, value)
+  setPerm(perm: PermissionBuilder.PermType) {
+    return super.getParent().channelSetPerm(this, perm)
+  }
+
+  /**
+   * Adds a permission to a channel
+   * Multiple permissions can be added by providing the two parameters of each permission.
+   * A permission can be specified by permid or permsid.
+   * @param perm permission object to set
+   */
+  createPerm() {
+    return super.getParent().channelSetPerm(this, undefined)
   }
 
   /**

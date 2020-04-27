@@ -14,6 +14,7 @@ import { Command } from "./transport/Command"
 import { Context, SelectType } from "./types/context"
 import { EventError } from "./exception/EventError"
 import { ClientType, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
+import { PermissionBuilder } from "./util/PermissionBuilder"
 
 export type QueryProtocol = TeamSpeak.QueryProtocol
 export type ConnectionParams = TeamSpeak.ConnectionParams
@@ -847,17 +848,19 @@ export class TeamSpeak extends EventEmitter {
 
 
   /**
-   * Adds a specified permissions to the server group. A permission can be specified by permid or permsid.
-   * @param group the ServerGroup id
-   * @param perm the permid or permsid
-   * @param value value of the Permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
+   * Adds a specified permissions to the server group.
+   * A permission can be specified by permid or permsid.
+   * @param group the serverGroup id
+   * @param perm the permission object
    */
-  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: string|number, value: string, skip: number = 0, negate: number = 0) {
-    const properties = { sgid: TeamSpeakServerGroup.getId(group), permvalue: value, permskip: skip, permnegated: negate }
-    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
-    return this.execute("servergroupaddperm", properties)
+  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: undefined): PermissionBuilder
+  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: PermissionBuilder.PermType): Promise<TeamSpeakQuery.Response>
+  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm?: PermissionBuilder.PermType) {
+    const builder = this.createServerGroupPermBuilder(TeamSpeakServerGroup.getId(group))
+    if (!perm) return builder
+    if (perm.skip) builder.skip(perm.skip)
+    if (perm.negate) builder.negate(perm.negate)
+    return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
 
@@ -1025,14 +1028,14 @@ export class TeamSpeak extends EventEmitter {
   /**
    * Adds a set of specified permissions to a channel.
    * @param channel the channel id
-   * @param perm the permid or permsid
-   * @param value the value which should be set
-   */
-  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: string|number, value: string) {
-    const properties: Record<string, any> = { cid: TeamSpeakChannel.getId(channel) }
-    properties[typeof perm === "string" ? "permsid" : "permid"] = perm
-    properties.permvalue = value
-    return this.execute("channeladdperm", properties)
+   * @param perm the permission object
+   */  
+  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: undefined): PermissionBuilder
+  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: PermissionBuilder.PermType): Promise<TeamSpeakQuery.Response>
+  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm?: PermissionBuilder.PermType) {
+    const builder = this.createChannelPermBuilder(TeamSpeakChannel.getId(channel))
+    if (!perm) return builder
+    return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
 
@@ -1042,9 +1045,12 @@ export class TeamSpeak extends EventEmitter {
    * @param channel the channel id
    * @param permissions the permissions to assign
    * @example
-   * TeamSpeak.channelSetPerms(5, [{ permsid: "iChannelneededModifyPower", permvalue: 75 }])
+   * TeamSpeak.channelSetPerms(5, [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }])
    */
-  channelSetPerms(channel: TeamSpeakChannel.ChannelType, permissions: any[]) {
+  channelSetPerms(
+    channel: TeamSpeakChannel.ChannelType,
+    permissions: { permid?: number, permsid?: string, permvalue: number }[]
+  ) {
     return this.execute("channeladdperm", { cid: TeamSpeakChannel.getId(channel) }, permissions)
   }
 
@@ -1190,18 +1196,16 @@ export class TeamSpeak extends EventEmitter {
    * Multiple permissions can be added by providing the three parameters of each permission.
    * A permission can be specified by permid or permsid.
    * @param client the client database id
-   * @param perm the permid or permsid
-   * @param value value of the permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
+   * @param perm the permission object
    */
-  clientAddPerm(client: TeamSpeakClient.ClientType, perm: string|number, value: string, skip: number = 0, negate: number = 0) {
-    const properties: Record<string, any> = { cldbid: TeamSpeakClient.getDbid(client) }
-    properties[typeof perm === "string" ? "permsid": "permid"] = perm
-    properties.permvalue = value
-    properties.permskip = skip
-    properties.permnegated = negate
-    return this.execute("clientaddperm", properties)
+  clientAddPerm(client: TeamSpeakClient.ClientType, perm: undefined): PermissionBuilder
+  clientAddPerm(client: TeamSpeakClient.ClientType, perm: PermissionBuilder.PermType): Promise<TeamSpeakQuery.Response>
+  clientAddPerm(client: TeamSpeakClient.ClientType, perm?: PermissionBuilder.PermType) {
+    const builder = this.createServerGroupPermBuilder(TeamSpeakClient.getDbid(client))
+    if (!perm) return builder
+    if (perm.skip) builder.skip(perm.skip)
+    if (perm.negate) builder.negate(perm.negate)
+    return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
 
@@ -1404,20 +1408,19 @@ export class TeamSpeak extends EventEmitter {
 
 
   /**
-   * Adds a specified permissions to the channel group. A permission can be specified by permid or permsid.
+   * Adds a specified permissions to the channel group.
+   * A permission can be specified by permid or permsid.
    * @param group the channelgroup id
-   * @param perm the permid or permsid
-   * @param value value of the permission
-   * @param skip whether the skip flag should be set
-   * @param negate whether the negate flag should be set
-   */
-  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: string|number, value: string, skip: number = 0, negate: number = 0) {
-    const properties: Record<string, any> = { cgid: TeamSpeakChannelGroup.getId(group) }
-    properties[typeof perm === "string" ? "permsid": "permid"] = perm
-    properties.permvalue = value
-    properties.permskip = skip
-    properties.permnegated = negate
-    return this.execute("channelgroupaddperm", properties)
+   * @param perm the permission object
+   */  
+  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: undefined): PermissionBuilder
+  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: PermissionBuilder.PermType): Promise<TeamSpeakQuery.Response>
+  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: PermissionBuilder.PermType) {
+    const builder = this.createServerGroupPermBuilder(TeamSpeakChannelGroup.getId(group))
+    if (!perm) return builder
+    if (perm.skip) builder.skip(perm.skip)
+    if (perm.negate) builder.negate(perm.negate)
+    return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
 
@@ -1483,7 +1486,7 @@ export class TeamSpeak extends EventEmitter {
 
   /**
    * Retrieves the database ID of one or more permissions specified by permsid.
-   * @param permsid one name
+   * @param permsid single permission name
    */
   permIdGetByName(permsid: string) {
     return this.execute<Response.PermIdGetByName>("permidgetbyname", { permsid })
@@ -2112,8 +2115,8 @@ export class TeamSpeak extends EventEmitter {
       permlist.then(perms => {
         const found = perms.some(perm => {
           if (perm.permsid === "i_icon_id") {
-            const value = parseInt(perm.permvalue, 10)
-            fulfill(`icon_${(value < 0) ? value >>> 0 : value}`)
+            const { permvalue } = perm
+            fulfill(`icon_${(permvalue < 0) ? permvalue >>> 0 : permvalue}`)
             return true
           }
           return false
@@ -2248,6 +2251,56 @@ export class TeamSpeak extends EventEmitter {
    */
   private ignoreQueryClient(type: ClientType) {
     return this.config.ignoreQueries && type === ClientType.ServerQuery
+  }
+
+  /**
+   * retrieves an instance of the PermissionBuilder
+   */
+  private getPermBuilder<T = void>(init: Omit<PermissionBuilder.IConfig<T>, "teamspeak">) {
+    return new PermissionBuilder({
+      teamspeak: this,
+      ...init
+    })
+  }
+
+  /** creates a channel perm builder for the specified channel id */
+  private createChannelPermBuilder(cid: string) {
+    return this.getPermBuilder<{ cid: string }>({
+      update: "channeladdperm",
+      remove: "channeldelperm",
+      allowSkipNegate: false,
+      context: { cid }
+    })
+  }
+
+  /** creates a channel group perm builder for the specified channel group id */
+  private createChannelGroupPermBuilder(cgid: string) {
+    return this.getPermBuilder<{ cgid: string }>({
+      update: "channelgroupaddperm",
+      remove: "channelgroupdelperm",
+      allowSkipNegate: false,
+      context: { cgid }
+    })
+  }
+
+  /** creates a servergroup perm builder for the specified server group id */
+  private createServerGroupPermBuilder(sgid: string) {
+    return this.getPermBuilder<{ sgid: string }>({
+      update: "servergroupaddperm",
+      remove: "servergroupdelperm",
+      allowSkipNegate: false,
+      context: { sgid }
+    })
+  }
+
+  /** creates a client perm builder for the specified client database id */
+  private createClientPermBuilder(cldbid: string) {
+    return this.getPermBuilder<{ cldbid: string }>({
+      update: "clientaddperm",
+      remove: "clientdelperm",
+      allowSkipNegate: false,
+      context: { cldbid }
+    })
   }
 
   /**
