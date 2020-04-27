@@ -839,11 +839,18 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid if the permsid option is set to true the output will contain the permission names
    */
   serverGroupPermList(group: TeamSpeakServerGroup.GroupType, permsid: boolean = false) {
+    const sgid = TeamSpeakServerGroup.getId(group)
     return this.execute<Response.PermList>(
-      "servergrouppermlist",
-      { sgid: TeamSpeakServerGroup.getId(group) },
-      [ permsid ? "-permsid" : null ]
-    ).then(TeamSpeak.toArray)
+      "servergrouppermlist", { sgid }, [ permsid ? "-permsid" : null ]
+    ).then(response => {
+      return response.map(perm => {
+        return this.createServerGroupPermBuilder(sgid)
+          .perm(perm.permsid! || perm.permid!)
+          .value(perm.permvalue)
+          .skip(perm.permskip)
+          .negate(perm.permnegated)
+      })
+    })
   }
 
 
@@ -858,8 +865,8 @@ export class TeamSpeak extends EventEmitter {
   serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm?: PermissionBuilder.PermType) {
     const builder = this.createServerGroupPermBuilder(TeamSpeakServerGroup.getId(group))
     if (!perm) return builder
-    if (perm.skip) builder.skip(perm.skip)
-    if (perm.negate) builder.negate(perm.negate)
+    if (perm.permskip) builder.skip(perm.permskip)
+    if (perm.permnegated) builder.negate(perm.permnegated)
     return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
@@ -1017,11 +1024,16 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid whether the permsid should be displayed aswell
    */
   channelPermList(channel: TeamSpeakChannel.ChannelType, permsid: boolean = false) {
+    const cid = TeamSpeakChannel.getId(channel)
     return this.execute<Response.PermList>(
-      "channelpermlist",
-      { cid: TeamSpeakChannel.getId(channel) },
-      [permsid ? "-permsid" : null]
-    ).then(TeamSpeak.toArray)
+      "channelpermlist", { cid }, [permsid ? "-permsid" : null]
+    ).then(response => {
+      return response.map(perm => {
+        return this.createChannelPermBuilder(cid)
+          .perm(perm.permsid! || perm.permid!)
+          .value(perm.permvalue)
+      })
+    })
   }
 
 
@@ -1183,11 +1195,18 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid if the permsid option is set to true the output will contain the permission names
    */
   clientPermList(client: TeamSpeakClient.ClientType, permsid: boolean = false) {
+    const cldbid = TeamSpeakClient.getDbid(client)
     return this.execute<Response.PermList>(
-      "clientpermlist",
-      { cldbid: TeamSpeakClient.getDbid(client) },
-      [permsid ? "-permsid" : null]
-    ).then(TeamSpeak.toArray)
+      "clientpermlist", { cldbid }, [permsid ? "-permsid" : null]
+    ).then(response => {
+      return response.map(perm => {
+        return this.createClientPermBuilder(cldbid)
+          .perm(perm.permsid! || perm.permid!)
+          .value(perm.permvalue)
+          .skip(perm.permskip)
+          .negate(perm.permnegated)
+      })
+    })
   }
 
 
@@ -1203,8 +1222,8 @@ export class TeamSpeak extends EventEmitter {
   clientAddPerm(client: TeamSpeakClient.ClientType, perm?: PermissionBuilder.PermType) {
     const builder = this.createServerGroupPermBuilder(TeamSpeakClient.getDbid(client))
     if (!perm) return builder
-    if (perm.skip) builder.skip(perm.skip)
-    if (perm.negate) builder.negate(perm.negate)
+    if (perm.permskip) builder.skip(perm.permskip)
+    if (perm.permnegated) builder.negate(perm.permnegated)
     return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
@@ -1399,11 +1418,18 @@ export class TeamSpeak extends EventEmitter {
    * @param permsid if the permsid option is set to true the output will contain the permission names.
    */
   channelGroupPermList(group: TeamSpeakChannelGroup.GroupType, permsid: boolean = false) {
+    const cgid = TeamSpeakChannelGroup.getId(group)
     return this.execute<Response.PermList>(
-      "channelgrouppermlist",
-      { cgid: TeamSpeakChannelGroup.getId(group) },
-      [permsid ?  "-permsid" : null]
-    ).then(TeamSpeak.toArray)
+      "channelgrouppermlist", { cgid }, [permsid ?  "-permsid" : null]
+    ).then(response => {
+      return response.map(perm => {
+        return this.createChannelGroupPermBuilder(cgid)
+          .perm(perm.permsid! || perm.permid!)
+          .value(perm.permvalue)
+          .skip(perm.permskip)
+          .negate(perm.permnegated)
+      })
+    })
   }
 
 
@@ -1418,8 +1444,8 @@ export class TeamSpeak extends EventEmitter {
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: PermissionBuilder.PermType) {
     const builder = this.createServerGroupPermBuilder(TeamSpeakChannelGroup.getId(group))
     if (!perm) return builder
-    if (perm.skip) builder.skip(perm.skip)
-    if (perm.negate) builder.negate(perm.negate)
+    if (perm.permskip) builder.skip(perm.permskip)
+    if (perm.permnegated) builder.negate(perm.permnegated)
     return builder.perm(perm.permname).value(perm.permvalue).update()
   }
 
@@ -2110,13 +2136,13 @@ export class TeamSpeak extends EventEmitter {
    * Gets the Icon Name of a resolveable Perm List
    * @param permlist expects a promise which resolves to a permission list
    */
-  getIconName(permlist: Promise<Response.PermList>): Promise<string> {
+  getIconName(permlist: Promise<PermissionBuilder[]>): Promise<string> {
     return new Promise((fulfill, reject) => {
       permlist.then(perms => {
         const found = perms.some(perm => {
-          if (perm.permsid === "i_icon_id") {
-            const { permvalue } = perm
-            fulfill(`icon_${(permvalue < 0) ? permvalue >>> 0 : permvalue}`)
+          if (perm.perm() === "i_icon_id") {
+            const value = perm.value()
+            fulfill(`icon_${(value < 0) ? value >>> 0 : value}`)
             return true
           }
           return false

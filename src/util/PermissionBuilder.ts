@@ -19,7 +19,7 @@ export class PermissionBuilder<T extends {} = any> {
   }
 
   /** sets/gets the permid or permsid */
-  perm(perm: undefined): string|number|undefined
+  perm(perm?: undefined): string|number|undefined
   perm(perm: string|number): PermissionBuilder<T>
   perm(perm?: string|number): string|number|undefined|PermissionBuilder<T> {
     if (perm === undefined) return this._perm
@@ -28,7 +28,7 @@ export class PermissionBuilder<T extends {} = any> {
   }
 
   /** sets/gets the value for the permission */
-  value(perm: undefined): number
+  value(perm?: undefined): number
   value(perm: number): PermissionBuilder<T>
   value(value?: number): number|PermissionBuilder<T> {
     if (value === undefined) return this._value
@@ -37,7 +37,7 @@ export class PermissionBuilder<T extends {} = any> {
   }
 
   /** sets/gets the skip value */
-  skip(skip: undefined): boolean
+  skip(skip?: undefined): boolean
   skip(skip: boolean): PermissionBuilder<T>
   skip(skip?: boolean): boolean|PermissionBuilder<T> {
     if (skip === undefined) return this._skip
@@ -46,7 +46,7 @@ export class PermissionBuilder<T extends {} = any> {
   }
 
   /** sets/gets the negate value */
-  negate(negate: undefined): boolean
+  negate(negate?: undefined): boolean
   negate(negate: boolean): PermissionBuilder<T>
   negate(negate?: boolean): boolean|PermissionBuilder<T> {
     if (negate === undefined) return this._negate
@@ -64,7 +64,7 @@ export class PermissionBuilder<T extends {} = any> {
   /** retrieves skip and negate flags */
   private getFlags() {
     if (this.withSkipNegate) return {}
-    return { skip: this._skip, negate: this._negate }
+    return { permnskip: this._skip, permnegated: this._negate }
   }
 
   /** retrieves a raw object with permid */
@@ -146,7 +146,7 @@ export namespace PermissionBuilder {
   export type PermType = {
     permname: string|number
     permvalue: number
-    skip?: boolean
-    negate?: boolean
+    permskip?: boolean
+    permnegated?: boolean
   }
 }
