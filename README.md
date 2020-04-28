@@ -257,6 +257,12 @@ In order to get errors when connecting to a server use the `error` event instead
 
 # Update Notes to 3.0
 
+### Some Parameters are now strings instead of numbers
+
+With the free Beta TeamSpeak Servers for the TeamSpeak 5 Client there are IDs which use a 64 bit format.
+Since JavaScript starts to round at 53 bits those IDs will not be displayed correctly. In order to compensate this all IDs are now strings instead of numbers!
+
+
 ### Function renames
 
 Renamed some function in order to comply with JavaScript Standard
