@@ -227,7 +227,6 @@ export class TeamSpeak extends EventEmitter {
     } else if (this.config.serverport) {
       exec.push(this.priorize().useByPort(this.config.serverport, this.config.nickname))
     }
-    console.log(this.context.events)
     exec.push(...this.context.events.map(ev => this.priorize().registerEvent(ev.event, ev.id)))
     this.query.pause(false)
     Promise.all(exec)

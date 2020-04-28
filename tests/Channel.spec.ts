@@ -152,8 +152,8 @@ describe("TeamSpeakChannel", () => {
 
   it("should verify execute parameters of #edit()", async () => {
     await channel.edit({ channelCodecQuality: 10, channelName: "Test"})
-    expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channeledit", { cid: raw.cid, channelCodecQuality: 10, channelName: "Test"})
+    expect(mockExecute).toHaveBeenCalledTimes(2)
+    expect(mockExecute).toHaveBeenNthCalledWith(2, "channeledit", { cid: raw.cid, channelCodecQuality: 10, channelName: "Test"})
   })
 
   it("should verify execute parameters of #permList()", async () => {

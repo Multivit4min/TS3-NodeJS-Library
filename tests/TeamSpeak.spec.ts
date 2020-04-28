@@ -563,8 +563,8 @@ describe("TeamSpeak", () => {
 
   it("should verify parameters of #channelEdit()", async () => {
     await teamspeak.channelEdit("1", { channelName: "new name" })
-    expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("channeledit", { cid: "1", channelName: "new name" })
+    expect(mockExecute).toHaveBeenCalledTimes(2)
+    expect(mockExecute).toHaveBeenNthCalledWith(2, "channeledit", { cid: "1", channelName: "new name" })
   })
 
   it("should verify parameters of #channelPermList() with permsid", async () => {
@@ -1445,12 +1445,13 @@ describe("TeamSpeak", () => {
   describe("event clientconnect", () => {
     it("should receive and handle the event", done => {
       try {
-        mockExecute.mockResolvedValue(mocks.clientlist(1))
+        mockExecute.mockRejectedValueOnce([])
+        mockExecute.mockResolvedValueOnce(mocks.clientlist(1))
         teamspeak.once("clientconnect", ev => {
           expect(ev.client).toBeInstanceOf(TeamSpeakClient)
           expect(ev.client.clid).toBe("1")
           expect(ev.cid).toBe("10")
-          expect(mockExecute).toHaveBeenCalledTimes(1)
+          expect(mockExecute).toHaveBeenCalledTimes(2)
           done()
         })
         teamspeak["query"].emit("cliententerview", {
@@ -1466,7 +1467,8 @@ describe("TeamSpeak", () => {
     }, 400)
     it("should receive and handle an error", done => {
       expect.assertions(1)
-      mockExecute.mockRejectedValue(new Error("failed"))
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockRejectedValueOnce(new Error("failed"))
       teamspeak.once("clientconnect", () => {
         throw new Error("event should not get called")
       })
@@ -1480,10 +1482,11 @@ describe("TeamSpeak", () => {
 
   describe("event clientdisconnect", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockResolvedValueOnce([])
       try {
         teamspeak.once("clientdisconnect", ev => {
           expect(ev.event.clid).toBe("4")
-          expect(mockExecute).toHaveBeenCalledTimes(0)
+          expect(mockExecute).toHaveBeenCalledTimes(1)
           done()
         })
         teamspeak["query"].emit("clientleftview", { clid: "4" })
@@ -1495,6 +1498,7 @@ describe("TeamSpeak", () => {
 
   describe("event tokenused", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockResolvedValue(mocks.clientlist(1))
       try {
         teamspeak.once("tokenused", ev => {
@@ -1503,7 +1507,7 @@ describe("TeamSpeak", () => {
           expect(ev.token).toBe("fXy69G3Td5eYeYiLCarBXMf3SEDTi3dPbfyJtrJK")
           expect(ev.token1).toBe("7")
           expect(ev.token2).toBe("0")
-          expect(mockExecute).toHaveBeenCalledTimes(1)
+          expect(mockExecute).toHaveBeenCalledTimes(2)
           done()
         })
         teamspeak["query"].emit("tokenused", {
@@ -1520,6 +1524,7 @@ describe("TeamSpeak", () => {
     }, 400)
     it("should receive and handle an error", done => {
       expect.assertions(1)
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockRejectedValue(new Error("failed"))
       teamspeak.once("tokenused", () => {
         throw new Error("event should not get called")
@@ -1534,6 +1539,9 @@ describe("TeamSpeak", () => {
 
   describe("event textmessage", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockResolvedValue(mocks.clientlist(1))
       try {
         teamspeak.once("textmessage", ev => {
@@ -1541,7 +1549,7 @@ describe("TeamSpeak", () => {
           expect(ev.invoker).toBeInstanceOf(TeamSpeakClient)
           expect(ev.invoker.clid).toBe("1")
           expect(ev.targetmode).toBe(1)
-          expect(mockExecute).toHaveBeenCalledTimes(1)
+          expect(mockExecute).toHaveBeenCalledTimes(4)
           done()
         })
         teamspeak["query"].emit("textmessage", {
@@ -1555,6 +1563,9 @@ describe("TeamSpeak", () => {
     }, 400)
     it("should receive and handle an error", done => {
       expect.assertions(1)
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockRejectedValue(new Error("failed"))
       teamspeak.once("textmessage", () => {
         throw new Error("event should not get called")
@@ -1569,6 +1580,7 @@ describe("TeamSpeak", () => {
 
   describe("event clientmoved", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockResolvedValueOnce(mocks.clientlist(1))
       mockExecute.mockResolvedValueOnce(mocks.channellist(1))
       try {
@@ -1578,7 +1590,7 @@ describe("TeamSpeak", () => {
           expect(ev.channel).toBeInstanceOf(TeamSpeakChannel)
           expect(ev.channel.cid).toBe("1")
           expect(ev.reasonid).toBe(4)
-          expect(mockExecute).toHaveBeenCalledTimes(2)
+          expect(mockExecute).toHaveBeenCalledTimes(3)
           done()
         })
         teamspeak["query"].emit("clientmoved", { clid: "1", ctid: "1", reasonid: 4 })
@@ -1588,6 +1600,7 @@ describe("TeamSpeak", () => {
     }, 400)
     it("should receive and handle an error", done => {
       expect.assertions(1)
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockRejectedValue(new Error("failed"))
       teamspeak.once("clientmoved", () => {
         throw new Error("event should not get called")
@@ -1604,6 +1617,7 @@ describe("TeamSpeak", () => {
 
   describe("event serveredit", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockResolvedValue(mocks.clientlist(1))
       try {
         teamspeak.once("serveredit", ev => {
@@ -1611,7 +1625,7 @@ describe("TeamSpeak", () => {
           expect(ev.invoker.clid).toBe("1")
           expect(ev.modified).toEqual({ virtualserverName: "Renamed Server" })
           expect(ev.reasonid).toBe(10)
-          expect(mockExecute).toHaveBeenCalledTimes(1)
+          expect(mockExecute).toHaveBeenCalledTimes(2)
           done()
         })
         teamspeak["query"].emit("serveredited", {
@@ -1643,6 +1657,7 @@ describe("TeamSpeak", () => {
 
   describe("event channeledited", () => {
     it("should receive and handle the event channeledit", done => {
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockResolvedValueOnce(mocks.clientlist(1))
       mockExecute.mockResolvedValueOnce(mocks.channellist(1))
       try {
@@ -1653,7 +1668,7 @@ describe("TeamSpeak", () => {
           expect(ev.channel.cid).toBe("1")
           expect(ev.modified).toEqual({ channelName: "new name" })
           expect(ev.reasonid).toBe(10)
-          expect(mockExecute).toHaveBeenCalledTimes(2)
+          expect(mockExecute).toHaveBeenCalledTimes(3)
           done()
         })
         teamspeak["query"].emit("channeledited", {
@@ -1686,6 +1701,7 @@ describe("TeamSpeak", () => {
 
   describe("event channelcreate", () => {
     it("should receive and handle the event", done => {
+      mockExecute.mockRejectedValueOnce([])
       mockExecute.mockResolvedValueOnce(mocks.clientlist(5))
       mockExecute.mockResolvedValueOnce(mocks.channellist(5))
       teamspeak.once("channelcreate", ev => {
@@ -1702,7 +1718,7 @@ describe("TeamSpeak", () => {
           channelFlagMaxfamilyclientsInherited: true
         })
         expect(ev.cpid).toBe("0")
-        expect(mockExecute).toHaveBeenCalledTimes(2)
+        expect(mockExecute).toHaveBeenCalledTimes(3)
         done()
       })
       teamspeak["query"].emit("channelcreated", {
@@ -1722,6 +1738,7 @@ describe("TeamSpeak", () => {
 
     it("should receive and handle an error", done => {
       expect.assertions(1)
+      mockExecute.mockResolvedValueOnce([])
       mockExecute.mockRejectedValue(new Error("failed"))
       teamspeak.once("channelcreate", () => {
         throw new Error("event should not get called")
@@ -1737,9 +1754,11 @@ describe("TeamSpeak", () => {
 
   describe("event channelmoved", () => {
     it("should receive and handle the event", done => {
-      mockExecute.mockResolvedValueOnce(mocks.clientlist(1))
-      mockExecute.mockResolvedValueOnce(mocks.channellist(2))
-      mockExecute.mockResolvedValueOnce(mocks.channellist(2))
+      mockExecute
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce(mocks.clientlist(1))
+        .mockResolvedValueOnce(mocks.channellist(2))
+        .mockResolvedValueOnce(mocks.channellist(2))
       teamspeak.once("channelmoved", ev => {
         expect(ev.invoker).toBeInstanceOf(TeamSpeakClient)
         expect(ev.invoker.clid).toBe("1")
@@ -1748,7 +1767,7 @@ describe("TeamSpeak", () => {
         expect(ev.parent).toBeInstanceOf(TeamSpeakChannel)
         expect(ev.parent.cid).toBe("2")
         expect(ev.order).toBe(0)
-        expect(mockExecute).toHaveBeenCalledTimes(3)
+        expect(mockExecute).toHaveBeenCalledTimes(4)
         done()
       })
       teamspeak["query"].emit("channelmoved", {
@@ -1764,7 +1783,8 @@ describe("TeamSpeak", () => {
 
     it("should receive and handle an error", done => {
       expect.assertions(1)
-      mockExecute.mockRejectedValue(new Error("failed"))
+      mockExecute.mockResolvedValueOnce([])
+      mockExecute.mockRejectedValueOnce(new Error("failed"))
       teamspeak.once("channelmoved", () => {
         throw new Error("event should not get called")
       })
@@ -1780,12 +1800,14 @@ describe("TeamSpeak", () => {
   describe("event channeldelete", () => {
     it("should receive and handle the event", done => {
       expect.assertions(4)
-      mockExecute.mockResolvedValue(mocks.clientlist(5))
+      mockExecute
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce(mocks.clientlist(5))
       teamspeak.once("channeldelete", ev => {
         expect(ev.invoker).toBeInstanceOf(TeamSpeakClient)
         expect(ev.invoker.clid).toBe("1")
         expect(ev.cid).toBe("4")
-        expect(mockExecute).toHaveBeenCalledTimes(1)
+        expect(mockExecute).toHaveBeenCalledTimes(2)
         done()
       })
       teamspeak["query"].emit("channeldeleted", {
@@ -1794,18 +1816,6 @@ describe("TeamSpeak", () => {
         invokeruid: "foobar1=",
         cid: "4"
       })
-    }, 400)
-    it("should receive and handle an error", done => {
-      expect.assertions(1)
-      mockExecute.mockRejectedValue(new Error("failed"))
-      teamspeak.once("channeldelete", () => {
-        throw new Error("event should not get called")
-      })
-      teamspeak.once("error", e => {
-        expect(e).toEqual(new Error("failed"))
-        done()
-      })
-      teamspeak["query"].emit("channeldeleted", {})
     }, 400)
   })
 

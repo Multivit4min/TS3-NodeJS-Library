@@ -103,7 +103,6 @@ describe("Integration Test", () => {
           if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()
           fulfill()
         })
-        await teamspeak.registerEvent("server")
         await teamspeak.serverEdit({ virtualserverName: servername })
       } catch (e) {
         if (teamspeak instanceof TeamSpeak) {
