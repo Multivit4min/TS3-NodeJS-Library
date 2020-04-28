@@ -171,22 +171,8 @@ teamspeak.whoami().then(whoami => {
 
 ### Events
 
-
-To register for events you need to execute `teamspeak.registerEvent()` first in order to even receive events.
-
-> Registering for all available Events
-
-```javascript
-Promise.all([
-  teamspeak.registerEvent("server"),
-  teamspeak.registerEvent("channel", 0),
-  teamspeak.registerEvent("textserver"),
-  teamspeak.registerEvent("textchannel"),
-  teamspeak.registerEvent("textprivate")
-])
-```
-
-When being registered for events you can use `teamspeak.on()` to register your event handlers
+You can use `teamspeak.on()` to register to various events, you can find a list of all events here: https://multivit4min.github.io/TS3-NodeJS-Library/classes/teamspeak.html#on
+Note: with 3.x its not necessary to subscribe to events anymore, this will be done automatically now!
 
 ```javascript
 teamspeak.on("textmessage", ev => {
@@ -374,6 +360,19 @@ channel.edit({
 })
 ```
 
+### Events
+
+With 3.0 you do not need to subscribe to server events manually anymore! This will now done automatically when necessary!
+So you can remove those lines from your code:
+```typescript
+Promise.all([
+  teamspeak.registerEvent("server"),
+  teamspeak.registerEvent("channel", 0),
+  teamspeak.registerEvent("textserver"),
+  teamspeak.registerEvent("textchannel"),
+  teamspeak.registerEvent("textprivate")
+])
+```
 
 
 # Authors
