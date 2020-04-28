@@ -73,6 +73,6 @@ export interface ChannelMove {
 }
 
 export interface ChannelDelete {
-  invoker: TeamSpeakClient
+  invoker?: TeamSpeakClient
   cid: number
 }
