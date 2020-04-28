@@ -341,10 +341,10 @@ export function channelgroupclientlist(props: Partial<Response.ChannelGroupClien
 export function permlist(props: Partial<Response.PermEntry> = {}): Response.PermEntry {
   return {
     permid: 1,
-    permsid: "bPermission",
-    permvalue: "75",
-    permnegated: 0,
-    permskip: 0,
+    permsid: "b_permission",
+    permvalue: 75,
+    permnegated: false,
+    permskip: false,
     ...props
   }
 }
@@ -544,7 +544,7 @@ export function permget(props: Partial<Response.PermGet> = {}): Response.PermGet
   return {
     permsid: "",
     permid: 0,
-    permvalue: "0",
+    permvalue: 0,
     ...props
   }
 }

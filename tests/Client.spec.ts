@@ -42,6 +42,7 @@ describe("TeamSpeakClient", () => {
     raw = clientlist(1)[0]
     client = new TeamSpeakClient(teamspeak, raw)
     mockExecute.mockReset()
+    mockExecute.mockResolvedValue([])
   })
 
   it("should verify the getter value of #clid()", () => {
@@ -174,42 +175,36 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #getInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.getInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientinfo", { clid: [raw.clid] })
   })
 
   it("should verify execute parameters of #edit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.edit({ clientIsTalker: false })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientedit", { clid: raw.clid, clientIsTalker: false })
   })
 
   it("should verify execute parameters of #getDbInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.getDBInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbinfo", { cldbid: [raw.clientDatabaseId] })
   })
 
   it("should verify execute parameters of #customInfo()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.customInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("custominfo", { cldbid: raw.clientDatabaseId })
   })
 
   it("should verify execute parameters of #customDelete()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.customDelete("key")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("customdelete", { cldbid: raw.clientDatabaseId, ident: "key" })
   })
 
   it("should verify execute parameters of #customSet()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.customSet("key", "value")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("customset", {
@@ -220,7 +215,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #kickFromServer()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.kickFromServer("Kick Message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientkick", {
@@ -231,7 +225,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #kickFromChannel()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.kickFromChannel("Kick Message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientkick", {
@@ -242,7 +235,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #ban()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.ban("Ban Reason", 60)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("banadd", {
@@ -256,7 +248,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #move()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.move("10", "channel password")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientmove", {
@@ -267,7 +258,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #addGroups()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.addGroups(["1", "5"])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddservergroup", {
@@ -277,7 +267,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #delGroups()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.delGroups(["1", "5"])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdelservergroup", {
@@ -287,7 +276,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #dbEdit()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.dbEdit({ clientDescription: "test" })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdbedit", {
@@ -297,7 +285,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #poke()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.poke("poke message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientpoke", {
@@ -307,7 +294,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #message()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.message("chat message")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("sendtextmessage", {
@@ -318,7 +304,6 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #permList()", async () => {
-    mockExecute.mockResolvedValue(null)
     await client.permList(true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith(
@@ -329,24 +314,22 @@ describe("TeamSpeakClient", () => {
   })
 
   it("should verify execute parameters of #addPerm()", async () => {
-    mockExecute.mockResolvedValue(null)
-    await client.addPerm("iChannelSubscribePower", "25", 0, 0)
+    await client.addPerm({ permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddperm", {
-      permsid: "iChannelSubscribePower",
-      permskip: 0,
-      permnegated: 0,
-      permvalue: "25",
+      permsid: "i_channel_subscribe_power",
+      permskip: false,
+      permnegated: false,
+      permvalue: 25,
       cldbid: raw.clientDatabaseId
     })
   })
 
   it("should verify execute parameters of #delPerm()", async () => {
-    mockExecute.mockResolvedValue(null)
-    await client.delPerm("iChannelSubscribePower")
+    await client.delPerm("i_channel_subscribe_power")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientdelperm", {
-      permsid: "iChannelSubscribePower",
+      permsid: "i_channel_subscribe_power",
       cldbid: raw.clientDatabaseId
     })
   })

@@ -26,7 +26,7 @@ describe("TeamSpeakChannelGroup", () => {
     raw = channelgrouplist(1)[0]
     channelGroup = new TeamSpeakChannelGroup(teamspeak, raw)
     mockExecute.mockReset()
-    mockExecute.mockResolvedValue(null)
+    mockExecute.mockResolvedValue([])
   })
 
   it("should verify the getter value of #cgid()", () => {
@@ -115,14 +115,14 @@ describe("TeamSpeakChannelGroup", () => {
   })
 
   it("should verify execute parameters of #addPerm()", async () => {
-    await channelGroup.addPerm("i_channel_subscribe_power", "25")
+    await channelGroup.addPerm({ permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
       permsid: "i_channel_subscribe_power",
-      permvalue: "25",
+      permvalue: 25,
       cgid: raw.cgid,
-      permskip: 0,
-      permnegated: 0
+      permskip: false,
+      permnegated: false
     })
   })
 

@@ -29,7 +29,7 @@ describe("TeamSpeakChannel", () => {
     raw = channellist(1)[0]
     channel = new TeamSpeakChannel(teamspeak, raw)
     mockExecute.mockReset()
-    mockExecute.mockResolvedValue(null)
+    mockExecute.mockResolvedValue([])
   })
 
   it("should verify the getter value of #cid()", () => {
@@ -169,11 +169,11 @@ describe("TeamSpeakChannel", () => {
   })
 
   it("should verify execute parameters of #setPerm()", async () => {
-    await channel.setPerm("i_channel_subscribe_power", "25")
+    await channel.setPerm({ permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
       permsid: "i_channel_subscribe_power",
-      permvalue: "25",
+      permvalue: 25,
       cid: raw.cid
     })
   })

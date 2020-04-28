@@ -53,9 +53,9 @@ describe("TeamSpeak", () => {
     mockTransfer.mockReset()
     mockClose.mockReset()
     mockExecute.mockReset()
-    mockExecute.mockResolvedValue(null)
+    mockExecute.mockResolvedValue([])
     mockExecutePrio.mockReset()
-    mockExecutePrio.mockResolvedValue(null)
+    mockExecutePrio.mockResolvedValue([])
   })
 
   describe("#new()", () => {
@@ -443,26 +443,26 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #serverGroupAddPerm() with permsid", async () => {
-    await teamspeak.serverGroupAddPerm("2", "i_channel_subscribe_power", "25")
+    await teamspeak.serverGroupAddPerm("2", { permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddperm", {
       sgid: "2",
       permsid: "i_channel_subscribe_power",
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 
   it("should verify parameters of #serverGroupAddPerm() with permid", async () => {
-    await teamspeak.serverGroupAddPerm("2", 11, "25")
+    await teamspeak.serverGroupAddPerm("2", { permname: 11, permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("servergroupaddperm", {
       sgid: "2",
       permid: 11,
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 
@@ -580,32 +580,32 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelSetPerm() with permsid", async () => {
-    await teamspeak.channelSetPerm("10", "i_channel_subscribe_power", "25")
+    await teamspeak.channelSetPerm("10", { permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
       cid: "10",
       permsid: "i_channel_subscribe_power",
-      permvalue: "25"
+      permvalue: 25
     })
   })
 
   it("should verify parameters of #channelSetPerm() with permid", async () => {
-    await teamspeak.channelSetPerm("10", 11, "25")
+    await teamspeak.channelSetPerm("10", { permname: 11, permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channeladdperm", {
       cid: "10",
       permid: 11,
-      permvalue: "25"
+      permvalue: 25
     })
   })
 
   it("should verify parameters of #channelSetPerms()", async () => {
-    await teamspeak.channelSetPerms("5", [{ permsid: "i_channel_needed_modify_power", permvalue: "75" }])
+    await teamspeak.channelSetPerms("5", [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }])
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
       "channeladdperm",
       { cid: "5" },
-      [{ permsid: "i_channel_needed_modify_power", permvalue: "75" }]
+      [{ permsid: "i_channel_needed_modify_power", permvalue: 75 }]
     )
   })
 
@@ -758,26 +758,26 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientAddPerm() with permsid", async () => {
-    await teamspeak.clientAddPerm("10", "i_channel_subscribe_power", "25")
+    await teamspeak.clientAddPerm("10", { permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddperm", {
       cldbid: "10",
       permsid: "i_channel_subscribe_power",
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 
   it("should verify parameters of #clientAddPerm() with permid", async () => {
-    await teamspeak.clientAddPerm("10", 11, "25")
+    await teamspeak.clientAddPerm("10", { permname: 11, permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientaddperm", {
       cldbid: "10",
       permid: 11,
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 
@@ -916,26 +916,26 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #channelGroupAddPerm() with permsid", async () => {
-    await teamspeak.channelGroupAddPerm("10", "i_channel_subscribe_power", "25")
+    await teamspeak.channelGroupAddPerm("10", { permname: "i_channel_subscribe_power", permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
       cgid: "10",
       permsid: "i_channel_subscribe_power",
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 
   it("should verify parameters of #channelGroupAddPerm() with permid", async () => {
-    await teamspeak.channelGroupAddPerm("10", 11, "25")
+    await teamspeak.channelGroupAddPerm("10", { permname: 11, permvalue: 25 })
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("channelgroupaddperm", {
       cgid: "10",
       permid: 11,
-      permvalue: "25",
-      permskip: 0,
-      permnegated: 0
+      permvalue: 25,
+      permskip: false,
+      permnegated: false
     })
   })
 

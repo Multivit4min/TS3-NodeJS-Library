@@ -3,7 +3,7 @@ import { TeamSpeak } from "../TeamSpeak"
 import { ChannelGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakClient } from "./Client"
-import { PermissionBuilder } from "util/PermissionBuilder"
+import { Permission } from "util/Permission"
 
 export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 
@@ -92,7 +92,7 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
    * A permission can be specified by permid or permsid.
    * @param perm the permission object
    */
-  addPerm(perm: PermissionBuilder.PermType) {
+  addPerm(perm: Permission.PermType) {
     return super.getParent().channelGroupAddPerm(this, perm)
   }
 
@@ -101,7 +101,7 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
    * A permission can be specified by permid or permsid.
    */
   createPerm() {
-    return super.getParent().channelGroupAddPerm(this, undefined)
+    return super.getParent().channelGroupAddPerm(this)
   }
 
   /**

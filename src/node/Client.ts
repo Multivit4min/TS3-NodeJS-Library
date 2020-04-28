@@ -5,7 +5,7 @@ import { ClientDBEdit, ClientEdit } from "../types/PropertyTypes"
 import { ClientType } from "../types/enum"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakServerGroup } from "./ServerGroup"
-import { PermissionBuilder } from "util/PermissionBuilder"
+import { Permission } from "util/Permission"
 
 export class TeamSpeakClient extends Abstract<ClientEntry> {
 
@@ -270,7 +270,7 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
    * A permission can be specified by permid or permsid.
    * @param perm the permission object to set
    */
-  addPerm(perm: PermissionBuilder.PermType) {
+  addPerm(perm: Permission.PermType) {
     return super.getParent().clientAddPerm(this, perm)
   }
 

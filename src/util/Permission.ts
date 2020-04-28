@@ -1,6 +1,6 @@
 import { TeamSpeak } from "../TeamSpeak"
 
-export class PermissionBuilder<T extends {} = any> {
+export class Permission<T extends {} = any> {
 
   private teamspeak: TeamSpeak
   private _perm?: string|number
@@ -12,63 +12,73 @@ export class PermissionBuilder<T extends {} = any> {
   private cmdRemove: string
   private context: T
 
-  constructor(config: PermissionBuilder.IConfig<T>) {
+  constructor(config: Permission.IConfig<T>) {
+    this.cmdUpdate = config.update
+    this.cmdRemove = config.remove
     this.teamspeak = config.teamspeak
-    this.withSkipNegate = config.allowSkipNegate || true
+    this.withSkipNegate = config.allowSkipNegate === false ? false : true
     this.context = config.context
   }
 
+  /** retrieves the current permission */
+  getPerm() {
+    return this._perm
+  }
+
+  /** retrieves the permission value */
+  getValue() {
+    return this._value
+  }
+
+  /** retrieves wether skip has been set */
+  getSkip() {
+    return this._skip || false
+  }
+
+  /** retrieves wether negate has been set */
+  getNegate() {
+    return this._negate || false
+  }
+
   /** sets/gets the permid or permsid */
-  perm(perm?: undefined): string|number|undefined
-  perm(perm: string|number): PermissionBuilder<T>
-  perm(perm?: string|number): string|number|undefined|PermissionBuilder<T> {
-    if (perm === undefined) return this._perm
+  perm(perm: string|number): Permission<T> {
     this._perm = perm
     return this
   }
 
   /** sets/gets the value for the permission */
-  value(perm?: undefined): number
-  value(perm: number): PermissionBuilder<T>
-  value(value?: number): number|PermissionBuilder<T> {
-    if (value === undefined) return this._value
+  value(value: number): Permission<T> {
     this._value = value
     return this
   }
 
   /** sets/gets the skip value */
-  skip(skip?: undefined): boolean
-  skip(skip: boolean): PermissionBuilder<T>
-  skip(skip?: boolean): boolean|PermissionBuilder<T> {
-    if (skip === undefined) return this._skip
+  skip(skip: boolean): Permission<T> {
     this._skip = skip
     return this
   }
 
   /** sets/gets the negate value */
-  negate(negate?: undefined): boolean
-  negate(negate: boolean): PermissionBuilder<T>
-  negate(negate?: boolean): boolean|PermissionBuilder<T> {
-    if (negate === undefined) return this._negate
+  negate(negate: boolean): Permission<T> {
     this._negate = negate
     return this
   }
 
   /** retrieves the permission object */
-  get(): PermissionBuilder.PermId|PermissionBuilder.PermSid {
-    if (!this._perm) throw new Error("PermissionBuilder#perm has not been called yet")
+  get(): Permission.PermId|Permission.PermSid {
+    if (!this._perm) throw new Error("Permission#perm has not been called yet")
     if (typeof this._perm === "string") return this.getAsPermSid()
     return this.getAsPermid()
   }
 
   /** retrieves skip and negate flags */
   private getFlags() {
-    if (this.withSkipNegate) return {}
-    return { permnskip: this._skip, permnegated: this._negate }
+    if (!this.withSkipNegate) return {}
+    return { permskip: this._skip, permnegated: this._negate }
   }
 
   /** retrieves a raw object with permid */
-  private getAsPermid(): PermissionBuilder.PermId {
+  private getAsPermid(): Permission.PermId {
     if (typeof this._perm !== "number")
       throw new Error(`permission needs to be a number but got '${this._perm}'`)
     return {
@@ -79,7 +89,7 @@ export class PermissionBuilder<T extends {} = any> {
   }
 
   /** retrieves a raw object with permsid */
-  private getAsPermSid(): PermissionBuilder.PermSid {
+  private getAsPermSid(): Permission.PermSid {
     if (typeof this._perm !== "string")
       throw new Error(`permission needs to be a string but got '${this._perm}'`) 
     return {
@@ -110,7 +120,7 @@ export class PermissionBuilder<T extends {} = any> {
     })
   }
 
-  static getDefaults(perm: Partial<PermissionBuilder.PermType>) {
+  static getDefaults(perm: Partial<Permission.PermType>) {
     return {
       skip: false,
       negate: false,
@@ -120,7 +130,7 @@ export class PermissionBuilder<T extends {} = any> {
 
 }
 
-export namespace PermissionBuilder {
+export namespace Permission {
   export interface IConfig<T> {
     teamspeak: TeamSpeak
     remove: string,

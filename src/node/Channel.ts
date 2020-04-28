@@ -3,7 +3,7 @@ import { TeamSpeak } from "../TeamSpeak"
 import { ChannelEntry, ClientEntry } from "../types/ResponseTypes"
 import { ChannelEdit } from "../types/PropertyTypes"
 import { TeamSpeakClient } from "./Client"
-import { PermissionBuilder } from "../util/PermissionBuilder"
+import { Permission } from "../util/Permission"
 
 export class TeamSpeakChannel extends Abstract<ChannelEntry> {
 
@@ -143,7 +143,7 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
    * A permission can be specified by permid or permsid.
    * @param perm permission object to set
    */
-  setPerm(perm: PermissionBuilder.PermType) {
+  setPerm(perm: Permission.PermType) {
     return super.getParent().channelSetPerm(this, perm)
   }
 
