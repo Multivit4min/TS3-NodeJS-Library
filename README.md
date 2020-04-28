@@ -255,6 +255,120 @@ Documentation software has been switched from `documentation` to `typedoc`
 The `close` event now only gets fired when a connection has been successfully established first!
 In order to get errors when connecting to a server use the `error` event instead. This was required in order to implement the reconnect logic.
 
+# Update Notes to 3.0
+
+### Function renames
+
+Renamed some function in order to comply with JavaScript Standard
+
+`TeamSpeak#getClientByID` -> `TeamSpeak#getClientById`\
+`TeamSpeak#getClientByUID` -> `TeamSpeak#getClientByUid`\
+`TeamSpeak#getClientByDBID` -> `TeamSpeak#getClientByDbid`\
+......\
+`TeamSpeak#getChannelByID` -> `TeamSpeak#getChannelById`\
+
+### Update to Permissions
+
+Permissions will now be handled differently, if you for example want to add a Permission onto a ServerGroup then you can use 
+
+
+```typescript
+const group = await teamspeak.getServerGroupById(10)
+if (!group) throw new Error("could not find group with id 10")
+//old await teamspeak.serverGroupAddPerm(10, "i_channel_subscribe_power", 10, 0, 1)
+await teamspeak.serverGroupAddPerm(group, {
+  permname: "i_channel_subscribe_power",
+  permvalue: 10,
+  skip: false,
+  negate: true
+})
+//or alternatively you can use it via the permission object
+await teamspeak.serverGroupAddPerm(group)
+  .perm("i_channel_subscribe_power")
+  .value(10)
+  .skip(false)
+  .negate(true)
+  .update()
+```
+
+Permission List commands will now not give back a raw object but will give you an array of Permission class
+which you can dynamically update after, for example if you want to add all existing permissions the skip flag
+
+```typescript
+const group = await teamspeak.getServerGroupById(10)
+if (!group) throw new Error("could not find group with id 10")
+const permlist = await group.permList()
+await Promise.all(permlist.map(perm => perm.skip(true).update()))
+```
+
+or if you want to remove all permissions:
+
+```typescript
+const group = await teamspeak.getServerGroupById(10)
+if (!group) throw new Error("could not find group with id 10")
+const permlist = await group.permList()
+await Promise.all(permlist.map(perm => perm.remove()))
+```
+
+To retrieve the permission name or value you can use
+`perm.getValue()`, `perm.getPerm()`, `perm.getSkip()`, `perm.getNegate()`
+
+### Update to all parameters
+
+all Parameters are now returned as camelcase and require camelcase characters in object properties
+```typescript
+console.log(await teamspeak.whoami())
+/**
+ * with < 3.0 it looked like:
+ * {
+ *   virtualserver_status: "unknown",
+ *   virtualserver_unique_identifier: undefined,
+ *   virtualserver_port: 0,
+ *   virtualserver_id: 0,
+ *   client_id: 0,
+ *   client_channel_id: 0,
+ *   client_nickname: undefined,
+ *   client_database_id: 0,
+ *   client_login_name: undefined,
+ *   client_unique_identifier: undefined,
+ *   client_origin_server_id: 0
+ * }
+ * with converted to camelcase the response will look like:
+ * {
+ *   virtualserverStatus: "unknown",
+ *   virtualserverUniqueIdentifier: undefined,
+ *   virtualserverPort: 0,
+ *   virtualserverId: 0,
+ *   clientId: 0,
+ *   clientChannelId: 0,
+ *   clientNickname: undefined,
+ *   clientDatabaseId: 0,
+ *   clientLoginName: undefined,
+ *   clientUniqueIdentifier: undefined,
+ *   clientOriginServerId: 0
+ * }
+ */
+```
+
+the same is for parameters given to update certain things for example:
+```typescript
+const channel = await teamspeak.getChannelById(10)
+if (!channel) throw new Error("could not find channel with id 10")
+//with version < 3.0
+channel.edit({
+  channel_name: "foo",
+  channel_password: "bar",
+  channel_description: "lorem ipsum"
+})
+//with version >= 3.0
+channel.edit({
+  channelName: "foo",
+  channelPassword: "bar",
+  channelDescription: "lorem ipsum"
+})
+```
+
+
 
 # Authors
 
