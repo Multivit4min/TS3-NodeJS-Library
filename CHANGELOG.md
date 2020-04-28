@@ -14,6 +14,10 @@
 * all ids are now strings instead of numbers (TeamSpeak 5 Servers have ids >53bit which JavaScript will start to round)
 * all functions which require a channel id, client id etc can now be given the TeamSpeakClient class / TeamSpeakChannel class etc
 * created some overloads for some functions where necessary
+* `TeamSpeak#registerEvent` now does not need to be called manually instead when a new event listener gets registered then the library will automatically subscribe to necessary events
+* fixed a bug in event context update where only one event gets added to subscription list
+* fixed a bug where invoker can be undefined when a temporary channel gets deleted
+* `TeamSpeak#channelEdit` will now check if the channel name is already being used by itself
 
 ### 2.4.4 - 06.04.2020
 * update type definitions for serverinfo response
