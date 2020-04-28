@@ -103,6 +103,8 @@ export class TeamSpeak extends EventEmitter {
     this.query.on("error", (e: Error) => super.emit("error", e))
     this.query.on("flooding", (e: ResponseError) => super.emit("flooding", e))
     this.query.on("debug", (data: Event.Debug) => super.emit("debug", data))
+    //@ts-ignore
+    this.on("newListener", this.handleNewListener.bind(this))
     if (this.config.autoConnect) 
       /** can be dropped silently since errors are getting emitted via the error event */
       this.connect().catch(() => null)
@@ -178,6 +180,36 @@ export class TeamSpeak extends EventEmitter {
     })
   }
 
+  /** subscribes to some query events if necessary */
+  private handleNewListener(event: string) {
+    const commands: Promise<any>[] = []
+    switch (event) {
+      case "clientconnect":
+      case "clientdisconnect":
+      case "serveredit":
+        if (this.isSubscribedToEvent("server")) break
+        commands.push(this.registerEvent("server"))
+        break
+      case "tokenused":
+        if (this.isSubscribedToEvent("tokenused")) break
+        commands.push(this.registerEvent("tokenused"))
+        break
+      case "channeledit":
+      case "channelmoved":
+      case "channeldelete":
+      case "channelcreate":
+      case "clientmoved":
+        if (this.isSubscribedToEvent("channel", "0")) break
+        commands.push(this.registerEvent("channel", "0"))
+        break
+      case "textmessage":
+        if (!this.isSubscribedToEvent("textserver")) commands.push(this.registerEvent("textserver"))
+        if (!this.isSubscribedToEvent("textchannel")) commands.push(this.registerEvent("textchannel"))
+        if (!this.isSubscribedToEvent("textprivate")) commands.push(this.registerEvent("textprivate"))
+    }
+    Promise.all(commands).catch(e => this.emit("error", e))
+  }
+
   /** handles initial commands after successfully connecting to a TeamSpeak Server */
   private handleReady() {
     const exec: Promise<any>[] = []
@@ -195,6 +227,7 @@ export class TeamSpeak extends EventEmitter {
     } else if (this.config.serverport) {
       exec.push(this.priorize().useByPort(this.config.serverport, this.config.nickname))
     }
+    console.log(this.context.events)
     exec.push(...this.context.events.map(ev => this.priorize().registerEvent(ev.event, ev.id)))
     this.query.pause(false)
     Promise.all(exec)
@@ -361,10 +394,9 @@ export class TeamSpeak extends EventEmitter {
    * Gets called when a channel gets deleted
    * @param event the raw teamspeak event
    */
-  private evchanneldeleted(event: TeamSpeakQuery.ResponseEntry) {
+  private async evchanneldeleted(event: TeamSpeakQuery.ResponseEntry) {
     this.getClientById(event.invokerid as string).then(invoker => {
-      if (!invoker) throw new EventError(`could not fetch client with id ${event.invokerid}`, "channelmoved")
-      if (this.ignoreQueryClient(invoker.type)) return
+      if (invoker && this.ignoreQueryClient(invoker.type)) return
       this.emit("channeldelete", { invoker, cid: event.cid })
     })
     .catch(e => this.emit("error", e))
@@ -384,7 +416,7 @@ export class TeamSpeak extends EventEmitter {
    * ts3.execute("use", [9987], { clientnickname: "test" })
    */
   execute<
-    T extends (TeamSpeakQuery.ResponseEntry|TeamSpeakQuery.Response) = TeamSpeakQuery.Response
+    T extends (TeamSpeakQuery.ResponseEntry|TeamSpeakQuery.Response) = []
   >(cmd: string, ...args: TeamSpeakQuery.executeArgs[]): Promise<T> {
     if (this.priorizeNextCommand) {
       this.priorizeNextCommand = false
@@ -861,7 +893,7 @@ export class TeamSpeak extends EventEmitter {
    * @param perm the permission object
    */
   serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: undefined): Permission
-  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: Permission.PermType): Promise<TeamSpeakQuery.Response>
+  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: Permission.PermType): Promise<[]>
   serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm?: Permission.PermType) {
     const builder = this.createServerGroupPermBuilder(TeamSpeakServerGroup.getId(group))
     if (!perm) return builder
@@ -1012,8 +1044,15 @@ export class TeamSpeak extends EventEmitter {
    * @param channel the channel id
    * @param properties the properties of the channel which should get changed
    */
-  channelEdit(channel: TeamSpeakChannel.ChannelType, properties: Props.ChannelEdit = {}) {
-    properties.cid = TeamSpeakChannel.getId(channel)
+  async channelEdit(channel: TeamSpeakChannel.ChannelType, properties: Props.ChannelEdit = {}) {
+    const cid = TeamSpeakChannel.getId(channel)
+    if (typeof properties.channelName === "string") {
+      if (!this.isSubscribedToEvent("server") || Object.keys(this.channels).length === 0) await this.channelList()
+      const c = await this.channels[cid]
+      if (c && properties.channelName === c.name) delete properties.channelName
+      if (Object.keys(properties).length === 0) return [] as []
+    }
+    properties.cid = cid
     return this.execute("channeledit", properties)
   }
 
@@ -1043,7 +1082,7 @@ export class TeamSpeak extends EventEmitter {
    * @param perm the permission object
    */  
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: undefined): Permission
-  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: Permission.PermType): Promise<TeamSpeakQuery.Response>
+  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: Permission.PermType): Promise<[]>
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm?: Permission.PermType) {
     const builder = this.createChannelPermBuilder(TeamSpeakChannel.getId(channel))
     if (!perm) return builder
@@ -1218,7 +1257,7 @@ export class TeamSpeak extends EventEmitter {
    * @param perm the permission object
    */
   clientAddPerm(client: TeamSpeakClient.ClientType, perm: undefined): Permission
-  clientAddPerm(client: TeamSpeakClient.ClientType, perm: Permission.PermType): Promise<TeamSpeakQuery.Response>
+  clientAddPerm(client: TeamSpeakClient.ClientType, perm: Permission.PermType): Promise<[]>
   clientAddPerm(client: TeamSpeakClient.ClientType, perm?: Permission.PermType) {
     const builder = this.createClientPermBuilder(TeamSpeakClient.getDbid(client))
     if (!perm) return builder
@@ -1440,7 +1479,7 @@ export class TeamSpeak extends EventEmitter {
    * @param perm the permission object
    */  
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: undefined): Permission
-  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: Permission.PermType): Promise<TeamSpeakQuery.Response>
+  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: Permission.PermType): Promise<[]>
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: Permission.PermType) {
     const builder = this.createChannelGroupPermBuilder(TeamSpeakChannelGroup.getId(group))
     if (!perm) return builder
@@ -2160,7 +2199,7 @@ export class TeamSpeak extends EventEmitter {
    * @param password the optional password to encrypt the snapshot
    */
   createSnapshot(password?: string): Promise<Response.SnapshotCreate> {
-    return this.execute(
+    return this.execute<any>(
       "serversnapshotcreate", 
       { password },
       parsers => {
@@ -2265,7 +2304,12 @@ export class TeamSpeak extends EventEmitter {
    * @param data the data to update the context with
    */
   private updateContext(data: Partial<Context>) {
-    this.context = { ...this.context, ...data } as Context
+    if (!Array.isArray(data.events)) data.events = []
+    this.context = {
+      ...this.context,
+      ...data, 
+      events: [...this.context.events, ...data.events]
+    } as Context
     return this
   }
 
@@ -2321,6 +2365,18 @@ export class TeamSpeak extends EventEmitter {
       update: "clientaddperm",
       remove: "clientdelperm",
       context: { cldbid }
+    })
+  }
+
+  /**
+   * checks if the server is subscribed to a specific event
+   * @param event event name which was subscribed to
+   * @param id context to check
+   */
+  private isSubscribedToEvent(event: string, id?: string) {
+    return this.context.events.some(ev => {
+      if (ev.event === event) return id ? id === ev.id : true
+      return false
     })
   }
 
