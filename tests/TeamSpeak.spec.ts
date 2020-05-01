@@ -150,6 +150,37 @@ describe("TeamSpeak", () => {
     })
   })
 
+  it("should validate correct subscriptions to events", () => {
+    teamspeak.on("textmessage", () => null)
+    expect(mockExecute).toHaveBeenCalledTimes(3)
+    expect(mockExecute).toHaveBeenNthCalledWith(1, "servernotifyregister", { event: "textserver", id: undefined })
+    expect(mockExecute).toHaveBeenNthCalledWith(2, "servernotifyregister", { event: "textchannel", id: undefined })
+    expect(mockExecute).toHaveBeenNthCalledWith(3, "servernotifyregister", { event: "textprivate", id: undefined })
+  })
+
+  it("should validate that no events get registered", done => {
+    expect.assertions(1)
+    teamspeak["context"].events.push({ event: "textserver" })
+    teamspeak["context"].events.push({ event: "textchannel" })
+    teamspeak["context"].events.push({ event: "textprivate" })
+    teamspeak["context"].events.push({ event: "server" })
+    teamspeak["context"].events.push({ event: "channel", id: "0" })
+    teamspeak["context"].events.push({ event: "tokenused" })
+    teamspeak.on("clientconnect", () => null)
+    teamspeak.on("clientdisconnect", () => null)
+    teamspeak.on("serveredit", () => null)
+    teamspeak.on("tokenused", () => null)
+    teamspeak.on("channeledit", () => null)
+    teamspeak.on("channelmoved", () => null)
+    teamspeak.on("channelcreate", () => null)
+    teamspeak.on("channeldelete", () => null)
+    teamspeak.on("textmessage", () => null)
+    process.nextTick(() => {
+      expect(mockExecute).toHaveBeenCalledTimes(0)
+      done()
+    })
+  })
+
   it("should test #reconnect()", async () => {
     expect.assertions(1)
     mockIsConnected.mockReturnValue(true)

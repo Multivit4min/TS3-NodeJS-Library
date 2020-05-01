@@ -515,9 +515,7 @@ export class TeamSpeak extends EventEmitter {
    */
   registerEvent(event: string, id?: string) {
     return this.execute("servernotifyregister", { event, id })
-      .then(this.updateContextResolve({
-        events: [...this.context.events, { event, id }]
-      }))
+      .then(this.updateContextResolve({ events: [{ event, id }] }))
   }
 
 

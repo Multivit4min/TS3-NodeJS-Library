@@ -68,7 +68,7 @@ export class Permission<T extends {} = any> {
   get(): Permission.PermId|Permission.PermSid {
     if (!this._perm) throw new Error("Permission#perm has not been called yet")
     if (typeof this._perm === "string") return this.getAsPermSid()
-    return this.getAsPermid()
+    return this.getAsPermId()
   }
 
   /** retrieves skip and negate flags */
@@ -78,7 +78,7 @@ export class Permission<T extends {} = any> {
   }
 
   /** retrieves a raw object with permid */
-  private getAsPermid(): Permission.PermId {
+  private getAsPermId(): Permission.PermId {
     if (typeof this._perm !== "number")
       throw new Error(`permission needs to be a number but got '${this._perm}'`)
     return {
@@ -120,10 +120,10 @@ export class Permission<T extends {} = any> {
     })
   }
 
-  static getDefaults(perm: Partial<Permission.PermType>) {
+  static getDefaults(perm: Partial<Permission.PermType>): Partial<Permission.PermType> {
     return {
-      skip: false,
-      negate: false,
+      permskip: false,
+      permnegated: false,
       ...perm
     }
   }
