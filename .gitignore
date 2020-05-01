@@ -1,7 +1,0 @@
-node_modules
-lib
-dist
-.vscode
-coverage
-docs
-.nyc_output

@@ -1,0 +1,775 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>TS3-NodeJS-Library</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">TS3-NodeJS-Library</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> TS3-NodeJS-Library</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#ts3-nodejs-library" id="ts3-nodejs-library" style="color: inherit; text-decoration: none;">
+					<h1>TS3-NodeJS-Library</h1>
+				</a>
+				<p><a href="https://github.com/Multivit4min/TS3-NodeJS-Library/actions"><img src="https://github.com/multivit4min/TS3-NodeJS-LIbrary/workflows/Node%20CI/badge.svg" alt="Build Status"></a>
+					<a href="https://www.npmjs.com/package/ts3-nodejs-library"><img src="https://img.shields.io/npm/v/ts3-nodejs-library.svg" alt="npm"></a>
+					<a href="https://coveralls.io/github/Multivit4min/TS3-NodeJS-Library?branch=master"><img src="https://coveralls.io/repos/github/Multivit4min/TS3-NodeJS-Library/badge.svg?branch=master" alt="Coverage Status"></a>
+				<a href="https://discord.gg/Z5rdcGu"><img src="https://img.shields.io/discord/653273459840778270" alt="Discord"></a></p>
+				<p>The TS3 NodeJS Library has been strongly influenced by <a href="https://docs.planetteamspeak.com/ts3/php/framework/index.html">PlanetTeamSpeaks TS3 PHP
+				Framework</a></p>
+				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+					<h1>Introduction</h1>
+				</a>
+				<p>This library can connect to a TeamSpeak Server Query interface, send and receive commands aswell as upload and download files via Filetransfer!</p>
+				<p>With vscode you will receive powerful autocomplete of functions and their return values, so vscode is highly recommended!</p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<p><code>npm install --save ts3-nodejs-library</code></p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h1>Documentation</h1>
+				</a>
+				<p>You can find all necessary documentation <a href="https://multivit4min.github.io/TS3-NodeJS-Library">here</a>!</p>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h1>Example</h1>
+				</a>
+				<p>Send a message to all non Query Clients connected:</p>
+				<pre><code class="language-typescript"><span class="hljs-comment">//import with typescript</span>
+<span class="hljs-keyword">import</span> { TeamSpeak, QueryProtocol } <span class="hljs-keyword">from</span> <span class="hljs-string">"ts3-nodejs-library"</span>
+<span class="hljs-comment">//import with javascript</span>
+<span class="hljs-comment">//const { TeamSpeak } = require("ts3-nodejs-library")</span>
+
+<span class="hljs-comment">//create a new connection</span>
+TeamSpeak.connect({
+  host: <span class="hljs-string">"localhost"</span>,
+  protocol: QueryProtocol.RAW, <span class="hljs-comment">//optional</span>
+  queryport: <span class="hljs-number">10011</span>, <span class="hljs-comment">//optional</span>
+  serverport: <span class="hljs-number">9987</span>,
+  username: <span class="hljs-string">"serveradmin"</span>,
+  password: <span class="hljs-string">""</span>,
+  nickname: <span class="hljs-string">"NodeJS Query Framework"</span>
+}).then(<span class="hljs-keyword">async</span> teamspeak =&gt; {
+  <span class="hljs-keyword">const</span> clients = <span class="hljs-keyword">await</span> teamspeak.clientList({ client_type: <span class="hljs-number">0</span> })
+  clients.forEach(<span class="hljs-function"><span class="hljs-params">client</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Sending 'Hello!' Message to"</span>, client.nickname)
+    client.message(<span class="hljs-string">"Hello!"</span>)
+  })
+}).catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Catched an error!"</span>)
+  <span class="hljs-built_in">console</span>.error(e)
+})</code></pre>
+				<a href="#quickstart" id="quickstart" style="color: inherit; text-decoration: none;">
+					<h1>Quickstart</h1>
+				</a>
+				<a href="#connecting-to-a-teamspeak-server" id="connecting-to-a-teamspeak-server" style="color: inherit; text-decoration: none;">
+					<h2>Connecting to a TeamSpeak Server</h2>
+				</a>
+				<p>There are 2 ways to connect with the TeamSpeak Server:
+				using the wrapper <code>TeamSpeak.connect()</code> or by instanciating the <code>TeamSpeak</code> class by yourself</p>
+				<blockquote>
+					<p>to connect with TeamSpeak.connect():</p>
+				</blockquote>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { TeamSpeak } <span class="hljs-keyword">from</span> <span class="hljs-string">"ts3-nodejs-library"</span>
+
+TeamSpeak.connect({
+  <span class="hljs-attr">host</span>: <span class="hljs-string">"127.0.0.1"</span>,
+  <span class="hljs-attr">queryport</span>: <span class="hljs-number">10011</span>
+}).then(<span class="hljs-function"><span class="hljs-params">teamspeak</span> =&gt;</span> {
+  <span class="hljs-comment">//you are now connected</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+  <span class="hljs-comment">//an error occured during connecting</span>
+})</code></pre>
+				<blockquote>
+					<p>when instanciating it by yourself:</p>
+				</blockquote>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { TeamSpeak } <span class="hljs-keyword">from</span> <span class="hljs-string">"ts3-nodejs-library"</span>
+
+<span class="hljs-keyword">const</span> teamspeak = <span class="hljs-keyword">new</span> TeamSpeak({
+  <span class="hljs-attr">host</span>: <span class="hljs-string">"127.0.0.1"</span>,
+  <span class="hljs-attr">queryport</span>: <span class="hljs-number">10011</span>
+})
+
+teamspeak.on(<span class="hljs-string">"ready"</span>, () =&gt; {
+  <span class="hljs-comment">//teamspeak connected successfully</span>
+})
+
+teamspeak.on(<span class="hljs-string">"error"</span>, () =&gt; {
+  <span class="hljs-comment">//teamspeak had an error</span>
+})</code></pre>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h3>Configuration</h3>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>Parameter</th>
+							<th>Default</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>host</td>
+							<td>&quot;127.0.0.1&quot;</td>
+							<td>hostname to connect to</td>
+						</tr>
+						<tr>
+							<td>queryport</td>
+							<td>10011</td>
+							<td>queryport to connect to</td>
+						</tr>
+						<tr>
+							<td>protocol</td>
+							<td>&quot;raw&quot;</td>
+							<td>either use telnet or ssh to connect to the server</td>
+						</tr>
+						<tr>
+							<td>serverport</td>
+							<td><code>empty</code></td>
+							<td>the server port to select when connecting</td>
+						</tr>
+						<tr>
+							<td>username</td>
+							<td><code>empty</code></td>
+							<td>the username to login with (required when using ssh)</td>
+						</tr>
+						<tr>
+							<td>password</td>
+							<td><code>empty</code></td>
+							<td>the password to login with (required when using ssh)</td>
+						</tr>
+						<tr>
+							<td>nickname</td>
+							<td><code>empty</code></td>
+							<td>the nickname to connect with when selecting a server</td>
+						</tr>
+						<tr>
+							<td>readyTimeout</td>
+							<td>10000</td>
+							<td>timeout in ms to wait for the connection to be built</td>
+						</tr>
+						<tr>
+							<td>keepAlive</td>
+							<td>true</td>
+							<td>wether a keepalive should be sent to the teamspeak server</td>
+						</tr>
+						<tr>
+							<td>localAddress</td>
+							<td><code>empty</code></td>
+							<td>local address the socket should connect from</td>
+						</tr>
+				</tbody></table>
+				<a href="#error-handling-when-connecting" id="error-handling-when-connecting" style="color: inherit; text-decoration: none;">
+					<h3>Error handling when connecting</h3>
+				</a>
+				<p>the method <code>TeamSpeak.connect()</code> will do error handling for you, when the query fails to connect or some of the commands which are being initially used to connect may encounter an error then the query will disconnect and reject the Promise with an error</p>
+				<p>However when instanciating TeamSpeak by yourself an <code>error</code> event might get thrown but the <code>ready</code> event will never fire</p>
+				<p>thats why <code>TeamSpeak.connect()</code> is more preferable to build a connection</p>
+				<a href="#basic-usage" id="basic-usage" style="color: inherit; text-decoration: none;">
+					<h2>Basic Usage</h2>
+				</a>
+				<a href="#sending-a-command" id="sending-a-command" style="color: inherit; text-decoration: none;">
+					<h3>Sending a command</h3>
+				</a>
+				<p>Sending a command is simple, every command will return a <code>Promise</code>. If you do not know what a Promise is then please read the documentation first: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">developer.mozilla.org &gt; Promise</a></p>
+				<p>When using NodeJS then Promises are essential for further progress</p>
+				<blockquote>
+					<p>Using Promises</p>
+				</blockquote>
+				<pre><code class="language-javascript">teamspeak.whoami().then(<span class="hljs-function"><span class="hljs-params">whoami</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(whoami)
+})</code></pre>
+				<blockquote>
+					<p>Using Async/Await</p>
+				</blockquote>
+				<pre><code class="language-javascript">(<span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> whoami = <span class="hljs-keyword">await</span> teamspeak.whoami()
+  <span class="hljs-built_in">console</span>.log(whoami)
+})()</code></pre>
+				<p><code>whoami</code> will then give you an object like</p>
+				<pre><code class="language-javascript">{
+  <span class="hljs-attr">virtualserver_status</span>: <span class="hljs-string">"online"</span>,
+  <span class="hljs-attr">virtualserver_unique_identifier</span>: <span class="hljs-string">"t1lytXTeyvmHXvNJ4ZcBBd15ugs="</span>,
+  <span class="hljs-attr">virtualserver_port</span>: <span class="hljs-number">9987</span>,
+  <span class="hljs-attr">virtualserver_id</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">client_id</span>: <span class="hljs-number">2</span>,
+  <span class="hljs-attr">client_channel_id</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">client_nickname</span>: <span class="hljs-string">"serveradmin"</span>,
+  <span class="hljs-attr">client_database_id</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">client_login_name</span>: <span class="hljs-string">"serveradmin"</span>,
+  <span class="hljs-attr">client_unique_identifier</span>: <span class="hljs-string">"serveradmin"</span>,
+  <span class="hljs-attr">client_origin_server_id</span>: <span class="hljs-number">0</span>
+}</code></pre>
+				<a href="#events" id="events" style="color: inherit; text-decoration: none;">
+					<h3>Events</h3>
+				</a>
+				<p>To register for events you need to execute <code>teamspeak.registerEvent()</code> first in order to even receive events.</p>
+				<blockquote>
+					<p>Registering for all available Events</p>
+				</blockquote>
+				<pre><code class="language-javascript"><span class="hljs-built_in">Promise</span>.all([
+  teamspeak.registerEvent(<span class="hljs-string">"server"</span>),
+  teamspeak.registerEvent(<span class="hljs-string">"channel"</span>, <span class="hljs-number">0</span>),
+  teamspeak.registerEvent(<span class="hljs-string">"textserver"</span>),
+  teamspeak.registerEvent(<span class="hljs-string">"textchannel"</span>),
+  teamspeak.registerEvent(<span class="hljs-string">"textprivate"</span>)
+])</code></pre>
+				<p>When being registered for events you can use <code>teamspeak.on()</code> to register your event handlers</p>
+				<pre><code class="language-javascript">teamspeak.on(<span class="hljs-string">"textmessage"</span>, ev =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${ev.invoker.nickname}</span> just send the message "<span class="hljs-subst">${ev.msg}</span>"`</span>)
+})</code></pre>
+				<a href="#flood-protection" id="flood-protection" style="color: inherit; text-decoration: none;">
+					<h3>Flood Protection</h3>
+				</a>
+				<p>Flooding will be handled automatically.</p>
+				<p>When the Query gets accused of Flooding then it will return error with id 524 and an error message which states how much time needs to be waited.</p>
+				<p>This will be parsed automatically and the Query will wait for the given time (normally its 1 second) + 100 additional milliseconds (sometimes it happens the query gets banned when still sending too early)</p>
+				<a href="#reconnecting" id="reconnecting" style="color: inherit; text-decoration: none;">
+					<h1>Reconnecting</h1>
+				</a>
+				<p>With version 2.3 this library is able to reconnect to its TeamSpeak Server when the connection has been lost.
+				It restores its full context this includes:</p>
+				<ul>
+					<li>selecting the server</li>
+					<li>logging in with the last credentials</li>
+					<li>subscribing to all used events</li>
+					<li>selecting the correct nickname</li>
+				</ul>
+				<p>all commands which have been added in meantime while the teamspeak server was not connected will be still executed after and all pending commands will be sent AFTER connecting and restoring the context</p>
+				<p>an example on how this looks like:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { TeamSpeak, QueryProtocol } <span class="hljs-keyword">from</span> <span class="hljs-string">"./src/TeamSpeak"</span>
+
+TeamSpeak.connect({
+  host: <span class="hljs-string">"127.0.0.1"</span>,
+  queryport: <span class="hljs-number">10011</span>,
+  serverport: <span class="hljs-number">9987</span>,
+  protocol: QueryProtocol.RAW,
+  username: <span class="hljs-string">"serveradmin"</span>,
+  password: <span class="hljs-string">"xxx"</span>,
+  nickname: <span class="hljs-string">"test"</span>
+}).then(<span class="hljs-keyword">async</span> teamspeak =&gt; {
+
+  teamspeak.on(<span class="hljs-string">"close"</span>, <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"disconnected, trying to reconnect..."</span>)
+    <span class="hljs-keyword">await</span> teamspeak.reconnect(<span class="hljs-number">-1</span>, <span class="hljs-number">1000</span>)
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"reconnected!"</span>)
+  })
+
+})</code></pre>
+				<a href="#update-notes-from-1x-to-2x" id="update-notes-from-1x-to-2x" style="color: inherit; text-decoration: none;">
+					<h1>Update Notes from 1.x to 2.x</h1>
+				</a>
+				<p>With version 2.x support for Client Events has been dropped instead use the events from the main class TeamSpeak.
+					Additionally it comes with <code>TeamSpeak.connect()</code> in order to use a promise to connect to a teamspeak server.
+					Multiple node methods have been replaced with a getter for ex: <code>client.getDBID()</code> -&gt; <code>client.databaseId</code>, <code>client.getUID()</code> -&gt; <code>client.uniqueIdentifier</code>, <code>channel.getID()</code> -&gt; <code>channel.cid</code>
+					The testing environment now runs via jest which makes mocking and testing easier. Since this project now is written in TypeScript vscode should now be completely capable to autocomplete, so there is no need to update docs on @types.
+				Documentation software has been switched from <code>documentation</code> to <code>typedoc</code></p>
+				<a href="#update-notes-to-23" id="update-notes-to-23" style="color: inherit; text-decoration: none;">
+					<h1>Update Notes to 2.3</h1>
+				</a>
+				<p>The <code>close</code> event now only gets fired when a connection has been successfully established first!
+				In order to get errors when connecting to a server use the <code>error</code> event instead. This was required in order to implement the reconnect logic.</p>
+				<a href="#authors" id="authors" style="color: inherit; text-decoration: none;">
+					<h1>Authors</h1>
+				</a>
+				<ul>
+					<li><strong>David Kartnaller</strong> (<a href="https://github.com/Multivit4min">Multivit4min</a>) - <em>Initial work</em></li>
+					<li><strong>Pascal Sthamer</strong> (<a href="https://github.com/P4sca1">P4sca1</a>) and <strong>Mattis Krämer</strong> (<a href="https://github.com/Mattzi">Mattzi</a>) - <em>TypeScript typings</em></li>
+					<li><strong>Alexander</strong> (<a href="https://github.com/xIAlexanderIx">xIAlexanderIx</a>)</li>
+				</ul>
+				<p>See also the list of <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/graphs/contributors">contributors</a> who participated in this project.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/apikeyscope.html" class="tsd-kind-icon">Api<wbr>Key<wbr>Scope</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/clienttype.html" class="tsd-kind-icon">Client<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/codec.html" class="tsd-kind-icon">Codec</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/codecencryptionmode.html" class="tsd-kind-icon">Codec<wbr>Encryption<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/hostbannermode.html" class="tsd-kind-icon">Host<wbr>Banner<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/hostmessagemode.html" class="tsd-kind-icon">Host<wbr>Message<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/permissiongroupdatabasetypes.html" class="tsd-kind-icon">Permission<wbr>Group<wbr>Database<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/permissiongrouptypes.html" class="tsd-kind-icon">Permission<wbr>Group<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/queryprotocol.html" class="tsd-kind-icon">Query<wbr>Protocol</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/reasonidentifier.html" class="tsd-kind-icon">Reason<wbr>Identifier</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/selecttype.html" class="tsd-kind-icon">Select<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/textmessagetargetmode.html" class="tsd-kind-icon">Text<wbr>Message<wbr>Target<wbr>Mode</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/tokentype.html" class="tsd-kind-icon">Token<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/abstract.html" class="tsd-kind-icon">Abstract</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/command.html" class="tsd-kind-icon">Command</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eventerror.html" class="tsd-kind-icon">Event<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/filetransfer.html" class="tsd-kind-icon">File<wbr>Transfer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/protocolraw.html" class="tsd-kind-icon">ProtocolRAW</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/protocolssh.html" class="tsd-kind-icon">ProtocolSSH</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/responseerror.html" class="tsd-kind-icon">Response<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeak.html" class="tsd-kind-icon">Team<wbr>Speak</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakchannel.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Channel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakchannelgroup.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Channel<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakclient.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakquery.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Query</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakserver.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Server</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/teamspeakservergroup.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Server<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/activeevent.html" class="tsd-kind-icon">Active<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/apikeyadd.html" class="tsd-kind-icon">Api<wbr>Key<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/apikeyentry.html" class="tsd-kind-icon">Api<wbr>Key<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/banadd.html" class="tsd-kind-icon">Ban<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/banlist.html" class="tsd-kind-icon">Ban<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/bindinglist.html" class="tsd-kind-icon">Binding<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelclientpermlistid.html" class="tsd-kind-icon">Channel<wbr>Client<wbr>Perm<wbr>List<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelclientpermlistsid.html" class="tsd-kind-icon">Channel<wbr>Client<wbr>Perm<wbr>List<wbr>Sid</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelcreate.html" class="tsd-kind-icon">Channel<wbr>Create</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channeldelete.html" class="tsd-kind-icon">Channel<wbr>Delete</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelfind.html" class="tsd-kind-icon">Channel<wbr>Find</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelgroupclientlist.html" class="tsd-kind-icon">Channel<wbr>Group<wbr>Client<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelgroupcopy.html" class="tsd-kind-icon">Channel<wbr>Group<wbr>Copy</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelgrouplist.html" class="tsd-kind-icon">Channel<wbr>Group<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelinfo.html" class="tsd-kind-icon">Channel<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channellist.html" class="tsd-kind-icon">Channel<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/channelmove.html" class="tsd-kind-icon">Channel<wbr>Move</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientconnect.html" class="tsd-kind-icon">Client<wbr>Connect</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientdbfind.html" class="tsd-kind-icon">ClientDBFind</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientdbinfo.html" class="tsd-kind-icon">ClientDBInfo</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientdblist.html" class="tsd-kind-icon">ClientDBList</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientdisconnect.html" class="tsd-kind-icon">Client<wbr>Disconnect</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientfind.html" class="tsd-kind-icon">Client<wbr>Find</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientgetdbidfromuid.html" class="tsd-kind-icon">Client<wbr>Get<wbr>Dbid<wbr>From<wbr>Uid</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientgetids.html" class="tsd-kind-icon">Client<wbr>Get<wbr>Ids</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientgetnamefromdbid.html" class="tsd-kind-icon">Client<wbr>Get<wbr>Name<wbr>From<wbr>Dbid</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientgetnamefromuid.html" class="tsd-kind-icon">Client<wbr>Get<wbr>Name<wbr>From<wbr>Uid</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientgetuidfromclid.html" class="tsd-kind-icon">Client<wbr>Get<wbr>Uid<wbr>From<wbr>Clid</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientinfo.html" class="tsd-kind-icon">Client<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientlist.html" class="tsd-kind-icon">Client<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientmoved.html" class="tsd-kind-icon">Client<wbr>Moved</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientsetserverquerylogin.html" class="tsd-kind-icon">Client<wbr>Set<wbr>Server<wbr>Query<wbr>Login</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/complainlist.html" class="tsd-kind-icon">Complain<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/connectionparams.html" class="tsd-kind-icon">Connection<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/context.html" class="tsd-kind-icon">Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/custominfo.html" class="tsd-kind-icon">Custom<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/customsearch.html" class="tsd-kind-icon">Custom<wbr>Search</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/debug.html" class="tsd-kind-icon">Debug</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ftgetfileinfo.html" class="tsd-kind-icon">FTGet<wbr>File<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ftgetfilelist.html" class="tsd-kind-icon">FTGet<wbr>File<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ftinitdownload.html" class="tsd-kind-icon">FTInit<wbr>Download</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ftinitupload.html" class="tsd-kind-icon">FTInit<wbr>Upload</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ftlist.html" class="tsd-kind-icon">FTList</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/hostinfo.html" class="tsd-kind-icon">Host<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/instanceinfo.html" class="tsd-kind-icon">Instance<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/logview.html" class="tsd-kind-icon">Log<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/logininfo.html" class="tsd-kind-icon">Login<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messageget.html" class="tsd-kind-icon">Message<wbr>Get</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messagelist.html" class="tsd-kind-icon">Message<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-not-exported">
+						<a href="interfaces/nodeconstructable.html" class="tsd-kind-icon">Node<wbr>Constructable</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permfind.html" class="tsd-kind-icon">Perm<wbr>Find</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permget.html" class="tsd-kind-icon">Perm<wbr>Get</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permidgetbyname.html" class="tsd-kind-icon">Perm<wbr>IdGet<wbr>ByName</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permlist.html" class="tsd-kind-icon">Perm<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permoverview.html" class="tsd-kind-icon">Perm<wbr>Overview</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/permissionlist.html" class="tsd-kind-icon">Permission<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/privilegekeylist.html" class="tsd-kind-icon">Privilege<wbr>Key<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/queryerrormessage.html" class="tsd-kind-icon">Query<wbr>Error<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/queryloginadd.html" class="tsd-kind-icon">Query<wbr>Login<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/queryloginlist.html" class="tsd-kind-icon">Query<wbr>Login<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/queryresponsetypes.html" class="tsd-kind-icon">Query<wbr>Response<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servercreate.html" class="tsd-kind-icon">Server<wbr>Create</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servergroupclientlist.html" class="tsd-kind-icon">Server<wbr>Group<wbr>Client<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servergroupcopy.html" class="tsd-kind-icon">Server<wbr>Group<wbr>Copy</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servergrouplist.html" class="tsd-kind-icon">Server<wbr>Group<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servergroupsbyclientid.html" class="tsd-kind-icon">Server<wbr>Groups<wbr>ByClient<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/serveridgetbyport.html" class="tsd-kind-icon">Server<wbr>IdGet<wbr>ByPort</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/serverinfo.html" class="tsd-kind-icon">Server<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/serverlist.html" class="tsd-kind-icon">Server<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/serverrequestconnectioninfo.html" class="tsd-kind-icon">Server<wbr>Request<wbr>Connection<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servertemppasswordlist.html" class="tsd-kind-icon">Server<wbr>Temp<wbr>Password<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/snapshotcreate.html" class="tsd-kind-icon">Snapshot<wbr>Create</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/textmessage.html" class="tsd-kind-icon">Text<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/token.html" class="tsd-kind-icon">Token</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tokencustomset.html" class="tsd-kind-icon">Token<wbr>Custom<wbr>Set</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tokenused.html" class="tsd-kind-icon">Token<wbr>Used</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/version.html" class="tsd-kind-icon">Version</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/whoami.html" class="tsd-kind-icon">Whoami</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#apikeylist" class="tsd-kind-icon">Api<wbr>Key<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#banclient" class="tsd-kind-icon">Ban<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#channeledit" class="tsd-kind-icon">Channel<wbr>Edit</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#clientdbedit" class="tsd-kind-icon">ClientDBEdit</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#clientedit" class="tsd-kind-icon">Client<wbr>Edit</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#clientupdate" class="tsd-kind-icon">Client<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#instanceedit" class="tsd-kind-icon">Instance<wbr>Edit</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#nodetype" class="tsd-kind-icon">Node<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#queryresponse" class="tsd-kind-icon">Query<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#serveredit" class="tsd-kind-icon">Server<wbr>Edit</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#servertemppasswordadd" class="tsd-kind-icon">Server<wbr>Temp<wbr>Password<wbr>Add</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#transferdownload" class="tsd-kind-icon">Transfer<wbr>Download</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#transferupload" class="tsd-kind-icon">Transfer<wbr>Upload</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
