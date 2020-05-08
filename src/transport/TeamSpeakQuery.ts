@@ -149,7 +149,7 @@ export class TeamSpeakQuery extends EventEmitter {
       if (error.id === "524") {
         this.emit("flooding", this.active.cmd.getError())
         const match = error.message.match(/(\d*) second/i)
-        const waitTimeout = match ? parseInt(match[1], 10) : 1000
+        const waitTimeout = match ? parseInt(match[1], 10) : 1
         clearTimeout(this.floodTimeout)
         this.floodTimeout = setTimeout((cmd => (() => {
           cmd.reset()
