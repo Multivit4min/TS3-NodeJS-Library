@@ -16,8 +16,6 @@ import { EventError } from "./exception/EventError"
 import { ClientType, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
 import { Permission } from "./util/Permission"
 
-export type QueryProtocol = TeamSpeak.QueryProtocol
-export type ConnectionParams = TeamSpeak.ConnectionParams
 
 /**
  * missing Query Commands 
@@ -2469,3 +2467,6 @@ export namespace TeamSpeak {
     SSH = "ssh"
   }
 }
+
+export const QueryProtocol = TeamSpeak.QueryProtocol
+export type ConnectionParams = TeamSpeak.ConnectionParams
