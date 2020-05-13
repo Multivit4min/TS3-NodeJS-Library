@@ -296,12 +296,13 @@ export class TeamSpeak extends EventEmitter {
   private evclientmoved(event: QueryResponse) {
     Promise.all([
       this.getClientByID(event.clid!),
-      this.getChannelByID(event.ctid!)
-    ]).then(([client, channel]) => {
+      this.getChannelByID(event.ctid!),
+	    this.getClientByID(event.invokerid!)
+    ]).then(([client, channel, invoker]) => {
       if (!client) throw new EventError(`could not fetch client with id ${event.clid}`, "clientmoved")
       if (!channel) throw new EventError(`could not fetch channel with id ${event.ctid}`, "clientmoved")
       if (this.ignoreQueryClient(client.type)) return
-      this.emit("clientmoved", { client, channel, reasonid: event.reasonid })
+      this.emit("clientmoved", { client, channel, invoker, reasonid: event.reasonid })
     }).catch(e => this.emit("error", e))
   }
 
