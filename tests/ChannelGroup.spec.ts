@@ -163,11 +163,11 @@ describe("TeamSpeakChannelGroup", () => {
       })
   })
 
-  it("should validate the return value of #getIconName()", async () => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
-    const name = await channelGroup.getIconName()
+  it("should validate the return value of #getIconId()", async () => {
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    const name = await channelGroup.getIconId()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(name).toBe("icon_9999")
+    expect(name).toBe(9999)
   })
 
 })

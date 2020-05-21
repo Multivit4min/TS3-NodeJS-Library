@@ -148,7 +148,7 @@ describe("TeamSpeakServerGroup", () => {
   })
 
   it("should validate the return value of #getIcon()", done => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
     mockExecute.mockResolvedValueOnce([{ size: 0, msg: "nok" }])
     serverGroup.getIcon()
       .then(() => done("Expected Promise to reject!"))
@@ -159,11 +159,11 @@ describe("TeamSpeakServerGroup", () => {
       })
   })
 
-  it("should validate the return value of #getIconName()", async () => {
-    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: "9999" }])
-    const name = await serverGroup.getIconName()
+  it("should validate the return value of #getIconId()", async () => {
+    mockExecute.mockResolvedValueOnce([{ permsid: "i_icon_id", permvalue: 9999 }])
+    const name = await serverGroup.getIconId()
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(name).toBe("icon_9999")
+    expect(name).toBe(9999)
   })
 
 })

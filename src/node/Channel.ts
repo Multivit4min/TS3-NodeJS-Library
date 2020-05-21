@@ -176,16 +176,14 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
     return super.getParent().clientList(filter)
   }
 
-
   /** returns a buffer with the icon of the channel */
   getIcon(): Promise<Buffer> {
-    return this.getIconName().then(name => super.getParent().downloadIcon(name))
+    return this.getIconId().then(id => super.getParent().downloadIcon(id))
   }
 
-
   /** returns the icon name of the channel */
-  getIconName(): Promise<string> {
-    return super.getParent().getIconName(this.permList(true))
+  getIconId() {
+    return super.getParent().getIconId(this.permList(true))
   }
 
   /** retrieves the client id from a string or teamspeak client */

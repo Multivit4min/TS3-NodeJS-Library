@@ -136,12 +136,12 @@ export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
 
   /** returns a buffer with the icon of the servergroup */
   getIcon() {
-    return this.getIconName().then(name => super.getParent().downloadIcon(name))
+    return this.getIconId().then(id => super.getParent().downloadIcon(id))
   }
 
-  /** gets the icon name of the servergroup */
-  getIconName() {
-    return super.getParent().getIconName(this.permList(true))
+  /** gets the icon id of the servergroup */
+  getIconId() {
+    return super.getParent().getIconId(this.permList(true))
   }
 
   /** retrieves the client id from a string or teamspeak client */

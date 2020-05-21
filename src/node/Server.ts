@@ -65,7 +65,6 @@ export class TeamSpeakServer extends Abstract<ServerEntry> {
     return super.getParent().serverDelete(this)
   }
 
-
   /**
    * Starts the virtual server.
    * Depending on your permissions, you're able to start either your own virtual server only or all virtual servers in the server instance.
@@ -73,7 +72,6 @@ export class TeamSpeakServer extends Abstract<ServerEntry> {
   start() {
     return super.getParent().serverStart(this)
   }
-
 
   /**
    * Stops the virtual server.

@@ -1,4 +1,5 @@
 import { EventEmitter } from "events"
+import crc from "crc-32"
 import { TeamSpeakQuery } from "./transport/TeamSpeakQuery"
 import { FileTransfer } from "./transport/FileTransfer"
 import { ResponseError } from "./exception/ResponseError"
@@ -2131,7 +2132,7 @@ export class TeamSpeak extends EventEmitter {
   }
 
   /**
-   * Uploads a file
+   * uploads a file
    * @param path the path whith the filename where the file should be uploaded to
    * @param data the data to upload
    * @param channel channel id to upload to (0 = server)
@@ -2145,7 +2146,7 @@ export class TeamSpeak extends EventEmitter {
   }
 
   /**
-   * Returns the file in the channel with the given path
+   * returns the file in the channel with the given path
    * @param path the path whith the filename where the file should be uploaded to
    * @param channel channel id to download from (0 = server)
    * @param cpw channel password of the channel which will be uploaded to
@@ -2158,25 +2159,35 @@ export class TeamSpeak extends EventEmitter {
 
 
   /**
-   * Returns an Icon with the given Name
-   * @param name the name of the icon to retrieve eg "icon_262672952"
+   * returns an icon with the given id
+   * @param id the id of the icon to retrieve eg 262672952
    */
-  downloadIcon(name: string) {
-    return this.downloadFile(`/${name}`)
+  downloadIcon(id: number) {
+    return this.downloadFile(`/icon_${id}`)
+  }
+
+  /**
+   * uploads an icon to the teamspeak server and returns its id
+   * @param data icon buffer to upload
+   */
+  async uploadIcon(data: Buffer) {
+    const id = crc.buf(data) >>> 0
+    await this.uploadFile(`/icon_${id}`, data, "0")
+    return id
   }
 
 
   /**
-   * Gets the Icon Name of a resolveable Perm List
+   * gets the icon id of a resolveable Perm List
    * @param permlist expects a promise which resolves to a permission list
    */
-  getIconName(permlist: Promise<Permission[]>): Promise<string> {
+  getIconId(permlist: Promise<Permission[]>): Promise<number> {
     return new Promise((fulfill, reject) => {
       permlist.then(perms => {
         const found = perms.some(perm => {
           if (perm.getPerm() !== "i_icon_id") return false
           const value = perm.getValue()
-          fulfill(`icon_${(value < 0) ? value >>> 0 : value}`)
+          fulfill(value < 0 ? value >>> 0 : value)
           return true
         })
         if (!found) reject(new Error("no icon found"))

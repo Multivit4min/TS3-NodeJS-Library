@@ -1437,11 +1437,11 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledWith("quit")
   })
 
-  it("should validate the return value of #getIconName()", async () => {
+  it("should validate the return value of #getIconId()", async () => {
     mockExecute.mockResolvedValue([{ permsid: "i_icon_id", permvalue: 9999 }])
-    const name = await teamspeak.getIconName(teamspeak.serverGroupPermList("8"))
+    const name = await teamspeak.getIconId(teamspeak.serverGroupPermList("8"))
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(name).toBe("icon_9999")
+    expect(name).toBe(9999)
   })
 
   it("should verify parameters of #createSnapshot()", async () => {

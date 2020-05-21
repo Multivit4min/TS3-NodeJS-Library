@@ -300,7 +300,7 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
 
   /** returns a Buffer with the icon of the client */
   getIcon() {
-    return this.getIconName().then(name => super.getParent().downloadIcon(name))
+    return this.getIconId().then(id => super.getParent().downloadIcon(id))
   }
 
   /** returns the avatar name of the client */
@@ -309,8 +309,8 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
   }
 
   /** gets the icon name of the client */
-  getIconName() {
-    return super.getParent().getIconName(this.permList(true))
+  getIconId() {
+    return super.getParent().getIconId(this.permList(true))
   }
 
   /** retrieves the client id from a string or teamspeak client */

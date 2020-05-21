@@ -1,6 +1,5 @@
 import { TeamSpeak } from "../src/TeamSpeak"
 import * as fs from "fs"
-import * as crc32 from "crc-32"
 
 /**
  * for some reason teamspeak closes the connection when connecting directly after a disconnect
@@ -76,10 +75,9 @@ describe("Integration Test", () => {
         nickname: "JEST RAW"
       })
       const data = fs.readFileSync(`${__dirname}/mocks/filetransfer.png`)
-      const crc = crc32.buf(data)
-      await teamspeak.uploadFile(`/icon_${crc >>> 0}`, data, "0")
-      const download = await teamspeak.downloadIcon(`icon_${crc >>> 0}`)
-      expect(crc).toEqual(crc32.buf(download))
+      const id = await teamspeak.uploadIcon(data)
+      const download = await teamspeak.downloadIcon(id)
+      expect(download).toEqual(data)
       teamspeak.forceQuit()
     } catch (e) {
       if (teamspeak instanceof TeamSpeak) teamspeak.forceQuit()

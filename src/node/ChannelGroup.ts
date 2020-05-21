@@ -132,12 +132,12 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 
   /** returns a buffer with the icon of the channelgroup */
   getIcon() {
-    return this.getIconName().then(name => super.getParent().downloadIcon(name))
+    return this.getIconId().then(name => super.getParent().downloadIcon(name))
   }
 
   /** gets the icon name of the channelgroup */
-  getIconName() {
-    return super.getParent().getIconName(this.permList(true))
+  getIconId() {
+    return super.getParent().getIconId(this.permList(true))
   }
 
   /** retrieves the client id from a string or teamspeak client */
