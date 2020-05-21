@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import crc from "crc-32"
+import crc from "buffer-crc32"
 import { TeamSpeakQuery } from "./transport/TeamSpeakQuery"
 import { FileTransfer } from "./transport/FileTransfer"
 import { ResponseError } from "./exception/ResponseError"
@@ -2171,7 +2171,7 @@ export class TeamSpeak extends EventEmitter {
    * @param data icon buffer to upload
    */
   async uploadIcon(data: Buffer) {
-    const id = crc.buf(data) >>> 0
+    const id = crc.signed(data)
     await this.uploadFile(`/icon_${id}`, data, "0")
     return id
   }
