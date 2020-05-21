@@ -360,6 +360,9 @@ channel.edit({
 })
 ```
 
+In favor to have `TeamSpeak#uploadIcon()` a new dependency has been added `buffer-crc32`
+Upload Icon takes as first argument the icon buffer and returns after a finnished upload the crc32 value of the buffer
+
 ### Events
 
 With 3.0 you do not need to subscribe to server events manually anymore! This will now done automatically when necessary!

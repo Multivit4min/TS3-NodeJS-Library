@@ -18,6 +18,7 @@
 * fixed a bug in event context update where only one event gets added to subscription list
 * fixed a bug where invoker can be undefined when a temporary channel gets deleted
 * `TeamSpeak#channelEdit` will now check if the channel name is already being used by itself
+* `TeamSpeak#uploadIcon` has been added
 
 ### 2.4.4 - 06.04.2020
 * update type definitions for serverinfo response
