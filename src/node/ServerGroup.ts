@@ -2,7 +2,7 @@ import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ServerGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakClient } from "./Client"
-import { Permission } from "util/Permission"
+import { Permission } from "../util/Permission"
 
 export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
 
