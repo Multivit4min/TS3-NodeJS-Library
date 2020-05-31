@@ -307,6 +307,13 @@ export interface ServerInfo extends TeamSpeakQuery.ResponseEntry {
   virtualserverNickname: string
   virtualserverAntifloodPointsNeededPluginBlock: number
   virtualserverStatus: string
+  virtualserverTotalPing: number
+  virtualserverTotalPacketlossTotal: number
+  virtualserverChannelsonline: number
+  virtualserverTotalBytesUploaded: number
+  virtualserverTotalBytesDownloaded: number
+  virtualserverClientsonline: number
+  virtualserverQueryclientsonline: number
   connectionFiletransferBandwidthSent: number
   connectionFiletransferBandwidthReceived: number
   connectionFiletransferBytesSentTotal: number
