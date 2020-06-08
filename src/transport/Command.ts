@@ -13,6 +13,7 @@ export class Command {
   private flags: string[] = []
   private response: TeamSpeakQuery.Response = []
   private error: QueryErrorMessage|null = null
+  private stack: string = new Error().stack!
 
   /** Initializes the Respone with default values */
   reset(): Command {
@@ -103,7 +104,7 @@ export class Command {
   /** get the parsed error object which has been received from the TeamSpeak Query */
   getError() {
     if (!this.hasError()) return null
-    return new ResponseError(this.error!, this)
+    return new ResponseError(this.error!, this.stack)
   }
 
   /** checks if a error has been received */

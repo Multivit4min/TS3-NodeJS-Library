@@ -1,5 +1,4 @@
 import { QueryErrorMessage } from "../types/ResponseTypes"
-import { Command } from "../transport/Command"
 
 export class ResponseError extends Error {
 
@@ -7,17 +6,16 @@ export class ResponseError extends Error {
   readonly msg: string
   readonly extraMsg?: string
   readonly failedPermid?: number
-  readonly source: Command
 
-  constructor(error: QueryErrorMessage, source: Command) {
+  constructor(error: QueryErrorMessage, stack: string) {
     super(error.msg)
-    this.source = source
     this.id = error.id
     this.msg = error.msg
     this.extraMsg = error.extraMsg
     this.failedPermid = error.failedPermid
     if (this.extraMsg) this.message += `, ${this.extraMsg}`
     if (this.failedPermid) this.message += `, failed on permid ${this.failedPermid}`
+    this.stack = stack
   }
 
   /**
