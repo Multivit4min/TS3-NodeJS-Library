@@ -43,7 +43,7 @@ import {
 } from "../src"
 
 import * as mocks from "./mocks/queryresponse"
-import { ApiKeyScope, TokenType } from "../src/types/enum"
+import { ApiKeyScope, TokenType, ClientType } from "../src/types/enum"
 
 describe("TeamSpeak", () => {
   let teamspeak: TeamSpeak = new TeamSpeak({})
@@ -857,14 +857,25 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #sendTextMessage()", async () => {
-    await teamspeak.sendTextMessage("10", TextMessageTargetMode.CLIENT, "message to channel chat")
+    await teamspeak.sendTextMessage("10", TextMessageTargetMode.CLIENT, "message to client chat")
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("sendtextmessage", {
       target: "10",
       targetmode: 1,
+      msg: "message to client chat"
+    })
+  })
+
+  it("should verify parameters of #sendTextMessage() with TargetMode channel", async () => {
+    await teamspeak.sendTextMessage("10", TextMessageTargetMode.CHANNEL, "message to channel chat")
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toHaveBeenCalledWith("sendtextmessage", {
+      target: "10",
+      targetmode: 2,
       msg: "message to channel chat"
     })
   })
+
 
   it("should verify parameters of #getServerGroupByID()", async () => {
     mockExecute.mockResolvedValue(mocks.servergrouplist(5))
@@ -1330,6 +1341,18 @@ describe("TeamSpeak", () => {
     )
   })
 
+  it("should verify parameters of #clientList() with set ignoreQueries config", async () => {
+    teamspeak["config"].ignoreQueries = true
+    const filter = {}
+    await teamspeak.clientList(filter)
+    expect(mockExecute).toHaveBeenCalledTimes(1)
+    expect(mockExecute).toBeCalledWith(
+      "clientlist",
+      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"]
+    )
+    expect(filter).toEqual({ clientType: 0 })
+  })
+
   it("should verify parameters of #ftList()", async () => {
     await teamspeak.ftList()
     expect(mockExecute).toHaveBeenCalledTimes(1)
@@ -1479,6 +1502,14 @@ describe("TeamSpeak", () => {
       version: 2
     })
     expect(typeof mockExecute.mock.calls[0][3]).toBe("function")
+  })
+
+  describe("should test return parameter of ignoreQueryClient", () => {
+    expect(teamspeak["ignoreQueryClient"](ClientType.Regular)).toBe(false)
+    expect(teamspeak["ignoreQueryClient"](ClientType.ServerQuery)).toBe(false)
+    teamspeak["config"].ignoreQueries = true
+    expect(teamspeak["ignoreQueryClient"](ClientType.Regular)).toBe(false)
+    expect(teamspeak["ignoreQueryClient"](ClientType.ServerQuery)).toBe(true)
   })
 
   describe("event clientconnect", () => {
