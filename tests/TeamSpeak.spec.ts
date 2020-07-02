@@ -183,8 +183,14 @@ describe("TeamSpeak", () => {
 
   it("should test #reconnect()", async () => {
     expect.assertions(1)
-    mockIsConnected.mockReturnValue(true)
+    mockIsConnected.mockReturnValue(false)
     await expect(teamspeak.reconnect(1)).rejects.toEqual(new Error("already connected"))
+  })
+
+  it("should test a failed #reconnect()", async () => {
+    expect.assertions(1)
+    mockIsConnected.mockReturnValue(true)
+    await expect(teamspeak.reconnect(0)).rejects.toEqual(new Error("reconnecting failed after 0 attempt(s)"))
   })
 
   it("should verify parameters of #version()", async () => {

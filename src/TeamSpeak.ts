@@ -126,8 +126,9 @@ export class TeamSpeak extends EventEmitter {
    * @param timeout time in ms to wait inbetween reconnect
    */
   async reconnect(attempts: number = 1, timeout: number = 2000) {
+    let attempt = 0
     let error: Error|null = null
-    while (attempts === -1 || attempts-- > 0) {
+    while (attempts === -1 || attempt++ >= attempts) {
       try {
         await TeamSpeak.wait(timeout)
         if (this.query.isConnected()) throw new Error("already connected")
