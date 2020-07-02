@@ -9,13 +9,15 @@ export class ResponseError extends Error {
 
   constructor(error: QueryErrorMessage, stack: string) {
     super(error.msg)
+    if (this.stack) {
+      this.stack = [this.stack.split("\n")[0], ...stack.split("\n").slice(1)].join("\n")
+    }
     this.id = error.id
     this.msg = error.msg
     this.extraMsg = error.extraMsg
     this.failedPermid = error.failedPermid
     if (this.extraMsg) this.message += `, ${this.extraMsg}`
     if (this.failedPermid) this.message += `, failed on permid ${this.failedPermid}`
-    this.stack = stack
   }
 
   /**
