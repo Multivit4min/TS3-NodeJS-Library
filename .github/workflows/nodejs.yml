@@ -11,7 +11,7 @@ jobs:
         node-version: [10, 12, 14]
     steps:
     - uses: actions/checkout@v1
-    - name: install teamspeak via docker
+    - name: Install TeamSpeak Server via docker
       run: |
         docker run -d --name=teamspeak\
           -p 10011:10011/tcp -p 10022:10022/tcp -p 30033:30033/tcp\
@@ -21,12 +21,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: install dependencies
+    - name: Install Dependencies
       run: |
         npm ci
-    - name: run tests
+    - name: Run Tests
       run: |
         npm test     
+    - name: Run TSLINT
+      run: |
+        npm run tslint
     - name: Coveralls
       if: matrix.node-version == 12
       uses: coverallsapp/github-action@master

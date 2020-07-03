@@ -143,7 +143,7 @@ export class Command {
   }
 
   /**
-   * 
+   *
    * @param param0 the custom snapshot response parser
    */
   static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
@@ -254,7 +254,7 @@ export class Command {
    */
   static parseValue(k: string, v: string|undefined) {
     if (v === undefined) return undefined
-    if (Object.keys(Command.Identifier).includes(k)) { 
+    if (Object.keys(Command.Identifier).includes(k)) {
       return Command.Identifier[k](v)
     } else {
       return this.parseString(v)

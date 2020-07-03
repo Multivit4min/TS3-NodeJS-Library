@@ -91,7 +91,7 @@ export class Permission<T extends {} = any> {
   /** retrieves a raw object with permsid */
   private getAsPermSid(): Permission.PermSid {
     if (typeof this._perm !== "string")
-      throw new Error(`permission needs to be a string but got '${this._perm}'`) 
+      throw new Error(`permission needs to be a string but got '${this._perm}'`)
     return {
       permsid: this._perm,
       permvalue: this._value,

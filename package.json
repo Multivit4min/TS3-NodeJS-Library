@@ -9,7 +9,7 @@
     "url": "git+https://github.com/Multivit4min/TS3-NodeJS-Library.git"
   },
   "scripts": {
-    "eslint": "eslint ./src/**/*.ts",
+    "tslint": "tslint --project .",
     "test": "jest --runInBand",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "generate-docs": "typedoc --out docs ./src",
@@ -37,6 +37,7 @@
     "eslint": "^6.8.0",
     "jest": "^24.9.0",
     "ts-jest": "^24.3.0",
+    "tslint": "^6.1.2",
     "typedoc": "^0.15.8",
     "typescript": "^3.9.3"
   },

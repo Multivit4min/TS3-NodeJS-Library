@@ -19,7 +19,7 @@ import { Permission } from "./util/Permission"
 
 
 /**
- * missing Query Commands 
+ * missing Query Commands
  * @todo
  * channelclientaddperm
  * channelclientdelperm
@@ -31,12 +31,9 @@ import { Permission } from "./util/Permission"
  * tokenuse
  * clientfind
  */
-  
-declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
-declare interface NodeConstructable<T> {
-  new(parent: TeamSpeak, props: {}): T
-}
 
+declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
+type NodeConstructable<T> = new(parent: TeamSpeak, props: {}) => T
 
 export interface TeamSpeak {
   on(event: "error", listener: (error: Error) => void): this
@@ -104,7 +101,7 @@ export class TeamSpeak extends EventEmitter {
     this.query.on("debug", (data: Event.Debug) => super.emit("debug", data))
     //@ts-ignore
     this.on("newListener", this.handleNewListener.bind(this))
-    if (this.config.autoConnect) 
+    if (this.config.autoConnect)
       /** can be dropped silently since errors are getting emitted via the error event */
       this.connect().catch(() => null)
   }
@@ -171,7 +168,7 @@ export class TeamSpeak extends EventEmitter {
       const closeCallback = (error?: Error) => {
         removeListeners()
         if (error instanceof Error) return reject(error)
-        reject(new Error("TeamSpeak Server prematurely closed the connection"))        
+        reject(new Error("TeamSpeak Server prematurely closed the connection"))
       }
       this.once("ready", readyCallback)
       this.once("error", errorCallback)
@@ -488,7 +485,7 @@ export class TeamSpeak extends EventEmitter {
   /**
    * Updates your own ServerQuery login credentials using a specified username.
    * The password will be auto-generated.
-   * @param name 
+   * @param name
    */
   clientSetServerQueryLogin(name: string) {
     return this.execute<Response.ClientSetServerQueryLogin>("clientsetserverquerylogin", { clientLoginName: name })
@@ -847,7 +844,7 @@ export class TeamSpeak extends EventEmitter {
       ssgid: TeamSpeakServerGroup.getId(sourceGroup),
       tsgid: TeamSpeakServerGroup.getId(targetGroup),
       type,
-      name 
+      name
     }).then(TeamSpeak.singleResponse)
   }
 
@@ -1077,7 +1074,7 @@ export class TeamSpeak extends EventEmitter {
    * Adds a set of specified permissions to a channel.
    * @param channel the channel id
    * @param perm the permission object
-   */  
+   */
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: undefined): Permission
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: Permission.PermType): Promise<[]>
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm?: Permission.PermType) {
@@ -1474,7 +1471,7 @@ export class TeamSpeak extends EventEmitter {
    * A permission can be specified by permid or permsid.
    * @param group the channelgroup id
    * @param perm the permission object
-   */  
+   */
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: undefined): Permission
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: Permission.PermType): Promise<[]>
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: Permission.PermType) {
@@ -2207,7 +2204,7 @@ export class TeamSpeak extends EventEmitter {
    */
   createSnapshot(password?: string): Promise<Response.SnapshotCreate> {
     return this.execute<any>(
-      "serversnapshotcreate", 
+      "serversnapshotcreate",
       { password },
       parsers => {
         parsers.response = ({ raw, cmd }) => cmd.parseSnapshotCreate({ raw })
@@ -2314,7 +2311,7 @@ export class TeamSpeak extends EventEmitter {
     if (!Array.isArray(data.events)) data.events = []
     this.context = {
       ...this.context,
-      ...data, 
+      ...data,
       events: [...this.context.events, ...data.events]
     } as Context
     return this

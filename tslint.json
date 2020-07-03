@@ -1,0 +1,21 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "semicolon": [true, "never"],
+    "indent": [true, "spaces", 2],
+    "comment-format": false,
+    "no-trailing-whitespace": true,
+    "no-namespace": false,
+    "no-bitwise": false,
+    "max-classes-per-file": [true, 2],
+    "radix": true,
+    "no-console": [true, "log", "warn"],
+    "no-angle-bracket-type-assertion": false,
+    "no-shadowed-variable": false
+  },
+  "rulesDirectory": []
+}

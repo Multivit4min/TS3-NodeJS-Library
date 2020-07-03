@@ -9,7 +9,7 @@ export class TeamSpeakQuery extends EventEmitter {
 
   static IGNORE_LINES_INITIAL = 2
   private config: TeamSpeak.ConnectionParams
-  private queue: Array<TeamSpeakQuery.QueueItem> = []
+  private queue: TeamSpeakQuery.QueueItem[] = []
   private active: TeamSpeakQuery.QueueItem|undefined
   private ignoreLines: number = TeamSpeakQuery.IGNORE_LINES_INITIAL
   private lastEvent: string = ""
@@ -19,7 +19,7 @@ export class TeamSpeakQuery extends EventEmitter {
   private floodTimeout: NodeJS.Timeout
   private socket: TeamSpeakQuery.QueryProtocolInterface
   private pauseQueue: boolean = true
-  readonly doubleEvents: Array<string> = [
+  readonly doubleEvents: string[] = [
     "notifyclientleftview",
     "notifyclientmoved",
     "notifycliententerview"
@@ -241,7 +241,7 @@ export class TeamSpeakQuery extends EventEmitter {
    * respects priorized queue
    */
   private getNextQueueItem() {
-    let item = this.queue.find(i => i.priority)
+    const item = this.queue.find(i => i.priority)
     if (item) {
       this.queue = this.queue.filter(i => i !== item)
       return item
@@ -263,7 +263,7 @@ export class TeamSpeakQuery extends EventEmitter {
 }
 
 export namespace TeamSpeakQuery {
-  
+
   export type executeArgs =
     Command.ParserCallback |
     Command.multiOpts |
@@ -271,8 +271,8 @@ export namespace TeamSpeakQuery {
     Command.flags
 
   export interface QueueItem {
-    fulfill: Function
-    reject: Function
+    fulfill: (data: any) => void
+    reject: (data: any) => void
     cmd: Command
     priority: boolean
   }
@@ -301,7 +301,7 @@ export namespace TeamSpeakQuery {
     number[]   |
     undefined  |
     TeamSpeakQuery.Response
-  
+
   export interface ResponseEntry {
     [x: string]: ValueTypes
   }

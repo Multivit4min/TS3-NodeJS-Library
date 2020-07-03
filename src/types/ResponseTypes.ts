@@ -588,9 +588,9 @@ export interface TokenCustomSet extends TeamSpeakQuery.ResponseEntry {
 
 export type PermOverview = PermOverviewEntry[]
 export interface PermOverviewEntry extends TeamSpeakQuery.ResponseEntry {
-  t: number 
-  id: number 
-  id2: number 
+  t: number
+  id: number
+  id2: number
   /** perm */
   p: number
   /** value */
@@ -609,21 +609,21 @@ export interface PermissionEntry extends TeamSpeakQuery.ResponseEntry {
 }
 
 export interface PermIdGetByName extends TeamSpeakQuery.ResponseEntry {
-  permsid: string 
-  permid: number 
+  permsid: string
+  permid: number
 }
 
 export interface PermGet extends TeamSpeakQuery.ResponseEntry {
-  permsid: string 
-  permid: number 
-  permvalue: number 
+  permsid: string
+  permid: number
+  permvalue: number
 }
 
 export interface PermFind extends TeamSpeakQuery.ResponseEntry {
-  t: number 
-  id1: number 
-  id2: number 
-  p: number 
+  t: number
+  id1: number
+  id2: number
+  p: number
 }
 
 export interface Token extends TeamSpeakQuery.ResponseEntry {
@@ -632,11 +632,11 @@ export interface Token extends TeamSpeakQuery.ResponseEntry {
 
 export type PrivilegeKeyList = PrivilegeKeyEntry[]
 export interface PrivilegeKeyEntry extends TeamSpeakQuery.ResponseEntry {
-  token: string 
-  tokenType: number 
-  tokenId1: number 
-  tokenId2: number 
-  tokenCreated: number 
+  token: string
+  tokenType: number
+  tokenId1: number
+  tokenId2: number
+  tokenCreated: number
   tokenDescription: string
   /** only in server version >= 3.11.x */
   tokenCustomset: TokenCustomSet[]
@@ -644,29 +644,29 @@ export interface PrivilegeKeyEntry extends TeamSpeakQuery.ResponseEntry {
 
 export type MessageList = MessageEntry[]
 export interface MessageEntry extends TeamSpeakQuery.ResponseEntry {
-  msgid: string 
-  cluid: string 
-  subject: string 
-  timestamp: number 
-  flagRead: boolean 
+  msgid: string
+  cluid: string
+  subject: string
+  timestamp: number
+  flagRead: boolean
 }
 
 export interface MessageGet extends TeamSpeakQuery.ResponseEntry {
-  msgid: string 
-  cluid: string 
-  subject: string 
-  message: string 
-  timestamp: number 
+  msgid: string
+  cluid: string
+  subject: string
+  message: string
+  timestamp: number
 }
 
 export type ComplainList = ComplainEntry[]
 export interface ComplainEntry extends TeamSpeakQuery.ResponseEntry {
-  tcldbid: string 
-  tname: string 
-  fcldbid: string 
-  fname: string 
-  message: string 
-  timestamp: number 
+  tcldbid: string
+  tname: string
+  fcldbid: string
+  fname: string
+  message: string
+  timestamp: number
 }
 
 export interface BanAdd extends TeamSpeakQuery.ResponseEntry {
@@ -675,25 +675,25 @@ export interface BanAdd extends TeamSpeakQuery.ResponseEntry {
 
 export type BanList = BanEntry[]
 export interface BanEntry extends TeamSpeakQuery.ResponseEntry {
-  banid: string 
-  ip: string 
-  name: string 
-  uid: string 
-  mytsid: string 
-  lastnickname: string 
-  created: number 
-  duration: number 
-  invokername: string 
-  invokercldbid: string 
-  invokeruid: string 
-  reason: string 
-  enforcements: number 
+  banid: string
+  ip: string
+  name: string
+  uid: string
+  mytsid: string
+  lastnickname: string
+  created: number
+  duration: number
+  invokername: string
+  invokercldbid: string
+  invokeruid: string
+  reason: string
+  enforcements: number
 }
 
 export interface LogView extends TeamSpeakQuery.ResponseEntry {
   lastPos: number
   fileSize: number
-  l: string 
+  l: string
 }
 
 export interface ClientDBFind extends TeamSpeakQuery.ResponseEntry {
@@ -718,24 +718,24 @@ export interface FileTransferEntry extends TeamSpeakQuery.ResponseEntry {
 
 export type FTGetFileList = FTGetFileEntry[]
 export interface FTGetFileEntry extends TeamSpeakQuery.ResponseEntry {
-  cid: string 
-  path: string 
-  name: string 
-  size: number 
-  datetime: number 
+  cid: string
+  path: string
+  name: string
+  size: number
+  datetime: number
   /** 1=file 0=folder */
-  type: number 
+  type: number
 }
 
 export interface FTGetFileInfo extends TeamSpeakQuery.ResponseEntry {
-  cid: string 
-  name: string 
-  size: number 
-  datetime: number 
+  cid: string
+  name: string
+  size: number
+  datetime: number
 }
 
 export interface FTInitUpload extends TeamSpeakQuery.ResponseEntry {
-  clientftfid: number 
+  clientftfid: number
   /** exists when an error occured */
   status?: number
   /** exists when an error occured */
@@ -755,8 +755,8 @@ export interface FTInitUpload extends TeamSpeakQuery.ResponseEntry {
 }
 
 export interface FTInitDownload extends TeamSpeakQuery.ResponseEntry {
-  clientftfid: number 
-  size: number 
+  clientftfid: number
+  size: number
   /** exists when an error occured */
   status?: number
   /** exists when an error occured */

@@ -1,5 +1,5 @@
 import * as ENUM from "./enum"
-import { TeamSpeakQuery } from "../transport/TeamSpeakQuery";
+import { TeamSpeakQuery } from "../transport/TeamSpeakQuery"
 
 export interface ApiKeyList extends TeamSpeakQuery.ResponseEntry {
   /** database ids to list  */
@@ -31,90 +31,90 @@ export interface ClientEdit extends TeamSpeakQuery.ResponseEntry {
 }
 
 export interface ServerEdit extends TeamSpeakQuery.ResponseEntry {
-  virtualserverName?: string 
-  virtualserverWelcomemessage?: string 
-  virtualserverMaxclients?: number 
-  virtualserverPassword?: string 
-  virtualserverHostmessage?: string 
-  virtualserverHostmessageMode?: ENUM.HostMessageMode 
-  virtualserverDefaultServerGroup?: number 
-  virtualserverDefaultChannelGroup?: number 
-  virtualserverDefaultChannelAdminGroup?: number 
-  virtualserverMaxDownloadTotalBandwidth?: number 
-  virtualserverMaxUploadTotalBandwidth?: number 
-  virtualserverHostbannerUrl?: string 
-  virtualserverHostbannerGfxUrl?: string 
-  virtualserverHostbannerGfxInterval?: number 
-  virtualserverComplainAutobanCount?: number 
-  virtualserverComplainAutobanTime?: number 
-  virtualserverComplainRemoveTime?: number 
-  virtualserverMinClientsInChannelBeforeForcedSilence?: number 
-  virtualserverPrioritySpeakerDimmModificator?: number 
-  virtualserverAntifloodPointsTickReduce?: number 
-  virtualserverAntifloodPointsNeededCommandBlock?: number 
-  virtualserverAntifloodPointsNeededPluginBlock?: number 
-  virtualserverAntifloodPointsNeededIpBlock?: number 
-  virtualserverHostbannerMode?: ENUM.HostBannerMode 
-  virtualserverHostbuttonTooltip?: string 
-  virtualserverHostbuttonGfxUrl?: string 
-  virtualserverHostbuttonUrl?: string 
-  virtualserverDownloadQuota?: number 
-  virtualserverUploadQuota?: number 
-  virtualserverMachineId?: string 
-  virtualserverPort?: number 
-  virtualserverAutostart?: number 
-  virtualserverStatus?: string 
-  virtualserverLogClient?: number 
-  virtualserverLogQuery?: number 
-  virtualserverLogChannel?: number 
-  virtualserverLogPermissions?: number 
-  virtualserverLogServer?: number 
-  virtualserverLogFiletransfer?: number 
-  virtualserverMinClientVersion?: number 
-  virtualserverMinAndroidVersion?: number 
-  virtualserverMinIosVersion?: number 
-  virtualserverNeededIdentitySecurityLevel?: number 
-  virtualserverNamePhonetic?: string 
-  virtualserverIconId?: number 
-  virtualserverReservedSlots?: number 
-  virtualserverWeblistEnabled?: number 
-  virtualserverCodecEncryptionMode?: ENUM.CodecEncryptionMode 
+  virtualserverName?: string
+  virtualserverWelcomemessage?: string
+  virtualserverMaxclients?: number
+  virtualserverPassword?: string
+  virtualserverHostmessage?: string
+  virtualserverHostmessageMode?: ENUM.HostMessageMode
+  virtualserverDefaultServerGroup?: number
+  virtualserverDefaultChannelGroup?: number
+  virtualserverDefaultChannelAdminGroup?: number
+  virtualserverMaxDownloadTotalBandwidth?: number
+  virtualserverMaxUploadTotalBandwidth?: number
+  virtualserverHostbannerUrl?: string
+  virtualserverHostbannerGfxUrl?: string
+  virtualserverHostbannerGfxInterval?: number
+  virtualserverComplainAutobanCount?: number
+  virtualserverComplainAutobanTime?: number
+  virtualserverComplainRemoveTime?: number
+  virtualserverMinClientsInChannelBeforeForcedSilence?: number
+  virtualserverPrioritySpeakerDimmModificator?: number
+  virtualserverAntifloodPointsTickReduce?: number
+  virtualserverAntifloodPointsNeededCommandBlock?: number
+  virtualserverAntifloodPointsNeededPluginBlock?: number
+  virtualserverAntifloodPointsNeededIpBlock?: number
+  virtualserverHostbannerMode?: ENUM.HostBannerMode
+  virtualserverHostbuttonTooltip?: string
+  virtualserverHostbuttonGfxUrl?: string
+  virtualserverHostbuttonUrl?: string
+  virtualserverDownloadQuota?: number
+  virtualserverUploadQuota?: number
+  virtualserverMachineId?: string
+  virtualserverPort?: number
+  virtualserverAutostart?: number
+  virtualserverStatus?: string
+  virtualserverLogClient?: number
+  virtualserverLogQuery?: number
+  virtualserverLogChannel?: number
+  virtualserverLogPermissions?: number
+  virtualserverLogServer?: number
+  virtualserverLogFiletransfer?: number
+  virtualserverMinClientVersion?: number
+  virtualserverMinAndroidVersion?: number
+  virtualserverMinIosVersion?: number
+  virtualserverNeededIdentitySecurityLevel?: number
+  virtualserverNamePhonetic?: string
+  virtualserverIconId?: number
+  virtualserverReservedSlots?: number
+  virtualserverWeblistEnabled?: number
+  virtualserverCodecEncryptionMode?: ENUM.CodecEncryptionMode
 }
 
 export interface ChannelEdit extends TeamSpeakQuery.ResponseEntry {
-  cid?: string 
+  cid?: string
   cpid?: string
-  channelName?: string 
-  channelTopic?: string 
+  channelName?: string
+  channelTopic?: string
   channelPassword?: string
-  channelDescription?: string 
+  channelDescription?: string
   channelCodec?: ENUM.Codec
-  channelCodecQuality?: number 
-  channelMaxclients?: number 
-  channelMaxfamilyclients?: number 
-  channelOrder?: number 
-  channelFlagPermanent?: boolean 
-  channelFlagSemiPermanent?: boolean 
-  channelFlagTemporary?: boolean 
-  channelFlagDefault?: boolean 
+  channelCodecQuality?: number
+  channelMaxclients?: number
+  channelMaxfamilyclients?: number
+  channelOrder?: number
+  channelFlagPermanent?: boolean
+  channelFlagSemiPermanent?: boolean
+  channelFlagTemporary?: boolean
+  channelFlagDefault?: boolean
   channelFlagMaxclientsUnlimited?: boolean
-  channelFlagMaxfamilyclientsInherited?: boolean 
-  channelNeededTalkPower?: number 
-  channelNamePhonetic?: string 
-  channelCodecIsUnencrypted?: boolean 
+  channelFlagMaxfamilyclientsInherited?: boolean
+  channelNeededTalkPower?: number
+  channelNamePhonetic?: string
+  channelCodecIsUnencrypted?: boolean
 }
 
 export interface InstanceEdit extends TeamSpeakQuery.ResponseEntry {
-  serverinstanceTemplateServeradminGroup?: string 
-  serverinstanceFiletransferPort?: number 
-  serverinstanceMaxDownloadTotalBandwidth?: number 
-  serverinstanceMaxUploadTotalBandwidth?: number 
-  serverinstanceTemplateServerdefaultGroup?: string 
-  serverinstanceTemplateChanneldefaultGroup?: string 
-  serverinstanceTemplateChanneladminGroup?: string 
-  serverinstanceServerqueryFloodCommands?: number 
-  serverinstanceServerqueryFloodTime?: number 
-  serverinstanceServerqueryFloodBanTime?: number 
+  serverinstanceTemplateServeradminGroup?: string
+  serverinstanceFiletransferPort?: number
+  serverinstanceMaxDownloadTotalBandwidth?: number
+  serverinstanceMaxUploadTotalBandwidth?: number
+  serverinstanceTemplateServerdefaultGroup?: string
+  serverinstanceTemplateChanneldefaultGroup?: string
+  serverinstanceTemplateChanneladminGroup?: string
+  serverinstanceServerqueryFloodCommands?: number
+  serverinstanceServerqueryFloodTime?: number
+  serverinstanceServerqueryFloodBanTime?: number
 }
 
 export interface ServerTempPasswordAdd extends TeamSpeakQuery.ResponseEntry {
