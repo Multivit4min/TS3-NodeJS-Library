@@ -28,6 +28,7 @@ jobs:
       run: |
         npm test     
     - name: Run TSLINT
+      if: matrix.node-version == 12
       run: |
         npm run tslint
     - name: Coveralls
@@ -56,4 +57,4 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
-        FOLDER: build
+        FOLDER: docs
