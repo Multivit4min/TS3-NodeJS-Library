@@ -1,3 +1,6 @@
-.github
+node_modules
+.vscode
 coverage
 docs
+.nyc_output
+test.ts

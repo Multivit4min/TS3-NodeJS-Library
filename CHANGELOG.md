@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.0.0 - ???
+### 3.0.7 - 05.07.2020
 * renamed functions to conform JS camelcase standard
   * `getChannelByID` -> `getChannelById`
   * `getClientByID` -> `getClientById`
