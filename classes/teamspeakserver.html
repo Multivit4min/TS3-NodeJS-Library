@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>TeamSpeakServer | TS3-NodeJS-Library</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for TS3-NodeJS-Library">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -68,7 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="abstract.html" class="tsd-signature-type">Abstract</a>
+						<a href="abstract.html" class="tsd-signature-type">Abstract</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/serverentry.html" class="tsd-signature-type">ServerEntry</a><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">TeamSpeakServer</span>
@@ -81,6 +81,13 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="teamspeakserver.html#multiservertype" class="tsd-kind-icon">Multi<wbr>Server<wbr>Type</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-class tsd-is-static"><a href="teamspeakserver.html#servertype" class="tsd-kind-icon">Server<wbr>Type</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
@@ -115,9 +122,34 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="teamspeakserver.html#tojson" class="tsd-kind-icon">toJSON</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="teamspeakserver.html#updatecache" class="tsd-kind-icon">update<wbr>Cache</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="teamspeakserver.html#use" class="tsd-kind-icon">use</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="teamspeakserver.html#getid" class="tsd-kind-icon">get<wbr>Id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="teamspeakserver.html#getmultipleids" class="tsd-kind-icon">get<wbr>Multiple<wbr>Ids</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+					<a name="multiservertype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Multi<wbr>Server<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Multi<wbr>Server<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="teamspeakserver.html" class="tsd-signature-type">TeamSpeakServer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="teamspeakserver.html#servertype" class="tsd-signature-type">ServerType</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L101">src/node/Server.ts:101</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+					<a name="servertype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> Server<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Server<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="teamspeakserver.html" class="tsd-signature-type">TeamSpeakServer</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L100">src/node/Server.ts:100</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -126,14 +158,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Team<wbr>Speak<wbr>Server<span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="teamspeak.html" class="tsd-signature-type">TeamSpeak</a>, list<span class="tsd-signature-symbol">: </span><a href="../interfaces/serverlist.html" class="tsd-signature-type">ServerList</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="teamspeakserver.html" class="tsd-signature-type">TeamSpeakServer</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Team<wbr>Speak<wbr>Server<span class="tsd-signature-symbol">(</span>parent<span class="tsd-signature-symbol">: </span><a href="teamspeak.html" class="tsd-signature-type">TeamSpeak</a>, list<span class="tsd-signature-symbol">: </span><a href="../interfaces/serverentry.html" class="tsd-signature-type">ServerEntry</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="teamspeakserver.html" class="tsd-signature-type">TeamSpeakServer</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="abstract.html">Abstract</a>.<a href="abstract.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L5">src/node/Server.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L5">src/node/Server.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -142,7 +174,7 @@
 									<h5>parent: <a href="teamspeak.html" class="tsd-signature-type">TeamSpeak</a></h5>
 								</li>
 								<li>
-									<h5>list: <a href="../interfaces/serverlist.html" class="tsd-signature-type">ServerList</a></h5>
+									<h5>list: <a href="../interfaces/serverentry.html" class="tsd-signature-type">ServerEntry</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="teamspeakserver.html" class="tsd-signature-type">TeamSpeakServer</a></h4>
@@ -162,7 +194,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L43">src/node/Server.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L43">src/node/Server.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -179,7 +211,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L23">src/node/Server.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L23">src/node/Server.ts:23</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -190,16 +222,16 @@
 					<a name="id" class="tsd-anchor"></a>
 					<h3>id</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> id<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> id<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L11">src/node/Server.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L11">src/node/Server.ts:11</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -213,7 +245,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L47">src/node/Server.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L47">src/node/Server.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -230,7 +262,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L31">src/node/Server.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L31">src/node/Server.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -247,7 +279,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L39">src/node/Server.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L39">src/node/Server.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -264,7 +296,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L15">src/node/Server.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L15">src/node/Server.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -281,7 +313,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L27">src/node/Server.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L27">src/node/Server.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -298,7 +330,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L19">src/node/Server.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L19">src/node/Server.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -309,19 +341,16 @@
 					<a name="uniqueidentifier" class="tsd-anchor"></a>
 					<h3>unique<wbr>Identifier</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> uniqueIdentifier<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> uniqueIdentifier<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L51">src/node/Server.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L51">src/node/Server.ts:51</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">string</span>
-							</h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -335,7 +364,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L35">src/node/Server.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L35">src/node/Server.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -349,13 +378,13 @@
 					<a name="del" class="tsd-anchor"></a>
 					<h3>del</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">del<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">del<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L64">src/node/Server.ts:64</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L64">src/node/Server.ts:64</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -363,7 +392,7 @@
 									<p>deletes the server</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -378,7 +407,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="abstract.html">Abstract</a>.<a href="abstract.html#getnamespace">getNameSpace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Abstract.ts#L17">src/node/Abstract.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Abstract.ts#L17">src/node/Abstract.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -401,7 +430,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="abstract.html">Abstract</a>.<a href="abstract.html#getparent">getParent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Abstract.ts#L43">src/node/Abstract.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Abstract.ts#L43">src/node/Abstract.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -417,14 +446,14 @@
 					<a name="getpropertybyname" class="tsd-anchor"></a>
 					<h3>get<wbr>Property<wbr>ByName</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Property<wbr>ByName&lt;T&gt;<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryResponse[T]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Property<wbr>ByName&lt;Y&gt;<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ServerEntry</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="abstract.html">Abstract</a>.<a href="abstract.html#getpropertybyname">getPropertyByName</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Abstract.ts#L32">src/node/Abstract.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Abstract.ts#L32">src/node/Abstract.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,19 +464,19 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">keyof QueryResponse</span></h4>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">keyof </span><a href="../interfaces/serverentry.html" class="tsd-signature-type">ServerEntry</a></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">T</span></h5>
+									<h5>name: <span class="tsd-signature-type">Y</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>the name from where the value should be retrieved</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">QueryResponse[T]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ServerEntry</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -455,13 +484,13 @@
 					<a name="start" class="tsd-anchor"></a>
 					<h3>start</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L73">src/node/Server.ts:73</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L72">src/node/Server.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -470,7 +499,7 @@
 									Depending on your permissions, you&#39;re able to start either your own virtual server only or all virtual servers in the server instance.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -478,13 +507,13 @@
 					<a name="stop" class="tsd-anchor"></a>
 					<h3>stop</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L83">src/node/Server.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L81">src/node/Server.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -502,7 +531,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -510,14 +539,14 @@
 					<a name="tojson" class="tsd-anchor"></a>
 					<h3>toJSON</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span>includeNameSpace<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">toJSON<span class="tsd-signature-symbol">(</span>includeNameSpace<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="abstract.html">Abstract</a>.<a href="abstract.html#tojson">toJSON</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Abstract.ts#L22">src/node/Abstract.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Abstract.ts#L22">src/node/Abstract.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -528,10 +557,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> includeNameSpace: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> includeNameSpace: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{}</span></h4>
 							<ul class="tsd-parameters">
 							</ul>
 						</li>
@@ -541,14 +570,14 @@
 					<a name="updatecache" class="tsd-anchor"></a>
 					<h3>update<wbr>Cache</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">update<wbr>Cache<span class="tsd-signature-symbol">(</span>props<span class="tsd-signature-symbol">: </span><a href="../globals.html#queryresponse" class="tsd-signature-type">QueryResponse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Cache<span class="tsd-signature-symbol">(</span>props<span class="tsd-signature-symbol">: </span><a href="../interfaces/teamspeakquery.responseentry.html" class="tsd-signature-type">ResponseEntry</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="abstract.html">Abstract</a>.<a href="abstract.html#updatecache">updateCache</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Abstract.ts#L37">src/node/Abstract.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Abstract.ts#L37">src/node/Abstract.ts:37</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -559,7 +588,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>props: <a href="../globals.html#queryresponse" class="tsd-signature-type">QueryResponse</a></h5>
+									<h5>props: <a href="../interfaces/teamspeakquery.responseentry.html" class="tsd-signature-type">ResponseEntry</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -570,13 +599,13 @@
 					<a name="use" class="tsd-anchor"></a>
 					<h3>use</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">use<span class="tsd-signature-symbol">(</span>client_nickname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">use<span class="tsd-signature-symbol">(</span>clientNickname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/132333a/src/node/Server.ts#L59">src/node/Server.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L59">src/node/Server.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -587,13 +616,72 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> client_nickname: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>sets the nickname when selecting a server</p>
-									</div>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> clientNickname: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/queryresponsetypes.html" class="tsd-signature-type">QueryResponseTypes</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+					<a name="getid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Id&lt;T&gt;<span class="tsd-signature-symbol">(</span>server<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L86">src/node/Server.ts:86</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>retrieves the client id from a string or teamspeak client</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="teamspeakserver.html#servertype" class="tsd-signature-type">ServerType</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> server: <a href="" class="tsd-signature-type">T</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="getmultipleids" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Multiple<wbr>Ids</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Multiple<wbr>Ids<span class="tsd-signature-symbol">(</span>servers<span class="tsd-signature-symbol">: </span><a href="teamspeakserver.html#multiservertype" class="tsd-signature-type">MultiServerType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Multivit4min/TS3-NodeJS-Library/blob/dedd062/src/node/Server.ts#L92">src/node/Server.ts:92</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>retrieves the clients from an array</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>servers: <a href="teamspeakserver.html#multiservertype" class="tsd-signature-type">MultiServerType</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -614,6 +702,12 @@
 					<li class="current tsd-kind-class">
 						<a href="teamspeakserver.html" class="tsd-kind-icon">Team<wbr>Speak<wbr>Server</a>
 						<ul>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+								<a href="teamspeakserver.html#multiservertype" class="tsd-kind-icon">Multi<wbr>Server<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-class tsd-is-static">
+								<a href="teamspeakserver.html#servertype" class="tsd-kind-icon">Server<wbr>Type</a>
+							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="teamspeakserver.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
@@ -677,6 +771,12 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="teamspeakserver.html#use" class="tsd-kind-icon">use</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+								<a href="teamspeakserver.html#getid" class="tsd-kind-icon">get<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="teamspeakserver.html#getmultipleids" class="tsd-kind-icon">get<wbr>Multiple<wbr>Ids</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -691,57 +791,24 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 		</div>
 	</div>
@@ -751,6 +818,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
