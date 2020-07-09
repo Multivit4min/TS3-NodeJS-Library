@@ -5,9 +5,9 @@ import { ChannelEdit } from "../types/PropertyTypes"
 import { TeamSpeakClient } from "./Client"
 import { Permission } from "../util/Permission"
 
-export class TeamSpeakChannel extends Abstract<ChannelEntry> {
+export class TeamSpeakChannel<T extends TeamSpeak.EntityOverride> extends Abstract<ChannelEntry, T> {
 
-  constructor(parent: TeamSpeak, list: ChannelEntry) {
+  constructor(parent: TeamSpeak<T>, list: ChannelEntry) {
     super(parent, list, "channel")
   }
 
@@ -107,7 +107,7 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
    * @param parent channel parent id
    * @param order channel sort order
    */
-  move(parent: string|TeamSpeakChannel, order: number = 0) {
+  move(parent: TeamSpeakChannel.ChannelType, order: number = 0) {
     return super.getParent().channelMove(this, parent, order)
   }
 
@@ -171,7 +171,7 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
    * Gets a List of Clients in the current Channel
    * @param filter the filter object
    */
-  getClients(filter: Partial<ClientEntry> = {}): Promise<TeamSpeakClient[]> {
+  getClients(filter: Partial<ClientEntry> = {}) {
     filter.cid = this.cid
     return super.getParent().clientList(filter)
   }
@@ -201,6 +201,6 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
 }
 
 export namespace TeamSpeakChannel {
-  export type ChannelType = string|TeamSpeakChannel
-  export type MultiChannelType = string[]|TeamSpeakChannel[]|ChannelType
+  export type ChannelType = string|TeamSpeakChannel<any>
+  export type MultiChannelType = string[]|TeamSpeakChannel<any>[]|ChannelType
 }

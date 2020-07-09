@@ -7,9 +7,9 @@ import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakServerGroup } from "./ServerGroup"
 import { Permission } from "util/Permission"
 
-export class TeamSpeakClient extends Abstract<ClientEntry> {
+export class TeamSpeakClient<T extends TeamSpeak.EntityOverride> extends Abstract<ClientEntry, T> {
 
-  constructor(parent: TeamSpeak, list: ClientEntry) {
+  constructor(parent: TeamSpeak<T>, list: ClientEntry) {
     super(parent, list, "client")
   }
 
@@ -204,7 +204,7 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
    * @param cid channel id in which the client should get moved
    * @param cpw the channel password
    */
-  move(cid: string|TeamSpeakChannel, cpw?: string) {
+  move(cid: string|TeamSpeakChannel<any>, cpw?: string) {
     return super.getParent().clientMove(this, cid, cpw)
   }
 
@@ -212,7 +212,7 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
    * adds the client to one or more groups
    * @param sgid one or more servergroup ids which the client should be added to
    */
-  addGroups(sgid: string|string[]|TeamSpeakServerGroup|TeamSpeakServerGroup[]) {
+  addGroups(sgid: string|string[]|TeamSpeakServerGroup<any>|TeamSpeakServerGroup<any>[]) {
     return super.getParent().clientAddServerGroup(this, sgid)
   }
 
@@ -220,7 +220,7 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
    * Removes the client from one or more groups
    * @param sgid one or more servergroup ids which the client should be added to
    */
-  delGroups(sgid: string|string[]|TeamSpeakServerGroup|TeamSpeakServerGroup[]) {
+  delGroups(sgid: string|string[]|TeamSpeakServerGroup<any>|TeamSpeakServerGroup<any>[]) {
     return super.getParent().clientDelServerGroup(this, sgid)
   }
 
@@ -352,6 +352,6 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
 }
 
 export namespace TeamSpeakClient {
-  export type ClientType = string|TeamSpeakClient
-  export type MultiClientType = string[]|TeamSpeakClient[]|ClientType
+  export type ClientType = string|TeamSpeakClient<any>
+  export type MultiClientType = string[]|TeamSpeakClient<any>[]|ClientType
 }

@@ -1,13 +1,13 @@
 import { TeamSpeak } from "../TeamSpeak"
 import { TeamSpeakQuery } from "../transport/TeamSpeakQuery"
 
-export abstract class Abstract<T extends TeamSpeakQuery.ResponseEntry> {
+export abstract class Abstract<T extends TeamSpeakQuery.ResponseEntry, Y extends TeamSpeak.EntityOverride> {
 
   private namespace: string
   private propcache: T
-  private parent: TeamSpeak
+  private parent: TeamSpeak<Y>
 
-  constructor(parent: TeamSpeak, props: T, namespace: string) {
+  constructor(parent: TeamSpeak<Y>, props: T, namespace: string) {
     this.namespace = namespace
     this.propcache = { ...props }
     this.parent = parent

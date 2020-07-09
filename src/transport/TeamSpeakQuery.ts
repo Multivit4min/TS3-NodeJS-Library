@@ -8,7 +8,7 @@ import { TeamSpeak } from "../TeamSpeak"
 export class TeamSpeakQuery extends EventEmitter {
 
   static IGNORE_LINES_INITIAL = 2
-  private config: TeamSpeak.ConnectionParams
+  private config: TeamSpeak.ConnectionParams<any>
   private queue: TeamSpeakQuery.QueueItem[] = []
   private active: TeamSpeakQuery.QueueItem|undefined
   private ignoreLines: number = TeamSpeakQuery.IGNORE_LINES_INITIAL
@@ -25,7 +25,7 @@ export class TeamSpeakQuery extends EventEmitter {
     "notifycliententerview"
   ]
 
-  constructor(config: TeamSpeak.ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams<any>) {
     super()
     this.config = config
   }
@@ -58,7 +58,7 @@ export class TeamSpeakQuery extends EventEmitter {
   }
 
   /** returns a constructed Socket */
-  static getSocket(config: TeamSpeak.ConnectionParams): TeamSpeakQuery.QueryProtocolInterface {
+  static getSocket(config: TeamSpeak.ConnectionParams<any>): TeamSpeakQuery.QueryProtocolInterface {
     if (config.protocol === TeamSpeak.QueryProtocol.RAW) {
       return new ProtocolRAW(config)
     } else if (config.protocol === TeamSpeak.QueryProtocol.SSH) {

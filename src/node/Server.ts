@@ -2,9 +2,9 @@ import { Abstract } from "./Abstract"
 import { TeamSpeak } from "../TeamSpeak"
 import { ServerEntry } from "../types/ResponseTypes"
 
-export class TeamSpeakServer extends Abstract<ServerEntry> {
+export class TeamSpeakServer<T extends TeamSpeak.EntityOverride> extends Abstract<ServerEntry, T> {
 
-  constructor(parent: TeamSpeak, list: ServerEntry) {
+  constructor(parent: TeamSpeak<T>, list: ServerEntry) {
     super(parent, list, "virtualserver")
   }
 
@@ -97,6 +97,6 @@ export class TeamSpeakServer extends Abstract<ServerEntry> {
 }
 
 export namespace TeamSpeakServer {
-  export type ServerType = string|TeamSpeakServer
-  export type MultiServerType = string[]|TeamSpeakServer[]|ServerType
+  export type ServerType = string|TeamSpeakServer<any>
+  export type MultiServerType = string[]|TeamSpeakServer<any>[]|ServerType
 }

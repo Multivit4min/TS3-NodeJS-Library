@@ -1,8 +1,8 @@
 import { TeamSpeak } from "../TeamSpeak"
 
-export class Permission<T extends {} = any> {
+export class Permission<T extends {} = any, Y extends TeamSpeak.EntityOverride = any> {
 
-  private teamspeak: TeamSpeak
+  private teamspeak: TeamSpeak<Y>
   private _perm?: string|number
   private _value: number = 0
   private _skip: boolean = false
@@ -12,7 +12,7 @@ export class Permission<T extends {} = any> {
   private cmdRemove: string
   private context: T
 
-  constructor(config: Permission.IConfig<T>) {
+  constructor(config: Permission.IConfig<T, Y>) {
     this.cmdUpdate = config.update
     this.cmdRemove = config.remove
     this.teamspeak = config.teamspeak
@@ -41,25 +41,25 @@ export class Permission<T extends {} = any> {
   }
 
   /** sets/gets the permid or permsid */
-  perm(perm: string|number): Permission<T> {
+  perm(perm: string|number): Permission<T, Y> {
     this._perm = perm
     return this
   }
 
   /** sets/gets the value for the permission */
-  value(value: number): Permission<T> {
+  value(value: number): Permission<T, Y> {
     this._value = value
     return this
   }
 
   /** sets/gets the skip value */
-  skip(skip: boolean): Permission<T> {
+  skip(skip: boolean): Permission<T, Y> {
     this._skip = skip
     return this
   }
 
   /** sets/gets the negate value */
-  negate(negate: boolean): Permission<T> {
+  negate(negate: boolean): Permission<T, Y> {
     this._negate = negate
     return this
   }
@@ -131,8 +131,8 @@ export class Permission<T extends {} = any> {
 }
 
 export namespace Permission {
-  export interface IConfig<T> {
-    teamspeak: TeamSpeak
+  export interface IConfig<T, Y extends TeamSpeak.EntityOverride> {
+    teamspeak: TeamSpeak<Y>
     remove: string,
     update: string,
     context: T

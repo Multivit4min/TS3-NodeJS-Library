@@ -4,9 +4,9 @@ import { ServerGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakClient } from "./Client"
 import { Permission } from "../util/Permission"
 
-export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
+export class TeamSpeakServerGroup<T extends TeamSpeak.EntityOverride> extends Abstract<ServerGroupEntry, T> {
 
-  constructor(parent: TeamSpeak, list: ServerGroupEntry) {
+  constructor(parent: TeamSpeak<T>, list: ServerGroupEntry) {
     super(parent, list, "servergroup")
   }
 
@@ -67,7 +67,7 @@ export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
    * @param type type of the group (0 = Query Group | 1 = Normal Group)
    * @param name name of the group
    */
-  copy(targetGroup: string|TeamSpeakServerGroup, type: number, name: string) {
+  copy(targetGroup: TeamSpeakServerGroup.GroupType, type: number, name: string) {
     return super.getParent().serverGroupCopy(this, targetGroup, type, name)
   }
 
@@ -159,6 +159,6 @@ export class TeamSpeakServerGroup extends Abstract<ServerGroupEntry> {
 }
 
 export namespace TeamSpeakServerGroup {
-  export type GroupType = string|TeamSpeakServerGroup
-  export type MultiGroupType = string[]|TeamSpeakServerGroup[]|GroupType
+  export type GroupType = string|TeamSpeakServerGroup<any>
+  export type MultiGroupType = string[]|TeamSpeakServerGroup<any>[]|GroupType
 }

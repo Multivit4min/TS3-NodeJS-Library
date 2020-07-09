@@ -17,7 +17,6 @@ import { EventError } from "./exception/EventError"
 import { ClientType, ReasonIdentifier, TextMessageTargetMode, TokenType, LogLevel } from "./types/enum"
 import { Permission } from "./util/Permission"
 
-
 /**
  * missing Query Commands
  * @todo
@@ -32,8 +31,12 @@ import { Permission } from "./util/Permission"
  * clientfind
  */
 
-declare type NodeType = TeamSpeakClient|TeamSpeakChannel|TeamSpeakChannelGroup|TeamSpeakServer|TeamSpeakServerGroup
-type NodeConstructable<T> = new(parent: TeamSpeak, props: {}) => T
+declare type NodeType<T extends TeamSpeak.EntityOverride> =
+  TeamSpeakClient<T> |
+  TeamSpeakChannel<T> |
+  TeamSpeakChannelGroup<T> |
+  TeamSpeakServer<T> |
+  TeamSpeakServerGroup<T>
 
 export interface TeamSpeak {
   on(event: "error", listener: (error: Error) => void): this
@@ -53,23 +56,24 @@ export interface TeamSpeak {
   on(event: "channeldelete", listener: (event: Event.ChannelDelete) => void): this
 }
 
-export class TeamSpeak extends EventEmitter {
+export class TeamSpeak<T extends TeamSpeak.EntityOverride = {}> extends EventEmitter {
 
-  readonly config: TeamSpeak.ConnectionParams
-  private clients: Record<string, TeamSpeakClient> = {}
-  private servers: Record<string, TeamSpeakServer> = {}
-  private servergroups: Record<string, TeamSpeakServerGroup> = {}
-  private channels: Record<string, TeamSpeakChannel> = {}
-  private channelgroups: Record<string, TeamSpeakChannelGroup> = {}
+  readonly config: TeamSpeak.ConnectionParams<T>
+  private clients: Record<string, TeamSpeak.Client<T>> = {}
+  private servers: Record<string, TeamSpeak.Server<T>> = {}
+  private servergroups: Record<string, TeamSpeak.ServerGroup<T>> = {}
+  private channels: Record<string, TeamSpeak.Channel<T>> = {}
+  private channelgroups: Record<string, TeamSpeak.ChannelGroup<T>> = {}
   private priorizeNextCommand: boolean = false
   private query: TeamSpeakQuery
+  private entities: TeamSpeak.Entities
   private context: Context = {
     selectType: SelectType.NONE,
     selected: 0,
     events: []
   }
 
-  constructor(config: Partial<TeamSpeak.ConnectionParams>) {
+  constructor(config: Partial<TeamSpeak.ConnectionParams<T>>) {
     super()
 
     this.config = {
@@ -82,6 +86,14 @@ export class TeamSpeak extends EventEmitter {
       keepAliveTimeout: 250,
       autoConnect: true,
       ...config
+    }
+    const entity = this.config.entity || ({} as TeamSpeak.EntityOverride)
+    this.entities = {
+      client: entity.client || TeamSpeakClient,
+      channel: entity.channel || TeamSpeakChannel,
+      server: entity.server || TeamSpeakServer,
+      channelgroup: entity.channelgroup || TeamSpeakChannelGroup,
+      servergroup: entity.servergroup || TeamSpeakServerGroup
     }
     this.query = new TeamSpeakQuery(this.config)
     this.query.on("cliententerview", this.evcliententerview.bind(this))
@@ -110,7 +122,9 @@ export class TeamSpeak extends EventEmitter {
    * connects via a Promise wrapper
    * @param config config options to connect
    */
-  static connect(config: Partial<TeamSpeak.ConnectionParams>): Promise<TeamSpeak> {
+  static connect<T extends TeamSpeak.EntityOverride = {}>(
+    config: Partial<TeamSpeak.ConnectionParams<T>>
+  ): Promise<TeamSpeak<T>> {
     return new TeamSpeak({
       ...config,
       autoConnect: false
@@ -149,7 +163,7 @@ export class TeamSpeak extends EventEmitter {
   /**
    * connects to the TeamSpeak Server
    */
-  connect(): Promise<TeamSpeak> {
+  connect(): Promise<TeamSpeak<T>> {
     return new Promise((fulfill, reject) => {
       const removeListeners = () => {
         this.removeListener("ready", readyCallback)
@@ -732,7 +746,7 @@ export class TeamSpeak extends EventEmitter {
    * @param name the name of the servergroup
    * @param type type of the servergroup
    */
-  serverGroupCreate(name: string, type: number = 1): Promise<TeamSpeakServerGroup> {
+  serverGroupCreate(name: string, type: number = 1): Promise<TeamSpeak.ServerGroup<T>> {
     return this.execute<{ sgid: string }>("servergroupadd", { name, type })
       .then(TeamSpeak.singleResponse)
       .then(({sgid}) => this.serverGroupList({ sgid }))
@@ -886,7 +900,7 @@ export class TeamSpeak extends EventEmitter {
    * @param group the serverGroup id
    * @param perm the permission object
    */
-  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: undefined): Permission
+  serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: undefined): Permission<any, T>
   serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm: Permission.PermType): Promise<[]>
   serverGroupAddPerm(group: TeamSpeakServerGroup.GroupType, perm?: Permission.PermType) {
     const builder = this.createServerGroupPermBuilder(TeamSpeakServerGroup.getId(group))
@@ -904,7 +918,7 @@ export class TeamSpeak extends EventEmitter {
    * @param perm the permid or permsid
    */
   serverGroupDelPerm(group: TeamSpeakServerGroup.GroupType, perm: string|number) {
-    const properties = { sgid: TeamSpeakServerGroup.getId(group) }
+    const properties: Record<string, string|number> = { sgid: TeamSpeakServerGroup.getId(group) }
     properties[typeof perm === "string" ? "permsid" : "permid"] = perm
     return this.execute("servergroupdelperm", properties)
   }
@@ -972,7 +986,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Channel by the given Channel ID
    * @param channel the channel id
    */
-  getChannelById(channel: TeamSpeakChannel.ChannelType): Promise<TeamSpeakChannel|undefined> {
+  getChannelById(channel: TeamSpeakChannel.ChannelType): Promise<TeamSpeak.Channel<T>|undefined> {
     return this.channelList({ cid: TeamSpeakChannel.getId(channel) }).then(([channel]) => channel)
   }
 
@@ -981,7 +995,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Channel by the given Channel Name
    * @param channelName the name of the channel
    */
-  getChannelByName(channelName: string): Promise<TeamSpeakChannel|undefined> {
+  getChannelByName(channelName: string): Promise<TeamSpeak.Channel<T>|undefined> {
     return this.channelList({ channelName }).then(([channel]) => channel)
   }
 
@@ -1075,7 +1089,7 @@ export class TeamSpeak extends EventEmitter {
    * @param channel the channel id
    * @param perm the permission object
    */
-  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: undefined): Permission
+  channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: undefined): Permission<any, T>
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm: Permission.PermType): Promise<[]>
   channelSetPerm(channel: TeamSpeakChannel.ChannelType, perm?: Permission.PermType) {
     const builder = this.createChannelPermBuilder(TeamSpeakChannel.getId(channel))
@@ -1118,7 +1132,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Client by the given Client ID
    * @param client the client id
    */
-  getClientById(client: TeamSpeakClient.ClientType): Promise<TeamSpeakClient|undefined> {
+  getClientById(client: TeamSpeakClient.ClientType): Promise<TeamSpeak.Client<T>|undefined> {
     return this.clientList({ clid: TeamSpeakClient.getId(client) })
       .then(([client]) => client)
   }
@@ -1128,7 +1142,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Client by the given Client Database ID
    * @param client the client database Id
    */
-  getClientByDbid(client: TeamSpeakClient.ClientType): Promise<TeamSpeakClient|undefined> {
+  getClientByDbid(client: TeamSpeakClient.ClientType): Promise<TeamSpeak.Client<T>|undefined> {
     return this.clientList({ clientDatabaseId: TeamSpeakClient.getDbid(client) })
       .then(([client]) => client)
   }
@@ -1138,7 +1152,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Client by the given Client Unique Identifier
    * @param client the client unique identifier
    */
-  getClientByUid(client: TeamSpeakClient.ClientType): Promise<TeamSpeakClient|undefined> {
+  getClientByUid(client: TeamSpeakClient.ClientType): Promise<TeamSpeak.Client<T>|undefined> {
     return this.clientList({ clientUniqueIdentifier: TeamSpeakClient.getUid(client) })
       .then(([client]) => client)
   }
@@ -1148,7 +1162,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Client by the given Client Unique Identifier
    * @param clientNickname the nickname of the client
    */
-  getClientByName(clientNickname: string): Promise<TeamSpeakClient|undefined> {
+  getClientByName(clientNickname: string): Promise<TeamSpeak.Client<T>|undefined> {
     return this.clientList({ clientNickname })
       .then(([client]) => client)
   }
@@ -1250,7 +1264,7 @@ export class TeamSpeak extends EventEmitter {
    * @param client the client database id
    * @param perm the permission object
    */
-  clientAddPerm(client: TeamSpeakClient.ClientType, perm: undefined): Permission
+  clientAddPerm(client: TeamSpeakClient.ClientType, perm: undefined): Permission<any, T>
   clientAddPerm(client: TeamSpeakClient.ClientType, perm: Permission.PermType): Promise<[]>
   clientAddPerm(client: TeamSpeakClient.ClientType, perm?: Permission.PermType) {
     const builder = this.createClientPermBuilder(TeamSpeakClient.getDbid(client))
@@ -1327,10 +1341,10 @@ export class TeamSpeak extends EventEmitter {
    * @param targetmode targetmode (1: client, 2: channel, 3: server)
    * @param msg the message the client should receive
    */
-  sendTextMessage(target: "0", targetmode: TextMessageTargetMode.SERVER, msg: string)
-  sendTextMessage(target: TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode.CHANNEL, msg: string)
-  sendTextMessage(target: TeamSpeakClient.ClientType, targetmode: TextMessageTargetMode.CLIENT, msg: string)
-  sendTextMessage(target: TeamSpeakClient.ClientType&TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode, msg: string) {
+  sendTextMessage(target: "0", targetmode: TextMessageTargetMode.SERVER, msg: string): Promise<[]>
+  sendTextMessage(target: TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode.CHANNEL, msg: string): Promise<[]>
+  sendTextMessage(target: TeamSpeakClient.ClientType, targetmode: TextMessageTargetMode.CLIENT, msg: string): Promise<[]>
+  sendTextMessage(target: TeamSpeakClient.ClientType&TeamSpeakChannel.ChannelType, targetmode: TextMessageTargetMode, msg: string): Promise<[]> {
     let selectedTarget: string = "0"
     if (targetmode === TextMessageTargetMode.CLIENT) {
       selectedTarget = TeamSpeakClient.getId(target)
@@ -1345,7 +1359,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a single ServerGroup by the given ServerGroup ID
    * @param group the servergroup id
    */
-  getServerGroupById(group: TeamSpeakServerGroup.GroupType): Promise<TeamSpeakServerGroup|undefined> {
+  getServerGroupById(group: TeamSpeakServerGroup.GroupType): Promise<TeamSpeak.ServerGroup<T>|undefined> {
     return this.serverGroupList({ sgid: TeamSpeakServerGroup.getId(group) })
       .then(([group]) => group)
   }
@@ -1355,7 +1369,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a single ServerGroup by the given ServerGroup Name
    * @param name the servergroup name
    */
-  getServerGroupByName(name: string): Promise<TeamSpeakServerGroup|undefined> {
+  getServerGroupByName(name: string): Promise<TeamSpeak.ServerGroup<T>|undefined> {
     return this.serverGroupList({ name })
       .then(([group]) => group)
   }
@@ -1365,7 +1379,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a single ChannelGroup by the given ChannelGroup ID
    * @param group the channelgroup Id
    */
-  getChannelGroupById(group: TeamSpeakChannelGroup.GroupType): Promise<TeamSpeakChannelGroup|undefined> {
+  getChannelGroupById(group: TeamSpeakChannelGroup.GroupType): Promise<TeamSpeak.ChannelGroup<T>|undefined> {
     return this.channelGroupList({ cgid: TeamSpeakChannelGroup.getId(group) })
       .then(([group]) => group)
   }
@@ -1375,7 +1389,7 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a single ChannelGroup by the given ChannelGroup Name
    * @param name the channelGroup name
    */
-  getChannelGroupByName(name: string): Promise<TeamSpeakChannelGroup|undefined> {
+  getChannelGroupByName(name: string): Promise<TeamSpeak.ChannelGroup<T>|undefined> {
     return this.channelGroupList({ name })
       .then(([group]) => group)
   }
@@ -1472,7 +1486,7 @@ export class TeamSpeak extends EventEmitter {
    * @param group the channelgroup id
    * @param perm the permission object
    */
-  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: undefined): Permission
+  channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: undefined): Permission<any, T>
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm: Permission.PermType): Promise<[]>
   channelGroupAddPerm(group: TeamSpeakChannelGroup.GroupType, perm?: Permission.PermType) {
     const builder = this.createChannelGroupPermBuilder(TeamSpeakChannelGroup.getId(group))
@@ -1612,8 +1626,8 @@ export class TeamSpeak extends EventEmitter {
    * @param description token description
    * @param customset token custom set
    */
-  privilegeKeyAdd(tokentype: TokenType.ChannelGroup, group: TeamSpeakChannelGroup.GroupType, channel: TeamSpeakChannel.ChannelType, description?: string, customset?: string)
-  privilegeKeyAdd(tokentype: TokenType.ServerGroup, group: TeamSpeakServerGroup.GroupType, channel: undefined, description?: string, customset?: string)
+  privilegeKeyAdd(tokentype: TokenType.ChannelGroup, group: TeamSpeakChannelGroup.GroupType, channel: TeamSpeakChannel.ChannelType, description?: string, customset?: string): Promise<Response.Token>
+  privilegeKeyAdd(tokentype: TokenType.ServerGroup, group: TeamSpeakServerGroup.GroupType, channel: undefined, description?: string, customset?: string): Promise<Response.Token>
   privilegeKeyAdd(
     tokentype: TokenType,
     group: TeamSpeakChannelGroup.GroupType&TeamSpeakServerGroup.GroupType,
@@ -1931,10 +1945,10 @@ export class TeamSpeak extends EventEmitter {
   /**
    * Displays a list of virtual servers including their ID, status, number of clients online, etc.
    */
-  serverList(filter: Partial<Response.ServerEntry> = {}): Promise<TeamSpeakServer[]> {
+  serverList(filter: Partial<Response.ServerEntry> = {}): Promise<TeamSpeak.Server<T>[]> {
     return this.execute<Response.ServerList>("serverlist", ["-uid", "-all"])
       .then(TeamSpeak.toArray)
-      .then(servers => this.handleCache(this.servers, servers, "virtualserverId", TeamSpeakServer))
+      .then(servers => this.handleCache(this.servers, servers, "virtualserverId", this.entities.server))
       .then(servers => TeamSpeak.filter(servers, filter))
       .then(servers => servers.map(s => this.servers[s.virtualserverId!]))
   }
@@ -1962,7 +1976,7 @@ export class TeamSpeak extends EventEmitter {
   channelGroupList(filter: Partial<Response.ChannelGroupEntry> = {}) {
     return this.execute<Response.ChannelGroupList>("channelgrouplist")
       .then(TeamSpeak.toArray)
-      .then(groups => this.handleCache(this.channelgroups, groups, "cgid", TeamSpeakChannelGroup))
+      .then(groups => this.handleCache(this.channelgroups, groups, "cgid", this.entities.channelgroup))
       .then(groups => TeamSpeak.filter(groups, filter))
       .then(groups => groups.map(g => this.channelgroups[g.cgid]))
   }
@@ -1975,7 +1989,7 @@ export class TeamSpeak extends EventEmitter {
   serverGroupList(filter: Partial<Response.ServerGroupEntry> = {}) {
     return this.execute<Response.ServerGroupList>("servergrouplist")
       .then(TeamSpeak.toArray)
-      .then(groups => this.handleCache(this.servergroups, groups, "sgid", TeamSpeakServerGroup))
+      .then(groups => this.handleCache(this.servergroups, groups, "sgid", this.entities.servergroup))
       .then(groups => TeamSpeak.filter(groups, filter))
       .then(groups => groups.map(g => this.servergroups[g.sgid]))
   }
@@ -1987,7 +2001,7 @@ export class TeamSpeak extends EventEmitter {
   channelList(filter: Partial<Response.ChannelEntry> = {}) {
     return this.execute<Response.ChannelList>("channellist", ["-topic", "-flags", "-voice", "-limits", "-icon", "-secondsempty", "-banner"])
       .then(TeamSpeak.toArray)
-      .then(channels => this.handleCache(this.channels, channels, "cid", TeamSpeakChannel))
+      .then(channels => this.handleCache(this.channels, channels, "cid", this.entities.channel))
       .then(channels => TeamSpeak.filter(channels, filter))
       .then(channels => channels.map(c => this.channels[c.cid]))
   }
@@ -2000,7 +2014,7 @@ export class TeamSpeak extends EventEmitter {
     if (this.config.ignoreQueries) filter.clientType = ClientType.Regular
     return this.execute<Response.ClientList>("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"])
       .then(TeamSpeak.toArray)
-      .then(clients => this.handleCache(this.clients, clients, "clid", TeamSpeakClient))
+      .then(clients => this.handleCache(this.clients, clients, "clid", this.entities.client))
       .then(clients => TeamSpeak.filter(clients, filter))
       .then(clients => clients.map(c => this.clients[String(c.clid)]))
   }
@@ -2259,12 +2273,12 @@ export class TeamSpeak extends EventEmitter {
    * @param key the key used to identify the object inside the cache
    * @param node the class which should be used
    */
-  private handleCache<T extends TeamSpeakQuery.Response>(
-    cache: Record<string, NodeType>,
-    list: T,
+  private handleCache<Y extends TeamSpeakQuery.Response>(
+    cache: Record<string, NodeType<T>>,
+    list: Y,
     key: keyof TeamSpeakQuery.ResponseEntry,
-    node: NodeConstructable<NodeType>
-  ) : T {
+    node: new (parent: TeamSpeak<T>, props: {}) => NodeType<T>
+  ) : Y {
     const remainder = Object.keys(cache)
     list.forEach(entry => {
       const k = String(entry[key])
@@ -2328,11 +2342,8 @@ export class TeamSpeak extends EventEmitter {
   /**
    * retrieves an instance of the Permission
    */
-  private getPermBuilder<T = void>(init: Omit<Permission.IConfig<T>, "teamspeak">) {
-    return new Permission({
-      teamspeak: this,
-      ...init
-    })
+  private getPermBuilder<Y = void>(init: Omit<Permission.IConfig<Y, T>, "teamspeak">) {
+    return new Permission({ teamspeak: this, ...init })
   }
 
   /** creates a channel perm builder for the specified channel id */
@@ -2442,7 +2453,7 @@ export class TeamSpeak extends EventEmitter {
 
 export namespace TeamSpeak {
 
-  export interface ConnectionParams {
+  export interface ConnectionParams<T extends EntityOverride> {
     /** the host to connect to (default: 127.0.0.1) */
     host: string,
     /** the query protocol to use (default: @see QueryProtocol ) */
@@ -2469,7 +2480,31 @@ export namespace TeamSpeak {
     localAddress?: string,
     /** wether it should automatically connect after instanciating (default: true) */
     autoConnect?: boolean
+    /** various entity overrides to use */
+    entity?: T
   }
+
+  export type EntityOverride = Partial<Entities>
+
+  export interface Entities {
+    client: typeof TeamSpeakClient
+    channel: typeof TeamSpeakChannel
+    server: typeof TeamSpeakServer
+    servergroup: typeof TeamSpeakServerGroup
+    channelgroup: typeof TeamSpeakChannelGroup
+  }
+
+  type ExtractNodeType<
+    T extends EntityOverride,
+    K extends keyof T,
+    Y extends NodeType<T>
+  > = T[K] extends new(parent: TeamSpeak<T>, props: {}) => Y ? InstanceType<T[K]> : Y
+
+  export type Client<T extends EntityOverride> = ExtractNodeType<T, "client", TeamSpeakClient<T>>
+  export type Channel<T extends EntityOverride> = ExtractNodeType<T, "channel", TeamSpeakChannel<T>>
+  export type Server<T extends EntityOverride> = ExtractNodeType<T, "server", TeamSpeakServer<T>>
+  export type ChannelGroup<T extends EntityOverride> = ExtractNodeType<T, "servergroup", TeamSpeakServerGroup<T>>
+  export type ServerGroup<T extends EntityOverride> = ExtractNodeType<T, "channelgroup", TeamSpeakChannelGroup<T>>
 
   export enum QueryProtocol {
     RAW = "raw",
@@ -2478,4 +2513,4 @@ export namespace TeamSpeak {
 }
 
 export const QueryProtocol = TeamSpeak.QueryProtocol
-export type ConnectionParams = TeamSpeak.ConnectionParams
+export type ConnectionParams<T> = TeamSpeak.ConnectionParams<T>

@@ -10,7 +10,7 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
   private stream: ClientChannel|null
   chunk: string = ""
 
-  constructor(config: TeamSpeak.ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams<any>) {
     super()
     this.client = new Client()
     process.nextTick(() => {

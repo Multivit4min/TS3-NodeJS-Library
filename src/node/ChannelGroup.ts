@@ -5,9 +5,9 @@ import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakClient } from "./Client"
 import { Permission } from "util/Permission"
 
-export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
+export class TeamSpeakChannelGroup<T extends TeamSpeak.EntityOverride> extends Abstract<ChannelGroupEntry, T> {
 
-  constructor(parent: TeamSpeak, list: ChannelGroupEntry) {
+  constructor(parent: TeamSpeak<T>, list: ChannelGroupEntry) {
     super(parent, list, "channelgroup")
   }
 
@@ -67,7 +67,7 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
    * @param type the type of the group (0 = Template Group | 1 = Normal Group)
    * @param name name of the group
    */
-  copy(tcgid: string|TeamSpeakChannelGroup, type: number, name: string) {
+  copy(tcgid: TeamSpeakChannelGroup.GroupType, type: number, name: string) {
     return super.getParent().channelGroupCopy(this, tcgid, type, name)
   }
 
@@ -118,7 +118,7 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
    * @param channel the channel in which the client should be assigned the Group
    * @param client the client database id which should be added to the Group
    */
-  setClient(channel: string|TeamSpeakChannel, client: string|TeamSpeakClient) {
+  setClient(channel: TeamSpeakChannel.ChannelType, client: string|TeamSpeakClient<any>) {
     return super.getParent().setClientChannelGroup(this, channel, client)
   }
 
@@ -126,7 +126,7 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
    * returns the ids of all clients currently residing in the channelgroup
    * @param channel the channel id
    */
-  clientList(channel: string|TeamSpeakChannel) {
+  clientList(channel: TeamSpeakChannel.ChannelType) {
     return super.getParent().channelGroupClientList(this, channel)
   }
 
@@ -154,6 +154,6 @@ export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 
 }
 export namespace TeamSpeakChannelGroup {
-  export type GroupType = string|TeamSpeakChannelGroup
-  export type MultiGroupType = string[]|TeamSpeakChannelGroup[]|GroupType
+  export type GroupType = string|TeamSpeakChannelGroup<any>
+  export type MultiGroupType = string[]|TeamSpeakChannelGroup<any>[]|GroupType
 }

@@ -9,7 +9,7 @@ export class ProtocolRAW extends EventEmitter implements TeamSpeakQuery.QueryPro
   private socket: Socket
   chunk: string = ""
 
-  constructor(config: TeamSpeak.ConnectionParams) {
+  constructor(config: TeamSpeak.ConnectionParams<any>) {
     super()
     this.socket = connect({
       port: config.queryport,
