@@ -3,7 +3,7 @@ import { TeamSpeak } from "../TeamSpeak"
 import { ChannelGroupEntry } from "../types/ResponseTypes"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakClient } from "./Client"
-import { Permission } from "util/Permission"
+import { Permission } from "../util/Permission"
 
 export class TeamSpeakChannelGroup extends Abstract<ChannelGroupEntry> {
 

@@ -1,5 +1,8 @@
 # Changelog
 
+### 3.0.8 - 10.07.2020
+* fix paths to local scripts
+
 ### 3.0.7 - 05.07.2020
 * renamed functions to conform JS camelcase standard
   * `getChannelByID` -> `getChannelById`

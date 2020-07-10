@@ -5,7 +5,7 @@ import { ClientDBEdit, ClientEdit } from "../types/PropertyTypes"
 import { ClientType } from "../types/enum"
 import { TeamSpeakChannel } from "./Channel"
 import { TeamSpeakServerGroup } from "./ServerGroup"
-import { Permission } from "util/Permission"
+import { Permission } from "../util/Permission"
 
 export class TeamSpeakClient extends Abstract<ClientEntry> {
 
