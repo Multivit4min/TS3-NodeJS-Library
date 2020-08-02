@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.0.9 - 02.08.2020
+* fix emitted data from clientdisconnect event
+* update dependencies
+
 ### 3.0.8 - 10.07.2020
 * fix paths to local scripts
 
