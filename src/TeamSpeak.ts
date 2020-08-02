@@ -255,10 +255,7 @@ export class TeamSpeak extends EventEmitter {
     const { clid } = event
     const client = this.clients[clid as string]
     if (client && this.ignoreQueryClient(client.type)) return
-    super.emit("clientdisconnect", {
-      client: client ? client : { clid },
-      event
-    })
+    super.emit("clientdisconnect", { client, event })
     Reflect.deleteProperty(this.clients, clid as string)
   }
 
