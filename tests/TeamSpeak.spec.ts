@@ -128,25 +128,28 @@ describe("TeamSpeak", () => {
       expect(mockExecute).toHaveBeenCalledTimes(0)
     })
     it("check a connection config with username and password", async () => {
-      expect.assertions(2)
+      expect.assertions(3)
       const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecutePrio).toBeCalledWith("login", ["foo", "bar"])
-      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(1, "login", ["foo", "bar"])
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(2, "version")
+      expect(mockExecutePrio).toHaveBeenCalledTimes(2)
     })
     it("check a connection config with a serverport", async () => {
-      expect.assertions(2)
+      expect.assertions(3)
       const teamspeak = new TeamSpeak({ serverport: 9987 })
       teamspeak["query"].emit("ready")
-      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987 }, ["-virtual"])
-      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(1, "use", { port: 9987 }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(2, "version")
+      expect(mockExecutePrio).toHaveBeenCalledTimes(2)
     })
     it("check a connection config with a serverport and nickname", async () => {
-      expect.assertions(2)
+      expect.assertions(3)
       const teamspeak = new TeamSpeak({ serverport: 9987, nickname: "FooBar" })
       teamspeak["query"].emit("ready")
-      expect(mockExecutePrio).toBeCalledWith("use", { port: 9987, clientNickname: "FooBar" }, ["-virtual"])
-      expect(mockExecutePrio).toHaveBeenCalledTimes(1)
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(1, "use", { port: 9987, clientNickname: "FooBar" }, ["-virtual"])
+      expect(mockExecutePrio).toHaveBeenNthCalledWith(2, "version")
+      expect(mockExecutePrio).toHaveBeenCalledTimes(2)
     })
   })
 
@@ -1498,8 +1501,7 @@ describe("TeamSpeak", () => {
     expect(mockExecute.mock.calls[0][1]).toEqual(["-keepfiles", "-mapping"])
     expect(mockExecute.mock.calls[0][2]).toEqual({
       password: "_PASSWORD_",
-      salt: "_SALT_",
-      version: 2
+      salt: "_SALT_"
     })
     expect(typeof mockExecute.mock.calls[0][3]).toBe("function")
   })

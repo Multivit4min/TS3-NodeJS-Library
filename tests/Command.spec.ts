@@ -39,13 +39,21 @@ describe("Command", () => {
   })
 
   describe("#buildSnapshotDeploy()", () => {
-    it("should validate a parsed request", () => {
+    it("should validate a parsed request with version 3.10.0", () => {
       const cmd = new Command()
       cmd.setCommand("serversnapshotdeploy")
       cmd.setFlags(["-keepfiles", "-mapping"])
-      cmd.setOptions({ password: "_PASSWORD_", salt: "_SALT_", version: 2})
-      const str = Command.buildSnapshotDeploy("_SNAPSHOTDATA_", cmd)
+      cmd.setOptions({ password: "_PASSWORD_", salt: "_SALT_" })
+      const str = Command.buildSnapshotDeploy("_SNAPSHOTDATA_", cmd, <any>{ version: "3.10.0" })
       expect(str).toBe("serversnapshotdeploy -keepfiles -mapping password=_PASSWORD_ salt=_SALT_ version=2|_SNAPSHOTDATA_")
+    })
+    it("should validate a parsed request with version 3.12.0", () => {
+      const cmd = new Command()
+      cmd.setCommand("serversnapshotdeploy")
+      cmd.setFlags(["-keepfiles", "-mapping"])
+      cmd.setOptions({ password: "_PASSWORD_", salt: "_SALT_" })
+      const str = Command.buildSnapshotDeploy("_SNAPSHOTDATA_", cmd, <any>{ version: "3.12.0" })
+      expect(str).toBe("serversnapshotdeploy -keepfiles -mapping password=_PASSWORD_ salt=_SALT_ version=3 data=_SNAPSHOTDATA_")
     })
   })
 

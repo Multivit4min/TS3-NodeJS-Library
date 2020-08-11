@@ -105,7 +105,7 @@ export class Command {
    * @param error the error line which has been received from the TeamSpeak Query
    */
   setError(raw: string): Command {
-    this.error = <QueryErrorMessage><unknown>Command.parse({ raw })
+    this.error = <QueryErrorMessage><unknown>Command.parse({ raw })[0]
     return this
   }
 
@@ -183,10 +183,10 @@ export class Command {
    * @param cmd command object
    */
   static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version) {
-    if (version > "3.12.0") {
-      cmd.setOptions({ ...cmd.getOptions(), data, version: 3 })
+    if (version >= "3.12.0") {
+      cmd.setOptions({ ...cmd.getOptions(), version: 3, data })
       return Command.build(cmd)
-    } else if (version > "3.10.0") {
+    } else if (version >= "3.10.0") {
       cmd.setOptions({ ...cmd.getOptions(), version: 2 })
       return [Command.build(cmd), data].join("|")
     } else {

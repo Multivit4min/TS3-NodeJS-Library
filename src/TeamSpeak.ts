@@ -2235,7 +2235,7 @@ export class TeamSpeak extends EventEmitter {
     return this.execute(
       "serversnapshotdeploy",
       [keepfiles ? "-keepfiles" : null, "-mapping"],
-      { password, salt, version: 2 },
+      { password, salt },
       parsers => {
         parsers.request = cmd => {
           if (!this.serverVersion) throw new Error("server version has not been determined yet")
