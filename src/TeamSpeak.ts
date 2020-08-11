@@ -2240,7 +2240,7 @@ export class TeamSpeak extends EventEmitter {
         parsers.request = cmd => {
           if (!this.serverVersion) throw new Error("server version has not been determined yet")
           return Command.buildSnapshotDeploy(data, cmd, this.serverVersion)
-        } 
+        }
         return parsers
       }
     )
