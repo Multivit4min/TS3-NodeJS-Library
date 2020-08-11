@@ -56,6 +56,7 @@ export interface TeamSpeak {
 export class TeamSpeak extends EventEmitter {
 
   readonly config: TeamSpeak.ConnectionParams
+  private serverVersion: Response.Version|undefined
   private clients: Record<string, TeamSpeakClient> = {}
   private servers: Record<string, TeamSpeakServer> = {}
   private servergroups: Record<string, TeamSpeakServerGroup> = {}
@@ -225,6 +226,7 @@ export class TeamSpeak extends EventEmitter {
       exec.push(this.priorize().useByPort(this.config.serverport, this.config.nickname))
     }
     exec.push(...this.context.events.map(ev => this.priorize().registerEvent(ev.event, ev.id)))
+    exec.push(this.priorize().version())
     this.query.pause(false)
     Promise.all(exec)
       .then(() => super.emit("ready"))
@@ -546,10 +548,15 @@ export class TeamSpeak extends EventEmitter {
   }
 
 
-  /** Displays the servers version information including platform and build number. */
-  version() {
-    return this.execute<Response.Version>("version")
-      .then(TeamSpeak.singleResponse)
+  /**
+   * Displays the servers version information including platform and build number.
+   * @param refresh if this parameter has been set it will send a command to the server otherwise will use the cached info
+   */
+  async version(refresh: boolean = false) {
+    if (refresh || !this.serverVersion) {
+      this.serverVersion = await this.execute<Response.Version>("version").then(TeamSpeak.singleResponse)
+    }
+    return this.serverVersion
   }
 
 
@@ -2224,13 +2231,16 @@ export class TeamSpeak extends EventEmitter {
    * @param password the password which has been set while saving
    * @param keepfiles wether it should keep the file mapping
    */
-  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true, ) {
+  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true) {
     return this.execute(
       "serversnapshotdeploy",
       [keepfiles ? "-keepfiles" : null, "-mapping"],
       { password, salt, version: 2 },
       parsers => {
-        parsers.request = cmd => Command.buildSnapshotDeploy(data, cmd)
+        parsers.request = cmd => {
+          if (!this.serverVersion) throw new Error("server version has not been determined yet")
+          return Command.buildSnapshotDeploy(data, cmd, this.serverVersion)
+        } 
         return parsers
       }
     )

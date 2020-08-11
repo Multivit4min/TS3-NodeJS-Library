@@ -1,6 +1,7 @@
 import { ResponseError } from "../exception/ResponseError"
 import { QueryErrorMessage } from "../types/ResponseTypes"
 import { TeamSpeakQuery } from "./TeamSpeakQuery"
+import { Version } from "../types/ResponseTypes"
 
 export class Command {
 
@@ -35,6 +36,13 @@ export class Command {
   setOptions(options: Command.options): Command {
     this.options = options
     return this
+  }
+
+  /**
+   * retrieves the current set options for this command
+   */
+  getOptions(): Command.options {
+    return this.options
   }
 
   /**
@@ -96,8 +104,8 @@ export class Command {
    * Set the error line which has been received from the TeamSpeak Query
    * @param error the error line which has been received from the TeamSpeak Query
    */
-  setError(error: string): Command {
-    this.error = <QueryErrorMessage><unknown>this.parse(error)[0]
+  setError(raw: string): Command {
+    this.error = <QueryErrorMessage><unknown>Command.parse({ raw })
     return this
   }
 
@@ -143,15 +151,30 @@ export class Command {
   }
 
   /**
-   *
+   * parses a snapshot create request
    * @param param0 the custom snapshot response parser
    */
   static parseSnapshotCreate({ raw }: Pick<Command.ParserArgument, "raw">) {
-    const [data, snapshot] = raw.split("|")
-    return <TeamSpeakQuery.Response>[{
-      ...Command.parse({ raw: data })[0],
-      snapshot
-    }]
+    const version = raw.match(/version=(\d+)/)
+    if (!version) throw new Error("unable to detect snapshot version")
+    switch (version[1]) {
+      case "2":
+        return (() => {
+          const [data, snapshot] = raw.split("|")
+          return <TeamSpeakQuery.Response>[{
+            ...Command.parse({ raw: data })[0], snapshot
+          }]
+        })()
+      case "3":
+        return (() => {
+          const { salt, data } = Command.parse({ raw })[0]
+          return <TeamSpeakQuery.Response>[{
+            version: 3, salt, snapshot: data
+          }]
+        })()
+      default:
+        throw new Error(`unsupported snapshot version: ${version[1]}`)
+    }
   }
 
   /**
@@ -159,8 +182,16 @@ export class Command {
    * @param data snapshot string
    * @param cmd command object
    */
-  static buildSnapshotDeploy(data: string, cmd: Command) {
-    return [Command.build(cmd), data].join("|")
+  static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version) {
+    if (version > "3.12.0") {
+      cmd.setOptions({ ...cmd.getOptions(), data, version: 3 })
+      return Command.build(cmd)
+    } else if (version > "3.10.0") {
+      cmd.setOptions({ ...cmd.getOptions(), version: 2 })
+      return [Command.build(cmd), data].join("|")
+    } else {
+      throw new Error(`unsupported teamspeak version to create snapshots ""`)
+    }
   }
 
   /**

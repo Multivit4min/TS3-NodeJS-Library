@@ -147,15 +147,7 @@ export class TeamSpeakQuery extends EventEmitter {
     if (this.active.cmd.hasError()) {
       const error = this.active.cmd.getError()!
       if (error.id === "524") {
-        this.emit("flooding", this.active.cmd.getError())
-        const match = error.message.match(/(\d*) second/i)
-        const waitTimeout = match ? parseInt(match[1], 10) : 1
-        clearTimeout(this.floodTimeout)
-        this.floodTimeout = setTimeout((cmd => (() => {
-          cmd.reset()
-          this.send(cmd.build())
-        }))(this.active.cmd), waitTimeout * 1000 + 100)
-        return
+        return this.handleFloodingError(this.active)
       } else {
         this.active.reject(this.active.cmd.getError())
       }
@@ -164,6 +156,19 @@ export class TeamSpeakQuery extends EventEmitter {
     }
     this.active = undefined
     this.queueWorker()
+  }
+
+  /** handles a flooding response from the teamspeak query */
+  private handleFloodingError(active: TeamSpeakQuery.QueueItem) {
+    this.emit("flooding", active.cmd.getError())
+    const match = active.cmd.getError()!.message.match(/(\d*) second/i)
+    const waitTimeout = match ? parseInt(match[1], 10) : 1
+    clearTimeout(this.floodTimeout)
+    this.floodTimeout = setTimeout((cmd => (() => {
+      cmd.reset()
+      this.send(cmd.build())
+    }))(active.cmd), waitTimeout * 1000 + 100)
+    return
   }
 
   /**
