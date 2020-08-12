@@ -15,7 +15,7 @@
     "generate-docs": "typedoc --out docs ./src",
     "build": "tsc",
     "prepare": "npm run build",
-    "prepublishOnly": "rm -R ./coverage"
+    "prepublishOnly": "rm -Rf ./coverage"
   },
   "keywords": [
     "teamspeak",
