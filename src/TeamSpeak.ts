@@ -228,7 +228,7 @@ export class TeamSpeak extends EventEmitter {
     exec.push(...this.context.events.map(ev => this.priorize().registerEvent(ev.event, ev.id)))
     exec.push(this.priorize().version())
     this.query.pause(false)
-    Promise.all(exec)
+    return Promise.all(exec)
       .then(() => super.emit("ready"))
       .catch(e => super.emit("error", e))
   }
@@ -2232,7 +2232,7 @@ export class TeamSpeak extends EventEmitter {
    * @param keepfiles wether it should keep the file mapping
    * @param version of the snapshot with 0 the version of the current teamspeak server is being used
    */
-  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true, version: number = 0) {
+  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true, version?: string) {
     return this.execute(
       "serversnapshotdeploy",
       [keepfiles ? "-keepfiles" : null, "-mapping"],

@@ -44,6 +44,7 @@ import {
 
 import * as mocks from "./mocks/queryresponse"
 import { ApiKeyScope, TokenType, ClientType } from "../src/types/enum"
+import { SelectType } from "../src/types/context"
 
 describe("TeamSpeak", () => {
   let teamspeak: TeamSpeak = new TeamSpeak({})
@@ -183,6 +184,17 @@ describe("TeamSpeak", () => {
       done()
     })
   })
+  
+  it("should test a #reconnect with selected SID", async () => {
+    expect.assertions(2)
+    mockExecutePrio.mockResolvedValue(null)
+    mockIsConnected.mockReturnValue(true)
+    teamspeak["context"].selectType = SelectType.SID
+    teamspeak["context"].selected = 123
+    await teamspeak["handleReady"]()
+    expect(mockExecutePrio).toHaveBeenNthCalledWith(1, "use", [123, "-virtual"], { clientNickname: undefined })
+    expect(mockExecutePrio).toBeCalledTimes(2)
+  }, 1000)
 
   it("should test #reconnect()", async () => {
     expect.assertions(1)

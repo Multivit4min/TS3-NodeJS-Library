@@ -39,6 +39,10 @@ describe("Command", () => {
   })
 
   describe("#buildSnapshotDeploy()", () => {
+    it("should throw an error on invalid version", () => {
+      expect(() => Command.buildSnapshotDeploy("_SNAPSHOTDATA_", new Command(), <any>{ version: "3.9.0" }))
+        .toThrowError("unsupported teamspeak version (3.9.0) or snapshot version (0)")
+    })
     it("should validate a parsed request with version 3.10.0", () => {
       const cmd = new Command()
       cmd.setCommand("serversnapshotdeploy")
@@ -58,13 +62,33 @@ describe("Command", () => {
   })
 
   describe("#buildSnapshot()", () => {
-    it("should validate an parsed response", () => {
+    it("should throw an error on invalid version", () => {
+      expect(() => Command.parseSnapshotCreate({ raw: "version=1 salt=_SALT_|_SNAPSHOTDATA_" }))
+        .toThrowError("unsupported snapshot version: 1")
+    })
+    it("should validate an parsed response with version 2", () => {
       const response = Command.parseSnapshotCreate({ raw: "version=2 salt=_SALT_|_SNAPSHOTDATA_" })
       expect(response).toEqual([{
         version: "2",
         salt: "_SALT_",
         snapshot: "_SNAPSHOTDATA_"
       }])
+    })
+    it("should validate an parsed response with version 3", () => {
+      const response = Command.parseSnapshotCreate({ raw: "version=3 salt=_SALT_ data=_SNAPSHOTDATA_" })
+      expect(response).toEqual([{
+        version: "3",
+        salt: "_SALT_",
+        snapshot: "_SNAPSHOTDATA_"
+      }])
+    })
+  })
+
+  describe("#minVersion()", () => {
+    it("should compare 2 semantic versions", () => {
+      expect(Command.minVersion("3.9.0", "3.10.0")).toBe(true)
+      expect(Command.minVersion("3.10.0", "3.9.0")).toBe(false)
+      expect(Command.minVersion("3.10.0", "3.010.0")).toBe(true)
     })
   })
 

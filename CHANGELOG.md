@@ -1,5 +1,8 @@
 # Changelog
 
+### 3.1.0 - 12.08.2020
+* implement snapshot version 3
+
 ### 3.0.9 - 02.08.2020
 * fix emitted data from clientdisconnect event
 * update dependencies

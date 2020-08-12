@@ -169,7 +169,7 @@ export class Command {
         return (() => {
           const { salt, data } = Command.parse({ raw })[0]
           return <TeamSpeakQuery.Response>[{
-            version: 3, salt, snapshot: data
+            version: "3", salt, snapshot: data
           }]
         })()
       default:
@@ -182,16 +182,29 @@ export class Command {
    * @param data snapshot string
    * @param cmd command object
    */
-  static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version, snapshotVersion: number = 0) {
-    if ((snapshotVersion === 0 && version >= "3.12.0") || snapshotVersion === 3) {
-      cmd.setOptions({ ...cmd.getOptions(), version: 3, data })
+  static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version, snapshotVersion: string = "0") {
+    if ((snapshotVersion === "0" && Command.minVersion("3.12.0", version)) || snapshotVersion === "3") {
+      cmd.setOptions({ ...cmd.getOptions(), version: "3", data })
       return Command.build(cmd)
-    } else if ((snapshotVersion === 0 && version >= "3.10.0") || snapshotVersion === 2) {
-      cmd.setOptions({ ...cmd.getOptions(), version: 2 })
+    } else if ((snapshotVersion === "0" && Command.minVersion("3.10.0", version)) || snapshotVersion === "2") {
+      cmd.setOptions({ ...cmd.getOptions(), version: "2" })
       return [Command.build(cmd), data].join("|")
     } else {
       throw new Error(`unsupported teamspeak version (${version}) or snapshot version (${snapshotVersion})`)
     }
+  }
+
+  /**
+   * checks if a version string has a minimum of x
+   * @param minimum minimum the version string should have
+   * @param version version string to compare
+   */
+  static minVersion(minimum: string, version: string) {
+    const v = version.split(".").map(n => parseInt(n, 10))
+    return minimum
+      .split(".")
+      .map(n => parseInt(n, 10))
+      .every((n, index) => n <= v[index])
   }
 
   /**
