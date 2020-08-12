@@ -2230,8 +2230,9 @@ export class TeamSpeak extends EventEmitter {
    * @param salt if a password has been set provide the salt from the response
    * @param password the password which has been set while saving
    * @param keepfiles wether it should keep the file mapping
+   * @param version of the snapshot with 0 the version of the current teamspeak server is being used
    */
-  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true) {
+  deploySnapshot(data: string, salt?: string, password?: string, keepfiles: boolean = true, version: number = 0) {
     return this.execute(
       "serversnapshotdeploy",
       [keepfiles ? "-keepfiles" : null, "-mapping"],
@@ -2239,7 +2240,7 @@ export class TeamSpeak extends EventEmitter {
       parsers => {
         parsers.request = cmd => {
           if (!this.serverVersion) throw new Error("server version has not been determined yet")
-          return Command.buildSnapshotDeploy(data, cmd, this.serverVersion)
+          return Command.buildSnapshotDeploy(data, cmd, this.serverVersion, version)
         }
         return parsers
       }

@@ -182,15 +182,15 @@ export class Command {
    * @param data snapshot string
    * @param cmd command object
    */
-  static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version) {
-    if (version >= "3.12.0") {
+  static buildSnapshotDeploy(data: string, cmd: Command, { version }: Version, snapshotVersion: number = 0) {
+    if ((snapshotVersion === 0 && version >= "3.12.0") || snapshotVersion === 3) {
       cmd.setOptions({ ...cmd.getOptions(), version: 3, data })
       return Command.build(cmd)
-    } else if (version >= "3.10.0") {
+    } else if ((snapshotVersion === 0 && version >= "3.10.0") || snapshotVersion === 2) {
       cmd.setOptions({ ...cmd.getOptions(), version: 2 })
       return [Command.build(cmd), data].join("|")
     } else {
-      throw new Error(`unsupported teamspeak version to create snapshots ""`)
+      throw new Error(`unsupported teamspeak version (${version}) or snapshot version (${snapshotVersion})`)
     }
   }
 
