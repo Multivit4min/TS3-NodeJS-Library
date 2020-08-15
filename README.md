@@ -45,7 +45,7 @@ TeamSpeak.connect({
   password: "",
   nickname: "NodeJS Query Framework"
 }).then(async teamspeak => {
-  const clients = await teamspeak.clientList({ client_type: 0 })
+  const clients = await teamspeak.clientList({ clientType: 0 })
   clients.forEach(client => {
     console.log("Sending 'Hello!' Message to", client.nickname)
     client.message("Hello!")
