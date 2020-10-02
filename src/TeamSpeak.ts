@@ -1844,7 +1844,7 @@ export class TeamSpeak extends EventEmitter {
    * @param pattern the pattern to search clients
    */
   clientFind(pattern: string) {
-    return this.execute<Response.ClientFind>("clientfind", { pattern })
+    return this.execute<Response.ClientFind[]>("clientfind", { pattern })
   }
 
   /**
