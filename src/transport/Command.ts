@@ -283,10 +283,10 @@ export class Command {
    */
   static getKeyValue(str: string): { key: string, value: string|undefined } {
     const index = str.indexOf("=")
-    if (index === -1) return { key: str, value: undefined }
+    if (index === -1) return { key: Command.toCamelCase(str), value: undefined }
     const value = str.substring(index+1)
-    return { key:
-      Command.toCamelCase(str.substring(0, index)),
+    return {
+      key: Command.toCamelCase(str.substring(0, index)),
       value: value === "" ? undefined : value
     }
   }
@@ -554,6 +554,7 @@ export namespace Command {
     clientLastconnected: Command.parseNumber,
     clientIconId: Command.parseString,
     clientCountry: Command.parseString,
+    clientEstimatedLocation: Command.parseString,
     clientOutputonlyMuted: Command.parseNumber,
     clientDefaultChannel: Command.parseString,
     clientMetaData: Command.parseString,
