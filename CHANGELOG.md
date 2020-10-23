@@ -1,5 +1,15 @@
 # Changelog
 
+### 3.2.0 - ??.??.????
+* set SSH as default connection if no parameter has been set (raw will be disabled by default with TeamSpeak Server version 3.14.0 as stated in TeamSpeaks Changelog)
+* add optional parameter `continueOnError` on `clientKick`, `clientMove` and `banClient`
+* add `clientEstimatedLocation` to TeamSpeak client
+* fix a bug where in some cases paramters are not getting converted from snakecase to camelcase
+
+### 3.1.0 - 23.10.2020
+* improve typings
+* update dev dependencies
+
 ### 3.1.0 - 12.08.2020
 * implement snapshot version 3
 
