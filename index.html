@@ -95,15 +95,15 @@
 
 <span class="hljs-comment">//create a new connection</span>
 TeamSpeak.connect({
-  host: <span class="hljs-string">&quot;localhost&quot;</span>,
-  protocol: QueryProtocol.RAW, <span class="hljs-comment">//optional</span>
-  queryport: <span class="hljs-number">10011</span>, <span class="hljs-comment">//optional</span>
-  serverport: <span class="hljs-number">9987</span>,
-  username: <span class="hljs-string">&quot;serveradmin&quot;</span>,
-  password: <span class="hljs-string">&quot;&quot;</span>,
-  nickname: <span class="hljs-string">&quot;NodeJS Query Framework&quot;</span>
+  <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;localhost&quot;</span>,
+  <span class="hljs-attr">protocol</span>: QueryProtocol.RAW, <span class="hljs-comment">//optional</span>
+  <span class="hljs-attr">queryport</span>: <span class="hljs-number">10011</span>, <span class="hljs-comment">//optional</span>
+  <span class="hljs-attr">serverport</span>: <span class="hljs-number">9987</span>,
+  <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;serveradmin&quot;</span>,
+  <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;&quot;</span>,
+  <span class="hljs-attr">nickname</span>: <span class="hljs-string">&quot;NodeJS Query Framework&quot;</span>
 }).then(<span class="hljs-keyword">async</span> teamspeak =&gt; {
-  <span class="hljs-keyword">const</span> clients = <span class="hljs-keyword">await</span> teamspeak.clientList({ clientType: <span class="hljs-number">0</span> })
+  <span class="hljs-keyword">const</span> clients = <span class="hljs-keyword">await</span> teamspeak.clientList({ <span class="hljs-attr">clientType</span>: <span class="hljs-number">0</span> })
   clients.forEach(<span class="hljs-function"><span class="hljs-params">client</span> =&gt;</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Sending &#x27;Hello!&#x27; Message to&quot;</span>, client.nickname)
     client.message(<span class="hljs-string">&quot;Hello!&quot;</span>)
@@ -283,18 +283,18 @@ teamspeak.on(<span class="hljs-string">&quot;error&quot;</span>, <span class="hl
 				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { TeamSpeak, QueryProtocol } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./src/TeamSpeak&quot;</span>
 
 TeamSpeak.connect({
-  host: <span class="hljs-string">&quot;127.0.0.1&quot;</span>,
-  queryport: <span class="hljs-number">10011</span>,
-  serverport: <span class="hljs-number">9987</span>,
-  protocol: QueryProtocol.RAW,
-  username: <span class="hljs-string">&quot;serveradmin&quot;</span>,
-  password: <span class="hljs-string">&quot;xxx&quot;</span>,
-  nickname: <span class="hljs-string">&quot;test&quot;</span>
+  <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;127.0.0.1&quot;</span>,
+  <span class="hljs-attr">queryport</span>: <span class="hljs-number">10011</span>,
+  <span class="hljs-attr">serverport</span>: <span class="hljs-number">9987</span>,
+  <span class="hljs-attr">protocol</span>: QueryProtocol.RAW,
+  <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;serveradmin&quot;</span>,
+  <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;xxx&quot;</span>,
+  <span class="hljs-attr">nickname</span>: <span class="hljs-string">&quot;test&quot;</span>
 }).then(<span class="hljs-keyword">async</span> teamspeak =&gt; {
 
   teamspeak.on(<span class="hljs-string">&quot;close&quot;</span>, <span class="hljs-keyword">async</span> () =&gt; {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;disconnected, trying to reconnect...&quot;</span>)
-    <span class="hljs-keyword">await</span> teamspeak.reconnect(<span class="hljs-number">-1</span>, <span class="hljs-number">1000</span>)
+    <span class="hljs-keyword">await</span> teamspeak.reconnect(-<span class="hljs-number">1</span>, <span class="hljs-number">1000</span>)
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;reconnected!&quot;</span>)
   })
 
@@ -333,10 +333,10 @@ TeamSpeak.connect({
 <span class="hljs-keyword">if</span> (!group) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;could not find group with id 10&quot;</span>)
 <span class="hljs-comment">//old await teamspeak.serverGroupAddPerm(10, &quot;i_channel_subscribe_power&quot;, 10, 0, 1)</span>
 <span class="hljs-keyword">await</span> teamspeak.serverGroupAddPerm(group, {
-  permname: <span class="hljs-string">&quot;i_channel_subscribe_power&quot;</span>,
-  permvalue: <span class="hljs-number">10</span>,
-  skip: <span class="hljs-literal">false</span>,
-  negate: <span class="hljs-literal">true</span>
+  <span class="hljs-attr">permname</span>: <span class="hljs-string">&quot;i_channel_subscribe_power&quot;</span>,
+  <span class="hljs-attr">permvalue</span>: <span class="hljs-number">10</span>,
+  <span class="hljs-attr">skip</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">negate</span>: <span class="hljs-literal">true</span>
 })
 <span class="hljs-comment">//or alternatively you can use it via the permission object</span>
 <span class="hljs-keyword">await</span> teamspeak.serverGroupAddPerm(group)
@@ -398,15 +398,15 @@ TeamSpeak.connect({
 <span class="hljs-keyword">if</span> (!channel) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;could not find channel with id 10&quot;</span>)
 <span class="hljs-comment">//with version &lt; 3.0</span>
 channel.edit({
-  channel_name: <span class="hljs-string">&quot;foo&quot;</span>,
-  channel_password: <span class="hljs-string">&quot;bar&quot;</span>,
-  channel_description: <span class="hljs-string">&quot;lorem ipsum&quot;</span>
+  <span class="hljs-attr">channel_name</span>: <span class="hljs-string">&quot;foo&quot;</span>,
+  <span class="hljs-attr">channel_password</span>: <span class="hljs-string">&quot;bar&quot;</span>,
+  <span class="hljs-attr">channel_description</span>: <span class="hljs-string">&quot;lorem ipsum&quot;</span>
 })
 <span class="hljs-comment">//with version &gt;= 3.0</span>
 channel.edit({
-  channelName: <span class="hljs-string">&quot;foo&quot;</span>,
-  channelPassword: <span class="hljs-string">&quot;bar&quot;</span>,
-  channelDescription: <span class="hljs-string">&quot;lorem ipsum&quot;</span>
+  <span class="hljs-attr">channelName</span>: <span class="hljs-string">&quot;foo&quot;</span>,
+  <span class="hljs-attr">channelPassword</span>: <span class="hljs-string">&quot;bar&quot;</span>,
+  <span class="hljs-attr">channelDescription</span>: <span class="hljs-string">&quot;lorem ipsum&quot;</span>
 })</code></pre>
 				<p>In favor to have <code>TeamSpeak#uploadIcon()</code> a new dependency has been added <code>buffer-crc32</code>
 				Upload Icon takes as first argument the icon buffer and returns after a finnished upload the crc32 value of the buffer</p>
