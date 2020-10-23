@@ -146,13 +146,15 @@ export interface BanAdd extends TeamSpeakQuery.ResponseEntry {
 }
 
 export interface BanClient extends TeamSpeakQuery.ResponseEntry {
-  clid: string
+  clid: string|string[]
   /** myteamspeak id, use "empty" to ban all clients without connected myteamspeak */
   mytsid?: string
   /** bantime in seconds, if left empty it will result in a permaban */
   time?: number
   /** ban reason */
   banreason: string
+  /** ignore errors  */
+  continueOnError?: boolean
 }
 
 export interface TransferUpload extends TeamSpeakQuery.ResponseEntry {

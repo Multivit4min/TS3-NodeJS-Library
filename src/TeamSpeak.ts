@@ -74,9 +74,9 @@ export class TeamSpeak extends EventEmitter {
     super()
 
     this.config = {
-      protocol: TeamSpeak.QueryProtocol.RAW,
+      protocol: TeamSpeak.QueryProtocol.SSH,
       host: "127.0.0.1",
-      queryport: config.protocol === TeamSpeak.QueryProtocol.SSH ? 10022 : 10011,
+      queryport: config.protocol === TeamSpeak.QueryProtocol.RAW ? 10011 : 10022,
       readyTimeout: 10000,
       ignoreQueries: false,
       keepAlive: true,
@@ -1195,9 +1195,21 @@ export class TeamSpeak extends EventEmitter {
    * @param client the client id
    * @param reasonid the reasonid
    * @param reasonmsg the message the client should receive when getting kicked
+   * @param continueOnError ignore errors
    */
-  clientKick(client: TeamSpeakClient.ClientType, reasonid: ReasonIdentifier, reasonmsg: string) {
-    return this.execute("clientkick", { clid: TeamSpeakClient.getId(client), reasonid, reasonmsg })
+  clientKick(
+    client: TeamSpeakClient.ClientType,
+    reasonid: ReasonIdentifier,
+    reasonmsg: string,
+    continueOnError: boolean = false
+  ) {
+    const flags: string[] = []
+    if (continueOnError) flags.push("-continueonerror")
+    return this.execute("clientkick", {
+      clid: TeamSpeakClient.getId(client),
+      reasonid,
+      reasonmsg
+    }, flags)
   }
 
 
@@ -1206,13 +1218,21 @@ export class TeamSpeak extends EventEmitter {
    * @param client the client id
    * @param channel channel id in which the client should get moved
    * @param cpw the channel password
+   * @param continueOnError ignore errors
    */
-  clientMove(client: TeamSpeakClient.ClientType, channel: TeamSpeakChannel.ChannelType, cpw?: string) {
+  clientMove(
+    client: TeamSpeakClient.ClientType,
+    channel: TeamSpeakChannel.ChannelType,
+    cpw?: string,
+    continueOnError: boolean = false
+  ) {
+    const flags: string[] = []
+    if (continueOnError) flags.push("-continueonerror")
     return this.execute("clientmove", {
       clid: TeamSpeakClient.getId(client),
       cid: TeamSpeakChannel.getId(channel),
       cpw
-    })
+    }, flags)
   }
 
 
@@ -2002,7 +2022,8 @@ export class TeamSpeak extends EventEmitter {
    */
   clientList(filter: Partial<Response.ClientEntry> = {}) {
     if (this.config.ignoreQueries) filter.clientType = ClientType.Regular
-    return this.execute<Response.ClientList>("clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"])
+    const flags = ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location", "-logquerytiminginterval"]
+    return this.execute<Response.ClientList>("clientlist", flags)
       .then(TeamSpeak.toArray)
       .then(clients => this.handleCache(this.clients, clients, "clid", TeamSpeakClient))
       .then(clients => TeamSpeak.filter(clients, filter))
@@ -2245,6 +2266,10 @@ export class TeamSpeak extends EventEmitter {
         return parsers
       }
     )
+  }
+
+  logQueryTiming() {
+    return this.execute("logquerytiminginterval")
   }
 
 

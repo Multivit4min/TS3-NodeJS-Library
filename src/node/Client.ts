@@ -121,6 +121,10 @@ export class TeamSpeakClient extends Abstract<ClientEntry> {
     return super.getPropertyByName("clientCountry")
   }
 
+  get estimatedLocation() {
+    return super.getPropertyByName("clientEstimatedLocation")
+  }
+
   get connectionClientIp() {
     return super.getPropertyByName("connectionClientIp")
   }

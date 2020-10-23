@@ -68,7 +68,8 @@ export interface ClientEntry extends TeamSpeakQuery.ResponseEntry {
   clientIdleTime: number
   clientCreated: number
   clientLastconnected: number
-  clientCountry: string
+  clientCountry: string|undefined
+  clientEstimatedLocation: string|undefined
   connectionClientIp: string
   clientBadges: string
 }
@@ -498,7 +499,7 @@ export interface ClientInfo extends TeamSpeakQuery.ResponseEntry {
   clientLastconnected: number
   clientTotalconnections: number
   clientAway: boolean
-  clientAwayMessage: string
+  clientAwayMessage: string|undefined
   clientType: ClientType
   clientFlagAvatar: string
   clientTalkPower: number
