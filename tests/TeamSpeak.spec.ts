@@ -6,7 +6,9 @@ const mockIsConnected = jest.fn()
 
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
+  // tslint:disable-next-line: only-arrow-functions
   TeamSpeakQuery.getSocket = function() {
+    // tslint:disable-next-line: no-empty
     return { on() {}, send() {}, sendKeepAlive() {}, close() { mockClose() }, isConnected() {} }
   }
   TeamSpeakQuery.prototype.execute = mockExecute
@@ -18,7 +20,6 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
 jest.mock("../src/transport/FileTransfer", () => {
 
   class FileTransfer {
-    constructor() {}
     download() {
       return mockTransfer(...arguments)
     }
@@ -45,6 +46,7 @@ import {
 import * as mocks from "./mocks/queryresponse"
 import { ApiKeyScope, TokenType, ClientType } from "../src/types/enum"
 import { SelectType } from "../src/types/context"
+import { BanClient } from "../src/types/PropertyTypes"
 
 describe("TeamSpeak", () => {
   let teamspeak: TeamSpeak = new TeamSpeak({})
@@ -61,7 +63,7 @@ describe("TeamSpeak", () => {
 
   describe("#new()", () => {
     it("should test the construction of TeamSpeak with an empty object", () => {
-      let teamspeak = new TeamSpeak({})
+      const teamspeak = new TeamSpeak({})
       expect(teamspeak.config)
         .toEqual({
           protocol: TeamSpeak.QueryProtocol.RAW,
@@ -75,7 +77,7 @@ describe("TeamSpeak", () => {
         })
     })
     it("should test the construction of TeamSpeak with an username and password", () => {
-      let teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
+      const teamspeak = new TeamSpeak({ username: "foo", password: "bar" })
       expect(teamspeak.config)
         .toEqual({
           protocol: TeamSpeak.QueryProtocol.RAW,
@@ -91,7 +93,7 @@ describe("TeamSpeak", () => {
         })
     })
     it("should test the construction of TeamSpeak with protocol SSH", () => {
-      let teamspeak = new TeamSpeak({ protocol: TeamSpeak.QueryProtocol.SSH })
+      const teamspeak = new TeamSpeak({ protocol: TeamSpeak.QueryProtocol.SSH })
       expect(teamspeak.config)
         .toEqual({
           protocol: TeamSpeak.QueryProtocol.SSH,
@@ -105,7 +107,7 @@ describe("TeamSpeak", () => {
         })
     })
     it("should test the construction of TeamSpeak with a serverport", () => {
-      let teamspeak = new TeamSpeak({ serverport: 5000 })
+      const teamspeak = new TeamSpeak({ serverport: 5000 })
       expect(teamspeak.config)
         .toEqual({
           protocol: TeamSpeak.QueryProtocol.RAW,
@@ -184,7 +186,7 @@ describe("TeamSpeak", () => {
       done()
     })
   })
-  
+
   it("should test a #reconnect with selected SID", async () => {
     expect.assertions(2)
     mockExecutePrio.mockResolvedValue(null)
@@ -778,19 +780,19 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #clientKick()", async () => {
-    await teamspeak.clientKick("10", ReasonIdentifier.KICK_CHANNEL, "Kicked from Channel")
+    await teamspeak.clientKick("10", ReasonIdentifier.KICK_CHANNEL, "Kicked from Channel", true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toHaveBeenCalledWith("clientkick", {
       clid: "10",
       reasonid: 4,
       reasonmsg: "Kicked from Channel"
-    })
+    }, ["-continueonerror"])
   })
 
   it("should verify parameters of #clientMove()", async () => {
-    await teamspeak.clientMove("25", "10")
+    await teamspeak.clientMove("25", "10", undefined, true)
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("clientmove", { clid: "25", cid: "10", cpw: undefined })
+    expect(mockExecute).toHaveBeenCalledWith("clientmove", { clid: "25", cid: "10", cpw: undefined }, ["-continueonerror"])
   })
 
   it("should verify parameters of #clientPoke()", async () => {
@@ -1247,10 +1249,11 @@ describe("TeamSpeak", () => {
   })
 
   it("should verify parameters of #banClient()", async () => {
-    const rule = { clid: "1337", mytsid: "empty", banreason: "spam", time: 60 }
+    const rule: BanClient = { clid: "1337", mytsid: "empty", banreason: "spam", time: 60, continueOnError: true }
     await teamspeak.banClient({ ...rule })
+    delete rule.continueOnError
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("banclient", { ...rule })
+    expect(mockExecute).toHaveBeenCalledWith("banclient", { ...rule }, ["-continueonerror"])
   })
 
   describe("#banDel()", () => {
@@ -1352,7 +1355,7 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
       "clientlist",
-      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"]
+      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location"]
     )
   })
 
@@ -1363,7 +1366,7 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledTimes(1)
     expect(mockExecute).toBeCalledWith(
       "clientlist",
-      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip"]
+      ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location"]
     )
     expect(filter).toEqual({ clientType: 0 })
   })

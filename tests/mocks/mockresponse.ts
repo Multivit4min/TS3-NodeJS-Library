@@ -157,6 +157,7 @@ export function clientlist(props: Partial<Response.ClientEntry> = {}): Response.
     clientCreated: 0,
     clientLastconnected: 0,
     clientCountry: "AT",
+    clientEstimatedLocation: "AT",
     connectionClientIp: "127.0.0.1",
     clientBadges: "",
     ...props

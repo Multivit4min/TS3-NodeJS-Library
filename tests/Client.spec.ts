@@ -3,7 +3,9 @@ const mockExecute = jest.fn()
 jest.mock("../src/transport/TeamSpeakQuery", () => {
   const { TeamSpeakQuery } = jest.requireActual("../src/transport/TeamSpeakQuery")
 
+  // tslint:disable-next-line: only-arrow-functions
   TeamSpeakQuery.getSocket = function() {
+    // tslint:disable-next-line: no-empty
     return { on() {}, send() {}, sendKeepAlive() {}, close() {}, isConnected() {} }
   }
 
@@ -16,7 +18,6 @@ jest.mock("../src/transport/TeamSpeakQuery", () => {
 jest.mock("../src/transport/FileTransfer", () => {
 
   class FileTransfer {
-    constructor() {}
     download() {
       return Promise.resolve(Buffer.from([]))
     }
@@ -153,6 +154,10 @@ describe("TeamSpeakClient", () => {
     expect(client.country).toBe(raw.clientCountry)
   })
 
+  it("should verify the getter value of #estimatedLocation()", () => {
+    expect(client.estimatedLocation).toBe(raw.clientEstimatedLocation)
+  })
+
   it("should verify the getter value of #connectionClientIp()", () => {
     expect(client.connectionClientIp).toBe(raw.connectionClientIp)
   })
@@ -221,7 +226,7 @@ describe("TeamSpeakClient", () => {
       clid: raw.clid,
       reasonid: 5,
       reasonmsg: "Kick Message"
-    })
+    }, [])
   })
 
   it("should verify execute parameters of #kickFromChannel()", async () => {
@@ -231,7 +236,7 @@ describe("TeamSpeakClient", () => {
       clid: raw.clid,
       reasonid: 4,
       reasonmsg: "Kick Message"
-    })
+    }, [])
   })
 
   it("should verify execute parameters of #ban()", async () => {
@@ -254,7 +259,7 @@ describe("TeamSpeakClient", () => {
       clid: raw.clid,
       cid: "10",
       cpw: "channel password"
-    })
+    }, [])
   })
 
   it("should verify execute parameters of #addGroups()", async () => {
@@ -348,7 +353,6 @@ describe("TeamSpeakClient", () => {
     mockExecute.mockResolvedValueOnce([{ ftkey: "fooKey", size: 10 }])
     await client.getAvatar()
     expect(mockExecute).toHaveBeenCalledTimes(2)
-    
     expect(mockExecute.mock.calls[0]).toEqual(["clientdbinfo", { cldbid: [raw.clientDatabaseId] }])
     expect(mockExecute.mock.calls[1][0]).toEqual("ftinitdownload")
     expect(mockExecute.mock.calls[1][1]).toHaveProperty("name", "/avatar_Zm9vYmFyMT0=")
