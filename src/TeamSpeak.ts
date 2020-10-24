@@ -74,9 +74,9 @@ export class TeamSpeak extends EventEmitter {
     super()
 
     this.config = {
-      protocol: TeamSpeak.QueryProtocol.SSH,
+      protocol: TeamSpeak.QueryProtocol.RAW,
       host: "127.0.0.1",
-      queryport: config.protocol === TeamSpeak.QueryProtocol.RAW ? 10011 : 10022,
+      queryport: config.protocol === TeamSpeak.QueryProtocol.SSH ? 10022 : 10011,
       readyTimeout: 10000,
       ignoreQueries: false,
       keepAlive: true,
@@ -1807,7 +1807,12 @@ export class TeamSpeak extends EventEmitter {
    * Please note that this will create two separate ban rules for the targeted clients IP address and his unique identifier.
    */
   banClient(properties: Props.BanClient) {
-    return this.execute<Response.BanAdd>("banclient", properties)
+    const flags: string[] = []
+    if (properties.continueOnError) {
+      flags.push("-continueonerror")
+      delete properties.continueOnError
+    }
+    return this.execute<Response.BanAdd>("banclient", properties, flags)
       .then(TeamSpeak.singleResponse)
   }
 
@@ -2022,7 +2027,7 @@ export class TeamSpeak extends EventEmitter {
    */
   clientList(filter: Partial<Response.ClientEntry> = {}) {
     if (this.config.ignoreQueries) filter.clientType = ClientType.Regular
-    const flags = ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location", "-logquerytiminginterval"]
+    const flags = ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location"]
     return this.execute<Response.ClientList>("clientlist", flags)
       .then(TeamSpeak.toArray)
       .then(clients => this.handleCache(this.clients, clients, "clid", TeamSpeakClient))
