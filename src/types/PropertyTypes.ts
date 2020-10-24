@@ -63,7 +63,7 @@ export interface ServerEdit extends TeamSpeakQuery.ResponseEntry {
   virtualserverMachineId?: string
   virtualserverPort?: number
   virtualserverAutostart?: number
-  virtualserverStatus?: string
+  virtualserverStatus?: ENUM.VirtualServerStatus
   virtualserverLogClient?: number
   virtualserverLogQuery?: number
   virtualserverLogChannel?: number
