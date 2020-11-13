@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.2.0 - ??.??.????
+### 3.2.0 - 13.11.2020
 * set SSH as default connection if no parameter has been set (raw will be disabled by default with TeamSpeak Server version 3.14.0 as stated in TeamSpeaks Changelog)
 * add optional parameter `continueOnError` on `clientKick`, `clientMove` and `banClient`
 * add `clientEstimatedLocation` to TeamSpeak client
