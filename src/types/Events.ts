@@ -18,11 +18,11 @@ export interface ClientConnect {
 export interface ClientDisconnect {
   client?: TeamSpeakClient
   event: {
-    cfid: number,
-    ctid: number,
-    reasonid: number,
+    cfid: string,
+    ctid: string,
+    reasonid: string,
     reasonmsg: string,
-    clid: number
+    clid: string
   }
 }
 
@@ -42,27 +42,27 @@ export interface TextMessage {
 export interface ClientMoved {
   client: TeamSpeakClient
   channel: TeamSpeakChannel
-  reasonid: ReasonIdentifier
+  reasonid: string
 }
 
 export interface ServerEdit {
   invoker: TeamSpeakClient
   modified: Record<string, any>
-  reasonid: number
+  reasonid: string
 }
 
 export interface ChannelEdit {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   modified: Record<string, any>
-  reasonid: number
+  reasonid: string
 }
 
 export interface ChannelCreate {
   invoker: TeamSpeakClient
   channel: TeamSpeakChannel
   modified: Record<string, any>
-  cpid: number
+  cpid: string
 }
 
 export interface ChannelMove {
@@ -74,5 +74,5 @@ export interface ChannelMove {
 
 export interface ChannelDelete {
   invoker?: TeamSpeakClient
-  cid: number
+  cid: string
 }
