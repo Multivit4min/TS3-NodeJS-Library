@@ -87,7 +87,7 @@ describe("Integration Test", () => {
 
   it("should test receiving of an event", () => {
     expect.assertions(1)
-    return new Promise(async fulfill => {
+    return new Promise<void>(async fulfill => {
       const servername = `event ${Math.floor(Math.random() * 10000)}`
       try {
         teamspeak = await TeamSpeak.connect({
