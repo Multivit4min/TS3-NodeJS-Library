@@ -112,6 +112,14 @@ export class TeamSpeakChannel extends Abstract<ChannelEntry> {
   }
 
   /**
+   * sends a message to the specified channel
+   * @param msg message which should be sent to the channel
+   */
+  message(msg: string) {
+    return this.getParent().sendChannelMessage(this, msg)
+  }
+
+  /**
    * Deletes an existing channel by ID.
    * If force is set to 1, the channel will be deleted even if there are clients within.
    * The clients will be kicked to the default channel with an appropriate reason message.
