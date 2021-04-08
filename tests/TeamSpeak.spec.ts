@@ -894,6 +894,39 @@ describe("TeamSpeak", () => {
   })
 
 
+  it("should verify parameters of #sendChannelMessage() when being in the same channel", async () => {
+    mockExecute
+      .mockResolvedValueOnce([{ clientId: "1" }])
+      .mockResolvedValueOnce([{ clid: "1", cid: "10" }])
+    await teamspeak.sendChannelMessage("10", "test message")
+    expect(mockExecute).toHaveBeenCalledTimes(3)
+    expect(mockExecute).toHaveBeenNthCalledWith(1, "whoami")
+    expect(mockExecute).toHaveBeenNthCalledWith(2, "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location"])
+    expect(mockExecute).toHaveBeenNthCalledWith(3, "sendtextmessage", {
+      target: "10", targetmode: 2, msg: "test message"
+    })
+  })
+
+
+  it("should verify parameters of #sendChannelMessage() when being in a different channel", async () => {
+    mockExecute
+      .mockResolvedValueOnce([{ clientId: "1" }])
+      .mockResolvedValueOnce([{ clid: "1", cid: "9" }])
+    await teamspeak.sendChannelMessage("10", "test message")
+    expect(mockExecute).toHaveBeenCalledTimes(5)
+    expect(mockExecute).toHaveBeenNthCalledWith(1, "whoami")
+    expect(mockExecute).toHaveBeenNthCalledWith(2, "clientlist", ["-uid", "-away", "-voice", "-times", "-groups", "-info", "-icon", "-country", "-ip", "-location"])
+    expect(mockExecute).toHaveBeenNthCalledWith(3, "clientmove", {
+      cid: "10", clid: "1", cpw: undefined
+    }, [])
+    expect(mockExecute).toHaveBeenNthCalledWith(4, "sendtextmessage", {
+      target: "10", targetmode: 2, msg: "test message"
+    })
+    expect(mockExecute).toHaveBeenNthCalledWith(5, "clientmove", {
+      cid: "9", clid: "1", cpw: undefined
+    }, [])
+  })
+
   it("should verify parameters of #getServerGroupByID()", async () => {
     mockExecute.mockResolvedValue(mocks.servergrouplist(5))
     const group = await teamspeak.getServerGroupById("4")
