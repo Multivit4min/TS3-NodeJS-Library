@@ -636,6 +636,17 @@ export class TeamSpeak extends EventEmitter {
   }
 
 
+  /** retrieves the own query client as TeamSpeakClient instance */
+  async self() {
+    const { clientId } = await this.whoami()
+    let client: TeamSpeakClient|undefined = this.clients[clientId]
+    if (client) return client
+    client = await this.getClientById(clientId)
+    if (client) return client
+    throw new Error("could not find own query client")
+  }
+
+
   /**
    * Displays detailed configuration information about the selected virtual server
    * including unique ID, number of clients online, configuration, etc.
@@ -1364,6 +1375,22 @@ export class TeamSpeak extends EventEmitter {
     return this.execute("sendtextmessage", { target: selectedTarget, targetmode, msg })
   }
 
+  /**
+   * sends a message to a teamspeak channel,
+   * if the client is not in this channel he will move into the channel, send the message and move back after
+   * @param target the target channel to send the message
+   * @param msg the message which should be sent
+   */
+  async sendChannelMessage(target: TeamSpeakChannel.ChannelType, msg: string) {
+    const self = await this.self()
+    const sourceChannel = self.cid
+    const cid = TeamSpeakChannel.getId(target)
+    const orders: Promise<any>[] = []
+    if (sourceChannel !== cid) orders.push(self.move(cid))
+    orders.push(this.sendTextMessage(target, TextMessageTargetMode.CHANNEL, msg))
+    if (sourceChannel !== cid) orders.push(self.move(sourceChannel))
+    await Promise.all(orders)
+  }
 
   /**
    * Retrieves a single ServerGroup by the given ServerGroup ID
