@@ -353,6 +353,15 @@ describe("TeamSpeak", () => {
     expect(mockExecute).toHaveBeenCalledWith("whoami")
   })
 
+  it("should verify rejection of #self()", async () => {
+    expect.assertions(2)
+    mockExecute.mockResolvedValueOnce({ clientId: 1 })
+    mockExecute.mockResolvedValueOnce([])
+    await expect(teamspeak.self())
+      .rejects.toEqual(new Error("could not find own query client"))
+    expect(mockExecute).toHaveBeenCalledTimes(2)
+  })
+
   it("should verify parameters of #serverInfo()", async () => {
     await teamspeak.serverInfo()
     expect(mockExecute).toHaveBeenCalledTimes(1)
