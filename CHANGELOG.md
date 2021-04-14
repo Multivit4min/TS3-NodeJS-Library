@@ -1,6 +1,6 @@
 # Changelog
 
-### 3.3.0 - 
+### 3.3.0 - 14.04.2020
 * added `TeamSpeak#self` in order to get Query client from the current connection
 * added `TeamSpeak#sendChannelMessage` which will send a message to a specific channel and will move into and back from the channel if necessary
 * added `TeamSpeakChannel#message` which will utilize `TeamSpeak#sendChannelMessage` in order to send a message to a channel
