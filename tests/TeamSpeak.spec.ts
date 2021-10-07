@@ -1422,7 +1422,7 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #ftGetFileList()", async () => {
     await teamspeak.ftGetFileList("10")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("ftgetfilelist", { cid: "10", path: "/", cpw: undefined })
+    expect(mockExecute).toHaveBeenCalledWith("ftgetfilelist", { cid: "10", path: "/", cpw: "" })
   })
 
   it("should verify parameters of #ftGetFileInfo()", async () => {
@@ -1440,13 +1440,13 @@ describe("TeamSpeak", () => {
   it("should verify parameters of #ftDeleteFile()", async () => {
     await teamspeak.ftDeleteFile("10", "/file.txt")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("ftdeletefile", { cid: "10", name: "/file.txt", cpw: undefined })
+    expect(mockExecute).toHaveBeenCalledWith("ftdeletefile", { cid: "10", name: "/file.txt", cpw: "" })
   })
 
   it("should verify parameters of #ftCreateDir()", async () => {
     await teamspeak.ftCreateDir("10", "/folder")
     expect(mockExecute).toHaveBeenCalledTimes(1)
-    expect(mockExecute).toHaveBeenCalledWith("ftcreatedir", { cid: "10", dirname: "/folder", "cpw": undefined })
+    expect(mockExecute).toHaveBeenCalledWith("ftcreatedir", { cid: "10", dirname: "/folder", "cpw": "" })
   })
 
   it("should verify parameters of #ftRenameFile()", async () => {
@@ -1457,8 +1457,8 @@ describe("TeamSpeak", () => {
       oldname: "/file.txt",
       newname: "/file2.txt",
       tcid: "11",
-      cpw: undefined,
-      tcpw: undefined
+      cpw: "",
+      tcpw: ""
     })
   })
 
