@@ -2078,7 +2078,7 @@ export class TeamSpeak extends EventEmitter {
    * @param path the path to list
    * @param cpw the channel password
    */
-  ftGetFileList(channel: TeamSpeakChannel.ChannelType, path: string = "/", cpw?: string) {
+  ftGetFileList(channel: TeamSpeakChannel.ChannelType, path: string = "/", cpw: string = "") {
     return this.execute<Response.FTGetFileList>(
       "ftgetfilelist",
       { cid: TeamSpeakChannel.getId(channel), path, cpw }
@@ -2116,7 +2116,7 @@ export class TeamSpeak extends EventEmitter {
    * @param name path to the file to delete
    * @param cpw the channel password
    */
-  ftDeleteFile(channel: TeamSpeakChannel.ChannelType, name: string, cpw?: string) {
+  ftDeleteFile(channel: TeamSpeakChannel.ChannelType, name: string, cpw: string = "") {
     return this.execute(
       "ftdeletefile",
       { cid: TeamSpeakChannel.getId(channel), name, cpw }
@@ -2130,7 +2130,7 @@ export class TeamSpeak extends EventEmitter {
    * @param dirname path to the directory
    * @param cpw the channel password
    */
-  ftCreateDir(channel: TeamSpeakChannel.ChannelType, dirname: string, cpw?: string) {
+  ftCreateDir(channel: TeamSpeakChannel.ChannelType, dirname: string, cpw: string = "") {
     return this.execute(
       "ftcreatedir",
       { cid: TeamSpeakChannel.getId(channel), dirname, cpw }
@@ -2148,7 +2148,7 @@ export class TeamSpeak extends EventEmitter {
    * @param cpw the channel password from where the file gets renamed
    * @param tcpw the channel password from where the file will get transferred to
    */
-  ftRenameFile(channel: TeamSpeakChannel.ChannelType, oldname: string, newname: string, tcid?: string, cpw?: string, tcpw?: string) {
+  ftRenameFile(channel: TeamSpeakChannel.ChannelType, oldname: string, newname: string, tcid?: string, cpw: string = "", tcpw: string = "") {
     return this.execute(
       "ftrenamefile",
       { cid: TeamSpeakChannel.getId(channel), oldname, newname, tcid, cpw, tcpw }
@@ -2226,7 +2226,7 @@ export class TeamSpeak extends EventEmitter {
    * @param data icon buffer to upload
    */
   async uploadIcon(data: Buffer) {
-    const id = crc.signed(data)
+    const id = crc.unsigned(data)
     await this.uploadFile(`/icon_${id}`, data, "0")
     return id
   }
