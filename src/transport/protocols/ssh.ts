@@ -26,6 +26,17 @@ export class ProtocolSSH extends EventEmitter implements TeamSpeakQuery.QueryPro
             username: config.username,
             password: config.password,
             readyTimeout: config.readyTimeout,
+            algorithms: {
+              serverHostKey: [
+                "ssh-rsa",
+                "ssh-ed25519",
+                "ecdsa-sha2-nistp256",
+                "ecdsa-sha2-nistp384",
+                "ecdsa-sha2-nistp521",
+                "rsa-sha2-512",
+                "rsa-sha2-256"
+              ]
+            },
             //@ts-ignore not implemented by @types repo
             localAddress: config.localAddress
           })
