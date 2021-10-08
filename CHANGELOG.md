@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.4.0 - 08.10.2021
+* **WARNING** changed crc32 return value from `TeamSpeak#uploadIcon` function from a signed int to an unsigned int
+* added empty string for multiple file transfer functions for property `cpw`
+* update dependencies
+
 ### 3.3.0 - 14.04.2020
 * added `TeamSpeak#self` in order to get Query client from the current connection
 * added `TeamSpeak#sendChannelMessage` which will send a message to a specific channel and will move into and back from the channel if necessary
