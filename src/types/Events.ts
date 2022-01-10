@@ -1,10 +1,7 @@
 import { TeamSpeakClient } from "../node/Client"
 import { TeamSpeakChannel } from "../node/Channel"
 import { ClientList } from "./ResponseTypes"
-import {
-  TextMessageTargetMode,
-  ReasonIdentifier
-} from "./enum"
+import { TextMessageTargetMode } from "./enum"
 
 export interface Debug {
   type: string,
