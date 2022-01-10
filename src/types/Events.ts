@@ -18,11 +18,15 @@ export interface ClientConnect {
 export interface ClientDisconnect {
   client?: TeamSpeakClient
   event: {
-    cfid: string,
-    ctid: string,
-    reasonid: string,
-    reasonmsg: string,
+    cfid: string
+    ctid: string
+    reasonid: string
+    reasonmsg: string
     clid: string
+    invokerid?: string
+    invokername?: string
+    invokeruid?: string
+    bantime?: number
   }
 }
 
