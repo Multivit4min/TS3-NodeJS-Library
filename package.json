@@ -1,12 +1,12 @@
 {
-  "name": "ts3-nodejs-library",
+  "name": "ts3-nodejs-scentral",
   "version": "3.4.1",
   "description": "TeamSpeak Server Query API",
   "main": "lib/index.js",
-  "homepage": "https://github.com/Multivit4min/TS3-NodeJS-Library",
+  "homepage": "https://github.com/scentral/ts3-nodejs-scentral",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Multivit4min/TS3-NodeJS-Library.git"
+    "url": "git+https://github.com/scentral/ts3-nodejs-scentral.git"
   },
   "scripts": {
     "tslint": "tslint --project .",
@@ -25,7 +25,7 @@
     "query",
     "serverquery"
   ],
-  "author": "Multivitamin <david.kartnaller@gmail.com>",
+  "author": "Multivitamin & Scentral & Racc",
   "license": "MIT",
   "devDependencies": {
     "@types/buffer-crc32": "^0.2.0",
