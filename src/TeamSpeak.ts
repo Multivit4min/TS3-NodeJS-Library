@@ -1153,9 +1153,13 @@ export class TeamSpeak extends EventEmitter {
    * Retrieves a Single Client by the given Client Unique Identifier
    * @param client the client unique identifier
    */
-  getClientByUid(client: TeamSpeakClient.ClientType): Promise<TeamSpeakClient|undefined> {
-    return this.clientList({ clientUniqueIdentifier: TeamSpeakClient.getUid(client) })
+  async getClientByUid(client: TeamSpeakClient.ClientType): Promise<TeamSpeakClient|number|undefined> {
+    const retClient = await this.clientList({ clientUniqueIdentifier: TeamSpeakClient.getUid(client) })
       .then(([client]) => client)
+      if (!retClient) {
+        const dbRes = await this.clientDbFind(TeamSpeakClient.getUid(client), true)
+        if (dbRes.length === 0) return Number(dbRes[0].cldbid); else return undefined
+      } else return retClient
   }
 
 
