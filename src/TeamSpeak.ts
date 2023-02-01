@@ -1158,7 +1158,7 @@ export class TeamSpeak extends EventEmitter {
       .then(([client]) => client)
       if (!retClient) {
         const dbRes = await this.clientDbFind(TeamSpeakClient.getUid(client), true)
-        if (dbRes.length === 0) return Number(dbRes[0].cldbid); else return undefined
+        if(dbRes.length > 0) return Number(dbRes[0].cldbid); else return undefined
       } else return retClient
   }
 
