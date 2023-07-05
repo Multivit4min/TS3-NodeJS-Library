@@ -2393,7 +2393,7 @@ export class TeamSpeak extends EventEmitter {
   /**
    * retrieves an instance of the Permission
    */
-  private getPermBuilder<T = void>(init: Omit<Permission.IConfig<T>, "teamspeak">) {
+  private getPermBuilder<T extends {} = {}>(init: Omit<Permission.IConfig<T>, "teamspeak">) {
     return new Permission({
       teamspeak: this,
       ...init
