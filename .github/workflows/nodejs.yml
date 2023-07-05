@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [16, 18]
     steps:
     - uses: actions/checkout@v1
     - name: Install TeamSpeak Server via docker
@@ -28,11 +28,11 @@ jobs:
       run: |
         npm test     
     - name: Run TSLINT
-      if: matrix.node-version == 12
+      if: matrix.node-version == 18
       run: |
         npm run tslint
     - name: Coveralls
-      if: matrix.node-version == 12
+      if: matrix.node-version == 18
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12]
+        node-version: [18]
     needs: tests
     steps:
     - uses: actions/checkout@v1
