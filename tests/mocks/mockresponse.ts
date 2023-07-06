@@ -496,22 +496,22 @@ export function clientdbinfo(props: Partial<Response.ClientDBInfo> = {}): Respon
   }
 }
 
-export function customsearch(props: Partial<Response.CustomSearch> = {}): Response.CustomSearch {
-  return {
+export function customsearch(props: Partial<Response.CustomSearchEntry> = {}): Response.CustomSearch {
+  return [{
     cldbid: "0",
     ident: "",
     value: "",
     ...props
-  }
+  }]
 }
 
-export function custominfo(props: Partial<Response.CustomInfo> = {}): Response.CustomInfo {
-  return {
+export function custominfo(props: Partial<Response.CustomInfoEntry> = {}): Response.CustomInfo {
+  return [{
     cldbid: "0",
     ident: "",
     value: "",
     ...props
-  }
+  }]
 }
 
 export function permoverview(props: Partial<Response.PermOverviewEntry> = {}): Response.PermOverviewEntry {

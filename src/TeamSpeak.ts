@@ -1316,8 +1316,13 @@ export class TeamSpeak extends EventEmitter {
    * @param ident the key to search for
    * @param pattern the search pattern to use
    */
-  customSearch(ident: string, pattern: string) {
-    return this.execute<Response.CustomSearch>("customsearch", { ident, pattern }).then(TeamSpeak.singleResponse)
+  async customSearch(ident: string, pattern: string) {
+    try {
+      return await this.execute<Response.CustomSearch>("customsearch", { ident, pattern })
+    } catch (e) {
+      if (e.id !== "1281") return [] //empty result set
+      throw e
+    }
   }
 
 
@@ -1325,8 +1330,13 @@ export class TeamSpeak extends EventEmitter {
    * returns a list of custom properties for the client specified with cldbid.
    * @param client the Client Database ID which should be retrieved
    */
-  customInfo(client: TeamSpeakClient.ClientType) {
-    return this.execute<Response.CustomInfo>("custominfo", { cldbid: TeamSpeakClient.getDbid(client) })
+  async customInfo(client: TeamSpeakClient.ClientType) {
+    try {
+      return await this.execute<Response.CustomInfo>("custominfo", { cldbid: TeamSpeakClient.getDbid(client) })
+    } catch (e) {
+      if (e.id === "1281") return [] //empty result set
+      throw e
+    }
   }
 
 

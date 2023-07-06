@@ -570,13 +570,15 @@ export interface ClientDBInfo extends TeamSpeakQuery.ResponseEntry {
   clientLastip: string
 }
 
-export interface CustomSearch extends TeamSpeakQuery.ResponseEntry {
+export type CustomSearch = CustomSearchEntry[]
+export interface CustomSearchEntry extends TeamSpeakQuery.ResponseEntry {
   cldbid: string
   ident: string
   value: string
 }
 
-export interface CustomInfo extends TeamSpeakQuery.ResponseEntry {
+export type CustomInfo = CustomInfoEntry[]
+export interface CustomInfoEntry extends TeamSpeakQuery.ResponseEntry {
   cldbid: string
   ident: string
   value: string

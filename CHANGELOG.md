@@ -1,5 +1,10 @@
 # Changelog
 
+
+### 3.5.0 - 06.07.2023
+* fix customSearch and customInfo response entry to be an array
+* both above functions will now return an empty array when no entry has been found instead of throwing an error
+
 ### 3.4.0 - 08.10.2021
 * **WARNING** changed crc32 return value from `TeamSpeak#uploadIcon` function from a signed int to an unsigned int
 * added empty string for multiple file transfer functions for property `cpw`
