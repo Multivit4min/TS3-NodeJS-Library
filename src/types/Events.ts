@@ -28,7 +28,7 @@ export interface ClientDisconnect {
 }
 
 export interface TokenUsed {
-  client: ClientList
+  client: TeamSpeakClient
   token: string
   token1: string
   token2: string
