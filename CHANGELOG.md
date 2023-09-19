@@ -1,5 +1,7 @@
 # Changelog
 
+### 3.5.1 - 19.09.2023
+* fix type of clientTalkRequest
 
 ### 3.5.0 - 06.07.2023
 * fix customSearch and customInfo response entry to be an array

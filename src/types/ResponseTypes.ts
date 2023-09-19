@@ -503,7 +503,7 @@ export interface ClientInfo extends TeamSpeakQuery.ResponseEntry {
   clientType: ClientType
   clientFlagAvatar: string
   clientTalkPower: number
-  clientTalkRequest: boolean
+  clientTalkRequest: number
   clientTalkRequestMsg: string
   clientDescription: string
   clientIsTalker: boolean

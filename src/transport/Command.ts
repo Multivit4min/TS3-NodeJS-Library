@@ -564,7 +564,7 @@ export namespace Command {
     clientLoginPassword: Command.parseString,
     clientTotalconnections: Command.parseNumber,
     clientFlagAvatar: Command.parseString,
-    clientTalkRequest: Command.parseBoolean,
+    clientTalkRequest: Command.parseNumber,
     clientTalkRequestMsg: Command.parseString,
     clientMonthBytesUploaded: Command.parseNumber,
     clientMonthBytesDownloaded: Command.parseNumber,

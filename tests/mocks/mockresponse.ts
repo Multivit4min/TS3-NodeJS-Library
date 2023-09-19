@@ -422,7 +422,7 @@ export function clientinfo(props: Partial<Response.ClientInfo> = {}): Response.C
     clientType: 1,
     clientFlagAvatar: "0",
     clientTalkPower: 0,
-    clientTalkRequest: false,
+    clientTalkRequest: 0,
     clientTalkRequestMsg: "",
     clientDescription: "",
     clientIsTalker: false,
