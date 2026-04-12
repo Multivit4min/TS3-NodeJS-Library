@@ -95,9 +95,7 @@ export interface ChannelEntry extends TeamSpeakQuery.ResponseEntry {
   channelMaxfamilyclients: number
   totalClients: number
   channelNeededSubscribePower: number
-  /** only in server version >= 3.11.x */
   channelBannerGfxUrl: string
-  /** only in server version >= 3.11.x */
   channelBannerMode: number
 }
 
