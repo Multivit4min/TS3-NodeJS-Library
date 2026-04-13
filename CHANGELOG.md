@@ -1,5 +1,9 @@
 # Changelog
 
+### 3.5.2 - 19.09.2023
+* add new channel properties from https://github.com/Multivit4min/TS3-NodeJS-Library/pull/200
+* add timeout 0 from https://github.com/Multivit4min/TS3-NodeJS-Library/pull/199
+
 ### 3.5.1 - 19.09.2023
 * fix type of clientTalkRequest
 
