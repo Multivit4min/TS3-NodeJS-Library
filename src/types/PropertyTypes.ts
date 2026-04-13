@@ -102,6 +102,9 @@ export interface ChannelEdit extends TeamSpeakQuery.ResponseEntry {
   channelNeededTalkPower?: number
   channelNamePhonetic?: string
   channelCodecIsUnencrypted?: boolean
+  channelIconId?: number
+  channelBannerGfxUrl?: string
+  channelBannerMode?: number
 }
 
 export interface InstanceEdit extends TeamSpeakQuery.ResponseEntry {
