@@ -37,6 +37,7 @@ export class ProtocolRAW extends EventEmitter implements TeamSpeakQuery.QueryPro
    * Called after the Socket has been established
    */
   private handleConnect() {
+    this.socket.setTimeout(0)
     this.emit("connect")
   }
 
