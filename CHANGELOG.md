@@ -1,6 +1,9 @@
 # Changelog
 
-### 3.5.2 - 19.09.2023
+### 3.5.3 - 11.05.2026
+* reverted pull request [199](https://github.com/Multivit4min/TS3-NodeJS-Library/pull/199)
+
+### 3.5.2 - 1.04.2026
 * add new channel properties from https://github.com/Multivit4min/TS3-NodeJS-Library/pull/200
 * add timeout 0 from https://github.com/Multivit4min/TS3-NodeJS-Library/pull/199
 
